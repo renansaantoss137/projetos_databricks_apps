@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Efetividade de Pedidos – Smart Order | Bimbo Brasil</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── PAGE LAYOUT & SCROLLING ─────────────────────────── */
+    html, body {
+      min-height: 100vh;
+      overflow-y: auto !important;
+    }
+
+    .ef-wrapper {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 2rem 1.5rem 5rem 1.5rem;
+    }
+
+    .ef-main-container {
+      width: 100%;
+      max-width: 1060px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    /* HEADER FIXO COM LOGO DE EFETIVIDADE DE PEDIDOS */
+    .ef-header {
+      background: rgba(14, 25, 45, 0.95);
+      border: 1px solid rgba(36, 141, 193, 0.3);
+      border-radius: 16px;
+      padding: 0.5rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .ef-header-brand {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .ef-logo-box {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ef-logo-img {
+      height: 65px;
+      width: auto;
+      max-width: 250px;
+      object-fit: contain;
+    }
+
+    .ef-header-title h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0 0 0.2rem 0;
+      letter-spacing: -0.02em;
+    }
+
+    .ef-header-title p {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.65);
+      margin: 0;
+    }
+
+    /* STEP INDICATOR */
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(8, 16, 32, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.4rem 0.9rem;
+      border-radius: 14px;
+    }
+
+    .step-tag {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.25rem 0.75rem;
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.05);
+      transition: all 0.2s ease;
+    }
+
+    .step-tag.active {
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.18);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    .step-arrow {
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 0.8rem;
+    }
+
+    /* TELAS (SCREEN 1 & SCREEN 2) */
+    .ef-screen {
+      display: none;
+      flex-direction: column;
+      gap: 1.75rem;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .ef-screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* PARTE EXTERNA DO BLOCO COM CONTORNO DEGRADÊ COLORIDO DA NAVBAR */
+    .ef-card-center {
+      background: rgba(14, 25, 45, 0.96);
+      border-radius: 24px;
+      padding: 2.25rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(36, 141, 193, 0.25);
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+      /* Contorno externo degradê colorido da Navbar (Azul Marinho -> Azul Ciano -> Vermelho Bimbo) */
+      border: 2px solid transparent;
+      background-image: linear-gradient(rgba(14, 25, 45, 0.96), rgba(14, 25, 45, 0.96)), 
+                        linear-gradient(90deg, #263576 0%, #248DC1 52%, #DA2E39 100%);
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+    }
+
+    /* FILTRO SELEÇÃO BANDEIRA */
+    .filter-box {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      position: relative;
+    }
+
+    .filter-box label {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.85);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .select-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .select-wrap svg.select-icon {
+      position: absolute;
+      left: 1.2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      color: #38bdf8;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .select-chevron {
+      position: absolute;
+      right: 1.1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: rgba(36, 141, 193, 0.18);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .select-chevron svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .search-select {
+      width: 100%;
+      padding: 1.05rem 3.6rem 1.05rem 3.2rem;
+      background: rgba(8, 16, 32, 0.95);
+      border: 1.5px solid rgba(36, 141, 193, 0.45);
+      border-radius: 15px;
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3) inset;
+    }
+
+    .search-select option {
+      background: #0a162a;
+      color: #ffffff;
+      font-size: 0.98rem;
+      padding: 0.8rem 1rem;
+    }
+
+    .search-select:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25), 0 4px 16px rgba(0,0,0,0.3) inset;
+    }
+
+    /* BOTÃO GERAR PEDIDOS (DEGRADÊ AZUL MARINHO A AZUL CLARO COM EFEITO ESPELHO) */
+    .btn-wrap-center {
+      display: flex;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    .btn-mirror {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.85rem;
+      padding: 1.1rem 3.5rem;
+      background: linear-gradient(135deg, #162540 0%, #263576 40%, #1c6899 75%, #248DC1 100%);
+      color: #ffffff;
+      font-size: 1.08rem;
+      font-weight: 800;
+      border: 1.5px solid rgba(56, 189, 248, 0.5);
+      border-radius: 16px;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(36, 141, 193, 0.38), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      width: 100%;
+      max-width: 440px;
+      overflow: hidden;
+    }
+
+    .btn-mirror::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 46%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.04) 100%);
+      border-radius: 14px 14px 0 0;
+      pointer-events: none;
+    }
+
+    .btn-mirror::after {
+      content: '';
+      position: absolute;
+      top: -60%;
+      left: -60%;
+      width: 45%;
+      height: 220%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.45) 50%, transparent 100%);
+      transform: rotate(25deg);
+      transition: left 0.7s ease;
+      pointer-events: none;
+    }
+
+    .btn-mirror:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, #1b2d4f 0%, #2e418e 40%, #217cb7 75%, #38bdf8 100%);
+      box-shadow: 0 16px 40px rgba(36, 141, 193, 0.55), 0 0 20px rgba(56, 189, 248, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+      border-color: rgba(186, 230, 253, 0.8);
+    }
+
+    .btn-mirror:hover::after {
+      left: 135%;
+    }
+
+    .btn-mirror:active {
+      transform: translateY(0);
+    }
+
+    .btn-mirror.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+      filter: grayscale(0.8);
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 1rem;
+      background: #f6f9fc;
+      border: 1px solid rgba(38,53,118,0.2);
+      border-radius: 10px;
+      color: #263576;
+      font-weight: 700;
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-back:hover {
+      background: rgba(36, 141, 193, 0.15);
+      border-color: #248DC1;
+      color: #248DC1;
+    }
+
+    /* MODAL CONFIRMAÇÃO */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 12, 24, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 9900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-box {
+      width: 90%;
+      max-width: 480px;
+      background: rgba(14, 28, 52, 0.98);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 22px;
+      padding: 2.25rem;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .modal-icon {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.2);
+      border: 2px solid #10b981;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body class="orders-page">
+
+  <!-- ══════════════════ NAVBAR ══════════════════ -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <img src="logo-dna.png" alt="DNA" class="nav-logo">
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li class="nav-dropdown">
+          <a href="#" class="dropdown-trigger">Análise Fill Rate ▾</a>
+          <ul class="dropdown-menu">
+            <li><a href="#" style="pointer-events:none;opacity:0.6;">Fill Rate N0 <span class="badge-wip">Em breve</span></a></li>
+            <li><a href="#" style="pointer-events:none;opacity:0.6;">Fill Rate N1 <span class="badge-wip">Em breve</span></a></li>
+            <li><a href="#" style="pointer-events:none;opacity:0.6;">Fill Rate N2 <span class="badge-wip">Em breve</span></a></li>
+          </ul>
+        </li>
+        <li><a href="gestao-pedidos.html">Gestão de Pedidos</a></li>
+        <li><a href="efetividade-pedidos.html" class="active">Efetividade de Pedidos</a></li>
+        <li><a href="disciplina-operativa.html">Disciplina Comercial</a></li>
+      </ul>
+      <div class="nav-actions">
+        <img src="Logo Bimbo -Brasil.png" alt="Bimbo Brasil" class="nav-logo-bimbo">
+      </div>
+    </div>
+  </nav>
+  <div class="gradient-line"></div>
+
+  <!-- ══════════════════ MAIN WRAPPER ══════════════════ -->
+  <div class="ef-wrapper">
+    <div class="ef-main-container">
+
+      <!-- HEADER FIXO COM LOGO DE EFETIVIDADE DE PEDIDOS -->
+      <header class="ef-header">
+        <div class="ef-header-brand">
+          <div class="ef-logo-box">
+            <img src="/static/logo_efetividade_pedidos.png" alt="Logo Efetividade de Pedidos" class="ef-logo-img">
+          </div>
+          <div class="ef-header-title">
+            <h1>Efetividade de Pedidos</h1>
+            <p id="headerSubtitle">Passo 1: Seleção do Grupo Econômico / Bandeira e CNPJs</p>
+          </div>
+        </div>
+
+        <div class="step-indicator">
+          <span class="step-tag active" id="stepTag1">1. Seleção</span>
+          <span class="step-arrow">→</span>
+          <span class="step-tag" id="stepTag2">2. Detalhamento do Lote</span>
+        </div>
+      </header>
+
+      <!-- ══════════════════ TELA 1: SELEÇÃO BANDEIRA E CNPJS ══════════════════ -->
+      <div id="screen1" class="ef-screen active">
+        <div class="ef-card-center">
+
+          <!-- FILTRO DE BANDEIRAS -->
+          <div class="filter-box">
+            <label for="bandeiraSelect">Grupo Econômico / Bandeira</label>
+            <div class="select-wrap">
+              <svg class="select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <select id="bandeiraSelect" class="search-select" onchange="selectGrupo(this.value)">
+                <option value="" disabled selected>Selecione o Grupo Econômico para iniciar</option>
+                <option value="ATACADÃO">ATACADÃO</option>
+                <option value="GPA">GPA</option>
+                <option value="VIOLETA">VIOLETA</option>
+                <option value="MACROMIX">MACROMIX</option>
+              </select>
+              <div class="select-chevron">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- TABELA PADRONIZADA COM GESTÃO DE PEDIDOS -->
+          <div class="table-card" style="max-height: 420px;">
+            <div class="tc-header">
+              <div>
+                <div class="tc-title">CNPJs atrelados ao Grupo: <strong id="grupoNameLabel" style="color:#5a789a;">—</strong></div>
+                <div class="tc-sub" id="grupoCountBadge">Selecione o Grupo Econômico para iniciar</div>
+              </div>
+              <div>
+                <label style="cursor:pointer; display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; font-weight:700; color:#5a789a;">
+                  <input type="checkbox" id="chkSelectAll" onclick="toggleSelectAll(this.checked)"> Selecionar todos
+                </label>
+              </div>
+            </div>
+
+            <div class="table-scroll">
+              <table class="orders-table">
+                <thead>
+                  <tr>
+                    <th style="width:45px; text-align:center;"></th>
+                    <th>CNPJ</th>
+                    <th>Nome do Grupo / Cliente</th>
+                    <th>Cidade / UF</th>
+                    <th>Canal / Regional</th>
+                  </tr>
+                </thead>
+                <tbody id="cnpjsTableBody">
+                  <!-- Populated dynamically by JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="tc-footer">
+              <span id="cnpjsFooterInfo">Mostrando <strong>10</strong> registros</span>
+            </div>
+          </div>
+
+          <!-- BOTÃO GERAR PEDIDOS -->
+          <div class="btn-wrap-center">
+            <button id="btnIrParaTela2" class="btn-mirror" onclick="irParaTela2()">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Gerar Pedidos
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ══════════════════ TELA 2: TABELA ENORME E DOIS BOTÕES ══════════════════ -->
+      <div id="screen2" class="ef-screen">
+        <div class="table-card" style="max-height: 600px;">
+
+          <div class="tc-header">
+            <div>
+              <button class="btn-back" onclick="voltarParaTela1()">
+                ← Voltar para Seleção
+              </button>
+            </div>
+            <div style="text-align:right;">
+              <div class="tc-sub">Detalhamento de Lote para:</div>
+              <div class="tc-title" style="color:#248DC1; font-size:1.1rem;" id="tela2GrupoTitle">ATACADÃO</div>
+            </div>
+          </div>
+
+          <div class="table-scroll">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>ID Centro de Vendas</th>
+                  <th>ID Cliente</th>
+                  <th>Nº Pedido Cliente</th>
+                  <th>Data de Entrega</th>
+                  <th>ID Código Produto</th>
+                  <th>Quantidade</th>
+                </tr>
+              </thead>
+              <tbody id="massiveTableBody">
+                <!-- Populated dynamically by JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="tc-footer" style="justify-content: space-between;">
+            <span id="massiveFooterInfo">Mostrando <strong>32</strong> registros</span>
+
+            <div style="display:flex; gap:1rem;">
+              <button class="btn-export" style="padding:0.6rem 1.3rem; font-size:0.82rem; border-radius:10px;" onclick="exportarMassivo()">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Exportar Massivo
+              </button>
+
+              <button class="btn-primary" style="padding:0.6rem 1.5rem; font-size:0.82rem; border-radius:10px; display:inline-flex; align-items:center; gap:0.4rem;" onclick="realizarPedido()">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Realizar Pedido
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════ MODAL DE CONFIRMAÇÃO ══════════════════ -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal-box">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h3 style="color:#fff; font-size:1.35rem; margin:0;">Pedido Realizado com Sucesso!</h3>
+      <p style="color:rgba(255,255,255,0.75); font-size:0.92rem; margin:0;" id="modalText">
+        Lote de efetividade de pedidos emitido com sucesso.
+      </p>
+
+      <button class="btn-primary" style="width:100%; padding:0.85rem; border-radius:14px; font-weight:700; margin-top:0.5rem;" onclick="closeModal()">
+        Concluir
+      </button>
+    </div>
+  </div>
+
+  <script>
+    /* DADOS CNPJS POR BANDEIRA / GRUPO (10 CNPJS FAKES POR BANDEIRA) */
+    const BANDEIRAS_CNPJS = {
+      'ATACADÃO': [
+        { cnpj: '75.315.333/0001-09', nome: 'ATACADAO S.A. - LOJA 042 MARGINAL TIETE', cidade: 'São Paulo / SP', canal: 'Atacado / SP Metro' },
+        { cnpj: '75.315.333/0014-23', nome: 'ATACADAO S.A. - LOJA 108 SANTO AMARO', cidade: 'São Paulo / SP', canal: 'Atacado / SP Metro' },
+        { cnpj: '75.315.333/0022-84', nome: 'ATACADAO S.A. - LOJA 215 CAMPINAS', cidade: 'Campinas / SP', canal: 'Atacado / SP Interior' },
+        { cnpj: '75.315.333/0031-10', nome: 'ATACADAO S.A. - LOJA 304 GUARULHOS', cidade: 'Guarulhos / SP', canal: 'Atacado / SP Metro' },
+        { cnpj: '75.315.333/0045-90', nome: 'ATACADAO S.A. - LOJA 112 RIBEIRAO PRETO', cidade: 'Ribeirão Preto / SP', canal: 'Atacado / SP Interior' },
+        { cnpj: '75.315.333/0058-05', nome: 'ATACADAO S.A. - LOJA 140 SOROCABA', cidade: 'Sorocaba / SP', canal: 'Atacado / SP Interior' },
+        { cnpj: '75.315.333/0064-53', nome: 'ATACADAO S.A. - LOJA 182 SANTOS', cidade: 'Santos / SP', canal: 'Atacado / SP Litoral' },
+        { cnpj: '75.315.333/0071-82', nome: 'ATACADAO S.A. - LOJA 205 OSASCO', cidade: 'Osasco / SP', canal: 'Atacado / SP Metro' },
+        { cnpj: '75.315.333/0089-01', nome: 'ATACADAO S.A. - LOJA 230 BAURU', cidade: 'Bauru / SP', canal: 'Atacado / SP Interior' },
+        { cnpj: '75.315.333/0096-30', nome: 'ATACADAO S.A. - LOJA 275 S.J. CAMPOS', cidade: 'São José dos Campos / SP', canal: 'Atacado / SP Interior' }
+      ],
+      'GPA': [
+        { cnpj: '47.508.411/0001-56', nome: 'COMPANHIA BRASILEIRA DE DISTRIBUICAO - PAO DE ACUCAR REAL PARQUE', cidade: 'São Paulo / SP', canal: 'Varejo / SP Metro' },
+        { cnpj: '47.508.411/0088-07', nome: 'COMPANHIA BRASILEIRA DE DISTRIBUICAO - EXTRA MOOCA', cidade: 'São Paulo / SP', canal: 'Varejo / SP Metro' },
+        { cnpj: '47.508.411/0145-30', nome: 'COMPANHIA BRASILEIRA DE DISTRIBUICAO - COMPRE BEM TAUBATE', cidade: 'Taubaté / SP', canal: 'Varejo / SP Interior' },
+        { cnpj: '47.508.411/0210-73', nome: 'COMPANHIA BRASILEIRA DE DISTRIBUICAO - PAO DE ACUCAR JARDINS', cidade: 'São Paulo / SP', canal: 'Varejo / SP Metro' },
+        { cnpj: '47.508.411/0305-70', nome: 'COMPANHIA BRASILEIRA DE DISTRIBUICAO - MINUTO PINHEIROS', cidade: 'São Paulo / SP', canal: 'Varejo / SP Metro' },
+        { cnpj: '47.508.411/0412-62', nome: 'COMPANHIA BRASILEIRA DE DISTRIBUICAO - PAO DE ACUCAR CAMPINAS', cidade: 'Campinas / SP', canal: 'Varejo / SP Interior' },
+        { cnpj: '47.508.411/0530-07', nome: 'COMPANHIA BRASILEIRA DE DISTRIBUICAO - EXTRA SANTOS', cidade: 'Santos / SP', canal: 'Varejo / SP Litoral' },
+        { cnpj: '47.508.411/0644-75', nome: 'COMPANHIA BRASILEIRA DE DISTRIBUICAO - PAO DE ACUCAR ALPHAVILLE', cidade: 'Barueri / SP', canal: 'Varejo / SP Metro' },
+        { cnpj: '47.508.411/0722-22', nome: 'COMPANHIA BRASILEIRA DE DISTRIBUICAO - PAO DE ACUCAR INDAIATUBA', cidade: 'Indaiatuba / SP', canal: 'Varejo / SP Interior' },
+        { cnpj: '47.508.411/0815-66', nome: 'COMPANHIA BRASILEIRA DE DISTRIBUICAO - MINUTO SANTO ANDRE', cidade: 'Santo André / SP', canal: 'Varejo / SP Metro' }
+      ],
+      'VIOLETA': [
+        { cnpj: '03.921.844/0001-12', nome: 'SUPERMERCADOS VIOLETA LTDA - LOJA 01 IMBIRUSU', cidade: 'São Paulo / SP', canal: 'Varejo / SP Metro' },
+        { cnpj: '03.921.844/0004-58', nome: 'SUPERMERCADOS VIOLETA LTDA - LOJA 02 BUTANTA', cidade: 'São Paulo / SP', canal: 'Varejo / SP Metro' },
+        { cnpj: '03.921.844/0009-66', nome: 'SUPERMERCADOS VIOLETA LTDA - LOJA 03 COTIA', cidade: 'Cotia / SP', canal: 'Varejo / SP Interior' },
+        { cnpj: '03.921.844/0012-30', nome: 'SUPERMERCADOS VIOLETA LTDA - LOJA 04 LAPA', cidade: 'São Paulo / SP', canal: 'Varejo / SP Metro' },
+        { cnpj: '03.921.844/0018-22', nome: 'SUPERMERCADOS VIOLETA LTDA - LOJA 05 JAGUARA', cidade: 'São Paulo / SP', canal: 'Varejo / SP Metro' },
+        { cnpj: '03.921.844/0024-70', nome: 'SUPERMERCADOS VIOLETA LTDA - LOJA 06 OSASCO', cidade: 'Osasco / SP', canal: 'Varejo / SP Metro' },
+        { cnpj: '03.921.844/0031-08', nome: 'SUPERMERCADOS VIOLETA LTDA - LOJA 07 ITAPEVI', cidade: 'Itapevi / SP', canal: 'Varejo / SP Metro' },
+        { cnpj: '03.921.844/0038-76', nome: 'SUPERMERCADOS VIOLETA LTDA - LOJA 08 CARAPICUIBA', cidade: 'Carapicuíba / SP', canal: 'Varejo / SP Metro' },
+        { cnpj: '03.921.844/0045-03', nome: 'SUPERMERCADOS VIOLETA LTDA - LOJA 09 PIRITUBA', cidade: 'São Paulo / SP', canal: 'Varejo / SP Metro' },
+        { cnpj: '03.921.844/0052-24', nome: 'SUPERMERCADOS VIOLETA LTDA - LOJA 10 FREGUESIA DO O', cidade: 'São Paulo / SP', canal: 'Varejo / SP Metro' }
+      ],
+      'MACROMIX': [
+        { cnpj: '91.834.120/0001-44', nome: 'MACROMIX ATACADO E VAREJO - LOJA 01 NOVO HAMBURGO', cidade: 'Novo Hamburgo / RS', canal: 'Atacarejo / Sul' },
+        { cnpj: '91.834.120/0008-10', nome: 'MACROMIX ATACADO E VAREJO - LOJA 02 SAO LEOPOLDO', cidade: 'São Leopoldo / RS', canal: 'Atacarejo / Sul' },
+        { cnpj: '91.834.120/0012-98', nome: 'MACROMIX ATACADO E VAREJO - LOJA 03 CANOAS', cidade: 'Canoas / RS', canal: 'Atacarejo / Sul' },
+        { cnpj: '91.834.120/0019-64', nome: 'MACROMIX ATACADO E VAREJO - LOJA 04 PORTO ALEGRE', cidade: 'Porto Alegre / RS', canal: 'Atacarejo / Sul' },
+        { cnpj: '91.834.120/0025-02', nome: 'MACROMIX ATACADO E VAREJO - LOJA 05 GRAVATAI', cidade: 'Gravataí / RS', canal: 'Atacarejo / Sul' },
+        { cnpj: '91.834.120/0031-50', nome: 'MACROMIX ATACADO E VAREJO - LOJA 06 CACHOEIRINHA', cidade: 'Cachoeirinha / RS', canal: 'Atacarejo / Sul' },
+        { cnpj: '91.834.120/0038-27', nome: 'MACROMIX ATACADO E VAREJO - LOJA 07 ESTEIO', cidade: 'Esteio / RS', canal: 'Atacarejo / Sul' },
+        { cnpj: '91.834.120/0044-75', nome: 'MACROMIX ATACADO E VAREJO - LOJA 08 SAPIRANGA', cidade: 'Sapiranga / RS', canal: 'Atacarejo / Sul' },
+        { cnpj: '91.834.120/0051-02', nome: 'MACROMIX ATACADO E VAREJO - LOJA 09 CAMPO BOM', cidade: 'Campo Bom / RS', canal: 'Atacarejo / Sul' },
+        { cnpj: '91.834.120/0058-80', nome: 'MACROMIX ATACADO E VAREJO - LOJA 10 VIAMAO', cidade: 'Viamão / RS', canal: 'Atacarejo / Sul' }
+      ]
+    };
+
+    /* DADOS DA TABELA ENORME SOLICITADA (TELA 2) */
+    const MASSIVE_DATA = {
+      'ATACADÃO': [
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '504437', qtde: 24 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '504369', qtde: 12 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '29766',  qtde: 24 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '2877',   qtde: 26 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '7515',   qtde: 10 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '503130', qtde: 13 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '503655', qtde: 13 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '27636',  qtde: 12 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '182',    qtde: 13 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '28541',  qtde: 13 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '4855',   qtde: 24 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '21859',  qtde: 24 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '502644', qtde: 10 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '502642', qtde: 10 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '8025',   qtde: 26 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '8904',   qtde: 26 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '503140', qtde: 20 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '500290', qtde: 10 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '965253', qtde: 10 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '965503', qtde: 12 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '965505', qtde: 8  },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '965502', qtde: 12 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '27207',  qtde: 36 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '965403', qtde: 12 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '8304',   qtde: 12 },
+        { cv: '13506', cliente: '94191',  pedidoCliente: '', dtEntrega: '17/07/2026', prod: '9101',   qtde: 96 },
+        { cv: '14510', cliente: '313434', pedidoCliente: '', dtEntrega: '17/07/2026', prod: '504437', qtde: 12 },
+        { cv: '14510', cliente: '313434', pedidoCliente: '', dtEntrega: '17/07/2026', prod: '7515',   qtde: 20 },
+        { cv: '14510', cliente: '313434', pedidoCliente: '', dtEntrega: '17/07/2026', prod: '503129', qtde: 13 },
+        { cv: '14510', cliente: '313434', pedidoCliente: '', dtEntrega: '17/07/2026', prod: '27636',  qtde: 24 },
+        { cv: '14510', cliente: '313434', pedidoCliente: '', dtEntrega: '17/07/2026', prod: '502644', qtde: 20 },
+        { cv: '14510', cliente: '313434', pedidoCliente: '', dtEntrega: '17/07/2026', prod: '502642', qtde: 20 }
+      ],
+      'GPA': [
+        { cv: '12104', cliente: '47508',  pedidoCliente: 'GPA-901', dtEntrega: '18/07/2026', prod: '504437', qtde: 30 },
+        { cv: '12104', cliente: '47508',  pedidoCliente: 'GPA-902', dtEntrega: '18/07/2026', prod: '7515',   qtde: 18 },
+        { cv: '12104', cliente: '47508',  pedidoCliente: 'GPA-903', dtEntrega: '18/07/2026', prod: '503130', qtde: 24 },
+        { cv: '12104', cliente: '47508',  pedidoCliente: 'GPA-904', dtEntrega: '18/07/2026', prod: '27636',  qtde: 15 },
+        { cv: '12104', cliente: '47508',  pedidoCliente: 'GPA-905', dtEntrega: '18/07/2026', prod: '9101',   qtde: 48 },
+        { cv: '12104', cliente: '47508',  pedidoCliente: 'GPA-906', dtEntrega: '18/07/2026', prod: '504369', qtde: 22 },
+        { cv: '12104', cliente: '47508',  pedidoCliente: 'GPA-907', dtEntrega: '18/07/2026', prod: '29766',  qtde: 36 },
+        { cv: '12104', cliente: '47508',  pedidoCliente: 'GPA-908', dtEntrega: '18/07/2026', prod: '8025',   qtde: 20 },
+        { cv: '12104', cliente: '47508',  pedidoCliente: 'GPA-909', dtEntrega: '18/07/2026', prod: '8904',   qtde: 25 },
+        { cv: '12104', cliente: '47508',  pedidoCliente: 'GPA-910', dtEntrega: '18/07/2026', prod: '503140', qtde: 40 }
+      ],
+      'VIOLETA': [
+        { cv: '11902', cliente: '39218',  pedidoCliente: 'VIO-101', dtEntrega: '19/07/2026', prod: '504437', qtde: 15 },
+        { cv: '11902', cliente: '39218',  pedidoCliente: 'VIO-102', dtEntrega: '19/07/2026', prod: '504369', qtde: 12 },
+        { cv: '11902', cliente: '39218',  pedidoCliente: 'VIO-103', dtEntrega: '19/07/2026', prod: '7515',   qtde: 20 },
+        { cv: '11902', cliente: '39218',  pedidoCliente: 'VIO-104', dtEntrega: '19/07/2026', prod: '27636',  qtde: 18 },
+        { cv: '11902', cliente: '39218',  pedidoCliente: 'VIO-105', dtEntrega: '19/07/2026', prod: '502644', qtde: 24 },
+        { cv: '11902', cliente: '39218',  pedidoCliente: 'VIO-106', dtEntrega: '19/07/2026', prod: '502642', qtde: 16 },
+        { cv: '11902', cliente: '39218',  pedidoCliente: 'VIO-107', dtEntrega: '19/07/2026', prod: '8025',   qtde: 28 },
+        { cv: '11902', cliente: '39218',  pedidoCliente: 'VIO-108', dtEntrega: '19/07/2026', prod: '8904',   qtde: 22 },
+        { cv: '11902', cliente: '39218',  pedidoCliente: 'VIO-109', dtEntrega: '19/07/2026', prod: '27207',  qtde: 30 },
+        { cv: '11902', cliente: '39218',  pedidoCliente: 'VIO-110', dtEntrega: '19/07/2026', prod: '9101',   qtde: 50 }
+      ],
+      'MACROMIX': [
+        { cv: '16400', cliente: '91834',  pedidoCliente: 'MAC-501', dtEntrega: '20/07/2026', prod: '504437', qtde: 40 },
+        { cv: '16400', cliente: '91834',  pedidoCliente: 'MAC-502', dtEntrega: '20/07/2026', prod: '29766',  qtde: 32 },
+        { cv: '16400', cliente: '91834',  pedidoCliente: 'MAC-503', dtEntrega: '20/07/2026', prod: '7515',   qtde: 28 },
+        { cv: '16400', cliente: '91834',  pedidoCliente: 'MAC-504', dtEntrega: '20/07/2026', prod: '9101',   qtde: 64 },
+        { cv: '16400', cliente: '91834',  pedidoCliente: 'MAC-505', dtEntrega: '20/07/2026', prod: '504369', qtde: 24 },
+        { cv: '16400', cliente: '91834',  pedidoCliente: 'MAC-506', dtEntrega: '20/07/2026', prod: '2877',   qtde: 30 },
+        { cv: '16400', cliente: '91834',  pedidoCliente: 'MAC-507', dtEntrega: '20/07/2026', prod: '503130', qtde: 22 },
+        { cv: '16400', cliente: '91834',  pedidoCliente: 'MAC-508', dtEntrega: '20/07/2026', prod: '27636',  qtde: 36 },
+        { cv: '16400', cliente: '91834',  pedidoCliente: 'MAC-509', dtEntrega: '20/07/2026', prod: '8025',   qtde: 45 },
+        { cv: '16400', cliente: '91834',  pedidoCliente: 'MAC-510', dtEntrega: '20/07/2026', prod: '965403', qtde: 50 }
+      ]
+    };
+
+    let currentGrupo = '';
+    let selectedCNPJs = new Set();
+
+    /* NORMALIZED LOOKUP (CASE & ACCENT INSENSITIVE) */
+    function getBandeiraData(nome) {
+      if (!nome) return [];
+      if (BANDEIRAS_CNPJS[nome]) return BANDEIRAS_CNPJS[nome];
+
+      const norm = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+      for (let key in BANDEIRAS_CNPJS) {
+        const keyNorm = key.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+        if (keyNorm === norm) return BANDEIRAS_CNPJS[key];
+      }
+      return [];
+    }
+
+    function getMassiveData(nome) {
+      if (!nome) return [];
+      if (MASSIVE_DATA[nome]) return MASSIVE_DATA[nome];
+
+      const norm = nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+      for (let key in MASSIVE_DATA) {
+        const keyNorm = key.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+        if (keyNorm === norm) return MASSIVE_DATA[key];
+      }
+      return [];
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const selectElem = document.getElementById('bandeiraSelect');
+      if (selectElem) {
+        selectElem.value = ""; // start blank
+        selectElem.addEventListener('change', (e) => selectGrupo(e.target.value));
+        selectElem.addEventListener('input', (e) => selectGrupo(e.target.value));
+      }
+      selectGrupo('');
+    });
+
+    function selectGrupo(nome) {
+      currentGrupo = nome || '';
+      const selectElem = document.getElementById('bandeiraSelect');
+      if (selectElem && selectElem.value !== currentGrupo) {
+        selectElem.value = currentGrupo;
+      }
+
+      const grupoLabel = document.getElementById('grupoNameLabel');
+      const countBadge = document.getElementById('grupoCountBadge');
+      const tela2Label = document.getElementById('tela2GrupoTitle');
+
+      if (!currentGrupo) {
+        if (grupoLabel) {
+          grupoLabel.textContent = '—';
+          grupoLabel.style.color = '#5a789a';
+        }
+        if (countBadge) countBadge.textContent = 'Selecione o Grupo Econômico para iniciar';
+        if (tela2Label) tela2Label.textContent = '—';
+        renderCNPJSTableEmpty();
+        return;
+      }
+
+      if (grupoLabel) {
+        grupoLabel.textContent = currentGrupo;
+        grupoLabel.style.color = '#248DC1';
+      }
+
+      const list = getBandeiraData(currentGrupo);
+      if (countBadge) countBadge.textContent = `${list.length} CNPJs disponíveis para seleção`;
+      if (tela2Label) tela2Label.textContent = currentGrupo;
+
+      renderCNPJSTable(currentGrupo);
+    }
+
+    function renderCNPJSTableEmpty() {
+      const tbody = document.getElementById('cnpjsTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" style="text-align:center; padding: 2.5rem 1rem; color: #5a789a; font-size: 0.9rem;">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" style="margin-bottom:0.5rem; display:block; margin-left:auto; margin-right:auto; opacity:0.6;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Selecione o Grupo Econômico para iniciar
+          </td>
+        </tr>
+      `;
+      selectedCNPJs.clear();
+      const chkAll = document.getElementById('chkSelectAll');
+      if (chkAll) chkAll.checked = false;
+      const footerInfo = document.getElementById('cnpjsFooterInfo');
+      if (footerInfo) footerInfo.innerHTML = 'Nenhum registro selecionado';
+      updateBtnScreen1();
+    }
+
+    function renderCNPJSTable(nome) {
+      const list = getBandeiraData(nome);
+      const tbody = document.getElementById('cnpjsTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (!list || list.length === 0) {
+        renderCNPJSTableEmpty();
+        return;
+      }
+
+      selectedCNPJs = new Set(list.map(i => i.cnpj));
+      const chkAll = document.getElementById('chkSelectAll');
+      if (chkAll) chkAll.checked = true;
+
+      list.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="text-align:center;">
+            <input type="checkbox" checked onchange="toggleCNPJ('${item.cnpj}', this.checked)">
+          </td>
+          <td><strong class="order-id" style="font-family:monospace; font-size:0.88rem;">${item.cnpj}</strong></td>
+          <td><strong style="color:#0C2340;">${item.nome}</strong></td>
+          <td style="color:#1e3252;">${item.cidade}</td>
+          <td><span class="status parcial">${item.canal}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const footerInfo = document.getElementById('cnpjsFooterInfo');
+      if (footerInfo) {
+        footerInfo.innerHTML = `Mostrando <strong>${list.length}</strong> registros`;
+      }
+
+      updateBtnScreen1();
+    }
+
+    function toggleCNPJ(cnpj, isChecked) {
+      if (isChecked) selectedCNPJs.add(cnpj);
+      else selectedCNPJs.delete(cnpj);
+      updateBtnScreen1();
+    }
+
+    function toggleSelectAll(selectAll) {
+      const list = getBandeiraData(currentGrupo);
+      document.querySelectorAll('#cnpjsTableBody input[type="checkbox"]').forEach(c => c.checked = selectAll);
+      if (selectAll) selectedCNPJs = new Set(list.map(i => i.cnpj));
+      else selectedCNPJs.clear();
+      updateBtnScreen1();
+    }
+
+    function updateBtnScreen1() {
+      const btn = document.getElementById('btnIrParaTela2');
+      if (!btn) return;
+      if (selectedCNPJs.size === 0) {
+        btn.classList.add('disabled');
+      } else {
+        btn.classList.remove('disabled');
+      }
+    }
+
+    /* SCREEN SWITCHING (TELA 1 -> TELA 2) */
+    function irParaTela2() {
+      if (selectedCNPJs.size === 0) return;
+
+      document.getElementById('screen1').classList.remove('active');
+      document.getElementById('screen2').classList.add('active');
+
+      document.getElementById('stepTag1').classList.remove('active');
+      document.getElementById('stepTag2').classList.add('active');
+
+      document.getElementById('headerSubtitle').textContent = `Passo 2: Detalhamento do Lote de Itens — Grupo: ${currentGrupo}`;
+      document.getElementById('tela2GrupoTitle').textContent = currentGrupo;
+
+      renderMassiveTable(currentGrupo);
+    }
+
+    function voltarParaTela1() {
+      document.getElementById('screen2').classList.remove('active');
+      document.getElementById('screen1').classList.add('active');
+
+      document.getElementById('stepTag2').classList.remove('active');
+      document.getElementById('stepTag1').classList.add('active');
+
+      document.getElementById('headerSubtitle').textContent = `Passo 1: Seleção do Grupo Econômico / Bandeira e CNPJs`;
+    }
+
+    /* TELA 2 LOGIC (TABELA ENORME & AÇÕES) */
+    function renderMassiveTable(grupoNome) {
+      const rows = getMassiveData(grupoNome);
+      const tbody = document.getElementById('massiveTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      rows.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong style="color:#0C2340;">${r.cv}</strong></td>
+          <td><strong class="order-id">${r.cliente}</strong></td>
+          <td style="color:#1e3252;">${r.pedidoCliente ? r.pedidoCliente : '<span style="opacity:0.4;">—</span>'}</td>
+          <td style="color:#1e3252;">${r.dtEntrega}</td>
+          <td><strong style="color:#263576;">${r.prod}</strong></td>
+          <td><strong style="color:#0C2340;">${r.qtde}</strong></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const footerInfo = document.getElementById('massiveFooterInfo');
+      if (footerInfo) {
+        footerInfo.innerHTML = `Mostrando <strong>${rows.length}</strong> registros`;
+      }
+    }
+
+    function exportarMassivo() {
+      const rows = getMassiveData(currentGrupo);
+      const cTag = '<' + '/';
+
+      const parts = [
+        '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">',
+        '<head>',
+        '  <meta charset="UTF-8">',
+        '  <!--[if gte mso 9]>',
+        '  <xml>',
+        '    <x:ExcelWorkbook>',
+        '      <x:ExcelWorksheets>',
+        '        <x:ExcelWorksheet>',
+        '          <x:Name>Efetividade Pedidos - ' + currentGrupo + cTag + 'x:Name>',
+        '          <x:WorksheetOptions>',
+        '            <x:DisplayGridlines/>',
+        '          ' + cTag + 'x:WorksheetOptions>',
+        '        ' + cTag + 'x:ExcelWorksheet>',
+        '      ' + cTag + 'x:ExcelWorksheets>',
+        '    ' + cTag + 'x:ExcelWorkbook>',
+        '  ' + cTag + 'x:xml>',
+        '  <![endif]-->',
+        '  <style>',
+        '    table { border-collapse: collapse; width: 100%; font-family: Calibri, Arial, sans-serif; font-size: 11pt; }',
+        '    th { background-color: #162540; color: #ffffff; font-weight: bold; border: 1px solid #94a3b8; padding: 8px 12px; text-align: left; }',
+        '    td { border: 1px solid #cbd5e1; padding: 6px 10px; text-align: left; }',
+        '    .num { mso-number-format:"\\#\\,\\#\\#0"; text-align: right; }',
+        '    .txt { mso-number-format:"\\@"; }',
+        '  ' + cTag + 'style>',
+        '' + cTag + 'head>',
+        '<body>',
+        '  <table>',
+        '    <thead>',
+        '      <tr>',
+        '        <th>ID Centro de Vendas</th>',
+        '        <th>ID Cliente</th>',
+        '        <th>Nº Pedido Cliente</th>',
+        '        <th>Data de Entrega</th>',
+        '        <th>ID Código Produto</th>',
+        '        <th>Quantidade</th>',
+        '      ' + cTag + 'tr>',
+        '    ' + cTag + 'thead>',
+        '    <tbody>'
+      ];
+
+      rows.forEach(r => {
+        parts.push(
+          '      <tr>' +
+          '<td class="txt">' + r.cv + cTag + 'td>' +
+          '<td class="txt">' + r.cliente + cTag + 'td>' +
+          '<td class="txt">' + (r.pedidoCliente || '') + cTag + 'td>' +
+          '<td class="txt">' + r.dtEntrega + cTag + 'td>' +
+          '<td class="txt">' + r.prod + cTag + 'td>' +
+          '<td class="num">' + r.qtde + cTag + 'td>' +
+          cTag + 'tr>'
+        );
+      });
+
+      parts.push('    ' + cTag + 'tbody>');
+      parts.push('  ' + cTag + 'table>');
+      parts.push('' + cTag + 'body>');
+      parts.push('' + cTag + 'html>');
+
+      const excelXML = parts.join('\n');
+      const blob = new Blob(['\uFEFF' + excelXML], { type: 'application/vnd.ms-excel;charset=utf-8' });
+      const filename = `Lote_Efetividade_${currentGrupo.replace(/\s+/g, '_')}.xls`;
+
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    function realizarPedido() {
+      const rows = getMassiveData(currentGrupo);
+      document.getElementById('modalText').textContent = `Lote de ${rows.length} itens de efetividade processado e enviado com sucesso para o Grupo ${currentGrupo}.`;
+      document.getElementById('successModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('successModal').classList.remove('active');
+    }
+  </script>
+</body>
+</html>

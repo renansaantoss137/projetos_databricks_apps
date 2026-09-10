@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disciplina Comercial – Acordos Comerciais | Bimbo Brasil</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* ── PAGE LAYOUT & SCROLLING ─────────────────────────── */
+    html, body {
+      min-height: 100vh;
+      overflow-y: auto !important;
+    }
+  </style>
+</head>
+<body class="orders-page">
+
+  <!-- ══════════════════ NAVBAR ══════════════════ -->
+  <nav class="navbar">
+    <div class="nav-container">
+
+      <a href="index.html" class="nav-brand">
+        <img src="logo-dna.png" alt="DNA" class="nav-logo">
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li class="nav-dropdown">
+          <a href="#" class="dropdown-trigger">Análise Fill Rate ▾</a>
+          <ul class="dropdown-menu">
+            <li><a href="#" style="pointer-events:none;opacity:0.6;">Fill Rate N0 <span class="badge-wip">Em breve</span></a></li>
+            <li><a href="#" style="pointer-events:none;opacity:0.6;">Fill Rate N1 <span class="badge-wip">Em breve</span></a></li>
+            <li><a href="#" style="pointer-events:none;opacity:0.6;">Fill Rate N2 <span class="badge-wip">Em breve</span></a></li>
+          </ul>
+        </li>
+        <li><a href="gestao-pedidos.html">Gestão de Pedidos</a></li>
+        <li><a href="efetividade-pedidos.html">Efetividade de Pedidos</a></li>
+        <li><a href="disciplina-operativa.html" class="active">Disciplina Comercial</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <img src="Logo Bimbo -Brasil.png" alt="Bimbo Brasil" class="nav-logo-bimbo">
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- ══════════════════ PAGE CONTENT ══════════════════ -->
+  <div class="page-content">
+
+    <!-- ── HERO BANNER EXECUTIVO ── -->
+    <div class="map-hero-card">
+      <div class="map-hero-left">
+        <h1>
+          <svg style="width:28px;height:28px;color:#38bdf8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Disciplina Comercial &mdash; Acordos Comerciais
+        </h1>
+        <p>Plataforma estratégica para gestão de metas, cadastro auditável de acordos comerciais por canal.</p>
+      </div>
+
+      <div class="map-hero-stats">
+        <div class="hero-stat-item">
+          <span class="hero-stat-num" id="heroStatTotal">3</span>
+          <span class="hero-stat-lbl">Acordos Ativos</span>
+        </div>
+        <div style="width:1px; background:rgba(255,255,255,0.15);"></div>
+        <div class="hero-stat-item">
+          <span class="hero-stat-num" style="color:#38bdf8;" id="heroStatPct">67%</span>
+          <span class="hero-stat-lbl">Cumprimento</span>
+        </div>
+        <div style="width:1px; background:rgba(255,255,255,0.15);"></div>
+        <div class="hero-stat-item">
+          <span class="hero-stat-num" style="color:#34d399;">4</span>
+          <span class="hero-stat-lbl">Canaismap</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── VIEW TABS & RBAC BAR ── -->
+    <div class="view-tabs-bar">
+      <div class="view-tabs" role="tablist">
+        <button class="tab-btn active" id="tabBtnDash" onclick="switchTab('dashboard')">
+          <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5;" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><polyline points="2 20 22 20"/></svg>
+          Dashboard & Performance
+        </button>
+        <button class="tab-btn" id="tabBtnSim" onclick="switchTab('simulador')">
+          <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5;" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+          Simulador Comercial (US-01)
+        </button>
+      </div>
+
+      <div class="rbac-bar">
+        <label for="rbacSelect">Perfil de Acesso (RBAC):</label>
+        <select id="rbacSelect" class="rbac-select" onchange="changeRbacRole(this.value)">
+          <option value="Administrador">Administrador (Total)</option>
+          <option value="Supervisor">Supervisor (Edição)</option>
+          <option value="Diretor">Diretor (Aprovação)</option>
+          <option value="Consulta">Consulta (Apenas Leitura)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ══════════════════ TAB 1: DASHBOARD & PERFORMANCE ══════════════════ -->
+    <div id="tabDashboard" class="tab-content">
+
+      <!-- ── FILTRO RÁPIDO DE CANAL DA PÁGINA ── -->
+      <div class="quick-chips-bar" style="margin-bottom:1.25rem; background:rgba(8, 16, 32, 0.5); padding:0.75rem 1.25rem; border-radius:16px; border:1px solid rgba(36, 141, 193, 0.25); display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+        <span style="font-size:0.85rem; font-weight:700; color:var(--txt); margin-right:0.4rem; display:inline-flex; align-items:center; gap:0.4rem;">
+          <svg style="width:16px;height:16px;color:#38bdf8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          Filtro de Canal:
+        </span>
+        <button class="chip-btn active" onclick="filterDashboardByCanal('', this)">Todos os Canais (4)</button>
+        <button class="chip-btn" onclick="filterDashboardByCanal('Tradicional', this)">Tradicional</button>
+        <button class="chip-btn" onclick="filterDashboardByCanal('Distribuidores', this)">Distribuidores</button>
+        <button class="chip-btn" onclick="filterDashboardByCanal('Moderno', this)">Moderno</button>
+        <button class="chip-btn" onclick="filterDashboardByCanal('Autosserviço', this)">Autosserviço</button>
+      </div>
+
+      <!-- ── CARDS SUPERIORES DE RESUMO EXECUTIVO ── -->
+      <div class="kpi-acordos-row">
+        <div class="kpi-acordo-card">
+          <div class="kpi-top-info">
+            <span class="kpi-lbl">Acordos Finalizados</span>
+            <div class="kpi-icon-box" style="background:rgba(56, 189, 248, 0.15); border-color:rgba(56, 189, 248, 0.3);">
+              <svg style="width:18px;height:18px;color:#38bdf8;fill:none;stroke:currentColor;stroke-width:2.5;" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+          </div>
+          <div class="kpi-val-group">
+            <div class="kpi-val" id="kpiFinalizados">12</div>
+            <span class="kpi-trend up">Concluídos</span>
+          </div>
+          <div class="kpi-subtext">Acordos encerrados com sucesso</div>
+        </div>
+
+        <div class="kpi-acordo-card kpi-good">
+          <div class="kpi-top-info">
+            <span class="kpi-lbl">Acordos Cumpridos</span>
+            <div class="kpi-icon-box" style="background:rgba(16, 185, 129, 0.15); border-color:rgba(16, 185, 129, 0.3);">
+              <svg style="width:18px;height:18px;color:#10B981;fill:none;stroke:currentColor;stroke-width:2.5;" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+          </div>
+          <div class="kpi-val-group">
+            <div class="kpi-val" id="kpiCumpridosTop">18</div>
+            <span class="kpi-trend up">▲ 100% Meta</span>
+          </div>
+          <div class="kpi-subtext">Metas atingidas ou superadas</div>
+        </div>
+
+        <div class="kpi-acordo-card kpi-warning">
+          <div class="kpi-top-info">
+            <span class="kpi-lbl">Acordos Pendentes</span>
+            <div class="kpi-icon-box" style="background:rgba(245, 158, 11, 0.15); border-color:rgba(245, 158, 11, 0.3);">
+              <svg style="width:18px;height:18px;color:#F59E0B;fill:none;stroke:currentColor;stroke-width:2.5;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+          </div>
+          <div class="kpi-val-group">
+            <div class="kpi-val" id="kpiPendentes">4</div>
+            <span class="kpi-trend up" style="background:rgba(245,158,11,0.18); color:#fbbf24;">Ação Requerida</span>
+          </div>
+          <div class="kpi-subtext">Aguardando aprovação / revisão</div>
+        </div>
+
+        <div class="kpi-acordo-card">
+          <div class="kpi-top-info">
+            <span class="kpi-lbl">Em Andamento</span>
+            <div class="kpi-icon-box" style="background:rgba(99, 102, 241, 0.15); border-color:rgba(99, 102, 241, 0.3);">
+              <svg style="width:18px;height:18px;color:#818cf8;fill:none;stroke:currentColor;stroke-width:2.5;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+          </div>
+          <div class="kpi-val-group">
+            <div class="kpi-val" id="kpiAndamentoTop">8</div>
+            <span class="kpi-trend up">Ativos</span>
+          </div>
+          <div class="kpi-subtext">Vigência operacional ativa</div>
+        </div>
+      </div>
+
+      <!-- ── CARDS DE CANAL (GRID EXECUTIVO 4 COLUNAS COM GAUGES MAIORES E MAIS FINOS) ── -->
+      <div class="channels-kpi-grid">
+
+        <!-- CARD 1: TRADICIONAL -->
+        <div class="channel-card state-surpassed">
+          <div class="channel-card-header">
+            <div class="channel-title-group">
+              <div class="channel-icon">
+                <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </div>
+              <div>
+                <div class="channel-name">Tradicional</div>
+                <div class="channel-period-tag">Responsável: PAULO CESAR DE OLIVEIRA</div>
+              </div>
+            </div>
+            <span class="status-badge good"><span class="status-dot"></span>Superado</span>
+          </div>
+
+          <div class="channel-card-body">
+            <div class="meta-realizado-row">
+              <div class="mr-box">
+                <span class="mr-lbl">Meta</span>
+                <span class="mr-val">R$ 5.00M</span>
+              </div>
+              <div class="mr-box">
+                <span class="mr-lbl">Atingido</span>
+                <span class="mr-val" style="color:#38bdf8;">R$ 5.42M</span>
+              </div>
+            </div>
+
+            <div class="indicators-grid">
+              <!-- Gauge SVG Maior e Mais Fino em Degrade -->
+              <div class="gauge-box">
+                <svg class="gauge-svg" viewBox="0 0 36 36">
+                  <defs>
+                    <linearGradient id="gaugeGradBrand1" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#263576" />
+                      <stop offset="50%" stop-color="#248DC1" />
+                      <stop offset="100%" stop-color="#38bdf8" />
+                    </linearGradient>
+                  </defs>
+                  <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path class="gauge-fill" stroke="url(#gaugeGradBrand1)" stroke-dasharray="100, 100" stroke-dashoffset="0" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div class="gauge-text">108%</div>
+              </div>
+
+              <!-- Indicators -->
+              <div class="diff-stats-col">
+                <div class="diff-item">
+                  <span class="diff-lbl">Dif. Pontos Percentuais</span>
+                  <span class="diff-val-pill above">▲ +8,4 p.p.</span>
+                </div>
+                <div class="diff-item">
+                  <span class="diff-lbl">Diferença Absoluta</span>
+                  <span class="diff-val-pill above">+R$ 420.000</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mini Line Chart (Evolução Meta × Realizado) -->
+            <div class="mini-chart-container">
+              <div class="mini-chart-header">
+                <span class="mini-chart-title">
+                  <svg style="width:12px;height:12px;color:#38bdf8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                  Evolução
+                </span>
+              </div>
+              <div style="height:92px; position:relative;">
+                <canvas id="chartMiniTradicional"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="channel-card-footer">
+            <span class="footer-period">
+              <svg style="width:14px;height:14px;color:var(--txt-m);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Junho / 2026
+            </span>
+            <button class="btn-justificativa" onclick="openJustificativaDrawer('Tradicional', 'Junho / 2026')">Detalhes</button>
+          </div>
+        </div>
+
+        <!-- CARD 2: DISTRIBUIDORES -->
+        <div class="channel-card state-reached">
+          <div class="channel-card-header">
+            <div class="channel-title-group">
+              <div class="channel-icon" style="color:#a5b4fc; border-color:rgba(165,180,252,0.4); background:rgba(99,102,241,0.15);">
+                <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              </div>
+              <div>
+                <div class="channel-name">Distribuidores</div>
+                <div class="channel-period-tag">Responsável: DANTE CODOGNO e HUDSON BRITO</div>
+              </div>
+            </div>
+            <span class="status-badge good"><span class="status-dot"></span>Atingido</span>
+          </div>
+
+          <div class="channel-card-body">
+            <div class="meta-realizado-row">
+              <div class="mr-box">
+                <span class="mr-lbl">Meta</span>
+                <span class="mr-val">R$ 3.20M</span>
+              </div>
+              <div class="mr-box">
+                <span class="mr-lbl">Atingido</span>
+                <span class="mr-val" style="color:#a5b4fc;">R$ 3.25M</span>
+              </div>
+            </div>
+
+            <div class="indicators-grid">
+              <!-- Gauge SVG Maior e Mais Fino em Degrade -->
+              <div class="gauge-box">
+                <svg class="gauge-svg" viewBox="0 0 36 36">
+                  <defs>
+                    <linearGradient id="gaugeGradBrand2" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#263576" />
+                      <stop offset="50%" stop-color="#248DC1" />
+                      <stop offset="100%" stop-color="#38bdf8" />
+                    </linearGradient>
+                  </defs>
+                  <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path class="gauge-fill" stroke="url(#gaugeGradBrand2)" stroke-dasharray="100, 100" stroke-dashoffset="0" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div class="gauge-text">102%</div>
+              </div>
+
+              <!-- Indicators -->
+              <div class="diff-stats-col">
+                <div class="diff-item">
+                  <span class="diff-lbl">Dif. Pontos Percentuais</span>
+                  <span class="diff-val-pill above">▲ +1,6 p.p.</span>
+                </div>
+                <div class="diff-item">
+                  <span class="diff-lbl">Diferença Absoluta</span>
+                  <span class="diff-val-pill above">+R$ 50.000</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mini Line Chart (Evolução Meta × Realizado) -->
+            <div class="mini-chart-container">
+              <div class="mini-chart-header">
+                <span class="mini-chart-title">
+                  <svg style="width:12px;height:12px;color:#38bdf8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                  Evolução
+                </span>
+              </div>
+              <div style="height:92px; position:relative;">
+                <canvas id="chartMiniDistribuidores"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="channel-card-footer">
+            <span class="footer-period">
+              <svg style="width:14px;height:14px;color:var(--txt-m);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Junho / 2026
+            </span>
+            <button class="btn-justificativa" onclick="openJustificativaDrawer('Distribuidores', 'Junho / 2026')">Detalhes</button>
+          </div>
+        </div>
+
+        <!-- CARD 3: MODERNO -->
+        <div class="channel-card state-below">
+          <div class="channel-card-header">
+            <div class="channel-title-group">
+              <div class="channel-icon" style="color:#c084fc; border-color:rgba(192,132,252,0.4); background:rgba(168,85,247,0.15);">
+                <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              </div>
+              <div>
+                <div class="channel-name">Moderno</div>
+                <div class="channel-period-tag">Responsável: RENAN GOES</div>
+              </div>
+            </div>
+            <span class="status-badge risk"><span class="status-dot"></span>Abaixo</span>
+          </div>
+
+          <div class="channel-card-body">
+            <div class="meta-realizado-row">
+              <div class="mr-box">
+                <span class="mr-lbl">Meta</span>
+                <span class="mr-val">R$ 4.50M</span>
+              </div>
+              <div class="mr-box">
+                <span class="mr-lbl">Atingido</span>
+                <span class="mr-val" style="color:#f87171;">R$ 4.10M</span>
+              </div>
+            </div>
+
+            <div class="indicators-grid">
+              <!-- Gauge SVG Maior e Mais Fino em Degrade -->
+              <div class="gauge-box">
+                <svg class="gauge-svg" viewBox="0 0 36 36">
+                  <defs>
+                    <linearGradient id="gaugeGradBrand3" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#263576" />
+                      <stop offset="50%" stop-color="#248DC1" />
+                      <stop offset="100%" stop-color="#38bdf8" />
+                    </linearGradient>
+                  </defs>
+                  <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path class="gauge-fill" stroke="url(#gaugeGradBrand3)" stroke-dasharray="91, 100" stroke-dashoffset="0" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div class="gauge-text" style="color:#ffffff;">91%</div>
+              </div>
+
+              <!-- Indicators -->
+              <div class="diff-stats-col">
+                <div class="diff-item">
+                  <span class="diff-lbl">Dif. Pontos Percentuais</span>
+                  <span class="diff-val-pill below">▼ -8,9 p.p.</span>
+                </div>
+                <div class="diff-item">
+                  <span class="diff-lbl">Diferença Absoluta</span>
+                  <span class="diff-val-pill below">-R$ 400.000</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mini Line Chart (Evolução Meta × Realizado) -->
+            <div class="mini-chart-container">
+              <div class="mini-chart-header">
+                <span class="mini-chart-title">
+                  <svg style="width:12px;height:12px;color:#38bdf8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                  Evolução
+                </span>
+              </div>
+              <div style="height:92px; position:relative;">
+                <canvas id="chartMiniModerno"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="channel-card-footer">
+            <span class="footer-period">
+              <svg style="width:14px;height:14px;color:var(--txt-m);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Junho / 2026
+            </span>
+            <button class="btn-justificativa" onclick="openJustificativaDrawer('Moderno', 'Junho / 2026')">Detalhes</button>
+          </div>
+        </div>
+
+        <!-- CARD 4: AUTOSSERVIÇO -->
+        <div class="channel-card state-reached">
+          <div class="channel-card-header">
+            <div class="channel-title-group">
+              <div class="channel-icon" style="color:#fbbf24; border-color:rgba(251,191,36,0.4); background:rgba(245,158,11,0.15);">
+                <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+              </div>
+              <div>
+                <div class="channel-name">Autosserviço</div>
+                <div class="channel-period-tag">Responsável: RENAN GOES</div>
+              </div>
+            </div>
+            <span class="status-badge good"><span class="status-dot"></span>Atingido</span>
+          </div>
+
+          <div class="channel-card-body">
+            <div class="meta-realizado-row">
+              <div class="mr-box">
+                <span class="mr-lbl">Meta</span>
+                <span class="mr-val">R$ 2.80M</span>
+              </div>
+              <div class="mr-box">
+                <span class="mr-lbl">Atingido</span>
+                <span class="mr-val" style="color:#fbbf24;">R$ 2.80M</span>
+              </div>
+            </div>
+
+            <div class="indicators-grid">
+              <!-- Gauge SVG Maior e Mais Fino em Degrade -->
+              <div class="gauge-box">
+                <svg class="gauge-svg" viewBox="0 0 36 36">
+                  <defs>
+                    <linearGradient id="gaugeGradBrand4" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#263576" />
+                      <stop offset="50%" stop-color="#248DC1" />
+                      <stop offset="100%" stop-color="#38bdf8" />
+                    </linearGradient>
+                  </defs>
+                  <path class="gauge-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path class="gauge-fill" stroke="url(#gaugeGradBrand4)" stroke-dasharray="100, 100" stroke-dashoffset="0" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div class="gauge-text">100%</div>
+              </div>
+
+              <!-- Indicators -->
+              <div class="diff-stats-col">
+                <div class="diff-item">
+                  <span class="diff-lbl">Dif. Pontos Percentuais</span>
+                  <span class="diff-val-pill above">▲ 0,0 p.p.</span>
+                </div>
+                <div class="diff-item">
+                  <span class="diff-lbl">Diferença Absoluta</span>
+                  <span class="diff-val-pill above">R$ 0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mini Line Chart (Evolução Meta × Realizado) -->
+            <div class="mini-chart-container">
+              <div class="mini-chart-header">
+                <span class="mini-chart-title">
+                  <svg style="width:12px;height:12px;color:#38bdf8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                  Evolução
+                </span>
+              </div>
+              <div style="height:92px; position:relative;">
+                <canvas id="chartMiniAutosservico"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="channel-card-footer">
+            <span class="footer-period">
+              <svg style="width:14px;height:14px;color:var(--txt-m);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Junho / 2026
+            </span>
+            <button class="btn-justificativa" onclick="openJustificativaDrawer('Autosserviço', 'Junho / 2026')">Detalhes</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── FEEDS DE AUDITORIA E PENDÊNCIAS ── -->
+      <div class="dashboard-grid">
+        
+        <!-- Feed: Últimas Alterações -->
+        <div class="dash-card col-6">
+          <div class="dash-header">
+            <div>
+              <div class="dash-title">
+                <svg style="width:18px;height:18px;color:#F59E0B;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Últimas Alterações (Histórico Auditável)
+              </div>
+              <div class="dash-subtitle">Trilha das últimas modificações de acordos</div>
+            </div>
+          </div>
+          <div class="timeline-list" id="feedHistorico">
+            <!-- Renderizado via JS -->
+          </div>
+        </div>
+
+        <!-- Feed: Pendências & Ações -->
+        <div class="dash-card col-6">
+          <div class="dash-header">
+            <div>
+              <div class="dash-title">
+                <svg style="width:18px;height:18px;color:#EF4444;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Pendências & Próximos do Vencimento
+              </div>
+              <div class="dash-subtitle">Acordos que requerem acompanhamento contínuo</div>
+            </div>
+          </div>
+          <div class="timeline-list" id="feedPendencias">
+            <!-- Renderizado via JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ══════════════════ TAB 2: GESTÃO DE ACORDOS (CRUD) ══════════════════ -->
+    <div id="tabCrud" class="tab-content" style="display:none;">
+
+      <!-- Quick Chips Bar -->
+      <div class="quick-chips-bar">
+        <span style="font-size:0.8rem; font-weight:700; color:var(--txt-2); margin-right:0.4rem;">Filtro Rápido por Canal:</span>
+        <button class="chip-btn active" onclick="setQuickChipFilter('')">Todos (3)</button>
+        <button class="chip-btn" onclick="setQuickChipFilter('Tradicional')">Tradicional</button>
+        <button class="chip-btn" onclick="setQuickChipFilter('Distribuidores')">Distribuidores</button>
+        <button class="chip-btn" onclick="setQuickChipFilter('Moderno')">Moderno</button>
+        <button class="chip-btn" onclick="setQuickChipFilter('Autosserviço')">Autosserviço</button>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="fg" style="min-width:140px;">
+          <label for="f-canal">Canal</label>
+          <select id="f-canal" onchange="applyFilters()">
+            <option value="">Todos os Canais</option>
+            <option value="Tradicional">Tradicional</option>
+            <option value="Distribuidores">Distribuidores</option>
+            <option value="Moderno">Moderno</option>
+            <option value="Autosserviço">Autosserviço</option>
+          </select>
+        </div>
+
+        <div class="fg" style="min-width:130px;">
+          <label for="f-status">Status</label>
+          <select id="f-status" onchange="applyFilters()">
+            <option value="">Todos os Status</option>
+            <option value="Em andamento">Em andamento</option>
+            <option value="Cumprido">Cumprido</option>
+            <option value="Não cumprido">Não cumprido</option>
+          </select>
+        </div>
+
+        <div class="fg" style="min-width:180px;">
+          <label for="f-responsavel">Responsável</label>
+          <select id="f-responsavel" onchange="applyFilters()">
+            <option value="">Todos os Responsáveis</option>
+            <option value="PAULO CESAR DE OLIVEIRA">PAULO CESAR DE OLIVEIRA</option>
+            <option value="Hudson Brito">Hudson Brito</option>
+            <option value="RENAN GOES">RENAN GOES</option>
+            <option value="DANTE CODOGNO e HUDSON BRITO">DANTE CODOGNO e HUDSON BRITO</option>
+          </select>
+        </div>
+
+        <div class="fg" style="min-width:130px;">
+          <label for="f-diretor">Diretor</label>
+          <select id="f-diretor" onchange="applyFilters()">
+            <option value="">Todos os Diretores</option>
+            <option value="PC">PC</option>
+            <option value="Hudson">Hudson</option>
+            <option value="Renan">Renan</option>
+            <option value="Dante">Dante</option>
+          </select>
+        </div>
+
+        <div class="fg" style="min-width:200px;">
+          <label for="f-busca-acordo">Busca Textual</label>
+          <input type="text" id="f-busca-acordo" placeholder="Nome do acordo, condições..." oninput="applyFilters()">
+        </div>
+
+        <div class="filter-actions">
+          <button class="btn-ghost" onclick="clearFilters()">Limpar</button>
+          <button class="btn-primary rbac-write" onclick="openCreateModal()">
+            <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;display:inline;vertical-align:middle;margin-right:4px;" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Acordo
+          </button>
+        </div>
+      </div>
+
+      <!-- Table Card -->
+      <div class="table-card">
+        <div class="tc-header">
+          <div>
+            <div class="tc-title">Acordos Comerciais Registrados</div>
+            <div class="tc-sub" id="tcSubAcordos">Carregando registros...</div>
+          </div>
+          <div class="tc-actions">
+            <button class="btn-export" onclick="exportCsv()">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Exportar CSV
+            </button>
+            <button class="btn-export" onclick="window.print()">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Imprimir / PDF
+            </button>
+          </div>
+        </div>
+
+        <div class="table-scroll">
+          <table class="orders-table" id="acordosTable">
+            <thead>
+              <tr>
+                <th style="min-width:60px">ID</th>
+                <th style="min-width:130px">Canal</th>
+                <th style="min-width:220px">Nome do Acordo</th>
+                <th style="min-width:180px">Responsável</th>
+                <th style="min-width:150px">Diretores</th>
+                <th style="min-width:180px">Vigência (Início - Fim)</th>
+                <th style="min-width:130px">Status</th>
+                <th style="min-width:160px; text-align:center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="acordosTableBody">
+              <!-- Renderizado via JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="tc-footer">
+          <span id="footerInfoAcordos">Mostrando <strong>0</strong> registros</span>
+          <div class="pagination" id="paginationAcordos"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════ TAB 3: SIMULADOR COMERCIAL ══════════════════ -->
+    <div id="tabSimulador" class="tab-content" style="display:none;">
+
+      <div class="dash-card col-12" style="margin-bottom:1.5rem;">
+        <div class="dash-header">
+          <div>
+            <div class="dash-title">
+              <svg style="width:20px;height:20px;color:#38bdf8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+              Simulador Comercial de Acordos & Projeções (US-01)
+            </div>
+            <div class="dash-subtitle">Ajuste de volume, preço, receita estimada e margem vs Baseline Estatístico US-01</div>
+          </div>
+        </div>
+
+        <div class="simulator-panel">
+          
+          <!-- Controles de Simulação -->
+          <div class="sim-controls">
+            
+            <div class="sim-field">
+              <label for="simCanal" class="form-label">Segmentação por Canal:</label>
+              <select id="simCanal" class="form-select" onchange="runSimulation()">
+                <option value="Todos">Todos os Canais</option>
+                <option value="Tradicional">Tradicional</option>
+                <option value="Distribuidores">Distribuidores</option>
+                <option value="Moderno">Moderno</option>
+                <option value="Autosserviço">Autosserviço</option>
+              </select>
+            </div>
+
+            <div class="sim-field">
+              <div class="sim-label">
+                <span>Variação de Volume Simulado:</span>
+                <span id="valVolBadge" class="sim-val-badge">+0%</span>
+              </div>
+              <input type="range" id="sliderVol" class="sim-slider" min="-30" max="50" value="0" oninput="runSimulation()">
+            </div>
+
+            <div class="sim-field">
+              <div class="sim-label">
+                <span>Variação de Preço Simulado:</span>
+                <span id="valPrcBadge" class="sim-val-badge">+0%</span>
+              </div>
+              <input type="range" id="sliderPrc" class="sim-slider" min="-20" max="30" value="0" oninput="runSimulation()">
+            </div>
+
+            <!-- Metric Summaries -->
+            <div class="sim-metrics-grid">
+              <div class="sim-metric-card">
+                <div class="sim-metric-title">Receita Estimada</div>
+                <div class="sim-metric-value" id="simValReceita">R$ 0,00</div>
+                <div class="sim-metric-diff positive" id="simDiffReceita">+0.0% vs Atual</div>
+              </div>
+
+              <div class="sim-metric-card">
+                <div class="sim-metric-title">Margem Estimada</div>
+                <div class="sim-metric-value" id="simValMargem">0.0%</div>
+                <div class="sim-metric-diff positive" id="simDiffMargem">+0.0 p.p. vs Baseline</div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Gráfico de Tendência Dinâmico -->
+          <div style="display:flex; flex-direction:column; gap:1rem; background:rgba(8, 16, 32, 0.5); padding:1.25rem; border-radius:16px; border:1px solid rgba(36, 141, 193, 0.3);">
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+              <div>
+                <div style="font-size:0.95rem; font-weight:800; color:#ffffff; display:flex; align-items:center; gap:0.5rem;">
+                  <svg style="width:18px;height:18px;color:#38bdf8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                  Gráfico de Tendência & Projeção Temporal (6 Meses)
+                </div>
+                <div style="font-size:0.75rem; color:var(--txt-m);">Curva dinâmica ajustada conforme variação de Volume e Preço</div>
+              </div>
+              <div style="display:flex; gap:0.8rem; font-size:0.75rem; font-weight:700;">
+                <span style="color:#a5b4fc; display:inline-flex; align-items:center; gap:4px;"><span style="width:10px;height:3px;background:#a5b4fc;border-radius:2px;display:inline-block;"></span> Baseline</span>
+                <span style="color:#38bdf8; display:inline-flex; align-items:center; gap:4px;"><span style="width:10px;height:3px;background:#38bdf8;border-radius:2px;display:inline-block;"></span> Receita (R$)</span>
+                <span style="color:#34d399; display:inline-flex; align-items:center; gap:4px;"><span style="width:10px;height:3px;background:#34d399;border-radius:2px;display:inline-block;"></span> Margem (%)</span>
+              </div>
+            </div>
+            
+            <div style="height:310px; position:relative;">
+              <canvas id="chartSimulador"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ══════════════════ MODAIS ══════════════════ -->
+
+  <!-- Modal Criar / Editar Acordo -->
+  <div class="modal-overlay" id="modalAcordo">
+    <div class="modal-box modal-lg">
+      <div class="dash-header" style="width:100%; margin-bottom:0;">
+        <div class="dash-title" id="modalAcordoTitle">Novo Acordo Comercial</div>
+        <button style="background:none;border:none;color:var(--txt-2);cursor:pointer;font-size:1.2rem;" onclick="closeModal('modalAcordo')">✕</button>
+      </div>
+
+      <form id="formAcordo" onsubmit="saveAcordo(event)" style="width:100%; text-align:left;">
+        <input type="hidden" id="acordoId">
+        
+        <div class="modal-body-grid" style="margin-top:1rem;">
+
+          <div>
+            <label for="inpCanal" class="form-label">Canal *</label>
+            <select id="inpCanal" class="form-select" required>
+              <option value="Tradicional">Tradicional</option>
+              <option value="Distribuidores">Distribuidores</option>
+              <option value="Moderno">Moderno</option>
+              <option value="Autosserviço">Autosserviço</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="inpNome" class="form-label">Nome do Acordo *</label>
+            <input type="text" id="inpNome" class="form-input" placeholder="Ex: Acordo Anual Pavuna 2026" required>
+          </div>
+
+          <div class="form-group-full">
+            <label for="inpDesc" class="form-label">Descrição & Metas Alvo</label>
+            <textarea id="inpDesc" class="form-textarea" rows="2" placeholder="Detalhamento das metas de volume, sortimento e margem..."></textarea>
+          </div>
+
+          <div>
+            <label for="inpVigInicio" class="form-label">Vigência Inicial *</label>
+            <input type="date" id="inpVigInicio" class="form-input" required>
+          </div>
+
+          <div>
+            <label for="inpVigFim" class="form-label">Vigência Final *</label>
+            <input type="date" id="inpVigFim" class="form-input" required>
+          </div>
+
+          <div class="form-group-full">
+            <label for="inpCondicoes" class="form-label">Condições Pactuadas *</label>
+            <textarea id="inpCondicoes" class="form-textarea" rows="3" placeholder="Termos de bonificação, desconto por volume, prazo de entrega..." required></textarea>
+          </div>
+
+          <div>
+            <label for="inpStatus" class="form-label">Status *</label>
+            <select id="inpStatus" class="form-select" required>
+              <option value="Em andamento">Em andamento</option>
+              <option value="Cumprido">Cumprido</option>
+              <option value="Não cumprido">Não cumprido</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="inpResponsavel" class="form-label">Responsável *</label>
+            <input type="text" id="inpResponsavel" class="form-input" value="Hudson Brito" readonly title="Responsável Comercial Bimbo Brasil">
+          </div>
+
+          <div class="form-group-full">
+            <label class="form-label">Diretores Participantes (Multi-seleção)</label>
+            <div style="display:flex; gap:1.2rem; flex-wrap:wrap; background:rgba(8, 16, 32, 0.8); padding:0.75rem 1rem; border-radius:12px; border:1px solid rgba(36, 141, 193, 0.3);">
+              <label style="font-size:0.86rem; font-weight:600; cursor:pointer;"><input type="checkbox" name="diretores" value="PC" checked> PC</label>
+              <label style="font-size:0.86rem; font-weight:600; cursor:pointer;"><input type="checkbox" name="diretores" value="Hudson" checked> Hudson</label>
+              <label style="font-size:0.86rem; font-weight:600; cursor:pointer;"><input type="checkbox" name="diretores" value="Renan" checked> Renan</label>
+              <label style="font-size:0.86rem; font-weight:600; cursor:pointer;"><input type="checkbox" name="diretores" value="Dante" checked> Dante</label>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-ghost" onclick="closeModal('modalAcordo')">Cancelar</button>
+          <button type="submit" class="btn-primary">Salvar Acordo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Visualizar Detalhes & Comentários -->
+  <div class="modal-overlay" id="modalDetalhes">
+    <div class="modal-box modal-lg">
+      <div class="dash-header" style="width:100%; margin-bottom:0;">
+        <div>
+          <div class="dash-title" id="detTitle">Detalhes do Acordo</div>
+          <div class="dash-subtitle" id="detSub">Canal: -</div>
+        </div>
+        <button style="background:none;border:none;color:var(--txt-2);cursor:pointer;font-size:1.2rem;" onclick="closeModal('modalDetalhes')">✕</button>
+      </div>
+
+      <div style="width:100%; text-align:left; margin-top:1rem; max-height:480px; overflow-y:auto; padding-right:0.4rem;">
+        
+        <!-- Detalhes Card -->
+        <div style="background:rgba(8, 16, 32, 0.7); padding:1.1rem; border-radius:14px; border:1px solid rgba(36, 141, 193, 0.3); margin-bottom:1.25rem;">
+          <p style="font-size:0.86rem; margin-bottom:0.45rem;"><strong>Condições Pactuadas:</strong> <span id="detCondicoes"></span></p>
+          <p style="font-size:0.86rem; margin-bottom:0.45rem;"><strong>Vigência:</strong> <span id="detVigencia"></span></p>
+          <p style="font-size:0.86rem; margin-bottom:0.45rem;"><strong>Responsável:</strong> Hudson Brito / Renan Goes</p>
+          <p style="font-size:0.86rem;"><strong>Diretores:</strong> <span id="detDiretores"></span></p>
+        </div>
+
+        <!-- Comentários Section -->
+        <div class="dash-title" style="font-size:0.98rem; margin-bottom:0.6rem;">
+          <svg style="width:18px;height:18px;color:#38bdf8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Comentários & Threads de Discussão
+        </div>
+
+        <div class="comments-container" id="commentsList">
+          <!-- Renderizado via JS -->
+        </div>
+
+        <div class="comment-input-box rbac-write">
+          <textarea id="inpCommentText" class="comment-textarea" placeholder="Escreva um comentário (use @nome para mencionar um usuário)..."></textarea>
+          <div style="display:flex; justify-content:flex-end;">
+            <button type="button" class="btn-primary btn-sm" onclick="addComment()">Publicar Comentário</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-ghost" onclick="closeModal('modalDetalhes')">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pop-Up Modal Justificativa Executiva (Inspirado no Design de 2 Colunas) -->
+  <div class="modal-overlay-popup" id="drawerJustificativa">
+    <div class="modal-justificativa-box">
+      <!-- Modal Header -->
+      <div class="modal-pop-header">
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <div class="pop-badge-pill" id="popBadgePill">
+            <span style="width:8px;height:8px;border-radius:50%;background:#38bdf8;"></span>
+            <span id="popStatusText">Superado 108% &bull; +8,4 p.p</span>
+          </div>
+          <h2 style="font-size:1.15rem; font-weight:800; color:#ffffff;">
+            Justificativa de Performance &mdash; Canal <span id="justCanalName">Tradicional</span>
+          </h2>
+        </div>
+        <button style="background:none; border:none; color:var(--txt-2); cursor:pointer; font-size:1.3rem;" onclick="closeJustificativaDrawer()">✕</button>
+      </div>
+
+      <form id="formJustificativa" onsubmit="saveJustificativa(event)" style="display:flex; flex-direction:column; gap:1.25rem;">
+        <div class="modal-justificativa-grid">
+          
+          <!-- COLUNA ESQUERDA: DADOS DO INDICADOR & METAS -->
+          <div style="display:flex; flex-direction:column; gap:1rem;">
+            
+            <div>
+              <label class="form-label">Nome do Indicador</label>
+              <input type="text" id="inpJustIndicador" class="form-input" value="Fill Rate Tradicional / Vendas" placeholder="Nome do Indicador">
+            </div>
+
+            <div>
+              <label class="form-label">Nome do Responsável</label>
+              <input type="text" id="justResponsavelInput" class="form-input" value="PAULO CESAR DE OLIVEIRA">
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.85rem;">
+              <div>
+                <label class="form-label">Atual</label>
+                <input type="text" id="inpJustAtual" class="form-input" value="108%">
+              </div>
+              <div>
+                <label class="form-label">Meta</label>
+                <input type="text" id="inpJustMeta" class="form-input" value="100%">
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label">Unidade</label>
+              <input type="text" id="inpJustUnidade" class="form-input" value="%">
+            </div>
+
+            <div>
+              <label class="form-label">Direção</label>
+              <div class="direction-toggle-group">
+                <button type="button" class="btn-direction active" id="btnDirMaior" onclick="setDirection('maior')">↑ Maior é melhor</button>
+                <button type="button" class="btn-direction" id="btnDirMenor" onclick="setDirection('menor')">↓ Menor é melhor</button>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.85rem;">
+              <div>
+                <label class="form-label">Data Inicial</label>
+                <input type="date" id="inpJustDataInicio" class="form-input" value="2026-06-01">
+              </div>
+              <div>
+                <label class="form-label">Data Final</label>
+                <input type="date" id="inpJustDataFim" class="form-input" value="2026-06-30">
+              </div>
+            </div>
+
+            <div>
+              <label class="form-label">Semana</label>
+              <select id="inpJustSemana" class="form-select">
+                <option value="Semana 24 (15/06/2026 - 21/06/2026)">Semana 24 (15/06/2026 - 21/06/2026)</option>
+                <option value="Semana 23 (08/06/2026 - 14/06/2026)">Semana 23 (08/06/2026 - 14/06/2026)</option>
+                <option value="Semana 22 (01/06/2026 - 07/06/2026)">Semana 22 (01/06/2026 - 07/06/2026)</option>
+                <option value="Semana 25 (22/06/2026 - 28/06/2026)">Semana 25 (22/06/2026 - 28/06/2026)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="form-label">Opção de Anexar Foto ou Documento</label>
+              <div class="attach-drop-zone" onclick="document.getElementById('fileUploadInput').click()">
+                <svg style="width:24px;height:24px;color:#38bdf8;flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                <div style="flex:1;">
+                  <div style="font-size:0.82rem; font-weight:700; color:#ffffff;" id="fileNameLabel">Anexar imagem ou documento (PDF, PNG, XLSX)</div>
+                  <div style="font-size:0.7rem; color:var(--txt-m);">Clique para escolher ou soltar arquivo</div>
+                </div>
+                <input type="file" id="fileUploadInput" style="display:none;" onchange="handleFileSelected(this)">
+              </div>
+            </div>
+
+          </div>
+
+          <!-- COLUNA DIREITA: JUSTIFICATIVA & CHAT DE INTERAÇÃO -->
+          <div style="display:flex; flex-direction:column; gap:1rem;">
+            
+            <div>
+              <label class="form-label">Espaço para Justificar *</label>
+              <textarea id="inpJustDesc" class="form-textarea" rows="5" required placeholder="Escreva aqui a justificativa executiva e os detalhes da causa raiz..."></textarea>
+            </div>
+
+            <div>
+              <div class="form-label" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.4rem;">
+                <span>Discussão Top Team &bull; <span id="interactionCount">3</span> Interações</span>
+                <span style="font-size:0.72rem; color:#38bdf8; font-weight:700;">Histórico de Interação</span>
+              </div>
+              
+              <div class="chat-history-box">
+                <div class="chat-messages-container" id="chatMessagesContainer">
+                  <div class="chat-msg-item">
+                    <div class="chat-card-header">
+                      <span class="chat-msg-user">bruno.fellipe@grupobimbo.com</span>
+                      <span class="chat-msg-date">16/06/2026, 10:07:30</span>
+                    </div>
+                    <div class="chat-msg-text">Dados da semana 23 validados com a equipe de logística.</div>
+                  </div>
+
+                  <div class="chat-msg-item">
+                    <div class="chat-card-header">
+                      <span class="chat-msg-user">bruno.fellipe@grupobimbo.com</span>
+                      <span class="chat-msg-date">17/06/2026, 14:05:17</span>
+                    </div>
+                    <div class="chat-msg-text">Dados da semana 24 atualizados conforme faturamento.</div>
+                  </div>
+
+                  <div class="chat-msg-item">
+                    <div class="chat-card-header">
+                      <span class="chat-msg-user">renan.goes@grupobimbo.com</span>
+                      <span class="chat-msg-date">16/07/2026, 17:02:37</span>
+                    </div>
+                    <div class="chat-msg-text">Dados da semana 28 validados e aprovados.</div>
+                  </div>
+                </div>
+
+                <!-- Input Chat de Interação -->
+                <div class="chat-input-row">
+                  <input type="text" id="inpChatMsg" class="form-input" placeholder="Escrever mensagem..." onkeydown="if(event.key==='Enter'){event.preventDefault();sendChatMessage();}">
+                  <button type="button" class="btn-primary btn-sm" style="padding:0.65rem 1rem;" onclick="sendChatMessage()">Enviar</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer" style="margin-top:0.5rem;">
+          <button type="button" class="btn-ghost" onclick="closeJustificativaDrawer()">Cancelar</button>
+          <button type="submit" class="btn-primary" style="padding:0.65rem 1.6rem;">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ══════════════════ SCRIPTS E LÓGICA DO MÓDULO ══════════════════ -->
+  <script>
+    /* ── DADOS EM MEMÓRIA & PERSISTÊNCIA ── */
+    let acordosData = [
+      {
+        id: 101,
+        canal: "Tradicional",
+        nome: "Acordo Anual Pavuna 2026",
+        descricao: "Plano estratégico de fornecimento e bonificação por atingimento de curva A.",
+        data: "2026-01-15",
+        vigencia_inicio: "2026-01-01",
+        vigencia_fim: "2026-12-31",
+        condicoes_pactuadas: "Garantia de 95% Fill Rate com bônus de 2% sobre faturamento líquido mensal.",
+        status: "Em andamento",
+        responsavel: "PAULO CESAR DE OLIVEIRA",
+        diretores: ["PC", "Hudson", "Renan", "Dante"],
+        comentarios: [
+          { id: 1, autor: "Hudson Brito", data: "2026-01-16 10:30", texto: "Alinhado com a diretoria. Aguardando validação do volume do Q1 @Hudson.", respostas: [] }
+        ],
+        historico: [
+          { data: "2026-01-15 14:00", usuario: "Hudson Brito", acao: "Criação do Acordo" }
+        ]
+      },
+      {
+        id: 102,
+        canal: "Distribuidores",
+        nome: "Parceria Distribuição Rio Centro",
+        descricao: "Expansion de rotas de venda direta em distribuidores parceiros.",
+        data: "2026-02-01",
+        vigencia_inicio: "2026-02-01",
+        vigencia_fim: "2026-08-31",
+        condicoes_pactuadas: "Desconto em cascata de 4% para compras acima de 1.000 caixas de pães fatiados.",
+        status: "Cumprido",
+        responsavel: "DANTE CODOGNO e HUDSON BRITO",
+        diretores: ["PC", "Renan"],
+        comentarios: [],
+        historico: [
+          { data: "2026-02-01 09:15", usuario: "Hudson Brito", acao: "Criação do Acordo" }
+        ]
+      },
+      {
+        id: 103,
+        canal: "Moderno",
+        nome: "Campanha Promocional Q2 - Redes Múltiplas",
+        descricao: "Ações de ponto de venda e destaque em folhetos de ofertas.",
+        data: "2026-03-10",
+        vigencia_inicio: "2026-04-01",
+        vigencia_fim: "2026-06-30",
+        condicoes_pactuadas: "Rebaixa de tabela de 3% condicionado ao sell-out mínimo de 85%.",
+        status: "Não cumprido",
+        responsavel: "RENAN GOES",
+        diretores: ["Hudson", "Dante"],
+        comentarios: [],
+        historico: [
+          { data: "2026-03-10 16:45", usuario: "Renan Goes", acao: "Criação do Acordo" }
+        ]
+      }
+    ];
+
+    let currentRole = "Administrador";
+    let activeTab = "dashboard";
+    let activeAcordoDetailId = null;
+    let chartCanalInstance = null;
+    let chartEvolucaoInstance = null;
+    let chartSimuladorInstance = null;
+
+    /* ── INICIALIZAÇÃO ── */
+    document.addEventListener("DOMContentLoaded", () => {
+      loadAcordos();
+      renderDashboard();
+      initCharts();
+      runSimulation();
+    });
+
+    /* ── CONTROLE DE ABAS ── */
+    function switchTab(tabName) {
+      activeTab = tabName;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+
+      if (tabName === 'dashboard') {
+        document.getElementById('tabBtnDash').classList.add('active');
+        document.getElementById('tabDashboard').style.display = 'block';
+        renderDashboard();
+      } else if (tabName === 'crud') {
+        document.getElementById('tabBtnCrud').classList.add('active');
+        document.getElementById('tabCrud').style.display = 'block';
+        renderTable();
+      } else if (tabName === 'simulador') {
+        document.getElementById('tabBtnSim').classList.add('active');
+        document.getElementById('tabSimulador').style.display = 'block';
+        runSimulation();
+      }
+    }
+
+    /* ── CONTROLE DE PERMISSÕES (RBAC) ── */
+    function changeRbacRole(role) {
+      currentRole = role;
+      showToast(`Perfil alterado para: ${role}`, "info");
+
+      const isReadonly = (role === "Consulta");
+      document.querySelectorAll('.rbac-write').forEach(el => {
+        el.style.display = isReadonly ? 'none' : 'inline-flex';
+      });
+    }
+
+    /* ── QUICK CHIPS FILTER ── */
+    function setQuickChipFilter(canalName) {
+      document.querySelectorAll('.chip-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('f-canal').value = canalName;
+      renderTable();
+    }
+
+    /* ── DASHBOARD & KPIS ── */
+    function renderDashboard() {
+      const total = acordosData.length;
+      const andamento = acordosData.filter(a => a.status === 'Em andamento').length;
+      const cumpridos = acordosData.filter(a => a.status === 'Cumprido').length;
+      const naoCumpridos = acordosData.filter(a => a.status === 'Não cumprido').length;
+      const pct = total > 0 ? Math.round((cumpridos / total) * 100) : 0;
+
+      const elFinal = document.getElementById('kpiFinalizados');
+      if (elFinal) elFinal.textContent = cumpridos + naoCumpridos;
+
+      const elCump = document.getElementById('kpiCumpridosTop');
+      if (elCump) elCump.textContent = cumpridos;
+
+      const elPend = document.getElementById('kpiPendentes');
+      if (elPend) elPend.textContent = naoCumpridos;
+
+      const elAnd = document.getElementById('kpiAndamentoTop');
+      if (elAnd) elAnd.textContent = andamento;
+
+      const elHeroTotal = document.getElementById('heroStatTotal');
+      if (elHeroTotal) elHeroTotal.textContent = total;
+
+      const elHeroPct = document.getElementById('heroStatPct');
+      if (elHeroPct) elHeroPct.textContent = `${pct}%`;
+
+      // Render Feed Histórico
+      const feedH = document.getElementById('feedHistorico');
+      let histHTML = '';
+      acordosData.forEach(a => {
+        (a.historico || []).forEach(h => {
+          histHTML += `
+            <div class="timeline-item">
+              <div>
+                <div class="timeline-user">${h.usuario} &bull; <span style="font-weight:600;color:#38bdf8;">${a.nome}</span></div>
+                <div class="timeline-desc">${h.acao}</div>
+                <div class="timeline-date">${h.data}</div>
+              </div>
+            </div>`;
+        });
+      });
+      feedH.innerHTML = histHTML || '<div class="timeline-desc">Nenhum histórico registrado.</div>';
+
+      // Render Feed Pendências
+      const feedP = document.getElementById('feedPendencias');
+      const pendentes = acordosData.filter(a => a.status === 'Em andamento');
+      let pendHTML = '';
+      pendentes.forEach(p => {
+        pendHTML += `
+          <div class="timeline-item" style="border-left-color:#F59E0B;">
+            <div>
+              <div class="timeline-user">${p.nome} (${p.canal})</div>
+              <div class="timeline-desc">Vigência ativa até: <strong>${formatDate(p.vigencia_fim)}</strong></div>
+              <div class="timeline-date">Responsável: ${p.responsavel}</div>
+            </div>
+          </div>`;
+      });
+      feedP.innerHTML = pendHTML || '<div class="timeline-desc">Nenhuma pendência ativa.</div>';
+
+      updateCharts();
+    }
+
+    /* ── GRÁFICOS DE PERFORMANCE & SIMULADOR ── */
+    function initCharts() {
+      // Mini Line Charts para os Cards de Canal Executivos (Evolução Semanal de 10 Semanas)
+      createMiniLineChart('chartMiniTradicional', [500, 500, 500, 500, 500, 500, 500, 500, 500, 500], [450, 460, 475, 485, 500, 515, 525, 530, 538, 542], 'rgba(56, 189, 248, 1)');
+      createMiniLineChart('chartMiniDistribuidores', [320, 320, 320, 320, 320, 320, 320, 320, 320, 320], [285, 290, 298, 305, 310, 315, 318, 320, 322, 325], 'rgba(165, 180, 252, 1)');
+      createMiniLineChart('chartMiniModerno', [450, 450, 450, 450, 450, 450, 450, 450, 450, 450], [460, 455, 450, 442, 435, 428, 420, 415, 412, 410], 'rgba(218, 46, 57, 1)');
+      createMiniLineChart('chartMiniAutosservico', [280, 280, 280, 280, 280, 280, 280, 280, 280, 280], [250, 258, 265, 270, 274, 278, 280, 280, 280, 280], 'rgba(251, 191, 36, 1)');
+
+      initSimulatorChart();
+    }
+
+    /* Gráfico de Tendência do Simulador Comercial */
+    function initSimulatorChart() {
+      const canvas = document.getElementById('chartSimulador');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      const gradReceita = ctx.createLinearGradient(0, 0, 0, 250);
+      gradReceita.addColorStop(0, 'rgba(56, 189, 248, 0.35)');
+      gradReceita.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
+
+      const gradMargem = ctx.createLinearGradient(0, 0, 0, 250);
+      gradMargem.addColorStop(0, 'rgba(52, 211, 153, 0.2)');
+      gradMargem.addColorStop(1, 'rgba(52, 211, 153, 0.0)');
+
+      chartSimuladorInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Mês 1 (Jul)', 'Mês 2 (Ago)', 'Mês 3 (Set)', 'Mês 4 (Out)', 'Mês 5 (Nov)', 'Mês 6 (Dez)'],
+          datasets: [
+            {
+              label: 'Baseline Estatístico (R$ mil)',
+              data: [420, 430, 440, 445, 450, 460],
+              borderColor: 'rgba(165, 180, 252, 0.8)',
+              borderDash: [5, 5],
+              borderWidth: 2,
+              pointRadius: 3,
+              fill: false,
+              tension: 0.3,
+              yAxisID: 'y'
+            },
+            {
+              label: 'Receita Simulada (R$ mil)',
+              data: [420, 430, 440, 445, 450, 460],
+              borderColor: '#38bdf8',
+              backgroundColor: gradReceita,
+              borderWidth: 3,
+              pointRadius: 4,
+              pointBackgroundColor: '#ffffff',
+              pointHoverRadius: 6,
+              fill: true,
+              tension: 0.4,
+              yAxisID: 'y'
+            },
+            {
+              label: 'Margem Simulada (%)',
+              data: [24.0, 24.2, 24.5, 24.5, 24.8, 25.0],
+              borderColor: '#34d399',
+              backgroundColor: gradMargem,
+              borderWidth: 2,
+              pointRadius: 3,
+              fill: false,
+              tension: 0.3,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(8, 16, 32, 0.95)',
+              titleColor: '#38bdf8',
+              bodyColor: '#ffffff',
+              borderColor: 'rgba(56, 189, 248, 0.4)',
+              borderWidth: 1,
+              padding: 12,
+              callbacks: {
+                label: function(context) {
+                  if (context.dataset.yAxisID === 'y1') {
+                    return `${context.dataset.label}: ${context.raw.toFixed(1)}%`;
+                  }
+                  return `${context.dataset.label}: R$ ${context.raw.toFixed(1)} mil`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: 'rgba(255,255,255,0.7)', font: { size: 10, weight: '600' } },
+              grid: { color: 'rgba(255,255,255,0.06)' }
+            },
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              title: { display: true, text: 'Receita (R$ mil)', color: '#38bdf8', font: { size: 10, weight: 'bold' } },
+              ticks: {
+                color: '#38bdf8',
+                font: { size: 10, weight: '600' },
+                callback: function(val) { return 'R$ ' + val + 'k'; }
+              },
+              grid: { color: 'rgba(255,255,255,0.06)' }
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              title: { display: true, text: 'Margem (%)', color: '#34d399', font: { size: 10, weight: 'bold' } },
+              ticks: {
+                color: '#34d399',
+                font: { size: 10, weight: '600' },
+                callback: function(val) { return val + '%'; }
+              },
+              grid: { drawOnChartArea: false }
+            }
+          }
+        }
+      });
+    }
+
+    /* Helper para Mini Line Charts dos Cards de Canal (Evolução de 10 Semanas) */
+    function createMiniLineChart(canvasId, metaData, realData, colorReal) {
+      const el = document.getElementById(canvasId);
+      if (!el) return;
+      const ctx = el.getContext('2d');
+      
+      const gradReal = ctx.createLinearGradient(0, 0, 0, 80);
+      gradReal.addColorStop(0, colorReal.replace('1)', '0.35)'));
+      gradReal.addColorStop(1, colorReal.replace('1)', '0.0)'));
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10'],
+          datasets: [
+            {
+              label: 'Meta',
+              data: metaData,
+              borderColor: '#38bdf8',
+              borderDash: [3, 3],
+              borderWidth: 1.5,
+              pointRadius: 1.5,
+              fill: false,
+              tension: 0.3
+            },
+            {
+              label: 'Realizado',
+              data: realData,
+              borderColor: colorReal,
+              backgroundColor: gradReal,
+              borderWidth: 2,
+              pointRadius: 2.5,
+              pointBackgroundColor: '#ffffff',
+              fill: true,
+              tension: 0.4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              labels: { color: '#E8F4FD', boxWidth: 10, font: { size: 9, weight: 'bold' } }
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              backgroundColor: 'rgba(8, 16, 32, 0.95)',
+              titleColor: '#38bdf8',
+              bodyColor: '#ffffff',
+              borderColor: 'rgba(56, 189, 248, 0.4)',
+              borderWidth: 1,
+              callbacks: {
+                label: function(context) {
+                  return `${context.dataset.label}: R$ ${context.raw} mil`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { ticks: { color: 'rgba(255,255,255,0.7)', font: { size: 9, weight: '600' } }, grid: { display: false } },
+            y: {
+              display: true,
+              position: 'right',
+              ticks: {
+                color: '#38bdf8',
+                font: { size: 9, weight: '700' },
+                maxTicksLimit: 3,
+                callback: function(val) { return 'R$ ' + val + 'k'; }
+              },
+              grid: { color: 'rgba(255,255,255,0.06)' }
+            }
+          }
+        }
+      });
+    }
+
+    /* ── POP-UP MODAL JUSTIFICATIVA ── */
+    function openJustificativaDrawer(channelName, periodo) {
+      const respMap = {
+        'Tradicional': 'PAULO CESAR DE OLIVEIRA',
+        'Distribuidores': 'DANTE CODOGNO e HUDSON BRITO',
+        'Moderno': 'RENAN GOES',
+        'Autosserviço': 'RENAN GOES'
+      };
+
+      const emailMap = {
+        'Tradicional': ['paulo.oliveira@grupobimbo.com', 'hudson.brito@grupobimbo.com'],
+        'Distribuidores': ['dante.codogno@grupobimbo.com', 'hudson.brito@grupobimbo.com'],
+        'Moderno': ['renan.goes@grupobimbo.com', 'hudson.brito@grupobimbo.com'],
+        'Autosserviço': ['renan.goes@grupobimbo.com', 'paulo.oliveira@grupobimbo.com']
+      };
+
+      const metricsMap = {
+        'Tradicional': { status: 'Superado 108% • +8,4 p.p', atual: '108%', meta: '100%', color: '#248DC1' },
+        'Distribuidores': { status: 'Atingido 102% • +1,6 p.p', atual: '102%', meta: '100%', color: '#6366f1' },
+        'Moderno': { status: 'Abaixo 91% • -8,9 p.p', atual: '91%', meta: '100%', color: '#ef4444' },
+        'Autosserviço': { status: 'Atingido 100% • 0,0 p.p', atual: '100%', meta: '100%', color: '#f59e0b' }
+      };
+
+      const resp = respMap[channelName] || 'Responsável Comercial';
+      const met = metricsMap[channelName] || { status: '100%', atual: '100%', meta: '100%', color: '#248DC1' };
+      const emails = emailMap[channelName] || ['responsavel@grupobimbo.com', 'diretoria@grupobimbo.com'];
+
+      document.getElementById('justCanalName').textContent = channelName;
+      document.getElementById('popStatusText').textContent = met.status;
+      
+      const badgePill = document.getElementById('popBadgePill');
+      if (badgePill) {
+        badgePill.style.color = met.color;
+      }
+
+      // Nome do Indicador = Somente o nome do card (Tradicional, Distribuidores, Moderno, Autosserviço)
+      document.getElementById('inpJustIndicador').value = channelName;
+      document.getElementById('justResponsavelInput').value = resp;
+      document.getElementById('inpJustAtual').value = met.atual;
+      document.getElementById('inpJustMeta').value = met.meta;
+
+      // Renderizar Chat de Interação com E-mails dos Responsáveis do Canal
+      const chatContainer = document.getElementById('chatMessagesContainer');
+      if (chatContainer) {
+        chatContainer.innerHTML = `
+          <div class="chat-msg-item">
+            <div class="chat-card-header">
+              <span class="chat-msg-user">${emails[0]}</span>
+              <span class="chat-msg-date">16/06/2026, 10:07:30</span>
+            </div>
+            <div class="chat-msg-text">Dados da semana 23 validados com a equipe comercial do canal ${channelName}.</div>
+          </div>
+          <div class="chat-msg-item">
+            <div class="chat-card-header">
+              <span class="chat-msg-user">${emails[1] || emails[0]}</span>
+              <span class="chat-msg-date">17/06/2026, 14:05:17</span>
+            </div>
+            <div class="chat-msg-text">Validação das metas e volumes operacionais concluída para a semana 24.</div>
+          </div>
+          <div class="chat-msg-item">
+            <div class="chat-card-header">
+              <span class="chat-msg-user">${emails[0]}</span>
+              <span class="chat-msg-date">16/07/2026, 17:02:37</span>
+            </div>
+            <div class="chat-msg-text">Justificativa e plano de ação aprovados pelo responsável comercial.</div>
+          </div>
+        `;
+      }
+
+      document.getElementById('drawerJustificativa').classList.add('active');
+    }
+
+    function closeJustificativaDrawer() {
+      document.getElementById('drawerJustificativa').classList.remove('active');
+    }
+
+    function saveJustificativa(e) {
+      e.preventDefault();
+      const canal = document.getElementById('justCanalName').textContent;
+      showToast(`Justificativa do canal ${canal} salva com sucesso!`, 'success');
+      closeJustificativaDrawer();
+    }
+
+    function setDirection(dir) {
+      const b1 = document.getElementById('btnDirMaior');
+      const b2 = document.getElementById('btnDirMenor');
+      if (!b1 || !b2) return;
+      if (dir === 'maior') {
+        b1.classList.add('active');
+        b2.classList.remove('active');
+      } else {
+        b2.classList.add('active');
+        b1.classList.remove('active');
+      }
+    }
+
+    function handleFileSelected(input) {
+      if (input.files && input.files[0]) {
+        const lbl = document.getElementById('fileNameLabel');
+        if (lbl) lbl.textContent = `📄 ${input.files[0].name}`;
+        showToast(`Arquivo "${input.files[0].name}" anexado com sucesso!`, 'info');
+      }
+    }
+
+    function sendChatMessage() {
+      const inp = document.getElementById('inpChatMsg');
+      const text = inp ? inp.value.trim() : '';
+      if (!text) return;
+
+      const container = document.getElementById('chatMessagesContainer');
+      if (!container) return;
+
+      const nowStr = new Date().toLocaleString('pt-BR');
+      
+      const msgHTML = `
+        <div class="chat-msg-item">
+          <div class="chat-card-header">
+            <span class="chat-msg-user">ana.ferraz@grupobimbo.com</span>
+            <span class="chat-msg-date">${nowStr}</span>
+          </div>
+          <div class="chat-msg-text">${escapeHtml(text)}</div>
+        </div>`;
+        
+      container.insertAdjacentHTML('beforeend', msgHTML);
+      container.scrollTop = container.scrollHeight;
+      inp.value = '';
+      
+      const countEl = document.getElementById('interactionCount');
+      if (countEl) {
+        countEl.textContent = parseInt(countEl.textContent || '0') + 1;
+      }
+    }
+
+    function updateCharts() {
+      if (!chartCanalInstance) return;
+      const canais = ['Tradicional', 'Distribuidores', 'Moderno', 'Autosserviço'];
+      const counts = canais.map(c => acordosData.filter(a => a.canal === c).length);
+      chartCanalInstance.data.datasets[0].data = counts;
+      chartCanalInstance.update();
+    }
+
+    /* ── TABELA & FILTROS (CRUD) ── */
+    function loadAcordos() {
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('acordosTableBody');
+      const filtered = getFilteredAcordos();
+
+      document.getElementById('tcSubAcordos').textContent = `Total: ${filtered.length} registro(s) encontrado(s)`;
+      document.getElementById('footerInfoAcordos').innerHTML = `Mostrando <strong>${filtered.length}</strong> de ${acordosData.length} registros`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" style="text-align:center; padding:3.5rem; color:var(--txt-m);">
+              Nenhum acordo comercial encontrado com os filtros selecionados.
+            </td>
+          </tr>`;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach(a => {
+        const stClass = a.status === 'Cumprido' ? 'good' : (a.status === 'Em andamento' ? 'warning' : 'risk');
+        const canalClass = (a.canal || '').toLowerCase();
+        const isReadonly = (currentRole === "Consulta");
+
+        html += `
+          <tr>
+            <td><strong>#${a.id}</strong></td>
+            <td><span class="mc-badge-canal ${canalClass}">${a.canal}</span></td>
+            <td><strong>${escapeHtml(a.nome)}</strong></td>
+            <td>${escapeHtml(a.responsavel)}</td>
+            <td>${(a.diretores || []).join(', ')}</td>
+            <td>${formatDate(a.vigencia_inicio)} até ${formatDate(a.vigencia_fim)}</td>
+            <td><span class="status-badge ${stClass}"><span class="status-dot"></span>${a.status}</span></td>
+            <td style="text-align:center;">
+              <div style="display:flex; justify-content:center; gap:0.4rem;">
+                <button class="btn-icon" title="Ver Detalhes & Comentários" onclick="openDetailsModal(${a.id})">💬</button>
+                ${!isReadonly ? `
+                  <button class="btn-icon" title="Editar Acordo" onclick="openEditModal(${a.id})">✏️</button>
+                  <button class="btn-icon" title="Duplicar Acordo" onclick="duplicateAcordo(${a.id})">📋</button>
+                  <button class="btn-icon" title="Excluir Acordo" onclick="deleteAcordo(${a.id})">🗑️</button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>`;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function getFilteredAcordos() {
+      const c = document.getElementById('f-canal').value;
+      const s = document.getElementById('f-status').value;
+      const r = document.getElementById('f-responsavel').value;
+      const d = document.getElementById('f-diretor').value;
+      const q = document.getElementById('f-busca-acordo').value.toLowerCase().trim();
+
+      return acordosData.filter(a => {
+        if (c && a.canal !== c) return false;
+        if (s && a.status !== s) return false;
+        if (r && a.responsavel !== r) return false;
+        if (d && !(a.diretores || []).includes(d)) return false;
+        if (q) {
+          const matchName = a.nome.toLowerCase().includes(q);
+          const matchDesc = (a.descricao || '').toLowerCase().includes(q);
+          const matchCond = (a.condicoes_pactuadas || '').toLowerCase().includes(q);
+          if (!matchName && !matchDesc && !matchCond) return false;
+        }
+        return true;
+      });
+    }
+
+    function applyFilters() {
+      renderTable();
+    }
+
+    function clearFilters() {
+      document.getElementById('f-canal').value = "";
+      document.getElementById('f-status').value = "";
+      document.getElementById('f-responsavel').value = "";
+      document.getElementById('f-diretor').value = "";
+      document.getElementById('f-busca-acordo').value = "";
+      document.querySelectorAll('.chip-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.chip-btn')[0].classList.add('active');
+      renderTable();
+    }
+
+    /* ── MODAIS & OPERAÇÕES CRUD ── */
+    function openCreateModal() {
+      document.getElementById('formAcordo').reset();
+      document.getElementById('acordoId').value = "";
+      document.getElementById('modalAcordoTitle').textContent = "Novo Acordo Comercial";
+      document.getElementById('modalAcordo').classList.add('active');
+    }
+
+    function openEditModal(id) {
+      const a = acordosData.find(x => x.id === id);
+      if (!a) return;
+
+      document.getElementById('acordoId').value = a.id;
+      document.getElementById('inpCanal').value = a.canal;
+      document.getElementById('inpNome').value = a.nome;
+      document.getElementById('inpDesc').value = a.descricao || "";
+      document.getElementById('inpVigInicio').value = a.vigencia_inicio;
+      document.getElementById('inpVigFim').value = a.vigencia_fim;
+      document.getElementById('inpCondicoes').value = a.condicoes_pactuadas;
+      document.getElementById('inpStatus').value = a.status;
+
+      // Checkboxes Diretores
+      const dirs = a.diretores || [];
+      document.querySelectorAll('input[name="diretores"]').forEach(cb => {
+        cb.checked = dirs.includes(cb.value);
+      });
+
+      document.getElementById('modalAcordoTitle').textContent = `Editar Acordo #${a.id}`;
+      document.getElementById('modalAcordo').classList.add('active');
+    }
+
+    function saveAcordo(e) {
+      e.preventDefault();
+      const id = document.getElementById('acordoId').value;
+      const canal = document.getElementById('inpCanal').value;
+      const nome = document.getElementById('inpNome').value;
+      const desc = document.getElementById('inpDesc').value;
+      const vIni = document.getElementById('inpVigInicio').value;
+      const vFim = document.getElementById('inpVigFim').value;
+      const cond = document.getElementById('inpCondicoes').value;
+      const status = document.getElementById('inpStatus').value;
+
+      const dirs = [];
+      document.querySelectorAll('input[name="diretores"]:checked').forEach(cb => dirs.push(cb.value));
+
+      const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 16);
+
+      if (id) {
+        // Edit
+        const a = acordosData.find(x => x.id == id);
+        if (a) {
+          const oldStatus = a.status;
+          a.canal = canal;
+          a.nome = nome;
+          a.descricao = desc;
+          a.vigencia_inicio = vIni;
+          a.vigencia_fim = vFim;
+          a.condicoes_pactuadas = cond;
+          a.status = status;
+          a.diretores = dirs;
+
+          a.historico.push({
+            data: nowStr,
+            usuario: "Hudson Brito",
+            acao: oldStatus !== status ? `Status alterado de ${oldStatus} para ${status}` : "Atualização de cláusulas do acordo"
+          });
+          showToast("Acordo atualizado com sucesso!", "success");
+        }
+      } else {
+        // Create
+        const newId = Math.max(...acordosData.map(x => x.id), 100) + 1;
+        acordosData.unshift({
+          id: newId,
+          canal, nome, descricao: desc,
+          data: new Date().toISOString().substring(0, 10),
+          vigencia_inicio: vIni, vigencia_fim: vFim,
+          condicoes_pactuadas: cond, status,
+          responsavel: "Hudson Brito",
+          diretores: dirs,
+          comentarios: [],
+          historico: [{ data: nowStr, usuario: "Hudson Brito", acao: "Criação do Acordo" }]
+        });
+        showToast("Novo acordo comercial criado com sucesso!", "success");
+      }
+
+      closeModal('modalAcordo');
+      renderTable();
+      renderDashboard();
+    }
+
+    function duplicateAcordo(id) {
+      const a = acordosData.find(x => x.id === id);
+      if (!a) return;
+
+      const newId = Math.max(...acordosData.map(x => x.id), 100) + 1;
+      const clone = JSON.parse(JSON.stringify(a));
+      clone.id = newId;
+      clone.nome = `${a.nome} (Cópia)`;
+      clone.historico = [{
+        data: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        usuario: "Hudson Brito",
+        acao: `Duplicado a partir do Acordo #${a.id}`
+      }];
+
+      acordosData.unshift(clone);
+      showToast(`Acordo #${a.id} duplicado como #${newId}!`, "success");
+      renderTable();
+      renderDashboard();
+    }
+
+    function deleteAcordo(id) {
+      if (!confirm(`Tem certeza que deseja excluir o acordo #${id}?`)) return;
+      acordosData = acordosData.filter(x => x.id !== id);
+      showToast(`Acordo #${id} excluído com sucesso.`, "info");
+      renderTable();
+      renderDashboard();
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    /* ── COMENTÁRIOS ── */
+    function openDetailsModal(id) {
+      const a = acordosData.find(x => x.id === id);
+      if (!a) return;
+
+      activeAcordoDetailId = id;
+      document.getElementById('detTitle').textContent = `#${a.id} - ${a.nome}`;
+      document.getElementById('detSub').textContent = `Canal: ${a.canal} | Status: ${a.status}`;
+      document.getElementById('detCondicoes').textContent = a.condicoes_pactuadas;
+      document.getElementById('detVigencia').textContent = `${formatDate(a.vigencia_inicio)} até ${formatDate(a.vigencia_fim)}`;
+      document.getElementById('detDiretores').textContent = (a.diretores || []).join(', ');
+
+      renderCommentsList(a);
+      document.getElementById('modalDetalhes').classList.add('active');
+    }
+
+    function renderCommentsList(acordo) {
+      const container = document.getElementById('commentsList');
+      if (!acordo.comentarios || acordo.comentarios.length === 0) {
+        container.innerHTML = '<div style="font-size:0.84rem; color:var(--txt-m);">Nenhum comentário cadastrado. Escreva um comentário abaixo.</div>';
+        return;
+      }
+
+      let html = '';
+      acordo.comentarios.forEach(c => {
+        const textWithMentions = escapeHtml(c.texto).replace(/@(\w+)/g, '<span class="mention">@$1</span>');
+        html += `
+          <div class="comment-card">
+            <div class="comment-header">
+              <span class="comment-author">👤 ${escapeHtml(c.autor)}</span>
+              <span class="comment-time">${c.data}</span>
+            </div>
+            <div class="comment-body">${textWithMentions}</div>
+          </div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function addComment() {
+      if (!activeAcordoDetailId) return;
+      const text = document.getElementById('inpCommentText').value.trim();
+      if (!text) return;
+
+      const a = acordosData.find(x => x.id === activeAcordoDetailId);
+      if (a) {
+        a.comentarios.push({
+          id: Date.now(),
+          autor: "Hudson Brito",
+          data: new Date().toISOString().replace('T', ' ').substring(0, 16),
+          texto: text,
+          respostas: []
+        });
+        document.getElementById('inpCommentText').value = "";
+        renderCommentsList(a);
+        showToast("Comentário publicado!", "success");
+      }
+    }
+
+    /* ── FILTRO DE CANAL DO DASHBOARD ── */
+    function filterDashboardByCanal(canal, btnEl) {
+      if (btnEl) {
+        const parent = btnEl.parentElement;
+        if (parent) {
+          parent.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+        }
+        btnEl.classList.add('active');
+      }
+
+      const cards = document.querySelectorAll('.channels-kpi-grid .channel-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const titleEl = card.querySelector('.channel-name');
+        const name = titleEl ? titleEl.textContent.trim() : '';
+
+        if (!canal || name.toLowerCase() === canal.toLowerCase()) {
+          card.style.display = '';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      showToast(canal ? `Filtrando dashboard por canal: ${canal}` : "Exibindo todos os canais", 'info');
+    }
+
+    /* ── SIMULADOR COMERCIAL ── */
+    function runSimulation() {
+      const canal = document.getElementById('simCanal') ? document.getElementById('simCanal').value : 'Todos';
+      const volPct = parseInt(document.getElementById('sliderVol').value) || 0;
+      const prcPct = parseInt(document.getElementById('sliderPrc').value) || 0;
+
+      document.getElementById('valVolBadge').textContent = `${volPct >= 0 ? '+' : ''}${volPct}%`;
+      document.getElementById('valPrcBadge').textContent = `${prcPct >= 0 ? '+' : ''}${prcPct}%`;
+
+      const canalBases = {
+        'Todos': { receita: 450.0, margem: 24.5 },
+        'Tradicional': { receita: 540.0, margem: 26.0 },
+        'Distribuidores': { receita: 325.0, margem: 22.0 },
+        'Moderno': { receita: 410.0, margem: 20.5 },
+        'Autosserviço': { receita: 280.0, margem: 25.0 }
+      };
+
+      const baseInfo = canalBases[canal] || canalBases['Todos'];
+      const baseReceita = baseInfo.receita;
+      const baseMargem = baseInfo.margem;
+
+      const simReceita = baseReceita * (1 + volPct / 100) * (1 + prcPct / 100);
+      const simMargem = Math.max(5.0, Math.min(50.0, baseMargem + (prcPct * 0.4) + (volPct * 0.1)));
+
+      const diffRec = ((simReceita - baseReceita) / baseReceita * 100).toFixed(1);
+      const diffMar = (simMargem - baseMargem).toFixed(1);
+
+      document.getElementById('simValReceita').textContent = `R$ ${simReceita.toFixed(1)}k`;
+      document.getElementById('simValMargem').textContent = `${simMargem.toFixed(1)}%`;
+
+      const elDiffR = document.getElementById('simDiffReceita');
+      if (elDiffR) {
+        elDiffR.textContent = `${diffRec >= 0 ? '+' : ''}${diffRec}% vs Base`;
+        elDiffR.className = `sim-metric-diff ${diffRec >= 0 ? 'positive' : 'negative'}`;
+      }
+
+      const elDiffM = document.getElementById('simDiffMargem');
+      if (elDiffM) {
+        elDiffM.textContent = `${diffMar >= 0 ? '+' : ''}${diffMar} p.p. vs Base`;
+        elDiffM.className = `sim-metric-diff ${diffMar >= 0 ? 'positive' : 'negative'}`;
+      }
+
+      // Atualizar Gráfico de Tendência (6 Meses)
+      if (chartSimuladorInstance) {
+        const monthFactors = [0.93, 0.96, 0.98, 1.00, 1.03, 1.06];
+        const baselineData = monthFactors.map(f => Math.round(baseReceita * f));
+        const simData = monthFactors.map(f => Math.round(simReceita * f));
+        const margemData = monthFactors.map((f, idx) => parseFloat((simMargem + (idx * 0.2 - 0.5)).toFixed(1)));
+
+        chartSimuladorInstance.data.datasets[0].data = baselineData;
+        chartSimuladorInstance.data.datasets[1].data = simData;
+        chartSimuladorInstance.data.datasets[2].data = margemData;
+        chartSimuladorInstance.update();
+      }
+    }
+
+    /* ── UTILITÁRIOS & FEEDBACK ── */
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3500);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '—';
+      const parts = dateStr.split('-');
+      if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      return dateStr;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function exportCsv() {
+      const filtered = getFilteredAcordos();
+      let csv = "ID;Canal;Nome do Acordo;Responsavel;Diretores;Vigencia Inicio;Vigencia Fim;Status\n";
+      filtered.forEach(a => {
+        csv += `${a.id};"${a.canal}";"${a.nome}";"${a.responsavel}";"${(a.diretores||[]).join(',')}";${a.vigencia_inicio};${a.vigencia_fim};"${a.status}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Acordos_Comerciais_MAP_${new Date().toISOString().substring(0,10)}.csv`;
+      a.click();
+    }
+  </script>
+
+  <!-- ══════════════════ RODAPÉ OFICIAL ══════════════════ -->
+  <footer class="page-footer">
+    <div class="footer-container">
+      <div class="footer-left">
+        <img src="Logo Bimbo -Brasil.png" alt="Grupo Bimbo" class="footer-logo">
+        <span>Grupo Bimbo &copy; 2026 &bull; Sistema de Gestão Fill Rate & Disciplina Comercial</span>
+      </div>
+      <div class="footer-right">
+        <span>Ambiente de Homologação Executiva &bull; v2.4.0</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

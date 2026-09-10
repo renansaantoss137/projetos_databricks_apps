@@ -1,0 +1,25 @@
+resources:
+  jobs:
+    gestao_pedidos:
+      name: gestao_pedidos
+      max_concurrent_runs: 1
+      trigger:
+        pause_status: UNPAUSED
+        file_arrival:
+          url: /Volumes/cat_dnabb_dv/default/default_dev_estoque_smart_order/
+      tasks:
+        - task_key: estoque
+          notebook_task:
+            notebook_path: ../src/dados/estoque_smart_order.ipynb
+            source: WORKSPACE
+            base_parameters:
+              arquivo: "{{job.trigger.file_arrival.location}}"
+      tags:
+        AMBIENTE: DEV
+      queue:
+        enabled: true
+      environments:
+        - environment_key: Default
+          spec:
+            environment_version: "5"
+      performance_target: PERFORMANCE_OPTIMIZED

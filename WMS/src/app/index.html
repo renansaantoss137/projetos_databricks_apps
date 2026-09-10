@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Central de Gestão – Smart Order | Bimbo Brasil</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="home-page">
+
+  <!-- ══════════════════ HEADER FLUTUANTE ══════════════════ -->
+  <header class="home-header">
+    <a href="index.html" class="hh-left">
+      <img src="/static/logo-dna.png" alt="DNA" class="hh-logo">
+    </a>
+
+    <div class="hh-right">
+      <!-- Language toggle -->
+      <div class="lang-toggle" role="group">
+        <button class="lang-btn active" id="btnPT" onclick="setLang('pt')">PT</button>
+        <button class="lang-btn" id="btnES" onclick="setLang('es')">ES</button>
+      </div>
+
+      <!-- Portal badge -->
+      <span class="portal-badge">
+        <span class="dot"></span>
+        <span data-pt="Portal Operacional" data-es="Portal Operacional">Portal Operacional</span>
+      </span>
+
+    </div>
+  </header>
+
+  <!-- ══════════════════ HERO ══════════════════ -->
+  <section class="home-hero">
+    <img src="/static/Logo Bimbo -Brasil.png" alt="Bimbo Brasil" class="hero-logo">
+
+    <div class="hero-title-block">
+      <span class="hero-welcome" data-pt="Bem-vindo ao" data-es="Bienvenido a">Bem-vindo ao</span>
+      <h1 class="hero-page-title" data-pt="Smart Order" data-es="Smart Order">Smart Order</h1>
+      <div class="hero-title-line"></div>
+    </div>
+
+    <p class="hero-subtitle"
+       data-pt="A plataforma estratégica para acompanhamento da performance de atendimento de pedidos."
+       data-es="La plataforma estratégica para el seguimiento del rendimiento de atención de pedidos.">
+      A plataforma estratégica para acompanhamento da performance de atendimento de pedidos.
+    </p>
+
+    <div class="hero-body">
+      <p data-pt="Monitore os principais indicadores operacionais, acompanhe o nível de atendimento em toda a cadeia logística e obtenha uma visão integrada dos processos — da programação à entrega final."
+         data-es="Monitorea los principales indicadores operacionales, sigue el nivel de atención en toda la cadena logística y obtén una visión integrada de los procesos — desde la programación hasta la entrega final.">
+        Monitore os principais indicadores operacionais, acompanhe o nível de atendimento em toda a cadeia logística e obtenha uma visão integrada dos processos — da programação à entrega final.
+      </p>
+      <p data-pt="Centralize informações críticas, identifique desvios com agilidade e potencialize a tomada de decisão por meio de dados confiáveis, visibilidade operacional e gestão orientada à performance."
+         data-es="Centraliza información crítica, identifica desviaciones con agilidad y potencia la toma de decisiones mediante datos confiables, visibilidad operacional y gestión orientada al rendimiento.">
+        Centralize informações críticas, identifique desvios com agilidade e potencialize a tomada de decisão por meio de dados confiáveis, visibilidade operacional e gestão orientada à performance.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══════════════════ MODULE SELECTOR ══════════════════ -->
+  <p class="modules-label" data-pt="Selecione o módulo desejado" data-es="Selecciona el módulo deseado">
+    Selecione o módulo desejado
+  </p>
+
+  <section class="modules-section">
+    <div class="modules-grid">
+
+      <!-- ── FILL RATE (unificado N0, N1 e N2) ── -->
+      <div class="mc-wrap mc-n0">
+        <div class="mc-inner">
+          <div class="mc-top">
+            <div class="mc-icon">
+              <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            </div>
+            <span class="mc-badge">Fill Rate</span>
+          </div>
+          <h3 class="mc-title">Fill Rate</h3>
+          <p class="mc-desc"
+             data-pt="Fill Rate N0, N1 e N2"
+             data-es="Fill Rate N0, N1 y N2">
+            Fill Rate N0, N1 e N2
+          </p>
+          <ul class="mc-features">
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Consolidação nacional e regional" data-es="Consolidación nacional y regional">Consolidação nacional e regional</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Análise por canal, cluster e produto" data-es="Análisis por canal, clúster y producto">Análise por canal, cluster e produto</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Granularidade SKU × cliente × data" data-es="Granularidad SKU × cliente × fecha">Granularidade SKU × cliente × data</span>
+            </li>
+          </ul>
+          <div class="mc-foot">
+            <span class="badge-construction">
+              <svg width="10" height="10" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span data-pt="Em construção" data-es="En construcción">Em construção</span>
+            </span>
+            <span class="mc-arrow">↗</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── GESTÃO DE PEDIDOS ── -->
+      <a class="mc-wrap mc-orders" href="gestao-pedidos.html">
+        <div class="mc-inner">
+          <div class="mc-top">
+            <div class="mc-icon">
+              <svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="15" y2="16"/></svg>
+            </div>
+            <span class="mc-badge" data-pt="Pedidos" data-es="Pedidos">Pedidos</span>
+          </div>
+          <h3 class="mc-title" data-pt="Gestão de Pedidos" data-es="Gestión de Pedidos">Gestão de Pedidos</h3>
+          <p class="mc-desc"
+             data-pt="Acompanhamento operacional de pedidos, status de entrega e Fill Rate individual."
+             data-es="Seguimiento operacional de pedidos, estado de entrega y Fill Rate individual.">
+            Acompanhamento operacional de pedidos, status de entrega e Fill Rate individual.
+          </p>
+          <ul class="mc-features">
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Filtros por canal, cliente e SKU" data-es="Filtros por canal, cliente y SKU">Filtros por canal, cliente e SKU</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Fill Rate visual por pedido" data-es="Fill Rate visual por pedido">Fill Rate visual por pedido</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Exportação Excel e PDF" data-es="Exportación Excel y PDF">Exportação Excel e PDF</span>
+            </li>
+          </ul>
+          <div class="mc-foot">
+            <span class="mc-open" data-pt="Abrir módulo" data-es="Abrir módulo">Abrir módulo</span>
+            <span class="mc-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- ── EFETIVIDADE DE PEDIDOS ── -->
+      <a class="mc-wrap mc-efetividade" href="efetividade-pedidos.html">
+        <div class="mc-inner">
+          <div class="mc-top">
+            <div class="mc-icon">
+              <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><polyline points="2 20 22 20"/></svg>
+            </div>
+            <span class="mc-badge" data-pt="Efetividade" data-es="Efectividad">Efetividade</span>
+          </div>
+          <h3 class="mc-title" data-pt="Efetividade de Pedidos" data-es="Efectividad de Pedidos">Efetividade de Pedidos</h3>
+          <p class="mc-desc"
+             data-pt="Gerar sugestão de pedidos, arquivo de solicitação de pedidos MC1 e efetividade dos pedidos."
+             data-es="Generar sugerencia de pedidos, archivo de solicitud de pedidos MC1 y efectividad de los pedidos.">
+            Gerar sugestão de pedidos, arquivo de solicitação de pedidos MC1 e efetividade dos pedidos.
+          </p>
+          <ul class="mc-features">
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Gerar sugestão de pedidos" data-es="Generar sugerencia de pedidos">Gerar sugestão de pedidos</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Gerar Arquivo solicitação de pedidos MC1" data-es="Generar Archivo solicitud de pedidos MC1">Gerar Arquivo solicitação de pedidos MC1</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Efetividade dos Pedidos" data-es="Efectividad de los Pedidos">Efetividade dos Pedidos</span>
+            </li>
+          </ul>
+          <div class="mc-foot">
+            <span class="mc-open" data-pt="Abrir módulo" data-es="Abrir módulo">Abrir módulo</span>
+            <span class="mc-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- ── DISCIPLINA OPERATIVA ── -->
+      <a class="mc-wrap mc-orders" href="disciplina-operativa.html">
+        <div class="mc-inner">
+          <div class="mc-top">
+            <div class="mc-icon">
+              <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </div>
+            <span class="mc-badge" data-pt="Acordos Comerciais" data-es="Acuerdos Comerciales">Acordos Comerciais</span>
+          </div>
+          <h3 class="mc-title" data-pt="Disciplina Comercial" data-es="Disciplina Comercial">Disciplina Comercial</h3>
+          <p class="mc-desc"
+             data-pt="Gestão de Acordos Comerciais, acompanhamento de metas, simulador e dashboard executivo."
+             data-es="Gestión de Acuerdos Comerciales, seguimiento de metas, simulador y dashboard ejecutivo.">
+            Gestão de Acordos Comerciais, acompanhamento de metas, simulador e dashboard executivo.
+          </p>
+          <ul class="mc-features">
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Cadastro e histórico auditável de acordos" data-es="Registro e historial auditable de acuerdos">Cadastro e histórico auditável de acordos</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Simulador comercial e projeção US-01" data-es="Simulador comercial y proyección US-01">Simulador comercial e projeção US-01</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Dashboard executivo e suporte RBAC" data-es="Dashboard ejecutivo y soporte RBAC">Dashboard executivo e suporte RBAC</span>
+            </li>
+          </ul>
+          <div class="mc-foot">
+            <span class="mc-open" data-pt="Abrir módulo" data-es="Abrir módulo">Abrir módulo</span>
+            <span class="mc-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════ FOOTER ══════════════════ -->
+  <footer class="home-footer">
+    <span>Bimbo Brasil &mdash; Grupo Bimbo</span>
+    <span id="footerDate"></span>
+  </footer>
+
+  <!-- ══════════════════ SCRIPT ══════════════════ -->
+  <script>
+    const html = document.documentElement;
+
+    /* ── LANGUAGE ── */
+    function setLang(lang) {
+      document.querySelectorAll('[data-pt]').forEach(el => {
+        const val = el.dataset[lang];
+        if (val) el.textContent = val;
+      });
+      document.getElementById('btnPT').classList.toggle('active', lang === 'pt');
+      document.getElementById('btnES').classList.toggle('active', lang === 'es');
+      html.setAttribute('lang', lang === 'es' ? 'es' : 'pt-BR');
+      localStorage.setItem('fr-lang', lang);
+    }
+
+    const storedLang = localStorage.getItem('fr-lang') || 'pt';
+    if (storedLang === 'es') setLang('es');
+    document.getElementById('btn' + storedLang.toUpperCase()).classList.add('active');
+
+    /* ── FOOTER DATE ── */
+    const d = new Date();
+    const lang = localStorage.getItem('fr-lang') || 'pt';
+    const locale = lang === 'es' ? 'es-MX' : 'pt-BR';
+    const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('footerDate').textContent = d.toLocaleDateString(locale, opts);
+  </script>
+
+</body>
+</html>

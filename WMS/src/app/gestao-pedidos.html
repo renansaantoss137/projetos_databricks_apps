@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão de Pedidos – Smart Order | Bimbo Brasil</title>
+  <link rel="stylesheet" href="styles.css">
+  <style id="colStyle"></style>
+  <style>
+    /* ── LOADING SPINNER ──────────────────────────────── */
+    #loadingSpinner {
+      position: fixed;
+      inset: 0;
+      z-index: 8000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 18, 35, 0.72);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    #loadingSpinner.ld-on {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .ld-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      padding: 40px 52px;
+      background: rgba(14, 28, 46, 0.92);
+      border: 1px solid rgba(36, 141, 193, 0.22);
+      border-radius: 24px;
+      box-shadow: 0 24px 72px rgba(0,0,0,0.55);
+    }
+    .ld-ring-wrap {
+      position: relative;
+      width: 90px;
+      height: 90px;
+    }
+    .ld-ring {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: conic-gradient(
+        from 0deg,
+        transparent 0%,
+        #263576 12%,
+        #248DC1 55%,
+        #DA2E39 87%,
+        transparent 100%
+      );
+      animation: ld-spin 1s linear infinite;
+      -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 9px), white calc(100% - 8px));
+      mask:         radial-gradient(farthest-side, transparent calc(100% - 9px), white calc(100% - 8px));
+    }
+    @keyframes ld-spin { to { transform: rotate(360deg); } }
+    .ld-icon {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ld-icon svg {
+      width: 32px;
+      height: 32px;
+      filter: drop-shadow(0 0 7px rgba(36,141,193,0.55));
+    }
+    .ld-text {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #263576, #248DC1, #DA2E39, #248DC1, #263576);
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: ld-shimmer 2.4s linear infinite;
+    }
+    @keyframes ld-shimmer {
+      0%   { background-position: 100% 0; }
+      100% { background-position: -100% 0; }
+    }
+    .ld-dots {
+      display: flex;
+      gap: 8px;
+    }
+    .ld-dots span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      animation: ld-bounce 1.2s ease-in-out infinite;
+    }
+    .ld-dots span:nth-child(1) { background: #263576; animation-delay: 0s; }
+    .ld-dots span:nth-child(2) { background: #248DC1; animation-delay: 0.18s; }
+    .ld-dots span:nth-child(3) { background: #DA2E39; animation-delay: 0.36s; }
+    @keyframes ld-bounce {
+      0%, 80%, 100% { transform: scale(0.75); opacity: 0.5; }
+      40%           { transform: scale(1.25); opacity: 1; }
+    }
+
+    /* ── PAGE LAYOUT & SCROLLING ─────────────────────────── */
+    html, body {
+      min-height: 100vh;
+      overflow-y: auto !important;
+    }
+
+    @media print {
+      .navbar, .page-title-bar, .gradient-line, .filter-bar, .bm-bar,
+      .tc-actions, .tc-footer, .btn-export, .btn-primary, .btn-ghost { display: none !important; }
+      body { background: #fff !important; }
+      .page-content { padding: 0 !important; }
+      .table-card { box-shadow: none !important; border: none !important; }
+      .orders-table thead th { background: #263576 !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .orders-table tbody tr:nth-child(odd) { background: #f6f9fd !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body class="orders-page">
+
+  <!-- ══════════════════ NAVBAR ══════════════════ -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <img src="/static/logo-dna.png" alt="DNA" class="nav-logo">
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li class="nav-dropdown">
+          <a href="#" class="dropdown-trigger">Análise Fill Rate ▾</a>
+          <ul class="dropdown-menu">
+            <li><a href="#" style="pointer-events:none;opacity:0.6;">Fill Rate N0 <span class="badge-wip">Em breve</span></a></li>
+            <li><a href="#" style="pointer-events:none;opacity:0.6;">Fill Rate N1 <span class="badge-wip">Em breve</span></a></li>
+            <li><a href="#" style="pointer-events:none;opacity:0.6;">Fill Rate N2 <span class="badge-wip">Em breve</span></a></li>
+          </ul>
+        </li>
+        <li><a href="gestao-pedidos.html" class="active">Gestão de Pedidos</a></li>
+        <li><a href="efetividade-pedidos.html">Efetividade de Pedidos</a></li>
+        <li><a href="disciplina-operativa.html">Disciplina Comercial</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <img src="Logo Bimbo -Brasil.png" alt="Bimbo Brasil" class="nav-logo-bimbo">
+      </div>
+    </div>
+  </nav>
+  <div class="gradient-line"></div>
+
+
+  <!-- ══════════════════ OVERLAY ══════════════════ -->
+  <div class="side-overlay" id="sideOverlay" onclick="closeAllPanels()"></div>
+
+  <!-- ══════════════════ FILTROS ADICIONAIS (painel lateral) ══════════════════ -->
+  <div class="side-panel" id="filterPanel">
+    <div class="sp-header">
+      <span>
+        <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Filtros Adicionais
+      </span>
+      <button class="sp-close" onclick="closeAllPanels()">✕</button>
+    </div>
+
+    <div class="sp-search-wrap">
+      <input type="text" id="spSearch" class="sp-search-input" placeholder="Pesquisar filtro..." oninput="filterPanelSearch(this.value)">
+    </div>
+
+    <!-- ── FILTERS ── -->
+    <div class="filter-bar">
+
+      <div class="fg" style="min-width:140px; max-width:170px;">
+        <label for="f-dt-ini">Data Entrega Início</label>
+        <input type="date" id="f-dt-ini">
+      </div>
+
+      <div class="fg" style="min-width:140px; max-width:170px;">
+        <label for="f-dt-fim">Data Entrega Fim</label>
+        <input type="date" id="f-dt-fim">
+      </div>
+
+      <div class="sp-group" data-label="data distribuicao distribuição">
+        <label>Dt. Distribuição – Início</label>
+        <input type="date" id="sp-dt-dist-ini" onchange="triggerFilter()">
+      </div>
+
+      <div class="sp-group" data-label="data distribuicao distribuição fim">
+        <label>Dt. Distribuição – Fim</label>
+        <input type="date" id="sp-dt-dist-fim" onchange="triggerFilter()">
+      </div>
+
+      <div class="sp-group" data-label="data faturamento">
+        <label>Dt. Faturamento – Início</label>
+        <input type="date" id="sp-dt-fat-ini" onchange="triggerFilter()">
+      </div>
+
+      <div class="sp-group" data-label="data faturamento fim">
+        <label>Dt. Faturamento – Fim</label>
+        <input type="date" id="sp-dt-fat-fim" onchange="triggerFilter()">
+      </div>
+
+      <div class="sp-group" data-label="status faturado fat">
+        <label>Status Faturado</label>
+        <div class="ss-wrap" id="ss-sp-status-fat">
+          <input type="text" class="ss-input" placeholder="Todos" autocomplete="off" spellcheck="false">
+          <input type="hidden" id="sp-status-fat" value="">
+          <div class="ss-list"></div>
+        </div>
+      </div>
+
+      <div class="sp-group" data-label="canal renomeado">
+        <label>Canal Renomeado</label>
+        <div class="ss-wrap" id="ss-sp-canal">
+          <input type="text" class="ss-input" placeholder="Todos" autocomplete="off" spellcheck="false">
+          <input type="hidden" id="sp-canal" value="">
+          <div class="ss-list"></div>
+        </div>
+      </div>
+
+      <div class="sp-group" data-label="pos fechamento carteira">
+        <label>Pós Fec. Carteira</label>
+        <select id="sp-pos-fec" onchange="triggerFilter()">
+          <option value="">Todos</option>
+        </select>
+      </div>
+
+      <div class="sp-group" data-label="data alteracao pedido">
+        <label>Dt. Alteração Pedido – Início</label>
+        <input type="date" id="sp-dt-alt-ini" onchange="triggerFilter()">
+      </div>
+
+      <div class="sp-group" data-label="data alteracao pedido fim">
+        <label>Dt. Alteração Pedido – Fim</label>
+        <input type="date" id="sp-dt-alt-fim" onchange="triggerFilter()">
+      </div>
+
+    </div>
+
+    <div class="sp-footer">
+      <button class="btn-ghost sp-clear-btn" onclick="clearSideFilters()">
+        <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.74"/></svg>
+        Limpar filtros
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════ SELETOR DE COLUNAS (painel lateral) ══════════════════ -->
+  <div class="side-panel" id="colPanel">
+    <div class="sp-header">
+      <span>
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Selecionar Colunas
+      </span>
+      <button class="sp-close" onclick="closeAllPanels()">✕</button>
+    </div>
+
+    <div class="sp-search-wrap">
+      <input type="text" id="colSearch" class="sp-search-input" placeholder="Pesquisar coluna..." oninput="filterColSearch(this.value)">
+    </div>
+
+    <div class="sp-body" id="colBody">
+      <div class="col-item col-item-all">
+        <label><input type="checkbox" id="col-all" checked onchange="toggleAllCols(this.checked)"> <span>Selecionar tudo</span></label>
+      </div>
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- ══════════════════ CONTENT ══════════════════ -->
+  <div class="page-content">
+
+    <!-- ── FILTER BAR ── -->
+    <div class="filter-bar">
+
+      <div class="fg" style="min-width:150px;max-width:200px;">
+        <label for="f-numero-pedido">Nº Pedido</label>
+        <input type="text" id="f-numero-pedido" placeholder="Buscar número..." oninput="debounceFilter()">
+      </div>
+
+      <div class="fg">
+        <label for="f-natureza">Status / Natureza</label>
+        <select id="f-natureza">
+          <option value="">Todas</option>
+        </select>
+      </div>
+
+      <div class="fg">
+        <label>Cliente</label>
+        <div class="ss-wrap" id="ss-cliente">
+          <input type="text" class="ss-input" placeholder="Todos" autocomplete="off" spellcheck="false">
+          <input type="hidden" id="f-nome-cliente" value="">
+          <div class="ss-list"></div>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label>ID Produto</label>
+        <div class="ss-wrap" id="ss-id-produto">
+          <input type="text" class="ss-input" placeholder="Todos" autocomplete="off" spellcheck="false">
+          <input type="hidden" id="f-id-produto" value="">
+          <div class="ss-list"></div>
+        </div>
+      </div>
+
+      <div class="fg" style="min-width:130px;max-width:180px;">
+        <label>Status Pedido</label>
+        <select id="sp-status-pedido" onchange="triggerFilter()">
+          <option value="">Todos</option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn-ghost" id="btnClear">Limpar</button>
+        <button class="btn-panel" id="btnMoreFilters" onclick="openFilterPanel()">
+          <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          Filtros Adicionais
+          <span class="sp-badge" id="spBadge" style="display:none">0</span>
+        </button>
+        <button class="btn-panel" id="btnColumns" onclick="openColPanel()">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Colunas
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ── BARRA DE FAVORITOS ── -->
+    <div class="bm-bar">
+      <svg viewBox="0 0 24 24" class="bm-bar-icon"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      <label class="bm-bar-label" for="bmSelect">Favoritos:</label>
+      <select id="bmSelect" class="bm-select" onchange="applyBmFromSelect()">
+        <option value="">Selecionar filtro salvo...</option>
+      </select>
+      <input type="text" id="bmNameInput" class="bm-name-input" placeholder="Nome do filtro...">
+      <button class="btn-primary bm-save-btn" id="btnSaveBm">Salvar atual</button>
+      <button class="btn-ghost bm-del-btn" id="btnDelBm" title="Remover selecionado">✕</button>
+    </div>
+
+    <!-- ── TABLE ── -->
+    <div class="table-card">
+
+      <div class="tc-header">
+        <div>
+          <div class="tc-title">Relação de Pedidos Operacionais</div>
+          <div class="tc-sub" id="tcSub">Carregando registros...</div>
+        </div>
+        <div class="tc-actions">
+          <span id="lastUpdated" style="font-size:0.72rem;color:#9ab0c8;white-space:nowrap;align-self:center;"></span>
+          <button class="btn-export" id="btnRefresh" title="Atualizar dados">
+            <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.74"/></svg>
+            Atualizar
+          </button>
+          <button class="btn-export" id="btnExcelExp">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar CSV
+          </button>
+          <button class="btn-export" id="btnPdfExp">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Imprimir / PDF
+          </button>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table class="orders-table" id="ordersTable">
+          <thead id="tableHead"><tr></tr></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="tc-footer">
+        <span id="footerInfo">Mostrando <strong>0</strong> registros</span>
+        <div class="pagination" id="paginationRow"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════ SCRIPT ══════════════════ -->
+  <script>
+    const API_BASE  = '';
+    const PAGE_SIZE = 50;
+
+    let currentPage  = 1;
+    let totalPages   = 1;
+    let totalRecords = 0;
+    let mockDataset  = null;
+
+    /* ── Generator de dados locais (Fallback para preview / offline) ── */
+    function generateMockDataset() {
+      const centrais   = ['SAO GONCALO', 'NITEROI', 'RIO DE JANEIRO', 'DUQUE DE CAXIAS', 'NOVA IGUACU', 'SAO PAULO'];
+      const statusList = ['FINALIZADO', 'EM PROCESSAMENTO', 'FATURADO', 'CANCELADO'];
+      const clientes   = [
+        { cnpj: '75.315.333/0001-09', nome: 'ATACADAO S.A.', cod: '94191' },
+        { cnpj: '47.508.411/0001-56', nome: 'COMPANHIA BRASILEIRA DE DISTRIBUICAO', cod: '47508' },
+        { cnpj: '03.921.844/0001-12', nome: 'SUPERMERCADOS VIOLETA LTDA', cod: '39218' },
+        { cnpj: '91.834.120/0001-44', nome: 'MACROMIX ATACADO E VAREJO', cod: '91834' },
+        { cnpj: '12.345.678/0001-90', nome: 'CARREFOUR COMERCIO E INDUSTRIA', cod: '12345' },
+        { cnpj: '98.765.432/0001-10', nome: 'SUPERMERCADOS GUANABARA S.A.', cod: '98765' }
+      ];
+      const prods = ['504437', '504369', '29766', '2877', '7515', '503130', '27636', '9101'];
+
+      const rows = [];
+      const now = new Date();
+      for (let i = 1; i <= 240; i++) {
+        const cli   = clientes[i % clientes.length];
+        const status= statusList[i % statusList.length];
+        const ceve  = centrais[i % centrais.length];
+        const qPed  = 10 + (i * 7) % 150;
+        const qDist = status === 'CANCELADO' ? 0 : Math.round(qPed * (0.85 + (i % 15) * 0.01));
+        const qFat  = status === 'CANCELADO' ? 0 : Math.round(qDist * (0.9 + (i % 10) * 0.01));
+        const vUnit = 12.50 + (i % 20) * 1.75;
+
+        const dayOffset = (i % 30);
+        const dtEnt = new Date(now.getTime() - dayOffset * 86400000);
+        const dtCri = new Date(dtEnt.getTime() - 2 * 86400000);
+        const fmtDate = d => `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+        const isoDate = d => d.toISOString().slice(0, 10);
+
+        rows.push({
+          DATA_CRIACAO:            fmtDate(dtCri),
+          DATA_ENTREGA:            fmtDate(dtEnt),
+          DATA_ENTREGA_ISO:        isoDate(dtEnt),
+          NUMERO_PEDIDO:           String(100000 + i),
+          DATA_DISTRIBUICAO:       fmtDate(dtEnt),
+          DATA_FATURAMENTO:        fmtDate(dtEnt),
+          ID_PRODUDO:              prods[i % prods.length],
+          QTDE_PEDIDO_ORIGINAL:    qPed,
+          QTDE_DISTRIBUIDO:        qDist,
+          QTDE_FATURADO:           qFat,
+          VLR_UNIT:                vUnit.toFixed(2),
+          VLR_PEDIDO:              (qPed * vUnit).toFixed(2),
+          VLR_DISTRIBUIDO:         (qDist * vUnit).toFixed(2),
+          VLR_FATURADO:            (qFat * vUnit).toFixed(2),
+          ID_CEVE:                 ceve,
+          ID_CLIENTE:              cli.cod,
+          ID_TABELA_PRECO:         '101',
+          lFinished:               status === 'FINALIZADO' ? 'True' : 'False',
+          ID_STATUS_PEDIDO:        '1',
+          STATUS_PEDIDO:           status,
+          ID_STATUS_DISTRIBUIDO:   '1',
+          STATUS_DISTRIBUICAO:     status === 'CANCELADO' ? 'CANCELADO' : 'DISTRIBUIDO',
+          STATUS_FATURADO:         status === 'CANCELADO' ? 'CANCELADO' : 'FATURADO',
+          MOTIVO_CANCELAMENTO_PEDIDO: status === 'CANCELADO' ? 'Sem Estoque' : '',
+          mc1LastUpdate:           fmtDate(dtEnt) + ' 10:00',
+          CLIENTE_CNPJ:            cli.cnpj,
+          CLIENTE_NOME:            cli.nome,
+          CLI_NUMBER:              cli.cod,
+          cIDUserCreated:          'USR_' + (10 + (i % 5)),
+          USER_ULT_ALT:            'SISTEMA',
+          cIDUserOwner:            'OWNER_' + (1 + (i % 3)),
+          USER_ULT_ALT2:           'SISTEMA'
+        });
+      }
+      return rows;
+    }
+
+    function filterMockData(filters) {
+      if (!mockDataset) mockDataset = generateMockDataset();
+      let list = [...mockDataset];
+
+      if (filters.dt_ini) {
+        list = list.filter(r => r.DATA_ENTREGA_ISO >= filters.dt_ini);
+      }
+      if (filters.dt_fim) {
+        list = list.filter(r => r.DATA_ENTREGA_ISO <= filters.dt_fim);
+      }
+      if (filters.centro) {
+        list = list.filter(r => String(r.ID_CEVE).toUpperCase() === filters.centro.toUpperCase());
+      }
+      if (filters.natureza) {
+        list = list.filter(r => String(r.STATUS_PEDIDO).toUpperCase() === filters.natureza.toUpperCase());
+      }
+      if (filters.busca) {
+        const q = filters.busca.toLowerCase();
+        list = list.filter(r => 
+          (r.CLIENTE_NOME && r.CLIENTE_NOME.toLowerCase().includes(q)) ||
+          (r.ID_PRODUDO && String(r.ID_PRODUDO).toLowerCase().includes(q)) ||
+          (r.NUMERO_PEDIDO && String(r.NUMERO_PEDIDO).toLowerCase().includes(q)) ||
+          (r.CLI_NUMBER && String(r.CLI_NUMBER).toLowerCase().includes(q))
+        );
+      }
+
+      const total = list.length;
+      const pageSize = filters.page_size || PAGE_SIZE;
+      const page = filters.page || 1;
+      const totalPages = Math.max(1, Math.ceil(total / pageSize));
+      const startIdx = (page - 1) * pageSize;
+      const rows = list.slice(startIdx, startIdx + pageSize);
+
+      return { rows, total, page, page_size: pageSize, total_pages: totalPages };
+    }
+
+    /* ─────────────────────────────────────────────
+       SEARCHABLE SELECT
+    ───────────────────────────────────────────── */
+    function makeSearchableSelect(wrapId, placeholder) {
+      const wrap   = document.getElementById(wrapId);
+      const input  = wrap.querySelector('.ss-input');
+      const list   = wrap.querySelector('.ss-list');
+      const hidden = wrap.querySelector('input[type="hidden"]');
+      let allOptions    = [];
+      let selectedValue = '';
+
+      function getLabel(val) {
+        if (!val) return '';
+        const o = allOptions.find(o => o.value === val);
+        return o ? o.label : val;
+      }
+
+      function render(q) {
+        const term = (q || '').trim().toLowerCase();
+        const filtered = term
+          ? allOptions.filter(o =>
+              o.label.toLowerCase().includes(term) ||
+              o.value.toLowerCase().includes(term))
+          : allOptions;
+        if (!filtered.length) {
+          list.innerHTML = '<div class="ss-item ss-no-results">Nenhum resultado</div>';
+        } else {
+          list.innerHTML = filtered.map(o =>
+            `<div class="ss-item${o.value === selectedValue ? ' ss-selected' : ''}" data-value="${o.value.replace(/"/g,'&quot;')}">${o.label}</div>`
+          ).join('');
+        }
+      }
+
+      function closeList() {
+        list.classList.remove('ss-open');
+        input.value = getLabel(selectedValue);
+      }
+
+      function doSelect(val, label) {
+        selectedValue = val;
+        hidden.value  = val;
+        input.value   = label;
+        list.classList.remove('ss-open');
+        triggerFilter();
+      }
+
+      input.addEventListener('focus', () => {
+        input.value = '';
+        render('');
+        list.classList.add('ss-open');
+      });
+
+      input.addEventListener('input', () => {
+        render(input.value);
+        list.classList.add('ss-open');
+      });
+
+      input.addEventListener('blur', () => {
+        setTimeout(() => closeList(), 180);
+      });
+
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { closeList(); input.blur(); }
+      });
+
+      list.addEventListener('mousedown', e => {
+        const item = e.target.closest('.ss-item');
+        if (item && !item.classList.contains('ss-no-results')) {
+          e.preventDefault();
+          doSelect(item.dataset.value || '', item.textContent.trim());
+        }
+      });
+
+      return {
+        setOptions(items) {
+          allOptions = [{ value: '', label: placeholder || 'Todos' }, ...items];
+          render('');
+        },
+        getValue()  { return selectedValue; },
+        setValue(val) {
+          selectedValue = val || '';
+          hidden.value  = val || '';
+          input.value   = getLabel(val || '');
+        },
+        clear() {
+          selectedValue = '';
+          hidden.value  = '';
+          input.value   = '';
+        },
+      };
+    }
+
+    /* ─────────────────────────────────────────────
+       RENDERIZAÇÃO DA TABELA
+    ───────────────────────────────────────────── */
+    function buildTableHead() {
+      const tr = document.querySelector('#tableHead tr');
+      tr.innerHTML = ALL_COLUMNS.map(c => {
+        const style = `min-width:${c.w}px${c.right ? ';text-align:right' : ''}`;
+        return `<th class="col-${c.key}" style="${style}">${c.label}</th>`;
+      }).join('');
+    }
+
+    function renderTable(rows, total) {
+      lastRows     = rows;
+      totalRecords = total;
+      const tbody  = document.getElementById('tableBody');
+      const colN   = ALL_COLUMNS.length;
+
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="${colN}" style="text-align:center;padding:2rem;opacity:0.5">Nenhum registro encontrado</td></tr>`;
+        document.getElementById('tcSub').textContent    = 'Nenhum registro encontrado';
+        document.getElementById('footerInfo').innerHTML = 'Mostrando <strong>0</strong> registros';
+        renderPagination();
+        return;
+      }
+
+      tbody.innerHTML = rows.map(r => {
+        const cells = ALL_COLUMNS.map(c => {
+          const cls   = `col-${c.key}`;
+          const align = c.right ? ' style="text-align:right;font-variant-numeric:tabular-nums"' : '';
+
+          if (c.key === 'NUMERO_PEDIDO') return `<td class="${cls} order-id">${dash(r[c.key])}</td>`;
+          if (['VLR_UNIT','VLR_PEDIDO','VLR_DISTRIBUIDO','VLR_FATURADO'].includes(c.key))
+            return `<td class="${cls}"${align}>${cur(r[c.key])}</td>`;
+          if (['QTDE_PEDIDO_ORIGINAL','QTDE_TOTAL_CESTOS','QTDE_DISTRIBUIDO','QTDE_FATURADO','CUPO'].includes(c.key))
+            return `<td class="${cls}"${align}>${brl(r[c.key])}</td>`;
+
+          const val = dash(r[c.key]);
+          const needTitle = ['DESCRICAO_PRODUTO','MOTIVO_CANCELAMENTO_PEDIDO','CLIENTE_NOME','ENDERECO'].includes(c.key);
+          const title = needTitle ? ` title="${(r[c.key] || '').replace(/"/g,'&quot;')}"` : '';
+          return `<td class="${cls}"${align}${title}>${val}</td>`;
+        }).join('');
+
+        return `<tr>${cells}</tr>`;
+      }).join('');
+
+      const start = (currentPage - 1) * PAGE_SIZE + 1;
+      const end   = Math.min(currentPage * PAGE_SIZE, total);
+      document.getElementById('tcSub').textContent    = `Exibindo ${start.toLocaleString('pt-BR')} a ${end.toLocaleString('pt-BR')} de ${total.toLocaleString('pt-BR')} registros`;
+      document.getElementById('footerInfo').innerHTML = `Mostrando <strong>${start.toLocaleString('pt-BR')}–${end.toLocaleString('pt-BR')}</strong> de <strong>${total.toLocaleString('pt-BR')}</strong> registros`;
+      renderPagination();
+    }
+
+    /* ─────────────────────────────────────────────
+       PAGINAÇÃO
+    ───────────────────────────────────────────── */
+    function renderPagination() {
+      const row = document.getElementById('paginationRow');
+      if (totalPages <= 1) { row.innerHTML = ''; return; }
+      const pages  = new Set([1, totalPages, currentPage]);
+      if (currentPage > 1) pages.add(currentPage - 1);
+      if (currentPage < totalPages) pages.add(currentPage + 1);
+      const sorted = [...pages].sort((a, b) => a - b);
+      let html = `<button class="pg-btn"${currentPage === 1 ? ' disabled' : ''} onclick="goPage(${currentPage - 1})">‹</button>`;
+      sorted.forEach((p, i) => {
+        if (i > 0 && p > sorted[i-1]+1) html += `<button class="pg-btn" disabled>…</button>`;
+        html += `<button class="pg-btn${p === currentPage ? ' active' : ''}" onclick="goPage(${p})">${p.toLocaleString('pt-BR')}</button>`;
+      });
+      html += `<button class="pg-btn"${currentPage === totalPages ? ' disabled' : ''} onclick="goPage(${currentPage + 1})">›</button>`;
+      row.innerHTML = html;
+    }
+
+    function goPage(p) {
+      if (p < 1 || p > totalPages) return;
+      currentPage = p;
+      loadData();
+    }
+
+    /* ─────────────────────────────────────────────
+       FILTROS – LEITURA
+    ───────────────────────────────────────────── */
+    function getFilters() {
+      return {
+        numero_pedido: document.getElementById('f-numero-pedido').value,
+        dt_ini:        document.getElementById('sp-dt-ini').value,
+        dt_fim:        document.getElementById('sp-dt-fim').value,
+        centro:        document.getElementById('f-centro').value,
+        natureza:      document.getElementById('sp-natureza').value,
+        nome_cliente:  document.getElementById('f-nome-cliente').value,
+        id_produto:    document.getElementById('f-id-produto').value,
+        desc_produto:  document.getElementById('f-desc-produto').value,
+        status_pedido: document.getElementById('sp-status-pedido').value,
+        id_ceve:       document.getElementById('sp-id-ceve').value,
+        id_cliente:    document.getElementById('sp-id-cliente').value,
+        dt_dist_ini:   document.getElementById('sp-dt-dist-ini').value,
+        dt_dist_fim:   document.getElementById('sp-dt-dist-fim').value,
+        dt_fat_ini:    document.getElementById('sp-dt-fat-ini').value,
+        dt_fat_fim:    document.getElementById('sp-dt-fat-fim').value,
+        dt_alt_ini:    document.getElementById('sp-dt-alt-ini').value,
+        dt_alt_fim:    document.getElementById('sp-dt-alt-fim').value,
+        pos_fec:       document.getElementById('sp-pos-fec').value,
+        status_fat:    document.getElementById('sp-status-fat').value,
+        canal:         document.getElementById('sp-canal').value,
+        page:          currentPage,
+        page_size:     PAGE_SIZE,
+      };
+    }
+
+    /* ── Carregar dados da API (com fallback local inteligente) ── */
+    async function loadData() {
+      const spinner = document.getElementById('loadingSpinner');
+      spinner.classList.add('ld-on');
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '<tr><td colspan="32" style="text-align:center;padding:2rem;opacity:0.6">Carregando...</td></tr>';
+
+      try {
+        const filters = getFilters();
+        const resp    = await fetch(`${API_BASE}/api/pedidos?${new URLSearchParams(filters)}`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        if (!resp.ok || data.error) throw new Error(data.error || `HTTP ${resp.status}: ${resp.statusText}`);
+        totalPages = data.total_pages;
+        renderTable(data.rows, data.total);
+        const hms = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        document.getElementById('lastUpdated').textContent = `Atualizado às ${hms}`;
+      } catch (err) {
+        console.warn('API não respondeu ou offline, usando fallback local de dados:', err);
+        const data = filterMockData(getFilters());
+        totalPages = data.total_pages;
+        renderTable(data.rows, data.total);
+      }
+    }
+
+    /* ─────────────────────────────────────────────
+       DROPDOWNS – INICIALIZAÇÃO
+    ───────────────────────────────────────────── */
+    async function loadCeves() {
+      const sel = document.getElementById('f-centro');
+      try {
+        const resp  = await fetch(`${API_BASE}/api/ceves`);
+        const ceves = await resp.json();
+        if (Array.isArray(ceves) && ceves.length) {
+          sel.innerHTML = '<option value="">Todos</option>' +
+            ceves.map(c => `<option value="${c}">${c}</option>`).join('');
+          return;
+        }
+      } catch {}
+      
+      const defaults = ['SAO GONCALO', 'NITEROI', 'RIO DE JANEIRO', 'DUQUE DE CAXIAS', 'NOVA IGUACU', 'SAO PAULO'];
+      sel.innerHTML = '<option value="">Todos</option>' +
+        defaults.map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    async function loadNaturezas() {
+      const sel = document.getElementById('f-natureza');
+      try {
+        const resp = await fetch(`${API_BASE}/api/naturezas`);
+        const nats = await resp.json();
+        if (Array.isArray(nats) && nats.length) {
+          sel.innerHTML = '<option value="">Todas</option>' +
+            nats.map(n => `<option value="${n}">${n}</option>`).join('');
+          return;
+        }
+      } catch {}
+      
+      const defaults = ['FINALIZADO', 'EM PROCESSAMENTO', 'FATURADO', 'CANCELADO'];
+      sel.innerHTML = '<option value="">Todas</option>' +
+        defaults.map(n => `<option value="${n}">${n}</option>`).join('');
+    }
+
+    async function loadStatusPedido() {
+      try {
+        const resp = await fetch(`${API_BASE}/api/status_pedido`);
+        const list = await resp.json();
+        const sel  = document.getElementById('sp-status-pedido');
+        sel.innerHTML = '<option value="">Todos</option>' +
+          list.map(s => `<option value="${s}">${s}</option>`).join('');
+      } catch {}
+    }
+
+    async function loadClientes() {
+      try {
+        const resp = await fetch(`${API_BASE}/api/clientes`);
+        const list = await resp.json();
+        ssInstances.cliente.setOptions(list.map(c => ({ value: c, label: c })));
+      } catch {}
+    }
+
+    async function loadProdutos() {
+      try {
+        const resp = await fetch(`${API_BASE}/api/produtos`);
+        const list = await resp.json();
+        ssInstances.idProduto.setOptions(list.map(p => ({ value: p.id, label: p.id })));
+        const descMap = new Map();
+        list.forEach(p => { if (p.desc) descMap.set(p.desc, true); });
+        ssInstances.descProduto.setOptions([...descMap.keys()].map(d => ({ value: d, label: d })));
+      } catch {}
+    }
+
+    async function loadStatusFat() {
+      try {
+        const resp = await fetch(`${API_BASE}/api/status_fat`);
+        const list = await resp.json();
+        ssInstances.statusFat.setOptions(list.map(s => ({ value: s, label: s })));
+      } catch {}
+    }
+
+    async function loadCanais() {
+      try {
+        const resp = await fetch(`${API_BASE}/api/canais`);
+        const list = await resp.json();
+        ssInstances.canal.setOptions(list.map(c => ({ value: c, label: c })));
+      } catch {}
+    }
+
+    /* ─────────────────────────────────────────────
+       LIMPAR FILTROS
+    ───────────────────────────────────────────── */
+    document.getElementById('btnClear').addEventListener('click', () => {
+      ['f-busca','f-centro','f-natureza','f-dt-ini','f-dt-fim'].forEach(id => document.getElementById(id).value = '');
+      currentPage = 1;
+      loadData();
+    });
+
+    function clearSideFilters(reload = true) {
+      ['sp-natureza','sp-id-ceve','sp-id-cliente',
+       'sp-dt-ini','sp-dt-fim','sp-dt-dist-ini','sp-dt-dist-fim','sp-dt-fat-ini','sp-dt-fat-fim',
+       'sp-pos-fec','sp-dt-alt-ini','sp-dt-alt-fim'
+      ].forEach(id => document.getElementById(id).value = '');
+      ssInstances.descProduto.clear();
+      ssInstances.statusFat.clear();
+      ssInstances.canal.clear();
+      hiddenCols.clear();
+      applyColStyle();
+      document.querySelectorAll('#colBody input[data-key]').forEach(cb => { cb.checked = true; });
+      syncColAllCheckbox();
+      updateSpBadge();
+      if (reload) { currentPage = 1; loadData(); }
+    }
+
+    /* ─────────────────────────────────────────────
+       PAINÉIS LATERAIS
+    ───────────────────────────────────────────── */
+    function openFilterPanel() {
+      document.getElementById('filterPanel').classList.add('open');
+      document.getElementById('colPanel').classList.remove('open');
+      document.getElementById('sideOverlay').classList.add('active');
+    }
+
+    function openColPanel() {
+      document.getElementById('colPanel').classList.add('open');
+      document.getElementById('filterPanel').classList.remove('open');
+      document.getElementById('sideOverlay').classList.add('active');
+    }
+
+    function closeAllPanels() {
+      document.getElementById('filterPanel').classList.remove('open');
+      document.getElementById('colPanel').classList.remove('open');
+      document.getElementById('sideOverlay').classList.remove('active');
+    }
+
+    /* Pesquisa dentro do painel de filtros adicionais */
+    function filterPanelSearch(q) {
+      const term = q.trim().toLowerCase();
+      document.querySelectorAll('#spBody .sp-group').forEach(g => {
+        const match = !term || g.dataset.label.toLowerCase().includes(term);
+        g.style.display = match ? '' : 'none';
+      });
+    }
+
+    /* ─────────────────────────────────────────────
+       SELETOR DE COLUNAS
+    ───────────────────────────────────────────── */
+    function buildColPanel() {
+      const body = document.getElementById('colBody');
+      const items = ALL_COLUMNS.map(c => {
+        const checked = !hiddenCols.has(c.key) ? 'checked' : '';
+        return `<div class="col-item" data-label="${c.label.toLowerCase()}">
+          <label><input type="checkbox" data-key="${c.key}" ${checked} onchange="toggleCol(this)"> <span>${c.label}</span></label>
+        </div>`;
+      }).join('');
+      body.innerHTML = `<div class="col-item col-item-all"><label><input type="checkbox" id="col-all" checked onchange="toggleAllCols(this.checked)"> <span>Selecionar tudo</span></label></div>` + items;
+    }
+
+    function toggleCol(cb) {
+      const key = cb.dataset.key;
+      if (cb.checked) hiddenCols.delete(key);
+      else            hiddenCols.add(key);
+      applyColStyle();
+      syncColAllCheckbox();
+    }
+
+    function toggleAllCols(checked) {
+      hiddenCols.clear();
+      document.querySelectorAll('#colBody input[data-key]').forEach(cb => {
+        cb.checked = checked;
+        if (!checked) hiddenCols.add(cb.dataset.key);
+      });
+      applyColStyle();
+    }
+
+    function syncColAllCheckbox() {
+      const all = document.querySelectorAll('#colBody input[data-key]');
+      const chk = [...all].filter(c => c.checked).length;
+      const allCb = document.getElementById('col-all');
+      if (allCb) allCb.checked = chk === all.length;
+    }
+
+    function filterColSearch(q) {
+      const term = q.trim().toLowerCase();
+      document.querySelectorAll('#colBody .col-item:not(.col-item-all)').forEach(item => {
+        const match = !term || item.dataset.label.includes(term);
+        item.style.display = match ? '' : 'none';
+      });
+    }
+
+    /* ─────────────────────────────────────────────
+       EXPORT CSV
+    ───────────────────────────────────────────── */
+    document.getElementById('btnExcelExp').addEventListener('click', async () => {
+      try {
+        let rows = [];
+        try {
+          const filters = { ...getFilters(), page: 1, page_size: 10000 };
+          const resp    = await fetch(`${API_BASE}/api/pedidos?${new URLSearchParams(filters)}`);
+          const data    = await resp.json();
+          rows = data.rows;
+        } catch {
+          rows = filterMockData({ ...getFilters(), page: 1, page_size: 10000 }).rows;
+        }
+
+        const esc    = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+        const hdr    = [
+          'Dt. Criação','Dt. Entrega','Nº Pedido','Dt. Distribuição','Dt. Faturamento',
+          'ID Produto','Qtde. Pedido','Qtde. Dist.','Qtde. Faturado','Fill Rate %',
+          'Vlr. Unit.','Vlr. Pedido','Vlr. Dist.','Vlr. Faturado',
+          'ID CEVE','ID Cliente','ID Tab. Preço','Finalizado',
+          'ID Stts. Pedido','Status Pedido','ID Stts. Dist.','Status Dist.','Status Fat.',
+          'Motivo Cancelamento','Últ. Atualização','CNPJ Cliente','Nome Cliente',
+          'Cód. Cliente','ID User Criação','User Últ. Alt.','ID User Owner','User Últ. Alt. 2'
+        ];
+        const linhas = rows.map(r => {
+          const up  = Number(r.QTDE_PEDIDO_ORIGINAL) || 0;
+          const ud  = Number(r.QTDE_DISTRIBUIDO)     || 0;
+          const uf  = Number(r.QTDE_FATURADO)        || 0;
+          const fin = r.lFinished === '1' || r.lFinished === 'True' ? 'Sim' : 'Não';
+          return [
+            r.DATA_CRIACAO, r.DATA_ENTREGA, r.NUMERO_PEDIDO, r.DATA_DISTRIBUICAO, r.DATA_FATURAMENTO,
+            r.ID_PRODUDO, up, ud, uf, fillRate(uf, up) + '%',
+            r.VLR_UNIT, r.VLR_PEDIDO, r.VLR_DISTRIBUIDO, r.VLR_FATURADO,
+            r.ID_CEVE, r.ID_CLIENTE, r.ID_TABELA_PRECO, fin,
+            r.ID_STATUS_PEDIDO, r.STATUS_PEDIDO, r.ID_STATUS_DISTRIBUIDO, r.STATUS_DISTRIBUICAO, r.STATUS_FATURADO,
+            r.MOTIVO_CANCELAMENTO_PEDIDO, r.mc1LastUpdate, r.CLIENTE_CNPJ, r.CLIENTE_NOME,
+            r.CLI_NUMBER, r.cIDUserCreated, r.USER_ULT_ALT, r.cIDUserOwner, r.USER_ULT_ALT2
+          ].map(esc).join(';');
+        });
+        const blob = new Blob(['\ufeff' + [hdr.map(esc).join(';'), ...linhas].join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+        const a    = Object.assign(document.createElement('a'), {
+          href: URL.createObjectURL(blob),
+          download: `gestao-pedidos-${new Date().toISOString().slice(0,10)}.csv`,
+        });
+        a.click();
+        URL.revokeObjectURL(a.href);
+      } catch (err) { alert('Erro ao exportar: ' + err.message); }
+    });
+
+    document.getElementById('btnPdfExp').addEventListener('click', () => window.print());
+
+    /* ─────────────────────────────────────────────
+       FAVORITOS (dropdown / lista suspensa)
+    ───────────────────────────────────────────── */
+    const BM_KEY = 'fr-bookmarks-v2';
+    const getBM  = () => { try { return JSON.parse(localStorage.getItem(BM_KEY)) || []; } catch { return []; } };
+    const saveBM = b => localStorage.setItem(BM_KEY, JSON.stringify(b));
+
+    function getCurrentFiltersForBm() {
+      return {
+        numeroPedido: document.getElementById('f-numero-pedido').value,
+        centro:       ssInstances.centro.getValue(),
+        nat:          document.getElementById('sp-natureza').value,
+        nomeCliente:  ssInstances.cliente.getValue(),
+        idProduto:    ssInstances.idProduto.getValue(),
+        descProduto:  ssInstances.descProduto.getValue(),
+        statusPedido: document.getElementById('sp-status-pedido').value,
+        idCeve:       document.getElementById('sp-id-ceve').value,
+        idCliente:    document.getElementById('sp-id-cliente').value,
+        spDtIni:      document.getElementById('sp-dt-ini').value,
+        spDtFim:      document.getElementById('sp-dt-fim').value,
+        dtDistIni:    document.getElementById('sp-dt-dist-ini').value,
+        dtDistFim:    document.getElementById('sp-dt-dist-fim').value,
+        dtFatIni:    document.getElementById('sp-dt-fat-ini').value,
+        dtFatFim:    document.getElementById('sp-dt-fat-fim').value,
+        statusFat:   ssInstances.statusFat.getValue(),
+        canal:       ssInstances.canal.getValue(),
+        posFec:      document.getElementById('sp-pos-fec').value,
+        dtAltIni:    document.getElementById('sp-dt-alt-ini').value,
+        dtAltFim:    document.getElementById('sp-dt-alt-fim').value,
+        hiddenCols:  [...hiddenCols],
+      };
+    }
+
+    function applyFiltersFromBm(f) {
+      document.getElementById('f-numero-pedido').value = f.numeroPedido || '';
+      ssInstances.centro.setValue(f.centro       || '');
+      document.getElementById('sp-natureza').value = f.nat || '';
+      ssInstances.cliente.setValue(f.nomeCliente  || '');
+      ssInstances.idProduto.setValue(f.idProduto   || '');
+      ssInstances.descProduto.setValue(f.descProduto || '');
+      document.getElementById('sp-status-pedido').value = f.statusPedido || '';
+      document.getElementById('sp-id-ceve').value       = f.idCeve      || '';
+      document.getElementById('sp-id-cliente').value   = f.idCliente   || '';
+      document.getElementById('sp-dt-ini').value       = f.spDtIni     || '';
+      document.getElementById('sp-dt-fim').value       = f.spDtFim     || '';
+      document.getElementById('sp-dt-dist-ini').value  = f.dtDistIni   || '';
+      document.getElementById('sp-dt-dist-fim').value  = f.dtDistFim   || '';
+      document.getElementById('sp-dt-fat-ini').value   = f.dtFatIni    || '';
+      document.getElementById('sp-dt-fat-fim').value   = f.dtFatFim    || '';
+      ssInstances.statusFat.setValue(f.statusFat || '');
+      ssInstances.canal.setValue(f.canal         || '');
+      document.getElementById('sp-pos-fec').value      = f.posFec      || '';
+      document.getElementById('sp-dt-alt-ini').value   = f.dtAltIni    || '';
+      document.getElementById('sp-dt-alt-fim').value   = f.dtAltFim    || '';
+      hiddenCols.clear();
+      (f.hiddenCols || []).forEach(k => hiddenCols.add(k));
+      applyColStyle();
+      document.querySelectorAll('#colBody input[data-key]').forEach(cb => {
+        cb.checked = !hiddenCols.has(cb.dataset.key);
+      });
+      syncColAllCheckbox();
+      triggerFilter();
+    }
+
+    function renderBmSelect() {
+      const bms = getBM();
+      const sel = document.getElementById('bmSelect');
+      sel.innerHTML = '<option value="">Selecionar filtro salvo...</option>' +
+        bms.map((bm, i) => `<option value="${i}">${bm.name}</option>`).join('');
+    }
+
+    function applyBmFromSelect() {
+      const i = document.getElementById('bmSelect').value;
+      if (i === '') return;
+      const bm = getBM()[+i];
+      if (bm) applyFiltersFromBm(bm.filters);
+    }
+
+    document.getElementById('btnSaveBm').addEventListener('click', () => {
+      const name = document.getElementById('bmNameInput').value.trim();
+      if (!name) { document.getElementById('bmNameInput').focus(); return; }
+      const bms = getBM();
+      bms.push({ name, filters: getCurrentFiltersForBm() });
+      saveBM(bms);
+      document.getElementById('bmNameInput').value = '';
+      renderBmSelect();
+    });
+
+    document.getElementById('btnDelBm').addEventListener('click', () => {
+      const sel = document.getElementById('bmSelect');
+      if (!sel.value) return;
+      const bms = getBM();
+      bms.splice(+sel.value, 1);
+      saveBM(bms);
+      renderBmSelect();
+    });
+
+    /* ─────────────────────────────────────────────
+       INICIALIZAR
+    ───────────────────────────────────────────── */
+    buildTableHead();
+    buildColPanel();
+    renderBmSelect();
+
+    Object.assign(ssInstances, {
+      centro:      makeSearchableSelect('ss-centro',         'Todos'),
+      cliente:     makeSearchableSelect('ss-cliente',        'Todos'),
+      idProduto:   makeSearchableSelect('ss-id-produto',     'Todos'),
+      descProduto: makeSearchableSelect('ss-desc-produto',   'Todas'),
+      statusFat:   makeSearchableSelect('ss-sp-status-fat',  'Todos'),
+      canal:       makeSearchableSelect('ss-sp-canal',       'Todos'),
+    });
+
+    document.getElementById('btnRefresh').addEventListener('click', () => loadData());
+    setInterval(() => loadData(), 5 * 60 * 1000);
+
+    Promise.all([
+      loadCeves(), loadNaturezas(), loadStatusPedido(), loadClientes(),
+      loadProdutos(), loadStatusFat(), loadCanais(),
+    ]).then(() => loadData());
+  </script>
+
+</body>
+</html>

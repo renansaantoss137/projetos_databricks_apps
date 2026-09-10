@@ -1,0 +1,8 @@
+# Configuração de recurso Databricks App para deploy via Declarative Automation Bundles (DABs)
+
+resources:
+  apps:
+    smart_order:
+      name: smart-order-${bundle.target}
+      description: "Aplicação Web de Extração, Conciliação e Monitoramento de Pagamentos | Bimbo Brasil"
+      source_code_path: "../src/app"
