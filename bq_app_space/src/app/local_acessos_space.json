@@ -1,0 +1,652 @@
+[
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-17 14:53:25"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-17 14:53:25"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-17 14:53:25"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-17 14:53:27"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-17 17:27:39"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-17 17:29:26"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-17 17:43:13"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-17 17:44:51"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-17 17:47:03"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "People",
+    "accessed_at": "2026-08-17 17:50:34"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-17 17:50:38"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-18 10:48:14"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-18 10:55:48"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-18 11:03:01"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-18 11:06:40"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-18 11:20:16"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-18 11:36:26"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-18 17:45:39"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-18 17:58:26"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "Commercial",
+    "accessed_at": "2026-08-18 18:19:56"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-18 18:26:24"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-18 18:37:49"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "Dna",
+    "accessed_at": "2026-08-18 18:38:33"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-18 18:38:51"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-19 09:10:01"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "Dna",
+    "accessed_at": "2026-08-19 09:10:06"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-19 09:10:09"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-19 09:10:15"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-19 09:18:34"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-19 09:23:16"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-19 09:25:22"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-19 09:25:48"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-19 09:57:28"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-19 09:57:43"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-08-19 10:07:48"
+  },
+  {
+    "user_email": "user@example.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-05 12:02:10"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "/admin",
+    "accessed_at": "2026-10-05 12:03:23"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-05 12:13:17"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "People",
+    "accessed_at": "2026-10-05 12:13:28"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-05 12:13:36"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Commercial",
+    "accessed_at": "2026-10-05 12:13:38"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-05 12:13:44"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Adm finances",
+    "accessed_at": "2026-10-05 12:13:47"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Adm finances",
+    "accessed_at": "2026-10-05 12:13:53"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Adm finances",
+    "accessed_at": "2026-10-05 12:13:57"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Adm finances",
+    "accessed_at": "2026-10-05 12:14:01"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Adm finances",
+    "accessed_at": "2026-10-05 12:25:28"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-05 12:25:29"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-05 12:25:30"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-05 12:25:34"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-05 12:25:36"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "/admin",
+    "accessed_at": "2026-10-05 16:13:16"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-05 16:13:28"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "/admin",
+    "accessed_at": "2026-10-05 16:13:31"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-05 16:37:12"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "/admin",
+    "accessed_at": "2026-10-05 16:37:12"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "/admin",
+    "accessed_at": "2026-10-05 16:37:51"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-05 16:38:11"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Logística",
+    "accessed_at": "2026-10-05 16:38:31"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Comercial",
+    "accessed_at": "2026-10-05 16:38:31"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Supply chain",
+    "accessed_at": "2026-10-05 16:38:31"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Finanças",
+    "accessed_at": "2026-10-05 16:38:31"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Marketing",
+    "accessed_at": "2026-10-05 16:38:31"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "/admin",
+    "accessed_at": "2026-10-05 16:51:39"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-05 16:51:51"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Logística",
+    "accessed_at": "2026-10-05 16:52:42"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-05 16:53:10"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "/admin",
+    "accessed_at": "2026-10-05 16:53:14"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "/admin",
+    "accessed_at": "2026-10-05 16:53:23"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-05 16:53:24"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-06 12:01:42"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Logística",
+    "accessed_at": "2026-10-06 12:01:42"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "/admin",
+    "accessed_at": "2026-10-06 12:01:42"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-06 12:02:59"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-06 12:03:34"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-06 13:50:43"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-06 13:52:23"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "/admin",
+    "accessed_at": "2026-10-06 13:52:40"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-06 13:53:00"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Logística",
+    "accessed_at": "2026-10-06 13:53:03"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Logística",
+    "accessed_at": "2026-10-06 13:56:42"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-06 13:57:01"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-06 13:59:23"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Comercial",
+    "accessed_at": "2026-10-06 13:59:43"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-06 13:59:49"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Comercial",
+    "accessed_at": "2026-10-06 13:59:54"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Comercial",
+    "accessed_at": "2026-10-06 14:00:26"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-06 14:00:34"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Supply chain",
+    "accessed_at": "2026-10-06 14:00:38"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-06 14:00:39"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "/admin",
+    "accessed_at": "2026-10-06 14:00:42"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "/admin",
+    "accessed_at": "2026-10-06 14:03:06"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-06 14:03:15"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Comercial",
+    "accessed_at": "2026-10-06 14:03:17"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Comercial",
+    "accessed_at": "2026-10-06 14:03:25"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Comercial",
+    "accessed_at": "2026-10-06 14:03:41"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-06 14:03:44"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "/admin",
+    "accessed_at": "2026-10-06 14:03:45"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "/admin",
+    "accessed_at": "2026-10-06 14:03:54"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-06 14:04:15"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "/admin",
+    "accessed_at": "2026-10-06 17:49:15"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-06 17:49:20"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-07 09:01:30"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Comercial",
+    "accessed_at": "2026-10-07 09:01:43"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-07 09:01:46"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Finanças",
+    "accessed_at": "2026-10-07 09:01:49"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Finanças",
+    "accessed_at": "2026-10-07 09:04:33"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-07 09:37:36"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Finanças",
+    "accessed_at": "2026-10-07 09:37:39"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-07 09:44:47"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Finanças",
+    "accessed_at": "2026-10-07 09:45:19"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Finanças",
+    "accessed_at": "2026-10-07 09:45:51"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-07 09:45:53"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Finanças",
+    "accessed_at": "2026-10-07 09:45:58"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-07 09:46:00"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "/admin",
+    "accessed_at": "2026-10-07 09:46:03"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-07 09:46:17"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Finanças",
+    "accessed_at": "2026-10-07 09:46:19"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Finanças",
+    "accessed_at": "2026-10-07 09:46:24"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-07 09:46:24"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Finanças",
+    "accessed_at": "2026-10-07 09:52:45"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Finanças",
+    "accessed_at": "2026-10-07 10:01:21"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-07 10:01:22"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Comercial",
+    "accessed_at": "2026-10-07 10:03:26"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-07 10:03:28"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Comercial",
+    "accessed_at": "2026-10-07 10:03:42"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-07 10:03:44"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Finanças",
+    "accessed_at": "2026-10-07 10:06:03"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "Finanças",
+    "accessed_at": "2026-10-07 10:06:26"
+  },
+  {
+    "user_email": "renan.ferreira@grupobimbo.com",
+    "page_path": "home",
+    "accessed_at": "2026-10-07 11:56:49"
+  }
+]

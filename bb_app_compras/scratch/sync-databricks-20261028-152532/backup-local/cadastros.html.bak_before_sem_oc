@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastros & Tabelas de Apoio | PORTAL COMPRAS</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <script src="i18n.js"></script>
+  <script src="app-menu.js"></script>
+  <style>
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       ESTILOS EXCLUSIVOS DO MÓDULO DE CADASTROS
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    :root {
+      --cd-primary: #3b82f6;
+      --cd-primary-hover: #2563eb;
+      --cd-success: #10b981;
+      --cd-danger: #ef4444;
+      --cd-warning: #f59e0b;
+      --cd-surface-card: rgba(30, 41, 59, 0.7);
+      --cd-border-subtle: rgba(148, 163, 184, 0.15);
+      --cd-cell-edit-bg: rgba(59, 130, 246, 0.12);
+      --cd-cell-changed-border: #f59e0b;
+    }
+    [data-theme="light"] {
+      --cd-surface-card: rgba(255, 255, 255, 0.9);
+      --cd-border-subtle: rgba(148, 163, 184, 0.25);
+      --cd-cell-edit-bg: rgba(219, 234, 254, 0.6);
+    }
+
+    .cd-container {
+      max-width: 1540px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem 4rem 2rem;
+    }
+
+    /* Hero & Stat Cards */
+    .cd-hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .cd-hero-info h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--fr-txt, #E8F4FD);
+      margin: 0 0 0.35rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .cd-hero-info p {
+      font-size: 0.85rem;
+      color: var(--fr-txt-soft, #7a9dba);
+      margin: 0;
+      max-width: 750px;
+    }
+
+    .cd-stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .cd-stat-card {
+      background: var(--cd-surface-card);
+      border: 1px solid var(--cd-border-subtle);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .cd-stat-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(59, 130, 246, 0.4);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .cd-stat-card.active {
+      border-color: var(--cd-primary);
+      background: rgba(59, 130, 246, 0.1);
+      box-shadow: 0 0 0 1px var(--cd-primary);
+    }
+    .cd-stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+      background: rgba(59, 130, 246, 0.12);
+      color: var(--cd-primary);
+    }
+    .cd-stat-card:nth-child(2) .cd-stat-icon {
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+    }
+    .cd-stat-card:nth-child(3) .cd-stat-icon {
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+    }
+    .cd-stat-card:nth-child(4) .cd-stat-icon {
+      background: rgba(245, 158, 11, 0.12);
+      color: #fbbf24;
+    }
+    .cd-stat-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .cd-stat-val {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--fr-txt, #E8F4FD);
+      line-height: 1.2;
+    }
+    .cd-stat-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--fr-txt-soft, #7a9dba);
+      font-weight: 700;
+      margin-top: 2px;
+    }
+    .cd-stat-desc {
+      font-size: 0.7rem;
+      color: var(--fr-txt-soft, #7a9dba);
+      opacity: 0.8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Main Card / Workspace */
+    .cd-card {
+      background: var(--cd-surface-card);
+      border: 1px solid var(--cd-border-subtle);
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+    }
+
+    /* Toolbar */
+    .cd-toolbar {
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--cd-border-subtle);
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .cd-tb-left, .cd-tb-right {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .cd-search-box {
+      position: relative;
+      min-width: 240px;
+    }
+    .cd-search-box input {
+      width: 100%;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--cd-border-subtle);
+      border-radius: 8px;
+      padding: 0 0.75rem 0 2.1rem;
+      font-size: 0.82rem;
+      color: var(--fr-txt, #E8F4FD);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .cd-search-box input:focus {
+      border-color: var(--cd-primary);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+    .cd-search-icon {
+      position: absolute;
+      left: 0.65rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--fr-txt-soft, #7a9dba);
+      pointer-events: none;
+      display: flex;
+    }
+    .cd-search-icon svg { width: 14px; height: 14px; }
+
+    /* Action Buttons */
+    .cd-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      height: 36px;
+      padding: 0 0.9rem;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .cd-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+    
+    .cd-btn-primary {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #3b82f6;
+    }
+    .cd-btn-primary:hover:not(:disabled) {
+      background: #1d4ed8;
+      box-shadow: 0 2px 10px rgba(37, 99, 235, 0.35);
+    }
+    
+    .cd-btn-save {
+      background: #059669;
+      color: #ffffff;
+      border-color: #10b981;
+    }
+    .cd-btn-save:hover:not(:disabled) {
+      background: #047857;
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35);
+    }
+    .cd-btn-save.pending {
+      animation: pulseBtn 2s infinite;
+    }
+    @keyframes pulseBtn {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+      50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    }
+
+    .cd-btn-outline {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--fr-txt, #E8F4FD);
+      border-color: var(--cd-border-subtle);
+    }
+    .cd-btn-outline:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(148, 163, 184, 0.4);
+    }
+
+    .cd-btn-danger {
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .cd-btn-danger:hover:not(:disabled) {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: #ef4444;
+    }
+
+    .cd-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      filter: grayscale(0.6);
+    }
+
+    /* Changes Counter Badge */
+    .cd-change-tag {
+      font-size: 0.72rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    /* Spreadsheet Grid Table */
+    .cd-table-container {
+      width: 100%;
+      max-height: 600px;
+      overflow: auto;
+      position: relative;
+    }
+    .cd-grid {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      text-align: left;
+    }
+    .cd-grid thead {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #182030;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    [data-theme="light"] .cd-grid thead {
+      background: #f1f5f9;
+    }
+    .cd-grid th {
+      padding: 0.65rem 0.75rem;
+      font-weight: 700;
+      color: var(--fr-txt-soft, #7a9dba);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 2px solid var(--cd-border-subtle);
+      border-right: 1px solid var(--cd-border-subtle);
+      white-space: nowrap;
+      user-select: none;
+      cursor: pointer;
+      position: relative;
+    }
+    .cd-grid th:hover {
+      color: var(--fr-txt, #E8F4FD);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .cd-grid th.sort-asc::after {
+      content: ' ▲';
+      font-size: 0.65rem;
+      color: var(--cd-primary);
+    }
+    .cd-grid th.sort-desc::after {
+      content: ' ▼';
+      font-size: 0.65rem;
+      color: var(--cd-primary);
+    }
+    .cd-grid th.required-col::before {
+      content: '* ';
+      color: #f87171;
+      font-weight: 900;
+    }
+
+    .cd-grid td {
+      padding: 0.55rem 0.75rem;
+      border-bottom: 1px solid var(--cd-border-subtle);
+      border-right: 1px solid var(--cd-border-subtle);
+      color: var(--fr-txt, #E8F4FD);
+      vertical-align: middle;
+      position: relative;
+      outline: none;
+    }
+    .cd-grid tbody tr:hover {
+      background: rgba(59, 130, 246, 0.04);
+    }
+    .cd-grid tbody tr.selected {
+      background: rgba(59, 130, 246, 0.12);
+    }
+    .cd-grid tbody tr.new-row {
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    /* Editable Cell States */
+    .cd-grid td.editable {
+      cursor: text;
+    }
+    .cd-grid td.editable:hover {
+      background: var(--cd-cell-edit-bg);
+    }
+    .cd-grid td.cell-modified {
+      background: rgba(245, 158, 11, 0.09) !important;
+    }
+    .cd-grid td.cell-modified::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 4px;
+      border-top: 4px solid var(--cd-cell-changed-border);
+      border-left: 4px solid var(--cd-cell-changed-border);
+    }
+    .cd-cell-input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--cd-primary);
+      border-radius: 4px;
+      padding: 0.35rem 0.5rem;
+      color: #ffffff;
+      font-size: 0.78rem;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+    [data-theme="light"] .cd-cell-input {
+      background: #ffffff;
+      color: #0f172a;
+    }
+
+    /* Row actions */
+    .cd-row-action {
+      background: none;
+      border: none;
+      color: var(--fr-txt-soft, #7a9dba);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .cd-row-action:hover {
+      color: #f87171;
+      background: rgba(239, 68, 68, 0.15);
+    }
+    .cd-row-action svg { width: 13px; height: 13px; }
+
+    /* Footer & Pagination */
+    .cd-footer {
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--cd-border-subtle);
+      background: rgba(255, 255, 255, 0.015);
+      font-size: 0.75rem;
+      color: var(--fr-txt-soft, #7a9dba);
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+    .cd-pagination {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .cd-page-btn {
+      min-width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--cd-border-subtle);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--fr-txt, #E8F4FD);
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .cd-page-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .cd-page-btn.active {
+      background: var(--cd-primary);
+      border-color: var(--cd-primary);
+      color: #ffffff;
+    }
+    .cd-page-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* Modals */
+    .cd-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .cd-modal-overlay.active { display: flex; }
+    .cd-modal {
+      background: #182030;
+      border: 1px solid var(--cd-border-subtle);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 580px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      overflow: hidden;
+      animation: modalFadeIn 0.2s ease-out;
+    }
+    [data-theme="light"] .cd-modal { background: #ffffff; }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .cd-modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--cd-border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cd-modal-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--fr-txt, #E8F4FD);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .cd-modal-close {
+      background: none;
+      border: none;
+      color: var(--fr-txt-soft, #7a9dba);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+      border-radius: 4px;
+    }
+    .cd-modal-close:hover { color: #f87171; }
+    .cd-modal-body {
+      padding: 1.5rem;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    .cd-modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--cd-border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Drag & Drop Upload Zone */
+    .cd-dropzone {
+      border: 2px dashed rgba(59, 130, 246, 0.4);
+      border-radius: 12px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      background: rgba(59, 130, 246, 0.03);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .cd-dropzone:hover, .cd-dropzone.dragover {
+      border-color: var(--cd-primary);
+      background: rgba(59, 130, 246, 0.08);
+    }
+    .cd-dropzone-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 0.75rem auto;
+      color: var(--cd-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cd-dropzone-icon svg { width: 36px; height: 36px; }
+    .cd-dropzone-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--fr-txt, #E8F4FD);
+      margin-bottom: 0.25rem;
+    }
+    .cd-dropzone-sub {
+      font-size: 0.75rem;
+      color: var(--fr-txt-soft, #7a9dba);
+    }
+    .cd-file-input { display: none; }
+
+    /* Toast Notification */
+    .cd-toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 3000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      pointer-events: none;
+    }
+    .cd-toast {
+      min-width: 280px;
+      max-width: 420px;
+      padding: 0.85rem 1.25rem;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      animation: toastSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: auto;
+    }
+    @keyframes toastSlideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .cd-toast-success {
+      background: #065f46;
+      color: #d1fae5;
+      border: 1px solid #10b981;
+    }
+    .cd-toast-error {
+      background: #7f1d1d;
+      color: #fee2e2;
+      border: 1px solid #ef4444;
+    }
+    .cd-toast-info {
+      background: #1e3a8a;
+      color: #dbeafe;
+      border: 1px solid #3b82f6;
+    }
+  </style>
+</head>
+<body class="fr-page">
+
+  <div class="sp-app-layout">
+    <!-- TRILHO VERTICAL À ESQUERDA (80px - Padrão D&A Unificado) -->
+    <aside class="sp-sidebar" aria-label="Navegação principal">
+      <a href="index.html" class="sp-nav-item" title="Início">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <span>Início</span>
+      </a>
+      <a href="performance.html" class="sp-nav-item" title="Performance">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        <span>Performance</span>
+      </a>
+      <a href="spend.html" class="sp-nav-item" title="Gastos">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>Gastos</span>
+      </a>
+      <a href="ordens.html" class="sp-nav-item" title="Ordens">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4"/></svg>
+        <span>Ordens</span>
+      </a>
+      <a href="comercial.html" class="sp-nav-item" title="Comercial">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <span>Comercial</span>
+      </a>
+      <a href="governanca.html" class="sp-nav-item" title="Governança">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Governança</span>
+      </a>
+      <a href="relatorios.html" class="sp-nav-item" title="Relatórios">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        <span>Relatórios</span>
+      </a>
+    </aside>
+
+    <div class="sp-main">
+      <!-- CABEÇALHO UNIFICADO (64px - A8, A4) -->
+      <header class="dna-header">
+        <div class="dna-brand">
+          <a href="index.html" class="dna-logo-link" aria-label="Ir para a Home">
+            <img src="logo-dna.png" alt="Portal Compras Bimbo" class="dna-logo-img">
+          </a>
+          <div class="sp-header-info">
+            <span class="dna-brand-badge">PORTAL COMPRAS</span>
+            <h1 class="sp-page-title">Cadastro de Planilhas</h1>
+          </div>
+        </div>
+        <div class="header-right">
+          <div id="app-menu-container"></div>
+        </div>
+      </header>
+
+      <!-- NAVEGAÇÃO MOBILE INFERIOR (<=640px - A2) -->
+      <nav class="dna-mobile-nav" aria-label="Navegação mobile">
+        <a href="index.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+          <span>Início</span>
+        </a>
+        <a href="performance.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          <span>Performance</span>
+        </a>
+        <a href="spend.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><path d="M12 18V6"/></svg>
+          <span>Gastos</span>
+        </a>
+        <a href="ordens.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          <span>Ordens</span>
+        </a>
+        <a href="comercial.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+          <span>Comercial</span>
+        </a>
+        <a href="governanca.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Governança</span>
+        </a>
+        <a href="relatorios.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          <span>Relatórios</span>
+        </a>
+      </nav>
+
+      <!-- Main Container -->
+      <div class="cd-container">
+
+    <!-- Hero Section -->
+    <div class="cd-hero">
+      <div class="cd-hero-info">
+        <h1>
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+          Gestão de Cadastros e Tabelas de Apoio
+        </h1>
+        <p>
+          Edite as tabelas de referência diretamente no app ou importe novas planilhas Excel/CSV. 
+          As alterações são sincronizadas imediatamente com o banco Lakebase PostgreSQL e gravadas com histórico de backup no Databricks.
+        </p>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <span class="cd-change-tag" id="syncStatusBadge">
+          <span style="width:7px; height:7px; border-radius:50%; background:#10b981; display:inline-block;"></span>
+          Lakebase Conectado
+        </span>
+        <span class="cd-change-tag" id="operatorBadge" style="border-color:rgba(59,130,246,0.35); color:#93c5fd; background:rgba(59,130,246,0.1); display:none;">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span id="operatorEmailText">Usuário Autorizado</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Stat Cards / Table Switcher -->
+    <div class="cd-stats-row">
+      <div class="cd-stat-card active" onclick="switchTable('fornecedores_especiais')" id="tab_fornecedores_especiais">
+        <div class="cd-stat-icon">🏢</div>
+        <div class="cd-stat-content">
+          <div class="cd-stat-val" id="cnt_fornecedores_especiais">--</div>
+          <div class="cd-stat-label">Fornecedores Especiais</div>
+          <div class="cd-stat-desc">Homologados como especiais</div>
+        </div>
+      </div>
+
+      <div class="cd-stat-card" onclick="switchTable('fornecedores_nao_negociaveis')" id="tab_fornecedores_nao_negociaveis">
+        <div class="cd-stat-icon">🚫</div>
+        <div class="cd-stat-content">
+          <div class="cd-stat-val" id="cnt_fornecedores_nao_negociaveis">--</div>
+          <div class="cd-stat-label">Não Negociáveis</div>
+          <div class="cd-stat-desc">Compras diretas / concessionárias</div>
+        </div>
+      </div>
+
+      <div class="cd-stat-card" onclick="switchTable('compradores_funcionais')" id="tab_compradores_funcionais">
+        <div class="cd-stat-icon">👤</div>
+        <div class="cd-stat-content">
+          <div class="cd-stat-val" id="cnt_compradores_funcionais">--</div>
+          <div class="cd-stat-label">Compradores Funcionais</div>
+          <div class="cd-stat-desc">Usuários Oracle ↔ Área / Unidade</div>
+        </div>
+      </div>
+
+      <div class="cd-stat-card" style="cursor:default;">
+        <div class="cd-stat-icon">⚡</div>
+        <div class="cd-stat-content">
+          <div class="cd-stat-val" id="pendingChangesCount">0</div>
+          <div class="cd-stat-label">Alterações Pendentes</div>
+          <div class="cd-stat-desc" id="lastSavedTime">Pronto para salvar</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Workspace Card -->
+    <div class="cd-card">
+
+      <!-- Toolbar -->
+      <div class="cd-toolbar">
+        <div class="cd-tb-left">
+          <!-- Search Box -->
+          <div class="cd-search-box">
+            <span class="cd-search-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+            <input type="text" id="gridSearchInput" placeholder="Buscar em todas as colunas..." oninput="onSearchChange(this.value)">
+          </div>
+
+          <!-- Add Row -->
+          <button class="cd-btn cd-btn-outline" onclick="addNewRow()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova Linha
+          </button>
+
+          <!-- Delete Selected -->
+          <button class="cd-btn cd-btn-danger" id="btnDeleteSelected" onclick="deleteSelectedRows()" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Excluir (<span id="selectedCountBadge">0</span>)
+          </button>
+        </div>
+
+        <div class="cd-tb-right">
+          <!-- Download Excel -->
+          <button class="cd-btn cd-btn-outline" onclick="exportExcel()" title="Baixar planilha preenchida com a base ativa">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar Excel (.xlsx)
+          </button>
+
+          <!-- Download CSV -->
+          <button class="cd-btn cd-btn-outline" onclick="exportCSV()" title="Baixar arquivo CSV formatado">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Baixar CSV
+          </button>
+
+          <!-- Import Excel / CSV -->
+          <button class="cd-btn cd-btn-outline" onclick="openImportModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Importar Planilha
+          </button>
+
+          <!-- Save Changes -->
+          <button class="cd-btn cd-btn-save" id="btnSave" onclick="openSaveModal()" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Salvar Alterações
+          </button>
+        </div>
+      </div>
+
+      <!-- Table Viewport -->
+      <div class="cd-table-container" id="gridTableContainer">
+        <table class="cd-grid" id="mainGridTable">
+          <thead id="gridThead">
+            <!-- Headers renderizados dinamicamente -->
+          </thead>
+          <tbody id="gridTbody">
+            <!-- Linhas renderizadas dinamicamente -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer & Pagination -->
+      <div class="cd-footer">
+        <div id="footerInfoText">Carregando dados...</div>
+        <div style="display:flex; align-items:center; gap:1.2rem;">
+          <div style="display:flex; align-items:center; gap:0.4rem;">
+            <span>Linhas por página:</span>
+            <select id="perPageSelect" onchange="changePerPage(this.value)" style="background:rgba(255,255,255,0.06); border:1px solid var(--cd-border-subtle); color:inherit; border-radius:6px; padding:2px 6px; font-size:0.75rem;">
+              <option value="25">25</option>
+              <option value="50" selected>50</option>
+              <option value="100">100</option>
+              <option value="all">Todas</option>
+            </select>
+          </div>
+          <div class="cd-pagination" id="paginationControls"></div>
+        </div>
+      </div>
+
+    </div><!-- /.cd-content -->
+  </div><!-- /.cd-container -->
+  </div><!-- /.sp-main -->
+</div><!-- /.sp-app-layout -->
+
+  <!-- MODAL: IMPORTAÇÃO DE PLANILHA -->
+  <div class="cd-modal-overlay" id="importModal">
+    <div class="cd-modal">
+      <div class="cd-modal-header">
+        <div class="cd-modal-title">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Importar Planilha (Excel ou CSV)
+        </div>
+        <button class="cd-modal-close" onclick="closeImportModal()">&times;</button>
+      </div>
+      <div class="cd-modal-body">
+        <p style="font-size:0.8rem; color:var(--fr-txt-soft); margin-top:0; margin-bottom:1rem;">
+          Suba a planilha editada para a tabela ativa: <strong id="modalTargetTableName" style="color:var(--cd-primary)">--</strong>.
+          O sistema validará as colunas automaticamente.
+        </p>
+
+        <!-- Dropzone -->
+        <div class="cd-dropzone" id="fileDropzone" onclick="document.getElementById('importFileInput').click()">
+          <div class="cd-dropzone-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+          </div>
+          <div class="cd-dropzone-title">Clique para selecionar ou arraste o arquivo aqui</div>
+          <div class="cd-dropzone-sub">Suporta arquivos Excel (.xlsx, .xls) ou CSV (.csv)</div>
+          <input type="file" id="importFileInput" class="cd-file-input" accept=".xlsx,.xls,.csv" onchange="handleFileSelected(this.files[0])">
+        </div>
+
+        <!-- Import Preview / Validation Info -->
+        <div id="importPreviewBox" style="display:none; margin-top:1.25rem; padding:1rem; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid var(--cd-border-subtle);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">
+            <strong style="font-size:0.85rem; color:var(--fr-txt);" id="importFileName">nome_arquivo.xlsx</strong>
+            <span class="cd-change-tag" id="importValidBadge" style="background:rgba(16,185,129,0.15); color:#34d399; border-color:#10b981;">0 registros válidos</span>
+          </div>
+          <div style="font-size:0.75rem; color:var(--fr-txt-soft);" id="importFileDetails">--</div>
+
+          <!-- Mode options -->
+          <div style="margin-top:1rem; padding-top:0.8rem; border-top:1px solid var(--cd-border-subtle); display:flex; flex-direction:column; gap:0.4rem; font-size:0.78rem;">
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+              <input type="radio" name="importMode" value="replace" checked>
+              <span><strong>Substituir base inteira</strong> (apaga os registros atuais e insere a nova planilha)</span>
+            </label>
+            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+              <input type="radio" name="importMode" value="append">
+              <span><strong>Adicionar / Mesclar</strong> (atualiza existentes e adiciona novos registros)</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="cd-modal-footer">
+        <button class="cd-btn cd-btn-outline" onclick="closeImportModal()">Cancelar</button>
+        <button class="cd-btn cd-btn-primary" id="btnConfirmImport" onclick="applyImportedData()" disabled>
+          Carregar na Grade
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRMAÇÃO DE SALVAMENTO -->
+  <div class="cd-modal-overlay" id="saveModal">
+    <div class="cd-modal">
+      <div class="cd-modal-header">
+        <div class="cd-modal-title">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+          Confirmar Salvamento
+        </div>
+        <button class="cd-modal-close" onclick="closeSaveModal()">&times;</button>
+      </div>
+      <div class="cd-modal-body">
+        <p style="font-size:0.82rem; color:var(--fr-txt); margin-top:0;">
+          Você está prestes a persistir as alterações na tabela <strong id="saveModalTableName" style="color:var(--cd-primary)">--</strong>.
+        </p>
+        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--cd-border-subtle); border-radius:8px; padding:1rem; margin-bottom:1rem;">
+          <div style="font-size:0.8rem; margin-bottom:0.4rem; color:var(--fr-txt);">
+            • <strong>Total de registros finais:</strong> <span id="saveSummaryTotal">--</span>
+          </div>
+          <div style="font-size:0.8rem; margin-bottom:0.4rem; color:#34d399;">
+            • <strong>Novas linhas adicionadas:</strong> <span id="saveSummaryAdded">0</span>
+          </div>
+          <div style="font-size:0.8rem; margin-bottom:0.4rem; color:#fbbf24;">
+            • <strong>Linhas modificadas:</strong> <span id="saveSummaryModified">0</span>
+          </div>
+          <div style="font-size:0.8rem; color:#f87171;">
+            • <strong>Linhas excluídas:</strong> <span id="saveSummaryDeleted">0</span>
+          </div>
+        </div>
+        <p style="font-size:0.75rem; color:var(--fr-txt-soft); line-height:1.4;">
+          🛡️ <em>Uma cópia de segurança (backup com data e seu e-mail) será gerada automaticamente antes de gravar. O Lakebase PostgreSQL será atualizado imediatamente.</em>
+        </p>
+      </div>
+      <div class="cd-modal-footer">
+        <button class="cd-btn cd-btn-outline" onclick="closeSaveModal()">Voltar e Revisar</button>
+        <button class="cd-btn cd-btn-save" id="btnExecuteSave" onclick="executeSave()">
+          Confirmar e Salvar Agora
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="cd-toast-container" id="toastContainer"></div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       ESTADO GLOBAL DA APLICAÇÃO
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    const STATE = {
+      currentTableKey: 'fornecedores_especiais',
+      tablesSummary: {},
+      columns: [],
+      primaryKey: 'cod_fornecedor_oracle',
+      originalRows: [],      // Estado vindo do servidor
+      workingRows: [],       // Estado atual editado pelo usuário
+      selectedIndices: new Set(),
+      searchQuery: '',
+      sortCol: '',
+      sortDir: 'ASC',
+      currentPage: 1,
+      perPage: 50,
+      hasUnsavedChanges: false,
+      importedDataCache: null
+    };
+
+    // Inicialização ao carregar a página
+    document.addEventListener('DOMContentLoaded', async () => {
+      setupDropzone();
+      setupKeyboardShortcuts();
+      fetch('/api/auth/me')
+        .then(r => r.json())
+        .then(u => {
+          if (u && u.email) {
+            const badge = document.getElementById('operatorBadge');
+            const txt = document.getElementById('operatorEmailText');
+            if (badge && txt) {
+              const role = u.is_admin ? 'Admin' : 'Autorizado';
+              txt.textContent = `${u.email} (${role})`;
+              badge.style.display = 'inline-flex';
+            }
+          }
+        }).catch(() => {});
+      await loadSummary();
+      await switchTable('fornecedores_especiais');
+    });
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       CARREGAR DADOS & ALTERNAR TABELAS
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    async function loadSummary() {
+      try {
+        const res = await fetch('/api/lookups/summary');
+        const data = await res.json();
+        if (data.success && data.tables) {
+          data.tables.forEach(t => {
+            STATE.tablesSummary[t.key] = t;
+            const el = document.getElementById(`cnt_${t.key}`);
+            if (el) el.innerText = Number(t.total || 0).toLocaleString('pt-BR');
+          });
+        }
+      } catch (e) {
+        console.warn('Erro ao carregar resumo de tabelas:', e);
+      }
+    }
+
+    async function switchTable(tableKey) {
+      if (STATE.hasUnsavedChanges) {
+        const leave = confirm('Você possui alterações não salvas nesta tabela. Deseja descartar e trocar de tabela?');
+        if (!leave) return;
+      }
+
+      STATE.currentTableKey = tableKey;
+      STATE.selectedIndices.clear();
+      STATE.searchQuery = '';
+      STATE.currentPage = 1;
+      STATE.hasUnsavedChanges = false;
+      document.getElementById('gridSearchInput').value = '';
+
+      // Atualizar abas visuais
+      document.querySelectorAll('.cd-stat-card').forEach(c => c.classList.remove('active'));
+      const activeTab = document.getElementById(`tab_${tableKey}`);
+      if (activeTab) activeTab.classList.add('active');
+
+      showToast(`Carregando ${tableKey}...`, 'info');
+      document.getElementById('gridTbody').innerHTML = `<tr><td colspan="10" style="text-align:center; padding:3rem; color:var(--fr-txt-soft);">Carregando dados do Lakebase...</td></tr>`;
+
+      try {
+        const res = await fetch(`/api/lookups/${tableKey}`);
+        const data = await res.json();
+        if (data.success) {
+          STATE.columns = data.columns || [];
+          STATE.primaryKey = data.primary_key || 'id';
+          STATE.originalRows = JSON.parse(JSON.stringify(data.rows || []));
+          STATE.workingRows = JSON.parse(JSON.stringify(data.rows || []));
+          
+          // Marca rows com _uid para rastreamento
+          STATE.workingRows.forEach((r, i) => {
+            r._uid = 'row_' + i + '_' + Date.now();
+            r._isNew = false;
+            r._modified = false;
+          });
+
+          renderGrid();
+          updatePendingChangesState();
+        } else {
+          showToast(data.error || 'Erro ao carregar tabela', 'error');
+        }
+      } catch (e) {
+        showToast('Erro de comunicação com o servidor: ' + e.message, 'error');
+      }
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       RENDERIZAÇÃO DA GRADE (SPREADSHEET GRID)
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function renderGrid() {
+      renderThead();
+      renderTbody();
+      renderFooter();
+    }
+
+    function renderThead() {
+      const thead = document.getElementById('gridThead');
+      let html = `<tr>`;
+      
+      // Checkbox Select All
+      html += `<th style="width:40px; text-align:center;">
+        <input type="checkbox" id="masterCheckbox" onchange="toggleSelectAll(this.checked)" title="Selecionar todas">
+      </th>`;
+
+      // Linha #
+      html += `<th style="width:50px; text-align:center;">#</th>`;
+
+      // Colunas da tabela
+      STATE.columns.forEach(col => {
+        const isSort = STATE.sortCol === col.key;
+        const sortClass = isSort ? (STATE.sortDir === 'ASC' ? 'sort-asc' : 'sort-desc') : '';
+        const reqClass = col.required ? 'required-col' : '';
+        html += `<th class="${sortClass} ${reqClass}" onclick="sortBy('${col.key}')" title="Clique para ordenar por ${col.label}">
+          ${col.label}
+        </th>`;
+      });
+
+      // Ações
+      html += `<th style="width:60px; text-align:center;">Ações</th>`;
+      html += `</tr>`;
+      thead.innerHTML = html;
+    }
+
+    function renderTbody() {
+      const tbody = document.getElementById('gridTbody');
+      const filtered = getFilteredRows();
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${STATE.columns.length + 3}" style="text-align:center; padding:3rem; color:var(--fr-txt-soft);">Nenhum registro encontrado com os filtros aplicados.</td></tr>`;
+        return;
+      }
+
+      // Paginação
+      const startIdx = STATE.perPage === 'all' ? 0 : (STATE.currentPage - 1) * STATE.perPage;
+      const endIdx = STATE.perPage === 'all' ? filtered.length : Math.min(startIdx + STATE.perPage, filtered.length);
+      const pageRows = filtered.slice(startIdx, endIdx);
+
+      let html = '';
+      pageRows.forEach((row, idx) => {
+        const globalIdx = startIdx + idx;
+        const isSelected = STATE.selectedIndices.has(row._uid);
+        const rowClass = (isSelected ? 'selected ' : '') + (row._isNew ? 'new-row ' : '');
+
+        html += `<tr class="${rowClass}" data-uid="${row._uid}">`;
+        
+        // Checkbox
+        html += `<td style="text-align:center;">
+          <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelectRow('${row._uid}', this.checked)">
+        </td>`;
+
+        // Linha #
+        html += `<td style="text-align:center; color:var(--fr-txt-soft); font-size:0.72rem;">${globalIdx + 1}</td>`;
+
+        // Células editáveis
+        STATE.columns.forEach(col => {
+          const val = row[col.key] !== undefined && row[col.key] !== null ? String(row[col.key]) : '';
+          const isMod = isCellModified(row, col.key);
+          const cellClass = `editable ${isMod ? 'cell-modified' : ''}`;
+          html += `<td class="${cellClass}" 
+                      ondblclick="startEditCell(this, '${row._uid}', '${col.key}')" 
+                      title="Duplo clique para editar"
+                      data-key="${col.key}">${escapeHtml(val)}</td>`;
+        });
+
+        // Ações da linha
+        html += `<td style="text-align:center;">
+          <button class="cd-row-action" onclick="deleteRow('${row._uid}')" title="Excluir linha">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </td>`;
+
+        html += `</tr>`;
+      });
+
+      tbody.innerHTML = html;
+      updateDeleteSelectedButton();
+    }
+
+    function renderFooter() {
+      const filtered = getFilteredRows();
+      const total = filtered.length;
+      const start = total === 0 ? 0 : (STATE.perPage === 'all' ? 1 : (STATE.currentPage - 1) * STATE.perPage + 1);
+      const end = STATE.perPage === 'all' ? total : Math.min(start + STATE.perPage - 1, total);
+
+      document.getElementById('footerInfoText').innerHTML = 
+        `Mostrando <strong>${start}</strong> a <strong>${end}</strong> de <strong>${total}</strong> registros (Total na base: ${STATE.workingRows.length})`;
+
+      // Paginação
+      const totalPages = STATE.perPage === 'all' ? 1 : Math.ceil(total / STATE.perPage);
+      const paginationEl = document.getElementById('paginationControls');
+      if (totalPages <= 1) {
+        paginationEl.innerHTML = '';
+        return;
+      }
+
+      let phtml = '';
+      phtml += `<button class="cd-page-btn" onclick="goToPage(${STATE.currentPage - 1})" ${STATE.currentPage === 1 ? 'disabled' : ''}>&laquo;</button>`;
+      
+      let startP = Math.max(1, STATE.currentPage - 2);
+      let endP = Math.min(totalPages, startP + 4);
+      if (endP - startP < 4) startP = Math.max(1, endP - 4);
+
+      for (let p = startP; p <= endP; p++) {
+        phtml += `<button class="cd-page-btn ${p === STATE.currentPage ? 'active' : ''}" onclick="goToPage(${p})">${p}</button>`;
+      }
+      phtml += `<button class="cd-page-btn" onclick="goToPage(${STATE.currentPage + 1})" ${STATE.currentPage === totalPages ? 'disabled' : ''}>&raquo;</button>`;
+      paginationEl.innerHTML = phtml;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       FILTRAGEM, PESQUISA E ORDENAÇÃO
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function getFilteredRows() {
+      let rows = [...STATE.workingRows];
+      const q = STATE.searchQuery.trim().toLowerCase();
+      if (q) {
+        rows = rows.filter(r => {
+          return STATE.columns.some(col => {
+            const v = String(r[col.key] || '').toLowerCase();
+            return v.includes(q);
+          });
+        });
+      }
+
+      if (STATE.sortCol) {
+        const key = STATE.sortCol;
+        const dir = STATE.sortDir === 'ASC' ? 1 : -1;
+        rows.sort((a, b) => {
+          const valA = String(a[key] || '').toLowerCase();
+          const valB = String(b[key] || '').toLowerCase();
+          return valA.localeCompare(valB, undefined, { numeric: true }) * dir;
+        });
+      }
+      return rows;
+    }
+
+    function onSearchChange(val) {
+      STATE.searchQuery = val;
+      STATE.currentPage = 1;
+      renderGrid();
+    }
+
+    function sortBy(colKey) {
+      if (STATE.sortCol === colKey) {
+        STATE.sortDir = STATE.sortDir === 'ASC' ? 'DESC' : 'ASC';
+      } else {
+        STATE.sortCol = colKey;
+        STATE.sortDir = 'ASC';
+      }
+      renderGrid();
+    }
+
+    function goToPage(p) {
+      const filtered = getFilteredRows();
+      const totalPages = STATE.perPage === 'all' ? 1 : Math.ceil(filtered.length / STATE.perPage);
+      if (p >= 1 && p <= totalPages) {
+        STATE.currentPage = p;
+        renderTbody();
+        renderFooter();
+      }
+    }
+
+    function changePerPage(val) {
+      STATE.perPage = val === 'all' ? 'all' : parseInt(val, 10);
+      STATE.currentPage = 1;
+      renderGrid();
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       EDIÇÃO DE CÉLULAS (INLINE EDITING)
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function startEditCell(tdElement, rowUid, colKey) {
+      if (tdElement.querySelector('.cd-cell-input')) return; // Já está editando
+
+      const currentVal = tdElement.innerText.trim();
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'cd-cell-input';
+      input.value = currentVal;
+
+      tdElement.innerHTML = '';
+      tdElement.appendChild(input);
+      input.focus();
+      input.select();
+
+      function finishEdit() {
+        const newVal = input.value.trim();
+        const row = STATE.workingRows.find(r => r._uid === rowUid);
+        if (row) {
+          row[colKey] = newVal;
+          row._modified = true;
+          STATE.hasUnsavedChanges = true;
+        }
+        tdElement.innerText = newVal;
+        if (isCellModified(row, colKey)) {
+          tdElement.classList.add('cell-modified');
+        } else {
+          tdElement.classList.remove('cell-modified');
+        }
+        updatePendingChangesState();
+      }
+
+      input.addEventListener('blur', finishEdit);
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          input.blur();
+        } else if (e.key === 'Escape') {
+          input.value = currentVal;
+          input.blur();
+        }
+      });
+    }
+
+    function isCellModified(row, colKey) {
+      if (!row) return false;
+      if (row._isNew) return true;
+      const orig = STATE.originalRows.find(r => String(r[STATE.primaryKey]) === String(row[STATE.primaryKey]));
+      if (!orig) return true;
+      return String(orig[colKey] || '').trim() !== String(row[colKey] || '').trim();
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       ADICIONAR & EXCLUIR LINHAS
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function addNewRow() {
+      const newRow = {
+        _uid: 'new_' + Date.now(),
+        _isNew: true,
+        _modified: true
+      };
+      STATE.columns.forEach(c => {
+        newRow[c.key] = '';
+      });
+
+      // Adiciona no início da lista
+      STATE.workingRows.unshift(newRow);
+      STATE.hasUnsavedChanges = true;
+      STATE.currentPage = 1;
+      renderGrid();
+      updatePendingChangesState();
+
+      // Foca automaticamente na primeira célula da nova linha
+      setTimeout(() => {
+        const firstRow = document.querySelector('#gridTbody tr');
+        if (firstRow) {
+          const firstEditable = firstRow.querySelector('.editable');
+          if (firstEditable) startEditCell(firstEditable, newRow._uid, STATE.columns[0].key);
+        }
+      }, 50);
+
+      showToast('Nova linha inserida. Preencha os dados e salve.', 'info');
+    }
+
+    function deleteRow(uid) {
+      const row = STATE.workingRows.find(r => r._uid === uid);
+      const name = row ? (row[STATE.primaryKey] || 'esta linha') : 'a linha';
+      if (!confirm(`Deseja remover o registro [${name}]?`)) return;
+
+      STATE.workingRows = STATE.workingRows.filter(r => r._uid !== uid);
+      STATE.selectedIndices.delete(uid);
+      STATE.hasUnsavedChanges = true;
+      renderGrid();
+      updatePendingChangesState();
+      showToast('Linha removida.', 'info');
+    }
+
+    function deleteSelectedRows() {
+      const count = STATE.selectedIndices.size;
+      if (count === 0) return;
+      if (!confirm(`Confirma a exclusão de ${count} registros selecionados?`)) return;
+
+      STATE.workingRows = STATE.workingRows.filter(r => !STATE.selectedIndices.has(r._uid));
+      STATE.selectedIndices.clear();
+      STATE.hasUnsavedChanges = true;
+      renderGrid();
+      updatePendingChangesState();
+      showToast(`${count} registros removidos.`, 'info');
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       SELEÇÃO DE LINHAS (CHECKBOXES)
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function toggleSelectRow(uid, isChecked) {
+      if (isChecked) {
+        STATE.selectedIndices.add(uid);
+      } else {
+        STATE.selectedIndices.delete(uid);
+      }
+      updateRowSelectionUI();
+    }
+
+    function toggleSelectAll(isChecked) {
+      const filtered = getFilteredRows();
+      if (isChecked) {
+        filtered.forEach(r => STATE.selectedIndices.add(r._uid));
+      } else {
+        filtered.forEach(r => STATE.selectedIndices.delete(r._uid));
+      }
+      updateRowSelectionUI();
+      renderTbody();
+    }
+
+    function updateRowSelectionUI() {
+      const count = STATE.selectedIndices.size;
+      document.getElementById('selectedCountBadge').innerText = count;
+      document.getElementById('btnDeleteSelected').disabled = count === 0;
+
+      const master = document.getElementById('masterCheckbox');
+      const filtered = getFilteredRows();
+      if (master && filtered.length > 0) {
+        master.checked = filtered.every(r => STATE.selectedIndices.has(r._uid));
+        master.indeterminate = count > 0 && !master.checked;
+      }
+    }
+
+    function updateDeleteSelectedButton() {
+      updateRowSelectionUI();
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       ESTADO DE ALTERAÇÕES PENDENTES
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function updatePendingChangesState() {
+      let added = 0;
+      let modified = 0;
+
+      STATE.workingRows.forEach(r => {
+        if (r._isNew) added++;
+        else if (STATE.columns.some(col => isCellModified(r, col.key))) modified++;
+      });
+
+      const deleted = Math.max(0, STATE.originalRows.length - (STATE.workingRows.length - added));
+      const totalChanges = added + modified + deleted;
+
+      STATE.hasUnsavedChanges = totalChanges > 0;
+      const btnSave = document.getElementById('btnSave');
+      const pendingBadge = document.getElementById('pendingChangesCount');
+
+      if (btnSave) {
+        btnSave.disabled = !STATE.hasUnsavedChanges;
+        if (STATE.hasUnsavedChanges) {
+          btnSave.classList.add('pending');
+          btnSave.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg> Salvar (${totalChanges})`;
+        } else {
+          btnSave.classList.remove('pending');
+          btnSave.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg> Salvar Alterações`;
+        }
+      }
+
+      if (pendingBadge) {
+        pendingBadge.innerText = totalChanges;
+        pendingBadge.style.color = totalChanges > 0 ? '#fbbf24' : 'var(--fr-txt)';
+      }
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       EXPORTAÇÃO (EXCEL & CSV)
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function exportExcel() {
+      if (typeof XLSX === 'undefined') {
+        showToast('Biblioteca SheetJS ainda não carregou.', 'error');
+        return;
+      }
+
+      const rowsToExport = STATE.workingRows.map(r => {
+        const rowObj = {};
+        STATE.columns.forEach(c => {
+          rowObj[c.label] = r[c.key] || '';
+        });
+        return rowObj;
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(rowsToExport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, STATE.currentTableKey.substring(0, 31));
+
+      const fileName = `${STATE.currentTableKey}_atual_${new Date().toISOString().slice(0,10)}.xlsx`;
+      XLSX.writeFile(workbook, fileName);
+      showToast(`Planilha Excel baixada com sucesso (${rowsToExport.length} registros).`, 'success');
+    }
+
+    function exportCSV() {
+      window.location.href = `/api/lookups/${STATE.currentTableKey}/export`;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       IMPORTAÇÃO DE ARQUIVOS (EXCEL / CSV)
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function openImportModal() {
+      const modal = document.getElementById('importModal');
+      const curCfg = STATE.tablesSummary[STATE.currentTableKey];
+      document.getElementById('modalTargetTableName').innerText = curCfg ? curCfg.title : STATE.currentTableKey;
+      document.getElementById('importPreviewBox').style.display = 'none';
+      document.getElementById('btnConfirmImport').disabled = true;
+      document.getElementById('importFileInput').value = '';
+      STATE.importedDataCache = null;
+      modal.classList.add('active');
+    }
+
+    function closeImportModal() {
+      document.getElementById('importModal').classList.remove('active');
+    }
+
+    function setupDropzone() {
+      const dropzone = document.getElementById('fileDropzone');
+      if (!dropzone) return;
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.add('dragover');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.remove('dragover');
+        });
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files && files.length > 0) {
+          handleFileSelected(files[0]);
+        }
+      });
+    }
+
+    function handleFileSelected(file) {
+      if (!file) return;
+
+      const reader = new FileReader();
+      const ext = file.name.split('.').pop().toLowerCase();
+
+      reader.onload = function(e) {
+        try {
+          const data = e.target.result;
+          let parsedRows = [];
+
+          if (ext === 'csv') {
+            // Decodifica CSV
+            const text = new TextDecoder('utf-8').decode(data);
+            parsedRows = parseCsvClient(text);
+          } else {
+            // Decodifica Excel via XLSX
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            parsedRows = XLSX.utils.sheet_to_json(firstSheet, { defval: '' });
+          }
+
+          processImportedRows(parsedRows, file.name);
+        } catch (err) {
+          showToast('Falha ao ler o arquivo: ' + err.message, 'error');
+        }
+      };
+
+      if (ext === 'csv') {
+        reader.readAsArrayBuffer(file);
+      } else {
+        reader.readAsArrayBuffer(file);
+      }
+    }
+
+    function parseCsvClient(text) {
+      const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+      if (lines.length === 0) return [];
+
+      // Detecta cabeçalho
+      let headerIdx = 0;
+      for (let i = 0; i < Math.min(10, lines.length); i++) {
+        const up = lines[i].toUpperCase();
+        if (up.includes('FORNECEDOR') || up.includes('USUARIO') || up.includes('COMPRADOR')) {
+          headerIdx = i;
+          break;
+        }
+      }
+
+      const sep = lines[headerIdx].includes(';') ? ';' : ',';
+      const headers = lines[headerIdx].split(sep).map(h => h.trim().replace(/^["']|["']$/g, ''));
+      const rows = [];
+
+      for (let i = headerIdx + 1; i < lines.length; i++) {
+        const parts = lines[i].split(sep).map(p => p.trim().replace(/^["']|["']$/g, ''));
+        const obj = {};
+        headers.forEach((h, idx) => {
+          if (h) obj[h] = parts[idx] || '';
+        });
+        rows.push(obj);
+      }
+      return rows;
+    }
+
+    function processImportedRows(rawRows, fileName) {
+      if (!rawRows || rawRows.length === 0) {
+        showToast('Nenhum dado encontrado no arquivo selecionado.', 'error');
+        return;
+      }
+
+      // Normalização e correspondência de colunas
+      const normalizedList = [];
+      const colMap = {};
+
+      // Mapeia colunas do arquivo para as colunas oficiais
+      const sampleRow = rawRows[0];
+      const fileHeaders = Object.keys(sampleRow);
+
+      fileHeaders.forEach(fh => {
+        const norm = fh.toLowerCase().replace(/[^a-z0-9]/g, '');
+        STATE.columns.forEach(col => {
+          const colNorm = col.key.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const labelNorm = col.label.toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (norm === colNorm || norm === labelNorm || norm.includes(colNorm) || colNorm.includes(norm)) {
+            colMap[fh] = col.key;
+          }
+        });
+      });
+
+      rawRows.forEach((r, idx) => {
+        const item = {
+          _uid: 'imported_' + idx + '_' + Date.now(),
+          _isNew: true,
+          _modified: true
+        };
+        STATE.columns.forEach(c => {
+          item[c.key] = '';
+        });
+
+        Object.keys(r).forEach(k => {
+          const targetKey = colMap[k];
+          if (targetKey) {
+            item[targetKey] = String(r[k] || '').trim();
+          }
+        });
+
+        // Só considera se tiver chave primária preenchida
+        if (item[STATE.primaryKey]) {
+          normalizedList.push(item);
+        }
+      });
+
+      if (normalizedList.length === 0) {
+        showToast(`Nenhuma linha válida com o campo obrigatório '${STATE.primaryKey}' foi identificada.`, 'error');
+        return;
+      }
+
+      STATE.importedDataCache = normalizedList;
+      document.getElementById('importFileName').innerText = fileName;
+      document.getElementById('importValidBadge').innerText = `${normalizedList.length} registros prontos`;
+      document.getElementById('importFileDetails').innerHTML = 
+        `Colunas mapeadas: <strong>${Object.values(colMap).length} de ${STATE.columns.length}</strong>.`;
+      document.getElementById('importPreviewBox').style.display = 'block';
+      document.getElementById('btnConfirmImport').disabled = false;
+    }
+
+    function applyImportedData() {
+      if (!STATE.importedDataCache || STATE.importedDataCache.length === 0) return;
+
+      const mode = document.querySelector('input[name="importMode"]:checked').value;
+      if (mode === 'replace') {
+        STATE.workingRows = [...STATE.importedDataCache];
+      } else {
+        // Append / Merge
+        const existingMap = new Map();
+        STATE.workingRows.forEach(r => existingMap.set(String(r[STATE.primaryKey]), r));
+
+        STATE.importedDataCache.forEach(imp => {
+          const pk = String(imp[STATE.primaryKey]);
+          if (existingMap.has(pk)) {
+            // Atualiza existente
+            const target = existingMap.get(pk);
+            STATE.columns.forEach(c => {
+              if (imp[c.key]) target[c.key] = imp[c.key];
+            });
+            target._modified = true;
+          } else {
+            // Insere novo
+            STATE.workingRows.push(imp);
+          }
+        });
+      }
+
+      STATE.hasUnsavedChanges = true;
+      STATE.currentPage = 1;
+      closeImportModal();
+      renderGrid();
+      updatePendingChangesState();
+      showToast(`${STATE.importedDataCache.length} registros carregados na grade com sucesso. Clique em Salvar para persistir.`, 'success');
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       CONFIRMAÇÃO & EXECUÇÃO DO SALVAMENTO
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function openSaveModal() {
+      if (!STATE.hasUnsavedChanges) return;
+
+      let added = 0;
+      let modified = 0;
+      STATE.workingRows.forEach(r => {
+        if (r._isNew) added++;
+        else if (STATE.columns.some(col => isCellModified(r, col.key))) modified++;
+      });
+      const deleted = Math.max(0, STATE.originalRows.length - (STATE.workingRows.length - added));
+
+      const curCfg = STATE.tablesSummary[STATE.currentTableKey];
+      document.getElementById('saveModalTableName').innerText = curCfg ? curCfg.title : STATE.currentTableKey;
+      document.getElementById('saveSummaryTotal').innerText = STATE.workingRows.length.toLocaleString('pt-BR');
+      document.getElementById('saveSummaryAdded').innerText = added;
+      document.getElementById('saveSummaryModified').innerText = modified;
+      document.getElementById('saveSummaryDeleted').innerText = deleted;
+
+      document.getElementById('saveModal').classList.add('active');
+    }
+
+    function closeSaveModal() {
+      document.getElementById('saveModal').classList.remove('active');
+    }
+
+    async function executeSave() {
+      const btn = document.getElementById('btnExecuteSave');
+      btn.disabled = true;
+      btn.innerText = 'Salvando no Lakebase...';
+
+      try {
+        // Remove campos internos antes de enviar payload
+        const payloadRows = STATE.workingRows.map(r => {
+          const clean = {};
+          STATE.columns.forEach(c => {
+            clean[c.key] = r[c.key] !== undefined && r[c.key] !== null ? String(r[c.key]).trim() : '';
+          });
+          return clean;
+        });
+
+        const res = await fetch(`/api/lookups/${STATE.currentTableKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rows: payloadRows })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          closeSaveModal();
+          showToast(data.message || 'Dados salvos com sucesso!', 'success');
+          
+          // Atualiza o estado original com o novo estado salvo
+          STATE.originalRows = JSON.parse(JSON.stringify(payloadRows));
+          STATE.workingRows.forEach(r => {
+            r._isNew = false;
+            r._modified = false;
+          });
+          STATE.hasUnsavedChanges = false;
+          
+          document.getElementById('lastSavedTime').innerText = `Salvo às ${new Date().toLocaleTimeString('pt-BR')}`;
+          await loadSummary();
+          renderGrid();
+          updatePendingChangesState();
+        } else {
+          showToast('Erro ao salvar: ' + (data.error || 'Erro desconhecido'), 'error');
+        }
+      } catch (err) {
+        showToast('Falha na requisição de salvamento: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Confirmar e Salvar Agora';
+      }
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       ATALHOS DE TECLADO E COPIAR/COLAR DO EXCEL
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function setupKeyboardShortcuts() {
+      // Suporte a colar dados do Excel (Ctrl+V)
+      window.addEventListener('paste', (e) => {
+        // Se estiver editando um campo de texto normal, não intercepta
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        const clipboardData = e.clipboardData || window.clipboardData;
+        const pastedText = clipboardData.getData('text');
+        if (!pastedText || !pastedText.includes('\t')) return; // É texto tabular
+
+        e.preventDefault();
+        const lines = pastedText.split(/\r?\n/).filter(l => l.trim().length > 0);
+        if (lines.length === 0) return;
+
+        const newPastedRows = [];
+        lines.forEach((line, idx) => {
+          const cells = line.split('\t');
+          const rowObj = {
+            _uid: 'pasted_' + idx + '_' + Date.now(),
+            _isNew: true,
+            _modified: true
+          };
+          STATE.columns.forEach((col, cIdx) => {
+            rowObj[col.key] = cells[cIdx] ? cells[cIdx].trim() : '';
+          });
+          if (rowObj[STATE.primaryKey]) {
+            newPastedRows.push(rowObj);
+          }
+        });
+
+        if (newPastedRows.length > 0) {
+          STATE.workingRows.unshift(...newPastedRows);
+          STATE.hasUnsavedChanges = true;
+          STATE.currentPage = 1;
+          renderGrid();
+          updatePendingChangesState();
+          showToast(`${newPastedRows.length} linhas coladas do Excel com sucesso!`, 'success');
+        }
+      });
+
+      // Atalho Ctrl+S para salvar
+      window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+          e.preventDefault();
+          if (STATE.hasUnsavedChanges) openSaveModal();
+        }
+      });
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       TOASTS & UTILITÁRIOS
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `cd-toast cd-toast-${type}`;
+
+      let icon = 'ℹ️';
+      if (type === 'success') icon = '✓';
+      if (type === 'error') icon = '⚠️';
+
+      toast.innerHTML = `<span>${icon}</span> <span>${escapeHtml(msg)}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('portal_theme', next);
+    }
+
+    // Inicializa tema salvo
+    (function() {
+      const saved = localStorage.getItem('portal_theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+  </script>
+</body>
+</html>

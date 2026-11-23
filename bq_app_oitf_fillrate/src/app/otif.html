@@ -1,0 +1,2021 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTIF – On Time In Full | Bimbo Brasil</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+  <style>
+    body.fr-page { background: var(--fr-bg); color: var(--fr-txt); transition: background .25s, color .25s; }
+
+    .theme-toggle {
+      width:34px; height:34px; border-radius:50%;
+      border:1.5px solid rgba(255,255,255,0.22);
+      background:rgba(255,255,255,0.08);
+      cursor:pointer; font-size:15px;
+      display:flex; align-items:center; justify-content:center;
+      transition:background .2s; flex-shrink:0;
+    }
+    .theme-toggle:hover { background:rgba(255,255,255,0.16); }
+    [data-theme="light"] .theme-toggle { border-color:rgba(38,53,118,0.2); background:rgba(38,53,118,0.06); }
+
+    .fr-content { max-width:1600px; margin:0 auto; padding:1.5rem 1.75rem 4rem; }
+
+    body.fr-page .filter-bar { background:var(--fr-surface); border-color:var(--fr-border); box-shadow:0 2px 14px var(--fr-shadow); }
+    body.fr-page .fg label   { color:var(--fr-txt-soft); }
+    body.fr-page .fg input,
+    body.fr-page .fg select  { background:var(--fr-input-bg); border-color:var(--fr-input-b); color:var(--fr-txt); }
+    body.fr-page .fg select option { background:var(--fr-opt-bg); color:var(--fr-txt); }
+
+    /* KPI Row – 3 cards */
+    .fr-kpi-row { display:grid; grid-template-columns:repeat(3,1fr); gap:.9rem; margin-bottom:1.5rem; }
+
+    .fr-kpi-card {
+      background:linear-gradient(#282f3f,#232a38) padding-box,
+                 var(--kpi-border-grad) border-box;
+      border:1.5px solid transparent;
+      border-radius:12px; padding:.55rem .9rem .45rem;
+      position:relative; overflow:hidden;
+      box-shadow:0 2px 16px rgba(0,0,0,.4), 0 0 0 0 var(--kpi-glow);
+      transition:transform .2s, box-shadow .25s;
+      display:flex; flex-direction:column; gap:.1rem;
+      --kpi-border-grad: linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.04));
+      --kpi-glow: rgba(255,255,255,0);
+    }
+    .fr-kpi-card:hover {
+      transform:translateY(-3px);
+      box-shadow:0 6px 28px rgba(0,0,0,.5), 0 0 18px 2px var(--kpi-glow);
+    }
+    .fr-kpi-card { --fr-txt:#E8F4FD; --fr-txt-soft:rgba(168,204,223,.65); }
+
+    [data-theme="light"] .fr-kpi-card {
+      background: #ffffff padding-box, var(--kpi-border-grad) border-box;
+      box-shadow: 0 2px 16px rgba(0,0,0,.08), 0 0 0 0 var(--kpi-glow);
+      --fr-txt:      #0C2340;
+      --fr-txt-soft: #5a789a;
+    }
+    [data-theme="light"] .fr-kpi-card:hover {
+      box-shadow: 0 6px 24px rgba(0,0,0,.12), 0 0 18px 2px var(--kpi-glow);
+    }
+    [data-theme="light"] .fr-kpi-card .kpi-foot {
+      border-top-color: rgba(0,0,0,.09);
+    }
+    [data-theme="light"] .fr-kpi-card .kpi-metric:nth-child(2),
+    [data-theme="light"] .fr-kpi-card .kpi-metric.kpi-atraso {
+      border-left-color: rgba(0,0,0,.09);
+    }
+    [data-theme="light"] .fr-kpi-card .kpi-badge {
+      background: rgba(0,0,0,.05);
+    }
+
+    /* coloured accents per card — prominent cards have vivid gradient + glow */
+    #kpi-otif-fob-card {
+      --kpi-border-grad: linear-gradient(135deg,#c17a2f,#d09b57,#8a5326);
+      --kpi-glow: rgba(193,122,47,.45);
+    }
+    #kpi-ot-fob-card {
+      --kpi-border-grad: linear-gradient(135deg,#1e3a5f,#60a5fa,#1e4d7a);
+      --kpi-glow: rgba(96,165,250,.25);
+    }
+    #kpi-ot-cif-card {
+      --kpi-border-grad: linear-gradient(135deg,#164e63,#38bdf8,#0e6080);
+      --kpi-glow: rgba(56,189,248,.25);
+    }
+    #kpi-otif-cif-card {
+      --kpi-border-grad: linear-gradient(135deg,#1d4ed8,#60a5fa,#1e40af);
+      --kpi-glow: rgba(59,130,246,.45);
+    }
+    #kpi-otif-geral-card {
+      --kpi-border-grad: linear-gradient(135deg,#059669,#34d399,#047857);
+      --kpi-glow: rgba(16,185,129,.45);
+    }
+
+    .kpi-head { display:flex; justify-content:center; align-items:center; padding:0; min-height:20px; position:relative; }
+    .kpi-title { font-size:.78rem; text-transform:uppercase; letter-spacing:.07em; font-weight:800; color:var(--fr-txt); line-height:1.2; text-align:center; }
+    .kpi-badge { width:22px; height:22px; border-radius:6px; background:rgba(255,255,255,.07); display:flex; align-items:center; justify-content:center; flex-shrink:0; position:absolute; right:0; top:0; }
+    .kpi-badge svg { width:12px; height:12px; }
+    .kpi-val-row { display:flex; align-items:baseline; justify-content:center; position:relative; }
+    .kpi-val-row .fr-kpi-val.big { flex-shrink:0; }
+    .kpi-val-row .kpi-delta-meta { display:flex; align-items:center; gap:.2rem; position:absolute; right:.4rem; top:50%; transform:translateY(-50%); }
+    .kpi-meta-line { font-size:.44rem; text-transform:uppercase; letter-spacing:.05em; color:var(--fr-txt-soft); white-space:nowrap; }
+
+    .fr-kpi-val { font-size:.82rem; font-weight:900; line-height:1; font-variant-numeric:tabular-nums; }
+    .fr-kpi-val.big { font-size:1.4rem; text-align:center; }
+
+    .kpi-dual-vals { display:flex; gap:1.2rem; justify-content:center; align-items:flex-start; margin-bottom:0; }
+    .kpi-dual-item { display:flex; flex-direction:column; align-items:center; gap:1px; }
+    .kpi-dual-item-lbl { font-size:.44rem; text-transform:uppercase; letter-spacing:.06em; color:var(--fr-txt-soft); }
+    .kpi-dual-item .fr-kpi-val { font-size:.82rem; }
+
+    .kpi-foot { display:grid; grid-template-columns:1fr 1fr minmax(70px,auto); gap:0; margin-top:auto; padding-top:.15rem; border-top:1px solid rgba(255,255,255,.06); }
+
+    /* Delta vs Meta indicator */
+    .kpi-delta { display:flex; align-items:center; gap:2px; font-size:.52rem; font-weight:700; }
+    .kpi-delta .delta-arrow { font-size:.5rem; line-height:1; }
+    .kpi-delta.above { color:#22c55e; }
+    .kpi-delta.below { color:#ef4444; }
+    /* MoM badge — centred below the main value row */
+    .kpi-month-delta { display:flex; justify-content:center; width:100%; }
+    .kpi-metric { display:flex; flex-direction:column; gap:2px; }
+    .kpi-metric:nth-child(2) { border-left:1px solid rgba(255,255,255,.06); padding-left:.5rem; }
+    .kpi-metric.kpi-atraso { border-left:1px solid rgba(255,255,255,.06); padding-left:.5rem; text-align:right; }
+    .kpi-metric-lbl { font-size:.55rem; text-transform:uppercase; letter-spacing:.06em; color:var(--fr-txt-soft); white-space:nowrap; }
+    .kpi-metric-val { font-size:.78rem; font-weight:700; font-variant-numeric:tabular-nums; color:var(--fr-txt); }
+
+    /* keep old sub/strip classes working on OT cards */
+    .fr-kpi-sub { font-size:.68rem; color:var(--fr-txt-soft); }
+    .kpi-strip { display:flex; gap:10px; margin-top:auto; padding-top:.4rem; border-top:1px solid rgba(255,255,255,.06); }
+    .kpi-strip-item { display:flex; flex-direction:column; gap:2px; }
+    .kpi-strip-lbl { font-size:.55rem; text-transform:uppercase; letter-spacing:.06em; color:var(--fr-txt-soft); }
+    .kpi-strip-val { font-size:.78rem; font-weight:700; font-variant-numeric:tabular-nums; color:var(--fr-txt); }
+
+    /* Charts */
+    .fr-charts-row { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin-bottom:1.5rem; }
+    .fr-chart-card {
+      background:var(--fr-surface); border:1px solid var(--fr-border); border-radius:14px;
+      padding:1.3rem 1.5rem 1.2rem; box-shadow:0 2px 14px var(--fr-shadow);
+      display:flex; flex-direction:column;
+    }
+    .fr-chart-ttl {
+      font-size:.95rem;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      color:var(--fr-txt);
+      margin-bottom:0;
+      text-align:center;
+      width:100%;
+    }
+    .fr-chart-title-row {
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:1rem;
+      margin-bottom:.8rem;
+      position:relative;
+    }
+    .fr-chart-title-row > .fr-chart-ttl {
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      width:auto;
+      white-space:nowrap;
+    }
+    .chart-dim-toggle { margin-left:auto; }
+    .fr-chart-sub { display:none !important; }
+    .chart-dim-toggle { display:flex; gap:2px; background:rgba(255,255,255,.06); border-radius:8px; padding:3px; flex-shrink:0; }
+    .cdt-btn { background:transparent; border:none; color:var(--fr-txt-soft); font-size:.72rem; font-weight:600; padding:.28rem .65rem; border-radius:6px; cursor:pointer; transition:background .15s,color .15s; white-space:nowrap; }
+    .cdt-btn:hover { background:rgba(255,255,255,.08); color:var(--fr-txt); }
+    .cdt-btn.active { background:rgba(99,102,241,.25); color:#a5b4fc; }
+    .fr-chart-body { position:relative; height:295px; }
+    .fr-chart-body canvas { position:absolute; inset:0; }
+    .fr-no-data {
+      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+      font-size:.84rem; color:var(--fr-txt-soft); font-style:italic;
+    }
+
+    .fr-chart-large { height:420px; }
+    .fr-chart-medium { height:320px; }
+
+    /* Full-width chart card */
+    .fr-chart-full { margin-bottom:1.5rem; }
+    .fr-chart-full .fr-chart-body { min-height:420px; }
+
+    /* Table */
+    .fr-tables-row { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin-bottom:1.5rem; }
+    .fr-tables-row .fr-table-card { margin-bottom:0; }
+    .fr-tables-row .fr-table-card.expanded { grid-column:1 / -1; }
+    @media (max-width:1200px) { .fr-tables-row { grid-template-columns:1fr; } }
+    .fr-table-card { background:var(--fr-surface); border:1px solid var(--fr-border); border-radius:14px; overflow:hidden; box-shadow:0 2px 14px var(--fr-shadow); margin-bottom:1.5rem; }
+    .fr-tc-hdr { position:relative; display:grid; grid-template-columns:1fr auto; align-items:center; padding:1.1rem 1.4rem; border-bottom:1px solid var(--fr-sep); gap:.75rem; }
+    .fr-tc-hdr > div:first-child { text-align:center; }
+    .fr-tc-ttl { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:1rem; font-weight:700; color:var(--fr-txt); text-transform:uppercase; letter-spacing:.06em; }
+    .fr-tc-sub { display:none; }
+
+    .fr-table { width:100%; border-collapse:collapse; }
+    ::-webkit-scrollbar { width:7px; height:7px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:rgba(100,116,139,0.35); border-radius:4px; }
+    ::-webkit-scrollbar-thumb:hover { background:rgba(100,116,139,0.55); }
+
+        .fr-table thead th { background:var(--fr-th-bg); color:var(--fr-th-txt); font-size:.74rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; padding:.7rem .85rem; text-align:left; white-space:nowrap; position:sticky; top:0; z-index:2; }
+    .fr-table thead th:not(:first-child) { text-align:center; }
+    .fr-table tbody tr { border-bottom:1px solid var(--fr-sep); transition:background .15s; }
+    .fr-table tbody tr:nth-child(odd)  { background:var(--fr-tr-odd); }
+    .fr-table tbody tr:nth-child(even) { background:var(--fr-tr-even); }
+    .fr-table tbody tr:hover           { background:var(--fr-tr-hover); }
+    .fr-table tbody td { padding:.6rem .85rem; font-size:.82rem; color:var(--fr-txt); white-space:nowrap; text-align:center; }
+    .fr-table tbody td:first-child { text-align:left; }
+    .fr-table tfoot { position:sticky; bottom:0; z-index:2; }
+    .fr-table tfoot td { padding:.6rem .85rem; font-size:.82rem; font-weight:700; color:var(--fr-txt); border-top:2px solid var(--fr-border); background:var(--fr-surface); text-align:center; }
+    .fr-table tfoot td:first-child { text-align:left; }
+
+    .grupo-lbl { font-weight:700; color:#248DC1; }
+
+    .otif-bar-cell { display:inline-flex; align-items:center; gap:7px; justify-content:center; }
+    .fr-bar-bg   { width:60px; height:6px; background:var(--fr-border); border-radius:3px; overflow:hidden; flex-shrink:0; }
+    .fr-bar-fill { display:block; height:100%; border-radius:3px; transition:width .4s; }
+    .fr-pct-txt  { font-weight:700; font-size:.8rem; min-width:42px; text-align:right; }
+
+    .fr-state td { text-align:center; padding:2.5rem; color:var(--fr-txt-soft); font-size:.85rem; }
+
+    .fr-table thead th[data-sort] { cursor:pointer; }
+    .fr-table thead th[data-sort]:hover { background:#3d4560; }
+    .fr-table thead th .si { font-style:normal; margin-left:4px; opacity:.35; font-size:.75em; }
+    .fr-table thead th.sort-asc  .si::before { content:'↑'; }
+    .fr-table thead th.sort-desc .si::before { content:'↓'; }
+    .fr-table thead th.sort-asc  .si,
+    .fr-table thead th.sort-desc .si { opacity:1; color:#60c8ef; font-size:.85em; }
+    .fr-table thead th:not(.sort-asc):not(.sort-desc) .si::before { content:'↕'; }
+
+    /* Detalhes toggle button */
+    .btn-detail { display:inline-flex; align-items:center; gap:.3rem; padding:.28rem .65rem; border-radius:7px; border:1px solid var(--fr-border); background:transparent; color:var(--fr-txt-soft); font-size:.7rem; font-weight:600; cursor:pointer; transition:all .15s; white-space:nowrap; }
+    .btn-detail:hover { border-color:var(--fr-txt-soft); color:var(--fr-txt); }
+    .btn-detail.active { border-color:#6366f1; color:#a5b4fc; background:rgba(99,102,241,.1); }
+
+    /* Compact mode: hide detail columns (OT%, Atraso, IF%) — keep OTIF% visible */
+    .tbl-compact th:nth-child(3), .tbl-compact td:nth-child(3),
+    .tbl-compact th:nth-child(4), .tbl-compact td:nth-child(4),
+    .tbl-compact th:nth-child(5), .tbl-compact td:nth-child(5),
+    .tbl-compact th:nth-child(7), .tbl-compact td:nth-child(7),
+    .tbl-compact th:nth-child(8), .tbl-compact td:nth-child(8),
+    .tbl-compact th:nth-child(9), .tbl-compact td:nth-child(9) { display:none; }
+
+    .chart-legend-pills { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:.75rem; }
+    .pill { display:inline-flex; align-items:center; gap:5px; font-size:.7rem; font-weight:600; color:var(--fr-txt-soft); }
+    .pill-dot    { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+    .pill-line   { width:18px; height:3px; flex-shrink:0; border-radius:2px; }
+    .pill-dashed { width:18px; height:0; border-top:2.5px dashed; flex-shrink:0; }
+
+    .ptb-filters { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .ptb-fg { display:flex; flex-direction:column; gap:2px; }
+    .ptb-fg label { font-size:.62rem; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; }
+    .ptb-fg input[type="text"],
+    .ptb-fg .flatpickr-alt-input { background:#282f3f !important; border:1px solid rgba(100,116,139,0.3) !important; color:#E8F4FD !important; border-radius:7px; padding:.3rem .6rem; font-size:.79rem; font-family:inherit; width:108px; outline:none; cursor:pointer; }
+    .ptb-fg select.ptb-select { background:#282f3f !important; border:1px solid rgba(100,116,139,0.3) !important; color:#E8F4FD !important; border-radius:7px; padding:.3rem .6rem; font-size:.79rem; font-family:inherit; outline:none; cursor:pointer; width:150px; }
+    .ptb-fg select.ptb-select option { background:#232a38; color:#E8F4FD; }
+    .ptb-fg .ms-btn { background:#282f3f !important; border-color:rgba(100,116,139,0.3) !important; color:#E8F4FD !important; padding:.3rem .55rem !important; font-size:.79rem !important; min-width:110px; }
+    .ptb-fg .ms-drop { background:#232a38 !important; border-color:rgba(100,116,139,.3) !important; }
+    .ptb-fg .ms-item { color:#E8F4FD !important; }
+    .ptb-fg .ms-item input[type="checkbox"] { accent-color:#10b981; }
+    .ms-search-wrap { padding:6px 8px 4px; }
+    .ms-search { width:100%; box-sizing:border-box; background:#282f3f; border:1px solid rgba(100,116,139,0.35); border-radius:5px; color:#E8F4FD; font-size:.78rem; padding:.28rem .5rem; outline:none; }
+    .ms-search::placeholder { color:rgba(232,244,253,.4); }
+    .ptb-fg .btn-ghost { padding:.32rem .7rem; font-size:.79rem; align-self:flex-end; }
+
+    @media (max-width:1400px) { .fr-kpi-row { grid-template-columns:repeat(3,1fr); } }
+    @media (max-width:1200px) { .fr-kpi-row { grid-template-columns:repeat(2,1fr); } .fr-charts-row { grid-template-columns:1fr; } }
+    @media (max-width:600px)  { .fr-kpi-row { grid-template-columns:1fr 1fr; } .fr-content { padding:1rem 1rem 3rem; } }
+    /* FOB / CIF visual separator */
+    .fr-table .col-sep-left { border-left: 2px solid rgba(100,116,139,0.40) !important; }
+
+    /* FOB/CIF column visibility – class-based (col-fob / col-cif on every th/td)
+       Col 2 (QTD REM/PED) has neither class and is NEVER hidden */
+    #tableEmpresaChart.hide-fob .col-fob,
+    #tableMensal.hide-fob       .col-fob { display:none; }
+    #tableEmpresaChart.hide-cif .col-cif,
+    #tableMensal.hide-cif       .col-cif { display:none; }
+    /* FOB/CIF sub-toggle button accent colours */
+    .cdt-fob.active { background:rgba(193,122,47,.18) !important; color:#c17a2f !important; }
+    .cdt-cif.active { background:rgba(96,165,250,.18) !important; color:#60a5fa !important; }
+    .cdt-fob:not(.active) { color:rgba(193,122,47,.5) !important; }
+    .cdt-cif:not(.active) { color:rgba(96,165,250,.5) !important; }
+    /* Override global margin-left:auto for inline FOB/CIF sub-toggles */
+    #fobCifToggle-empresa,
+    #fobCifToggle-mensal { margin-left:0; }
+  </style>
+</head>
+<body class="fr-page">
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="otif.html" class="nav-brand">
+        <span style="font-size:1.4rem;font-weight:900;letter-spacing:.04em;text-transform:uppercase;margin-left:2rem;">OTIF</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="painel-executivo.html">Painel Executivo</a></li>
+        <li><a href="fillrate.html">Fill Rate</a></li>
+        <li><a href="gestao-pedidos.html">Fill Rate Detalhe</a></li>
+        <li><a href="otif.html" class="active">OTIF</a></li>
+        <li><a href="otif-detalhe.html">OTIF Detalhe</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="btnTheme" title="Alternar tema">☀️</button>
+        <img src="logo-bimbo-qsr.png" alt="Bimbo QSR" class="ptb-logo-bimbo">
+      </div>
+    </div>
+  </nav>
+
+  <!-- PAGE TITLE BAR -->
+  <div class="page-title-bar">
+    <div class="ptb-left"></div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <div class="ptb-filters">
+        <div class="ptb-fg" style="min-width:95px">
+          <label>Ano</label>
+          <div class="ms-wrap" id="ms-ano"></div>
+        </div>
+        <div class="ptb-fg" style="min-width:95px">
+          <label>Mês</label>
+          <div class="ms-wrap" id="ms-mes"></div>
+        </div>
+        <div class="ptb-fg" style="min-width:85px">
+          <label>Dia</label>
+          <div class="ms-wrap" id="ms-dia"></div>
+        </div>
+        <div class="ptb-fg" style="min-width:175px">
+          <label>Semana</label>
+          <div class="ms-wrap" id="ms-semana"></div>
+        </div>
+        <div class="ptb-fg" style="min-width:120px">
+          <label>Planta</label>
+          <div class="ms-wrap" id="ms-planta"></div>
+        </div>
+        <div class="ptb-fg" style="min-width:130px">
+          <label>Cliente</label>
+          <div class="ms-wrap" id="ms-cliente"></div>
+        </div>
+        <div class="ptb-fg" style="min-width:175px">
+          <label>Grupo Cliente</label>
+          <div class="ms-wrap" id="ms-grupo-cliente"></div>
+        </div>
+
+        <div class="ptb-fg" style="min-width:160px">
+          <label>Transportadora</label>
+          <div class="ms-wrap" id="ms-transportadora"></div>
+        </div>
+        <div class="ptb-fg" style="min-width:160px">
+          <label>Responsável</label>
+          <div class="ms-wrap" id="ms-responsavel"></div>
+        </div>
+        <button class="btn-ghost" id="btnClear" style="align-self:flex-end;padding:.32rem .7rem;font-size:.79rem">Limpar</button>
+        <button class="btn-ghost" id="btnExportOtif" style="align-self:flex-end;padding:.32rem .7rem;font-size:.79rem;margin-left:auto;background:rgba(96,200,239,.1);border-color:rgba(96,200,239,.4);color:#60c8ef" title="Exportar tabelas para Excel">⬇ Exportar Excel</button>
+      </div>
+    </div>
+  </div>
+  <div class="gradient-line"></div>
+
+  <!-- CONTENT -->
+  <div class="fr-content">
+
+    <!-- KPI CARDS -->
+    <div class="fr-kpi-row">
+
+      <!-- OTIF FOB (consolidado: OTIF + OT + IF) -->
+      <div class="fr-kpi-card" id="kpi-otif-fob-card">
+        <div class="kpi-head">
+          <span class="kpi-title">OTIF FOB</span>
+          <div class="kpi-badge" style="background:rgba(193,122,47,.15)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#c17a2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+        </div>
+        <div class="kpi-val-row">
+          <div class="fr-kpi-val big" id="kpi-otif-fob" style="color:#22c55e">—</div>
+          <div class="kpi-delta-meta">
+            <div class="kpi-delta" id="kpi-delta-fob"></div>
+            <div class="kpi-meta-line">Meta ≥ 85%</div>
+          </div>
+        </div>
+        <div class="kpi-delta kpi-month-delta" id="kpi-mom-fob"></div>
+        <div class="kpi-dual-vals">
+          <div class="kpi-dual-item">
+            <span class="kpi-dual-item-lbl">On Time</span>
+            <div class="fr-kpi-val" id="kpi-ot-fob" style="color:#60a5fa">—</div>
+          </div>
+          <div class="kpi-dual-item">
+            <span class="kpi-dual-item-lbl">In Full</span>
+            <div class="fr-kpi-val" id="kpi-infull-fob" style="color:#93c5fd">—</div>
+          </div>
+        </div>
+        <div class="kpi-foot">
+          <div class="kpi-metric">
+            <span class="kpi-metric-lbl">OT</span>
+            <span class="kpi-metric-val" id="kpi-ot-fob-sub">—</span>
+          </div>
+          <div class="kpi-metric">
+            <span class="kpi-metric-lbl">IF</span>
+            <span class="kpi-metric-val" id="kpi-infull-fob-sub">—</span>
+          </div>
+          <div class="kpi-metric kpi-atraso">
+            <span class="kpi-metric-lbl">Atraso Médio</span>
+            <span class="kpi-metric-val" id="kpi-atraso-fob">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- OTIF CIF (consolidado: OTIF + OT + IF) -->
+      <div class="fr-kpi-card" id="kpi-otif-cif-card">
+        <div class="kpi-head">
+          <span class="kpi-title">OTIF CIF</span>
+          <div class="kpi-badge" style="background:rgba(59,130,246,.15)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          </div>
+        </div>
+        <div class="kpi-val-row">
+          <div class="fr-kpi-val big" id="kpi-otif-cif" style="color:#22c55e">—</div>
+          <div class="kpi-delta-meta">
+            <div class="kpi-delta" id="kpi-delta-cif"></div>
+            <div class="kpi-meta-line">Meta ≥ 85%</div>
+          </div>
+        </div>
+        <div class="kpi-delta kpi-month-delta" id="kpi-mom-cif"></div>
+        <div class="kpi-dual-vals">
+          <div class="kpi-dual-item">
+            <span class="kpi-dual-item-lbl">On Time</span>
+            <div class="fr-kpi-val" id="kpi-ot-cif" style="color:#38bdf8">—</div>
+          </div>
+          <div class="kpi-dual-item">
+            <span class="kpi-dual-item-lbl">In Full</span>
+            <div class="fr-kpi-val" id="kpi-infull-cif" style="color:#7dd3fc">—</div>
+          </div>
+        </div>
+        <div class="kpi-foot">
+          <div class="kpi-metric">
+            <span class="kpi-metric-lbl">OT</span>
+            <span class="kpi-metric-val" id="kpi-ot-cif-sub">—</span>
+          </div>
+          <div class="kpi-metric">
+            <span class="kpi-metric-lbl">IF</span>
+            <span class="kpi-metric-val" id="kpi-infull-cif-sub">—</span>
+          </div>
+          <div class="kpi-metric kpi-atraso">
+            <span class="kpi-metric-lbl">Atraso Médio</span>
+            <span class="kpi-metric-val" id="kpi-atraso-cif">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- OTIF GERAL -->
+      <div class="fr-kpi-card" id="kpi-otif-geral-card">
+        <div class="kpi-head">
+          <span class="kpi-title">OTIF Geral</span>
+          <div class="kpi-badge" style="background:rgba(16,185,129,.15)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+        <div class="kpi-val-row">
+          <div class="fr-kpi-val big" id="kpi-otif-geral" style="color:#22c55e">—</div>
+          <div class="kpi-delta-meta">
+            <div class="kpi-delta" id="kpi-delta-geral"></div>
+            <div class="kpi-meta-line">Meta ≥ 85%</div>
+          </div>
+        </div>
+        <div class="kpi-delta kpi-month-delta" id="kpi-mom-geral"></div>
+        <div class="kpi-dual-vals">
+          <div class="kpi-dual-item">
+            <span class="kpi-dual-item-lbl">On Time</span>
+            <div class="fr-kpi-val" id="kpi-ot-geral" style="color:#60a5fa">—</div>
+          </div>
+          <div class="kpi-dual-item">
+            <span class="kpi-dual-item-lbl">In Full</span>
+            <div class="fr-kpi-val" id="kpi-infull-geral" style="color:#93c5fd">—</div>
+          </div>
+        </div>
+        <div class="kpi-foot">
+          <div class="kpi-metric">
+            <span class="kpi-metric-lbl">OT</span>
+            <span class="kpi-metric-val" id="kpi-ot-geral-sub">—</span>
+          </div>
+          <div class="kpi-metric">
+            <span class="kpi-metric-lbl">IF</span>
+            <span class="kpi-metric-val" id="kpi-infull-geral-sub">—</span>
+          </div>
+          <div class="kpi-metric kpi-atraso">
+            <span class="kpi-metric-lbl">Tipo</span>
+            <span class="kpi-metric-val" style="color:#10b981">FOB+CIF</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Chart: OTIF por Empresa/Grupo Cliente (full-width) -->
+    <div class="fr-chart-card" style="margin-bottom:1.5rem">
+      <div style="text-align:center;padding:.6rem 0 .2rem">
+        <div class="fr-chart-ttl" id="ttl-chart-empresa">OTIF por Empresa</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.4rem;text-align:left">
+        <div class="chart-dim-toggle" id="toggleEmpresaView" style="margin-left:0;margin-right:auto">
+          <button class="cdt-btn active" data-mode="grafico">Gráfico</button>
+          <button class="cdt-btn" data-mode="tabela">Tabela</button>
+        </div>
+        <div class="chart-dim-toggle" id="toggleEmpresaGrupo">
+          <button class="cdt-btn active" data-mode="empresa">Empresa</button>
+          <button class="cdt-btn" data-mode="grupo">Grupo Cliente</button>
+          <button class="cdt-btn" data-mode="transportadora">Transportadora</button>
+        </div>
+      </div>
+      <div id="empresa-chart-view">
+        <div class="chart-legend-pills">
+          <span class="pill"><span class="pill-dot" style="background:#c17a2f"></span>OTIF FOB %</span>
+          <span class="pill"><span class="pill-dot" style="background:#1d4ed8"></span>OTIF CIF %</span>
+          <span class="pill"><span class="pill-dashed" style="border-color:rgba(255,255,255,0.45)"></span>Meta 85%</span>
+        </div>
+        <div class="fr-chart-body fr-chart-medium">
+          <canvas id="chartEmpresa"></canvas>
+          <div class="fr-no-data" id="nd-empresa">Aplique os filtros para carregar.</div>
+        </div>
+      </div>
+      <div id="empresa-table-view" style="display:none;overflow-x:auto;max-height:320px;overflow-y:auto">
+        <div style="display:flex;align-items:center;justify-content:flex-start;gap:6px;padding:.3rem .6rem .4rem;border-bottom:1px solid var(--fr-sep)">
+          <span style="font-size:.68rem;color:var(--fr-txt-soft);font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-right:2px">Exibir:</span>
+          <div class="chart-dim-toggle" id="fobCifToggle-empresa">
+            <button class="cdt-btn cdt-fob" data-col="fob">FOB</button>
+            <button class="cdt-btn cdt-cif active" data-col="cif">CIF</button>
+          </div>
+        </div>
+        <table class="fr-table hide-fob" id="tableEmpresaChart">
+          <thead>
+            <tr id="headEmpresaChart">
+              <th data-sort="GRUPO">Empresa <i class="si"></i></th>
+              <th data-sort="TOTAL_LINHAS" style="text-align:center">QTD REM/PED <i class="si"></i></th>
+              <th data-sort="OT_FOB" class="col-fob">OT FOB % <i class="si"></i></th>
+              <th data-sort="IF_FOB" class="col-fob">IF FOB % <i class="si"></i></th>
+              <th data-sort="ATRASO_FOB" class="col-fob">Atraso FOB (min) <i class="si"></i></th>
+              <th data-sort="OTIF_FOB" class="col-fob" style="min-width:150px;color:#c17a2f">OTIF FOB % <i class="si"></i></th>
+              <th data-sort="OT_CIF" class="col-cif col-sep-left">OT CIF % <i class="si"></i></th>
+              <th data-sort="IF_CIF" class="col-cif">IF CIF % <i class="si"></i></th>
+              <th data-sort="ATRASO_CIF" class="col-cif">Atraso CIF (min) <i class="si"></i></th>
+              <th data-sort="OTIF_CIF" class="col-cif" style="min-width:150px;color:#60a5fa">OTIF CIF % <i class="si"></i></th>
+            </tr>
+          </thead>
+          <tbody id="bodyEmpresaChart">
+            <tr class="fr-state"><td colspan="10">Aplique os filtros para carregar.</td></tr>
+          </tbody>
+          <tfoot id="footEmpresaChart" style="display:none">
+            <tr><td>Total</td><td id="fec-total" style="text-align:center">—</td><td id="fec-ot-fob" class="col-fob">—</td><td id="fec-if-fob" class="col-fob">—</td><td id="fec-atraso-fob" class="col-fob" style="text-align:center">—</td><td id="fec-otif-fob" class="col-fob">—</td><td id="fec-ot-cif" class="col-cif col-sep-left">—</td><td id="fec-if-cif" class="col-cif">—</td><td id="fec-atraso-cif" class="col-cif" style="text-align:center">—</td><td id="fec-otif-cif" class="col-cif">—</td></tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- Chart: Evolução Mensal (full-width) -->
+    <div class="fr-chart-card" style="margin-bottom:1.5rem">
+      <div style="text-align:center;padding:.6rem 0 .2rem">
+        <div class="fr-chart-ttl" id="ttl-mensal">Evolução Mensal</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.4rem">
+        <div class="chart-dim-toggle" id="toggleMensalView" style="margin-left:0;margin-right:auto">
+          <button class="cdt-btn active" data-mode="grafico">Gráfico</button>
+          <button class="cdt-btn" data-mode="tabela">Tabela</button>
+        </div>
+        <div class="chart-dim-toggle" id="toggleMensal" style="flex-shrink:0">
+          <button class="cdt-btn active" data-mode="mes">Mês</button>
+          <button class="cdt-btn" data-mode="semana">Semana</button>
+        </div>
+      </div>
+      <div id="mensal-chart-view">
+        <div class="chart-legend-pills">
+          <span class="pill"><span class="pill-dot" style="background:#c17a2f"></span>OTIF FOB %</span>
+          <span class="pill"><span class="pill-dot" style="background:#1d4ed8"></span>OTIF CIF %</span>
+          <span class="pill"><span class="pill-dashed" style="border-color:rgba(255,255,255,0.45)"></span>Meta 85%</span>
+        </div>
+        <div class="fr-chart-body fr-chart-medium">
+          <canvas id="chartMensal"></canvas>
+          <div class="fr-no-data" id="nd-mensal">Aplique os filtros para carregar.</div>
+        </div>
+      </div>
+      <div id="mensal-table-view" style="display:none;overflow-x:auto;max-height:360px;overflow-y:auto">
+        <div style="display:flex;align-items:center;justify-content:flex-start;gap:6px;padding:.3rem .6rem .4rem;border-bottom:1px solid var(--fr-sep)">
+          <span style="font-size:.68rem;color:var(--fr-txt-soft);font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-right:2px">Exibir:</span>
+          <div class="chart-dim-toggle" id="fobCifToggle-mensal">
+            <button class="cdt-btn cdt-fob" data-col="fob">FOB</button>
+            <button class="cdt-btn cdt-cif active" data-col="cif">CIF</button>
+          </div>
+        </div>
+        <table class="fr-table hide-fob" id="tableMensal">
+          <thead>
+            <tr id="headMensal">
+              <th data-sort="LABEL">Mês <i class="si"></i></th>
+              <th data-sort="TOTAL_LINHAS" style="text-align:center;min-width:90px">QTD REM/PED <i class="si"></i></th>
+              <th data-sort="OT_FOB" class="col-fob">OT FOB % <i class="si"></i></th>
+              <th data-sort="ATRASO_FOB" class="col-fob">Atraso FOB <i class="si"></i></th>
+              <th data-sort="IF_FOB" class="col-fob">IF FOB % <i class="si"></i></th>
+              <th data-sort="OTIF_FOB" class="col-fob" style="min-width:150px;color:#c17a2f">OTIF FOB % <i class="si"></i></th>
+              <th data-sort="OT_CIF" class="col-cif">OT CIF % <i class="si"></i></th>
+              <th data-sort="ATRASO_CIF" class="col-cif">Atraso CIF <i class="si"></i></th>
+              <th data-sort="IF_CIF" class="col-cif">IF CIF % <i class="si"></i></th>
+              <th data-sort="OTIF_CIF" class="col-cif" style="min-width:150px;color:#60a5fa">OTIF CIF % <i class="si"></i></th>
+            </tr>
+          </thead>
+          <tbody id="bodyMensal">
+            <tr class="fr-state"><td colspan="10">Aplique os filtros para carregar.</td></tr>
+          </tbody>
+          <tfoot id="footMensal" style="display:none">
+            <tr><td>Total</td><td id="fm-total">—</td><td id="fm-ot-fob" class="col-fob">—</td><td id="fm-atraso-fob" class="col-fob">—</td><td id="fm-if-fob" class="col-fob">—</td><td id="fm-otif-fob" class="col-fob">—</td><td id="fm-ot-cif" class="col-cif">—</td><td id="fm-atraso-cif" class="col-cif">—</td><td id="fm-if-cif" class="col-cif">—</td><td id="fm-otif-cif" class="col-cif">—</td></tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+
+
+
+  </div><!-- /fr-content -->
+
+  <script>
+    const API       = '';
+    const OTIF_META = 85;
+    const MES_PT    = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+    let cEmpresa = null, cCliente = null, cMensal = null;
+    let dataEmpresa = [], dataCliente = [];
+    let sortEmpresa  = { col: null, dir: 'asc' };
+    let sortCliente  = { col: null, dir: 'asc' };
+    let chartEmpresaMode = 'empresa';
+    let empresaChartData = [];
+    let mensalChartData = [];
+    let mensalChartIsSem = false;
+    let sortEmpresaChart = { col: null, dir: 'asc' };
+    let sortMensalChart = { col: null, dir: 'asc' };
+    let chartClienteMode = 'grupo';
+    let tableClienteMode = 'grupo';
+    let mensalMode        = 'mes';
+
+    /* ── Helpers ── */
+    const brl = v => Number(v || 0).toLocaleString('pt-BR');
+    function pct(cnt, total) {
+      const t = Number(total), c = Number(cnt);
+      return t > 0 ? Math.min(100, c / t * 100) : 0;
+    }
+    function otifColor(p) { return p >= OTIF_META ? '#22c55e' : p >= 80 ? '#f59e0b' : '#DA2E39'; }
+    function otifAccent(p) { return p >= OTIF_META ? 'k-green' : p >= 80 ? 'k-amber' : 'k-red'; }
+    function isDark() { return document.documentElement.getAttribute('data-theme') !== 'light'; }
+    function chartColors() {
+      return {
+        grid:   isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+        tick:   isDark() ? 'rgba(255,255,255,0.50)' : 'rgba(0,0,0,0.55)',
+        legend: isDark() ? '#E8F4FD' : '#0C2340',
+        meta:   isDark() ? 'rgba(255,255,255,0.45)' : 'rgba(50,58,78,0.55)',
+      };
+    }
+
+    /* ── Theme ── */
+    function applyTheme(dark) {
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+      document.getElementById('btnTheme').textContent = dark ? '🌙' : '☀️';
+      localStorage.setItem('fr-theme', dark ? 'dark' : 'light');
+      refreshChartColors();
+    }
+    document.getElementById('btnTheme').addEventListener('click', () => applyTheme(!isDark()));
+
+
+
+
+
+    // Toggle: Gráfico / Tabela for OTIF por Empresa
+    document.getElementById('toggleEmpresaView').addEventListener('click', e => {
+      const btn = e.target.closest('.cdt-btn');
+      if (!btn) return;
+      const mode = btn.dataset.mode;
+      document.querySelectorAll('#toggleEmpresaView .cdt-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+      document.getElementById('empresa-chart-view').style.display = mode === 'grafico' ? '' : 'none';
+      document.getElementById('empresa-table-view').style.display = mode === 'tabela' ? '' : 'none';
+    });
+
+    // Toggle: Empresa / Grupo Cliente for OTIF por Empresa chart
+    document.getElementById('toggleEmpresaGrupo').addEventListener('click', e => {
+      const btn = e.target.closest('.cdt-btn');
+      if (!btn) return;
+      const mode = btn.dataset.mode;
+      if (mode === chartEmpresaMode) return;
+      chartEmpresaMode = mode;
+      document.querySelectorAll('#toggleEmpresaGrupo .cdt-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+      loadChartEmpresa(getFilters());
+    });
+
+    // Toggle: Gráfico / Tabela for Evolução Mensal
+    document.getElementById('toggleMensalView').addEventListener('click', e => {
+      const btn = e.target.closest('.cdt-btn');
+      if (!btn) return;
+      const mode = btn.dataset.mode;
+      document.querySelectorAll('#toggleMensalView .cdt-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+      document.getElementById('mensal-chart-view').style.display = mode === 'grafico' ? '' : 'none';
+      document.getElementById('mensal-table-view').style.display = mode === 'tabela' ? '' : 'none';
+    });
+
+    document.getElementById('toggleMensal').addEventListener('click', e => {
+      const btn = e.target.closest('.cdt-btn');
+      if (!btn) return;
+      const mode = btn.dataset.mode;
+      if (mode === mensalMode) return;
+      mensalMode = mode;
+      document.querySelectorAll('#toggleMensal .cdt-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+      _savePageState();
+      loadChartMensal(getFilters());
+    });
+    /* ── Sort for Empresa Chart Table ── */
+    function getSortVal(d, col, isMensal, isSem) {
+      const fobL = +d.FOB_LINHAS || 1, cifL = +d.CIF_LINHAS || 1;
+      switch(col) {
+        case 'GRUPO': return (d.GRUPO || '').toLowerCase();
+        case 'LABEL': {
+          if (isSem) return d.DT_SEGUNDA || '';
+          return `${d.ANO}-${String(d.MES).padStart(2,'0')}`;
+        }
+        case 'TOTAL_LINHAS': return +d.TOTAL_LINHAS || 0;
+        case 'OT_FOB': return (+d.OT_FOB||0) / fobL;
+        case 'IF_FOB': return (+d.INFULL_FOB||0) / fobL;
+        case 'OTIF_FOB': return (+d.OTIF_FOB||0) / fobL;
+        case 'OT_CIF': return (+d.OT_CIF||0) / cifL;
+        case 'IF_CIF': return (+d.INFULL_CIF||0) / cifL;
+        case 'OTIF_CIF': return (+d.OTIF_CIF||0) / cifL;
+        case 'ATRASO_FOB': return +d.AVG_ATRASO_FOB || 0;
+        case 'ATRASO_CIF': return +d.AVG_ATRASO_CIF || 0;
+        default: return 0;
+      }
+    }
+
+    function sortAndRender(headId, sortState, dataArr, renderFn, isMensal) {
+      const sorted = [...dataArr].sort((a, b) => {
+        const va = getSortVal(a, sortState.col, isMensal, mensalChartIsSem);
+        const vb = getSortVal(b, sortState.col, isMensal, mensalChartIsSem);
+        const cmp = typeof va === 'string' ? va.localeCompare(vb) : va - vb;
+        return sortState.dir === 'asc' ? cmp : -cmp;
+      });
+      renderFn(sorted);
+      // Update header indicators
+      document.querySelectorAll(`#${headId} th[data-sort]`).forEach(th => {
+        th.classList.remove('sort-asc', 'sort-desc');
+        if (th.dataset.sort === sortState.col) th.classList.add('sort-' + sortState.dir);
+      });
+    }
+
+    document.getElementById('headEmpresaChart').addEventListener('click', e => {
+      const th = e.target.closest('th[data-sort]');
+      if (!th || !empresaChartData.length) return;
+      const col = th.dataset.sort;
+      sortEmpresaChart.dir = (sortEmpresaChart.col === col && sortEmpresaChart.dir === 'asc') ? 'desc' : 'asc';
+      sortEmpresaChart.col = col;
+      sortAndRender('headEmpresaChart', sortEmpresaChart, empresaChartData, (d) => {
+        const lbl = chartEmpresaMode === 'grupo' ? 'Grupo Cliente' : 'Empresa';
+        populateEmpresaTable(d, lbl);
+      }, false);
+    });
+
+    document.getElementById('headMensal').addEventListener('click', e => {
+      const th = e.target.closest('th[data-sort]');
+      if (!th || !mensalChartData.length) return;
+      const col = th.dataset.sort;
+      sortMensalChart.dir = (sortMensalChart.col === col && sortMensalChart.dir === 'asc') ? 'desc' : 'asc';
+      sortMensalChart.col = col;
+      sortAndRender('headMensal', sortMensalChart, mensalChartData, (d) => {
+        populateMensalTable(d, mensalChartIsSem);
+      }, true);
+    });
+
+    function refreshChartColors() {
+      const c = chartColors();
+      [cEmpresa, cCliente, cMensal].forEach(ch => {
+        if (!ch) return;
+        ['x','y'].forEach(ax => {
+          if (ch.options.scales[ax]) {
+            ch.options.scales[ax].ticks.color = c.tick;
+            ch.options.scales[ax].grid.color  = c.grid;
+          }
+        });
+        if (ch.options.plugins.legend) ch.options.plugins.legend.labels.color = c.legend;
+        ch.data.datasets.forEach(ds => { if (ds.borderDash && ds.borderDash.length) ds.borderColor = c.meta; });
+        ch.update('none');
+      });
+    }
+
+    /* ── Inline bar-label plugin ── */
+    Chart.register({
+      id: 'barLabels',
+      afterDatasetsDraw(chart) {
+        if (chart.options.plugins?.barLabels?.display === false) return;
+        const ctx = chart.ctx;
+        chart.data.datasets.forEach((ds, i) => {
+          if (ds.type === 'line') return;
+          const meta = chart.getDatasetMeta(i);
+          if (meta.hidden) return;
+          meta.data.forEach((bar, j) => {
+            const v = ds.data[j];
+            if (v == null) return;
+            const chartArea = chart.chartArea;
+            const barTop = bar.y;
+            const barBottom = Math.min(bar.base, chartArea.bottom);
+            const h = barBottom - barTop;
+            const barW = bar.width || 30;
+            const label = v.toFixed(1) + '%';
+
+            if (barW < 22) {
+              // Narrow bars: vertical label inside
+              if (h < 35) return;
+              const fontSize = Math.max(7, Math.min(9, h * 0.10));
+              ctx.save();
+              ctx.fillStyle = '#ffffff';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              ctx.font = `bold ${fontSize}px Inter, sans-serif`;
+              ctx.translate(bar.x, barTop + h / 2);
+              ctx.rotate(-Math.PI / 2);
+              ctx.fillText(label, 0, 0);
+              ctx.restore();
+            } else {
+              // Wide bars: INSIDE END (near top of bar, always inside)
+              if (h < 12) return;
+              const fontSize = Math.max(9, Math.min(11, barW * 0.35));
+              ctx.save();
+              ctx.fillStyle = '#ffffff';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'top';
+              ctx.font = `bold ${fontSize}px Inter, sans-serif`;
+              ctx.shadowColor = 'rgba(0,0,0,0.55)';
+              ctx.shadowBlur = 3;
+              ctx.fillText(label, bar.x, barTop + 4);
+              ctx.restore();
+            }
+          });
+        });
+      }
+    });
+
+    /* ── MultiSelect component ── */
+    class MultiSelect {
+      constructor(wrapperId, placeholder = 'Todas', { searchable = false } = {}) {
+        this.el = document.getElementById(wrapperId);
+        this.placeholder = placeholder;
+        this.searchable = searchable;
+        this._selected = new Set();
+        this._items = [];
+        this._query = '';
+        this._isOpen = false;
+        this._build();
+        document.addEventListener('click', e => { if (!this.el.contains(e.target)) this._setOpen(false); });
+      }
+      populate(items) {
+        this._items = items.map(i => typeof i === 'string' ? { value: i, label: i } : i);
+        this._selected.clear();
+        this._query = '';
+        this._renderItems();
+        this._updateBtn();
+      }
+      getValues() { return [...this._selected]; }
+      setValues(vals) { this._selected = new Set(vals.map(String)); this._renderItems(); this._updateBtn(); }
+      reset() { this._query = ''; this.setValues([]); }
+      _build() {
+        this.el.innerHTML = `<button class="ms-btn" type="button"><span class="ms-lbl">${this.placeholder}</span><svg class="ms-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button><div class="ms-drop"></div>`;
+        this.btnEl  = this.el.querySelector('.ms-btn');
+        this.lblEl  = this.el.querySelector('.ms-lbl');
+        this.dropEl = this.el.querySelector('.ms-drop');
+        this.btnEl.addEventListener('click', e => { e.stopPropagation(); this._setOpen(!this._isOpen); });
+      }
+      _visibleItems() {
+        if (!this.searchable || !this._query) return this._items;
+        const q = this._query.toLowerCase();
+        return this._items.filter(i => i.label.toLowerCase().includes(q));
+      }
+      _renderItems() {
+        if (!this._items.length) { this.dropEl.innerHTML = `<div style="padding:10px 13px;font-size:.8rem;opacity:.5">Carregando...</div>`; return; }
+        const visible = this._visibleItems();
+        const searchHtml = this.searchable
+          ? `<div class="ms-search-wrap"><input class="ms-search" type="text" placeholder="Pesquisar..." value="${this._query.replace(/"/g,'&quot;')}"></div>`
+          : '';
+        const allSel = visible.length > 0 && visible.every(i => this._selected.has(String(i.value)));
+        const allHtml = `<label class="ms-item ms-all${allSel?' ms-checked':''}"><input type="checkbox" class="ms-all-cb"${allSel?' checked':''}><span>${allSel?'Limpar seleção':'Selecionar tudo'}</span></label><div class="ms-sep"></div>`;
+        this.dropEl.innerHTML = searchHtml + allHtml + visible.map(item => `<label class="ms-item${this._selected.has(String(item.value))?' ms-checked':''}"><input type="checkbox" value="${item.value.replace(/"/g,'&quot;')}"${this._selected.has(String(item.value))?' checked':''}><span>${item.label}</span></label>`).join('');
+        if (this.searchable) {
+          const inp = this.dropEl.querySelector('.ms-search');
+          inp.addEventListener('click', e => e.stopPropagation());
+          inp.addEventListener('input', e => { this._query = e.target.value; this._renderItems(); if (this.searchable) this.dropEl.querySelector('.ms-search').focus(); });
+          if (this._query) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+        }
+        this.dropEl.querySelector('.ms-all-cb').addEventListener('change', e => {
+          e.stopPropagation();
+          if (e.target.checked) visible.forEach(i => this._selected.add(String(i.value)));
+          else visible.forEach(i => this._selected.delete(String(i.value)));
+          this._renderItems(); this._updateBtn();
+          this.el.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+        this.dropEl.querySelectorAll('input[type="checkbox"]:not(.ms-all-cb)').forEach(cb => {
+          cb.addEventListener('change', e => {
+            e.stopPropagation();
+            if (cb.checked) this._selected.add(cb.value); else this._selected.delete(cb.value);
+            cb.closest('.ms-item').classList.toggle('ms-checked', cb.checked);
+            const iAll = visible.every(i => this._selected.has(String(i.value)));
+            const allCb = this.dropEl.querySelector('.ms-all-cb');
+            if (allCb) {
+              allCb.checked = iAll;
+              allCb.closest('.ms-item').classList.toggle('ms-checked', iAll);
+              const sp = allCb.nextElementSibling; if (sp) sp.textContent = iAll ? 'Limpar seleção' : 'Selecionar tudo';
+            }
+            this._updateBtn();
+            this.el.dispatchEvent(new Event('change', { bubbles: true }));
+          });
+        });
+      }
+      _updateBtn() {
+        const n = this._selected.size;
+        if (n === 0) { this.lblEl.innerHTML = this.placeholder; return; }
+        const labels = [...this._selected].map(v => { const i = this._items.find(x => String(x.value) === v); return i ? i.label : v; });
+        this.lblEl.innerHTML = (n <= 2 ? labels.join(', ') : labels.slice(0,2).join(', ')) + (n > 2 ? ` <span class="ms-count">+${n-2}</span>` : '');
+      }
+      _setOpen(v) {
+        this._isOpen = v;
+        if (v) this._renderItems();
+        this.dropEl.classList.toggle('ms-drop--open', v);
+        this.el.classList.toggle('ms-open', v);
+      }
+    }
+
+    const msAno          = new MultiSelect('ms-ano',          'Todos');
+    const msMes          = new MultiSelect('ms-mes',          'Todos', { searchable: true });
+    const msDia          = new MultiSelect('ms-dia',          'Todos', { searchable: true });
+    const msSemana       = new MultiSelect('ms-semana',       'Todas', { searchable: true });
+    const msPlanta       = new MultiSelect('ms-planta',       'Todas', { searchable: true });
+    const msCliente      = new MultiSelect('ms-cliente',      'Todos', { searchable: true });
+    const msGrupoCliente   = new MultiSelect('ms-grupo-cliente',  'Todos', { searchable: true });
+    const msTransportadora = new MultiSelect('ms-transportadora', 'Todas', { searchable: true });
+    const msResponsavel  = new MultiSelect('ms-responsavel',  'Todos', { searchable: true });
+    // Canal filter removed
+
+    /* ── Date helpers ── */
+    function getMonday(d) {
+      const dt = new Date(d), day = dt.getDay();
+      dt.setDate(dt.getDate() + (day === 0 ? -6 : 1) - day);
+      dt.setHours(0,0,0,0); return dt;
+    }
+    function isoWeekNumber(d) {
+      const dt = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dn = dt.getUTCDay() || 7;
+      dt.setUTCDate(dt.getUTCDate() + 4 - dn);
+      const ys = new Date(Date.UTC(dt.getUTCFullYear(), 0, 1));
+      return Math.ceil((((dt - ys) / 86400000) + 1) / 7);
+    }
+    const pad2    = n => String(n).padStart(2,'0');
+    const isoDate = d => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+    const fmtDM   = d => `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}`;
+
+    /* ── Populate: ANO ── */
+    function populateAnos(preselect) {
+      const cur = new Date().getFullYear();
+      const items = [];
+      for (let y = cur - 2; y <= cur + 1; y++) items.push({ value: String(y), label: String(y) });
+      msAno.populate(items);
+      msAno.setValues(preselect != null ? preselect : [String(cur)]);
+    }
+
+    /* ── Populate: MES ── */
+    function populateMeses(preselect) {
+      const cur = new Date().getMonth() + 1;
+      msMes.populate(MES_PT.map((nm, i) => ({ value: String(i + 1), label: nm })));
+      msMes.setValues(preselect != null ? preselect : [String(cur)]);
+    }
+
+    /* ── Populate: DIA ── */
+    function populateDias() {
+      msDia.populate(
+        Array.from({ length: 31 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) }))
+      );
+    }
+
+    /* ── Populate: SEMANA — cascades from ANO + MES selection ── */
+    function populateSemanas() {
+      const selectedAnos  = msAno.getValues().map(Number).filter(Boolean);
+      const selectedMeses = msMes.getValues().map(Number).filter(Boolean);
+      const today = new Date();
+
+      let startDate, endDate;
+
+      if (selectedAnos.length && selectedMeses.length) {
+        // Show weeks within EVERY selected ANO × MES combination
+        let globalStart = null, globalEnd = null;
+        selectedAnos.forEach(y => {
+          selectedMeses.forEach(m => {
+            const first = new Date(y, m - 1, 1);
+            const last  = new Date(y, m, 0);
+            if (!globalStart || first < globalStart) globalStart = first;
+            if (!globalEnd   || last  > globalEnd)   globalEnd   = last;
+          });
+        });
+        startDate = globalStart;
+        endDate   = globalEnd;
+      } else if (selectedAnos.length) {
+        startDate = new Date(Math.min(...selectedAnos), 0, 1);
+        endDate   = new Date(Math.max(...selectedAnos), 11, 31);
+      } else if (selectedMeses.length) {
+        const y = today.getFullYear();
+        startDate = new Date(y, Math.min(...selectedMeses) - 1, 1);
+        endDate   = new Date(y, Math.max(...selectedMeses), 0);
+      } else {
+        // No ANO/MES: show last 26 weeks
+        const mon = getMonday(today);
+        startDate = new Date(mon); startDate.setDate(startDate.getDate() - 25 * 7);
+        endDate   = today;
+      }
+
+      const weeksMap = new Map();
+      let mon = getMonday(startDate);
+      while (mon <= endDate) {
+        const sun = new Date(mon); sun.setDate(sun.getDate() + 6);
+        const key = isoDate(mon);
+        if (!weeksMap.has(key)) weeksMap.set(key, { mon: new Date(mon), sun: new Date(sun) });
+        mon = new Date(mon); mon.setDate(mon.getDate() + 7);
+      }
+
+      const weeks = [...weeksMap.values()].sort((a, b) => b.mon - a.mon);
+      const prevSelected = new Set(msSemana.getValues());
+      msSemana.populate(weeks.map(({ mon, sun }) => ({
+        value: `${isoDate(mon)}|${isoDate(sun)}`,
+        label: `S${isoWeekNumber(mon)} · ${fmtDM(mon)}-${fmtDM(sun)}/${sun.getFullYear()}`
+      })));
+      // Restore previous selection if the week still exists in the new list
+      const validPrev = weeks
+        .map(({ mon, sun }) => `${isoDate(mon)}|${isoDate(sun)}`)
+        .filter(v => prevSelected.has(v));
+      if (validPrev.length) msSemana.setValues(validPrev);
+    }
+
+    /* ── Build URL params ── */
+    function buildTrendParams(f) {
+      // Para gráficos de evolução temporal: passa ano + dimensões, mas NÃO mes/dia/semana
+      // (filtrar por mês limitaria a série temporal ao mês selecionado)
+      const p = new URLSearchParams();
+      (f.anos           || []).forEach(v => p.append('ano',           v));
+      (f.plantas        || []).forEach(v => p.append('planta',        v));
+      (f.clientes       || []).forEach(v => p.append('cliente',       v));
+      (f.grupos_cliente || []).forEach(v => p.append('grupo_cliente', v));
+      (f.responsaveis || []).forEach(v => p.append('responsavel', v));
+      (f.canais         || []).forEach(v => p.append('canal',         v));
+      (f.pedidos        || []).forEach(v => p.append('pedido',        v));
+      (f.remessas       || []).forEach(v => p.append('remessa',       v));
+      return p;
+    }
+    function buildParams(f) {
+      const p = new URLSearchParams();
+      (f.semanas        || []).forEach(v => p.append('semana',        v));
+      (f.anos           || []).forEach(v => p.append('ano',           v));
+      (f.meses          || []).forEach(v => p.append('mes',           v));
+      (f.dias           || []).forEach(v => p.append('dia',           v));
+      (f.plantas        || []).forEach(v => p.append('planta',        v));
+      (f.clientes       || []).forEach(v => p.append('cliente',       v));
+      (f.grupos_cliente || []).forEach(v => p.append('grupo_cliente', v));
+      (f.canais           || []).forEach(v => p.append('canal',           v));
+      (f.transportadoras  || []).forEach(v => p.append('transportadora',  v));
+      (f.responsaveis     || []).forEach(v => p.append('responsavel',     v));
+      return p;
+    }
+
+    function getFilters() {
+      return {
+        semanas:        msSemana.getValues(),
+        anos:           msAno.getValues(),
+        meses:          msMes.getValues(),
+        dias:           msDia.getValues(),
+        plantas:        msPlanta.getValues(),
+        clientes:       msCliente.getValues(),
+        grupos_cliente: msGrupoCliente.getValues(),
+        responsaveis: msResponsavel.getValues(),
+        canais:          [],
+        transportadoras: msTransportadora.getValues(),
+      };
+    }
+
+    /* ── Load dropdown data ── */
+    async function loadPlantas() {
+      try {
+        const r = await fetch(`${API}/api/otif2/plantas`);
+        msPlanta.populate(await r.json());
+      } catch {}
+    }
+    async function loadClientes(grupos = []) {
+      try {
+        const p = new URLSearchParams();
+        grupos.forEach(v => p.append('grupo_cliente', v));
+        const r    = await fetch(`${API}/api/otif2/clientes?${p}`);
+        const data = await r.json();
+        const prevSelected = msCliente.getValues();
+        msCliente.populate(data);
+        const valid = prevSelected.filter(v => data.includes(v));
+        if (valid.length) msCliente.setValues(valid);
+      } catch {}
+    }
+    async function loadGruposCliente() {
+      try {
+        const r = await fetch(`${API}/api/otif2/grupos-cliente`);
+        msGrupoCliente.populate(await r.json());
+      } catch {}
+    }
+    async function loadTransportadoras() {
+      try {
+        const r = await fetch(`${API}/api/otif2/transportadoras`);
+        msTransportadora.populate(await r.json());
+      } catch {}
+    }
+
+    async function loadResponsaveis() {
+      try { const r = await fetch(`${API}/api/otif2/responsaveis`); msResponsavel.populate(await r.json()); } catch {}
+    }
+
+    /* ── KPI Cards ── */
+    async function loadResumo(f) {
+      try {
+        const r = await fetch(`${API}/api/otif2/resumo?${buildParams(f)}`);
+        const d = await r.json();
+        if (d.error) return;
+
+        const fobLinhas   = Number(d.FOB_LINHAS);
+        const cifLinhas   = Number(d.CIF_LINHAS);
+        const otifFob     = Number(d.OTIF_FOB);
+        const otFob       = Number(d.OT_FOB);
+        const otCif       = Number(d.OT_CIF);
+        const otifCif     = Number(d.OTIF_CIF);
+        const infullFob   = Number(d.INFULL_FOB);
+        const infullCif   = Number(d.INFULL_CIF);
+
+        const otifFobPct   = pct(otifFob,   fobLinhas);
+        const otFobPct     = pct(otFob,     fobLinhas);
+        const otCifPct     = pct(otCif,     cifLinhas);
+        const otifCifPct   = pct(otifCif,   cifLinhas);
+        const infullFobPct = pct(infullFob, fobLinhas);
+        const infullCifPct = pct(infullCif, cifLinhas);
+
+        // Helper: render delta vs meta (pp)
+        function renderDelta(elId, pctValue) {
+          const el = document.getElementById(elId);
+          if (!el) return;
+          const deltaPP = pctValue - OTIF_META;
+          const above = deltaPP >= 0;
+          const arrow = above ? '▲' : '▼';
+          const sign = above ? '+' : '';
+          el.className = 'kpi-delta ' + (above ? 'above' : 'below');
+          el.innerHTML = `<span class="delta-arrow">${arrow}</span> ${sign}${deltaPP.toFixed(2)} pp`;
+        }
+        // Helper: render MoM delta
+        function renderMoM(elId, currPct, prevPct, prevLabel) {
+          const el = document.getElementById(elId);
+          if (!el) return;
+          if (prevPct == null) { el.innerHTML = ''; el.className = 'kpi-delta kpi-month-delta'; return; }
+          const diff = currPct - prevPct;
+          const above = diff >= 0;
+          el.className = 'kpi-delta kpi-month-delta ' + (above ? 'above' : 'below');
+          el.innerHTML = `<span class="delta-arrow">${above ? '▲' : '▼'}</span> ${above ? '+' : ''}${diff.toFixed(2)} pp vs. ${prevLabel}`;
+        }
+
+        // OTIF FOB card (consolidado)
+        const ef = document.getElementById('kpi-otif-fob');
+        ef.textContent = otifFobPct.toFixed(1) + '%';
+        ef.style.color = otifColor(otifFobPct);
+        renderDelta('kpi-delta-fob', otifFobPct);
+        const cf = document.getElementById('kpi-otif-fob-card');
+        cf.classList.remove('k-green','k-amber','k-red','k-blue');
+        cf.classList.add(otifAccent(otifFobPct));
+        document.getElementById('kpi-ot-fob').textContent     = otFobPct.toFixed(1) + '%';
+        document.getElementById('kpi-infull-fob').textContent = infullFobPct.toFixed(1) + '%';
+        document.getElementById('kpi-ot-fob-sub').textContent     = `${brl(otFob)} / ${brl(fobLinhas)}`;
+        document.getElementById('kpi-infull-fob-sub').textContent = `${brl(infullFob)} / ${brl(fobLinhas)}`;
+        document.getElementById('kpi-atraso-fob').innerHTML       = fmtAtraso(d.AVG_ATRASO_FOB);
+
+        // OTIF CIF card (consolidado)
+        const ec = document.getElementById('kpi-otif-cif');
+        ec.textContent = otifCifPct.toFixed(1) + '%';
+        ec.style.color = otifColor(otifCifPct);
+        renderDelta('kpi-delta-cif', otifCifPct);
+        const cc = document.getElementById('kpi-otif-cif-card');
+        cc.classList.remove('k-green','k-amber','k-red','k-blue');
+        cc.classList.add(otifAccent(otifCifPct));
+        document.getElementById('kpi-ot-cif').textContent     = otCifPct.toFixed(1) + '%';
+        document.getElementById('kpi-infull-cif').textContent = infullCifPct.toFixed(1) + '%';
+        document.getElementById('kpi-ot-cif-sub').textContent     = `${brl(otCif)} / ${brl(cifLinhas)}`;
+        document.getElementById('kpi-infull-cif-sub').textContent = `${brl(infullCif)} / ${brl(cifLinhas)}`;
+        document.getElementById('kpi-atraso-cif').innerHTML       = fmtAtraso(d.AVG_ATRASO_CIF);
+
+        // OTIF Geral card
+        const totalLinhas   = Number(d.TOTAL_LINHAS);
+        const otifGeral     = otifFob + otifCif;
+        const otGeralCnt    = otFob + otCif;
+        const infullGeralCnt= infullFob + infullCif;
+        const otifGeralPct  = pct(otifGeral,      totalLinhas);
+        const otGeralPct    = pct(otGeralCnt,     totalLinhas);
+        const infullGeralPct= pct(infullGeralCnt, totalLinhas);
+        const eg = document.getElementById('kpi-otif-geral');
+        eg.textContent = otifGeralPct.toFixed(1) + '%';
+        eg.style.color = otifColor(otifGeralPct);
+        renderDelta('kpi-delta-geral', otifGeralPct);
+        const cg = document.getElementById('kpi-otif-geral-card');
+        cg.classList.remove('k-green','k-amber','k-red','k-blue');
+        cg.classList.add(otifAccent(otifGeralPct));
+        document.getElementById('kpi-ot-geral').textContent     = otGeralPct.toFixed(1) + '%';
+        document.getElementById('kpi-infull-geral').textContent = infullGeralPct.toFixed(1) + '%';
+        document.getElementById('kpi-ot-geral-sub').textContent     = `${brl(otGeralCnt)} / ${brl(totalLinhas)}`;
+        document.getElementById('kpi-infull-geral-sub').textContent = `${brl(infullGeralCnt)} / ${brl(totalLinhas)}`;
+
+        // MoM comparison — fetch previous month
+        const selMeses = f.meses || [];
+        const selAnos  = f.anos  || [];
+        if (selMeses.length === 1 && selAnos.length === 1) {
+          const curMes = Number(selMeses[0]);
+          const curAno = Number(selAnos[0]);
+          const prevMes = curMes === 1 ? 12 : curMes - 1;
+          const prevAno = curMes === 1 ? curAno - 1 : curAno;
+          const prevLabel = MES_PT[prevMes - 1];
+          try {
+            const pp = new URLSearchParams();
+            pp.append('ano', prevAno); pp.append('mes', prevMes);
+            (f.plantas || []).forEach(v => pp.append('planta', v));
+            (f.clientes || []).forEach(v => pp.append('cliente', v));
+            (f.grupos_cliente || []).forEach(v => pp.append('grupo_cliente', v));
+            (f.canais || []).forEach(v => pp.append('canal', v));
+            const rp = await fetch(`${API}/api/otif2/resumo?${pp}`);
+            const dp = await rp.json();
+            if (!dp.error) {
+              const pFobL = Number(dp.FOB_LINHAS) || 1;
+              const pCifL = Number(dp.CIF_LINHAS) || 1;
+              const pTotL = Number(dp.TOTAL_LINHAS) || 1;
+              const pOtifFobPct = pct(Number(dp.OTIF_FOB), pFobL);
+              const pOtifCifPct = pct(Number(dp.OTIF_CIF), pCifL);
+              const pOtifGeralPct = pct(Number(dp.OTIF_FOB) + Number(dp.OTIF_CIF), pTotL);
+              renderMoM('kpi-mom-fob', otifFobPct, pOtifFobPct, prevLabel);
+              renderMoM('kpi-mom-cif', otifCifPct, pOtifCifPct, prevLabel);
+              renderMoM('kpi-mom-geral', otifGeralPct, pOtifGeralPct, prevLabel);
+            } else {
+              renderMoM('kpi-mom-fob', null, null, '');
+              renderMoM('kpi-mom-cif', null, null, '');
+              renderMoM('kpi-mom-geral', null, null, '');
+            }
+          } catch { renderMoM('kpi-mom-fob',null,null,''); renderMoM('kpi-mom-cif',null,null,''); renderMoM('kpi-mom-geral',null,null,''); }
+        } else {
+          renderMoM('kpi-mom-fob', null, null, '');
+          renderMoM('kpi-mom-cif', null, null, '');
+          renderMoM('kpi-mom-geral', null, null, '');
+        }
+
+      } catch (err) { console.warn('Resumo error:', err); }
+    }
+
+    /* ── yRange helper ── */
+    function yRange(values) {
+      const nn = values.filter(v => v != null && !isNaN(v));
+      const mn = nn.length ? Math.min(...nn) : 80;
+      return { min: Math.max(0, Math.floor(mn) - 8), max: 100 };
+    }
+
+    /* ── Render grouped bar chart (empresa or cliente) ── */
+    function buildGroupedChart(canvasId, ndId, data, labelKey, showLabels = true) {
+      const canvas = document.getElementById(canvasId);
+      const ndEl   = document.getElementById(ndId);
+      const existingChart = canvasId === 'chartEmpresa' ? cEmpresa : cCliente;
+      if (existingChart) { existingChart.destroy(); }
+
+      if (!Array.isArray(data) || data.error || !data.length) {
+        ndEl.textContent   = data && data.error ? 'Erro: ' + data.error : 'Sem dados no período.';
+        ndEl.style.display = 'flex'; canvas.style.display = 'none';
+        return null;
+      }
+      ndEl.style.display = 'none'; canvas.style.display = 'block';
+
+      const labels      = data.map(d => d[labelKey] || '—');
+      const fobVals     = data.map(d => +pct(d.OTIF_FOB, d.FOB_LINHAS).toFixed(2));
+      const cifVals     = data.map(d => +pct(d.OTIF_CIF, d.CIF_LINHAS).toFixed(2));
+      const meta96      = labels.map(() => OTIF_META);
+      const c           = chartColors();
+      const { min, max } = yRange([...fobVals, ...cifVals]);
+
+      return new Chart(canvas, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'OTIF FOB %',
+              data: fobVals,
+              backgroundColor: '#c17a2f',
+              borderRadius: 5, order: 3,
+            },
+            {
+              label: 'OTIF CIF %',
+              data: cifVals,
+              backgroundColor: '#1d4ed8',
+              borderRadius: 5, order: 2,
+            },
+            {
+              label: 'Meta (85%)',
+              data: meta96,
+              type: 'line', borderColor: chartColors().meta, borderWidth: 2,
+              borderDash: [7,4], pointRadius: 0, fill: false, order: 1,
+            }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, animation: { duration: 450 },
+          plugins: {
+            barLabels: { display: showLabels },
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => {
+                  if (ctx.datasetIndex === 2) return ` Meta: ${ctx.parsed.y}%`;
+                  return ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: c.tick, font: { weight:'600', size: 11 } } },
+            y: { min, max, grid: { display: false }, ticks: { display: false } }
+          }
+        }
+      });
+    }
+
+    function populateEmpresaTable(data, lbl) {
+      if (!Array.isArray(data) || !data.length) return;
+      empresaChartData = data; // store for sorting
+      const tbody = document.getElementById('bodyEmpresaChart');
+      const tfoot = document.getElementById('footEmpresaChart');
+      const th = document.querySelector('#tableEmpresaChart thead th:first-child');
+      if (th) th.textContent = lbl;
+
+      let totLinhas = 0, totFobL = 0, totCifL = 0;
+      let sumOtFob = 0, sumIfFob = 0, sumOtifFob = 0, sumOtCif = 0, sumIfCif = 0, sumOtifCif = 0;
+      let sumAtrasoFob = 0, sumAtrasoCif = 0, countAtrasoFob = 0, countAtrasoCif = 0;
+
+      tbody.innerHTML = data.map(d => {
+        const linhas = +d.TOTAL_LINHAS || 0;
+        const fobL = +d.FOB_LINHAS || 0;
+        const cifL = +d.CIF_LINHAS || 0;
+        const otFob = pct(d.OT_FOB, d.FOB_LINHAS);
+        const ifFob = pct(d.INFULL_FOB, d.FOB_LINHAS);
+        const otifFob = pct(d.OTIF_FOB, d.FOB_LINHAS);
+        const otCif = pct(d.OT_CIF, d.CIF_LINHAS);
+        const ifCif = pct(d.INFULL_CIF, d.CIF_LINHAS);
+        const otifCif = pct(d.OTIF_CIF, d.CIF_LINHAS);
+        const atrasoFob = Math.round(+d.AVG_ATRASO_FOB || 0);
+        const atrasoCif = Math.round(+d.AVG_ATRASO_CIF || 0);
+        totLinhas += linhas; totFobL += fobL; totCifL += cifL;
+        sumOtFob += (+d.OT_FOB||0); sumIfFob += (+d.INFULL_FOB||0); sumOtifFob += (+d.OTIF_FOB||0);
+        sumOtCif += (+d.OT_CIF||0); sumIfCif += (+d.INFULL_CIF||0); sumOtifCif += (+d.OTIF_CIF||0);
+        if (+d.AVG_ATRASO_FOB) { sumAtrasoFob += +d.AVG_ATRASO_FOB; countAtrasoFob++; }
+        if (+d.AVG_ATRASO_CIF) { sumAtrasoCif += +d.AVG_ATRASO_CIF; countAtrasoCif++; }
+        const noFob = fobL === 0;
+        const noCif = cifL === 0;
+        return `<tr>
+          <td style="font-weight:700">${d.GRUPO || '—'}</td>
+          <td style="text-align:center">${linhas.toLocaleString('pt-BR')}</td>
+          <td class="col-fob">${noFob ? '' : pctCell(otFob)}</td>
+          <td class="col-fob">${noFob ? '' : pctCell(ifFob)}</td>
+          <td class="col-fob" style="text-align:center">${noFob ? '' : atrasoFob}</td>
+          <td class="col-fob">${noFob ? '' : pctCell(otifFob)}</td>
+          <td class="col-cif col-sep-left">${noCif ? '' : pctCell(otCif)}</td>
+          <td class="col-cif">${noCif ? '' : pctCell(ifCif)}</td>
+          <td class="col-cif" style="text-align:center">${noCif ? '' : atrasoCif}</td>
+          <td class="col-cif">${noCif ? '' : pctCell(otifCif)}</td>
+        </tr>`;
+      }).join('');
+
+      tfoot.style.display = '';
+      document.getElementById('fec-total').textContent = totLinhas.toLocaleString('pt-BR');
+      document.getElementById('fec-ot-fob').innerHTML = pctCell(totFobL > 0 ? (sumOtFob/totFobL)*100 : 0);
+      document.getElementById('fec-atraso-fob').textContent = countAtrasoFob > 0 ? (sumAtrasoFob/countAtrasoFob).toFixed(1) : '—';
+      document.getElementById('fec-if-fob').innerHTML = pctCell(totFobL > 0 ? (sumIfFob/totFobL)*100 : 0);
+      document.getElementById('fec-otif-fob').innerHTML = pctCell(totFobL > 0 ? (sumOtifFob/totFobL)*100 : 0);
+      document.getElementById('fec-ot-cif').innerHTML = pctCell(totCifL > 0 ? (sumOtCif/totCifL)*100 : 0);
+      document.getElementById('fec-atraso-cif').textContent = countAtrasoCif > 0 ? (sumAtrasoCif/countAtrasoCif).toFixed(1) : '—';
+      document.getElementById('fec-if-cif').innerHTML = pctCell(totCifL > 0 ? (sumIfCif/totCifL)*100 : 0);
+      document.getElementById('fec-otif-cif').innerHTML = pctCell(totCifL > 0 ? (sumOtifCif/totCifL)*100 : 0);
+    }
+
+    async function loadChartEmpresa(f) {
+      try {
+        let endpoint, modeParam, lbl;
+        if (chartEmpresaMode === 'transportadora') {
+          endpoint = 'por-transportadora'; modeParam = ''; lbl = 'Transportadora';
+        } else if (chartEmpresaMode === 'grupo') {
+          endpoint = 'por-cliente'; modeParam = '&mode=grupo'; lbl = 'Grupo Cliente';
+        } else {
+          endpoint = 'por-planta'; modeParam = ''; lbl = 'Empresa';
+        }
+        const r    = await fetch(`${API}/api/otif2/${endpoint}?${buildParams(f)}${modeParam}`);
+        const data = await r.json();
+        document.getElementById('ttl-chart-empresa').textContent = `OTIF por ${lbl}`;
+        // Populate table view first (full names)
+        populateEmpresaTable(data, lbl);
+        // Truncate labels for chart
+        if (Array.isArray(data)) {
+          data.forEach(d => { if (d.GRUPO && d.GRUPO.length > 12) d.GRUPO = d.GRUPO.substring(0, 9) + '...'; });
+        }
+        cEmpresa = buildGroupedChart('chartEmpresa', 'nd-empresa', data, 'GRUPO');
+      } catch (err) {
+        document.getElementById('nd-empresa').textContent = 'Erro: ' + err.message;
+        document.getElementById('nd-empresa').style.display = 'flex';
+        document.getElementById('chartEmpresa').style.display = 'none';
+      }
+    }
+
+    async function loadChartCliente(f) {
+      try {
+        const p = buildParams(f);
+        const r    = await fetch(`${API}/api/otif2/por-cliente?${p}&mode=${chartClienteMode}`);
+        const data = await r.json();
+        const lbl  = chartClienteMode === 'cliente' ? 'Cliente' : 'Grupo Cliente';
+        document.getElementById('ttl-chart-cliente').textContent = `OTIF por ${lbl}`;
+        // Truncar nomes a 9 chars para melhor visualização no eixo X
+        if (Array.isArray(data)) {
+          data.forEach(d => { if (d.GRUPO && d.GRUPO.length > 9) d.GRUPO = d.GRUPO.substring(0, 9); });
+        }
+        cCliente = buildGroupedChart('chartCliente', 'nd-cliente', data, 'GRUPO', false);
+      } catch (err) {
+        document.getElementById('nd-cliente').textContent = 'Erro: ' + err.message;
+        document.getElementById('nd-cliente').style.display = 'flex';
+        document.getElementById('chartCliente').style.display = 'none';
+      }
+    }
+
+    /* ── Chart Evolução Mensal / Semanal ── */
+    function populateMensalTable(data, isSem) {
+      if (!Array.isArray(data) || !data.length) return;
+      mensalChartData = data; mensalChartIsSem = isSem; // store for sorting
+      const tbody = document.getElementById('bodyMensal');
+      const tfoot = document.getElementById('footMensal');
+      const pad2 = n => String(n).padStart(2,'0');
+
+      let totLinhas = 0, totFobL = 0, totCifL = 0;
+      let sumOtFob = 0, sumIfFob = 0, sumOtifFob = 0, sumOtCif = 0, sumIfCif = 0, sumOtifCif = 0;
+      let sumAtrasoFob = 0, sumAtrasoCif = 0, countAtrasoFob = 0, countAtrasoCif = 0;
+
+      tbody.innerHTML = data.map(d => {
+        const label = isSem
+          ? (() => { const dt = new Date(d.DT_SEGUNDA + 'T00:00:00'); return `S${d.SEMANA_NUM} · ${pad2(dt.getDate())}/${pad2(dt.getMonth()+1)}`; })()
+          : `${MES_PT[(+d.MES)-1]}/${String(d.ANO).slice(2)}`;
+        const linhas = +d.TOTAL_LINHAS || 0;
+        const fobL = +d.FOB_LINHAS || 0;
+        const cifL = +d.CIF_LINHAS || 0;
+        const otFob = pct(d.OT_FOB, d.FOB_LINHAS);
+        const ifFob = pct(d.INFULL_FOB, d.FOB_LINHAS);
+        const otifFob = pct(d.OTIF_FOB, d.FOB_LINHAS);
+        const otCif = pct(d.OT_CIF, d.CIF_LINHAS);
+        const ifCif = pct(d.INFULL_CIF, d.CIF_LINHAS);
+        const otifCif = pct(d.OTIF_CIF, d.CIF_LINHAS);
+        const atrasoFob = (+d.AVG_ATRASO_FOB || 0).toFixed(1);
+        const atrasoCif = (+d.AVG_ATRASO_CIF || 0).toFixed(1);
+
+        totLinhas += linhas; totFobL += fobL; totCifL += cifL;
+        sumOtFob += (+d.OT_FOB||0); sumIfFob += (+d.INFULL_FOB||0); sumOtifFob += (+d.OTIF_FOB||0);
+        sumOtCif += (+d.OT_CIF||0); sumIfCif += (+d.INFULL_CIF||0); sumOtifCif += (+d.OTIF_CIF||0);
+        if (+d.AVG_ATRASO_FOB) { sumAtrasoFob += +d.AVG_ATRASO_FOB; countAtrasoFob++; }
+        if (+d.AVG_ATRASO_CIF) { sumAtrasoCif += +d.AVG_ATRASO_CIF; countAtrasoCif++; }
+
+        return `<tr>
+          <td style="font-weight:700">${label}</td>
+          <td style="text-align:right">${linhas.toLocaleString('pt-BR')}</td>
+          <td class="col-fob">${pctCell(otFob)}</td>
+          <td class="col-fob" style="text-align:center">${atrasoFob}</td>
+          <td class="col-fob">${pctCell(ifFob)}</td>
+          <td class="col-fob">${pctCell(otifFob)}</td>
+          <td class="col-cif">${pctCell(otCif)}</td>
+          <td class="col-cif" style="text-align:center">${atrasoCif}</td>
+          <td class="col-cif">${pctCell(ifCif)}</td>
+          <td class="col-cif">${pctCell(otifCif)}</td>
+        </tr>`;
+      }).join('');
+
+      tfoot.style.display = '';
+      document.getElementById('fm-total').textContent = totLinhas.toLocaleString('pt-BR');
+      document.getElementById('fm-ot-fob').innerHTML = pctCell(totFobL > 0 ? (sumOtFob/totFobL)*100 : 0);
+      document.getElementById('fm-atraso-fob').textContent = countAtrasoFob > 0 ? (sumAtrasoFob/countAtrasoFob).toFixed(1) : '—';
+      document.getElementById('fm-if-fob').innerHTML = pctCell(totFobL > 0 ? (sumIfFob/totFobL)*100 : 0);
+      document.getElementById('fm-otif-fob').innerHTML = pctCell(totFobL > 0 ? (sumOtifFob/totFobL)*100 : 0);
+      document.getElementById('fm-ot-cif').innerHTML = pctCell(totCifL > 0 ? (sumOtCif/totCifL)*100 : 0);
+      document.getElementById('fm-atraso-cif').textContent = countAtrasoCif > 0 ? (sumAtrasoCif/countAtrasoCif).toFixed(1) : '—';
+      document.getElementById('fm-if-cif').innerHTML = pctCell(totCifL > 0 ? (sumIfCif/totCifL)*100 : 0);
+      document.getElementById('fm-otif-cif').innerHTML = pctCell(totCifL > 0 ? (sumOtifCif/totCifL)*100 : 0);
+    }
+
+    async function loadChartMensal(f) {
+      const canvas = document.getElementById('chartMensal');
+      const ndEl   = document.getElementById('nd-mensal');
+      const isSem  = mensalMode === 'semana';
+
+      document.getElementById('ttl-mensal').textContent = isSem ? 'Evolução Semanal' : 'Evolução Mensal';
+
+      try {
+        const p = buildTrendParams(f);
+        const url = isSem ? `${API}/api/otif2/semanal?${p}` : `${API}/api/otif2/mensal?${p}`;
+        const r    = await fetch(url);
+        const data = await r.json();
+        if (cMensal) { cMensal.destroy(); cMensal = null; }
+
+        if (!Array.isArray(data) || data.error || !data.length) {
+          ndEl.textContent   = data && data.error ? 'Erro: ' + data.error : 'Sem dados no período.';
+          ndEl.style.display = 'flex'; canvas.style.display = 'none'; return;
+        }
+        ndEl.style.display = 'none'; canvas.style.display = 'block';
+        populateMensalTable(data, isSem);
+
+        let labels, otifFobVals, otifCifVals;
+
+        if (isSem) {
+          const pad2 = n => String(n).padStart(2,'0');
+          labels = data.map(d => {
+            const dt = new Date(d.DT_SEGUNDA + 'T00:00:00');
+            return `S${d.SEMANA_NUM} · ${pad2(dt.getDate())}/${pad2(dt.getMonth()+1)}`;
+          });
+          otifFobVals = data.map(d => +pct(d.OTIF_FOB, d.FOB_LINHAS).toFixed(2));
+          otifCifVals = data.map(d => +pct(d.OTIF_CIF, d.CIF_LINHAS).toFixed(2));
+        } else {
+          let slots;
+          if (f.anos && f.anos.length) {
+            slots = [];
+            f.anos.slice().sort().forEach(ano => {
+              for (let m = 1; m <= 12; m++) slots.push({ ANO: +ano, MES: m });
+            });
+          } else {
+            slots = data.map(d => ({ ANO: +d.ANO, MES: +d.MES }));
+          }
+          const now = new Date();
+          const curAno = now.getFullYear(), curMes = now.getMonth() + 1;
+          slots = slots.filter(s => s.ANO < curAno || (s.ANO === curAno && s.MES <= curMes));
+          const byKey = {};
+          data.forEach(d => { byKey[`${d.ANO}-${+d.MES}`] = d; });
+          labels      = slots.map(s => `${MES_PT[s.MES-1]}/${String(s.ANO).slice(2)}`);
+          otifFobVals = slots.map(s => { const d = byKey[`${s.ANO}-${s.MES}`]; return d ? +pct(d.OTIF_FOB, d.FOB_LINHAS).toFixed(2) : null; });
+          otifCifVals = slots.map(s => { const d = byKey[`${s.ANO}-${s.MES}`]; return d ? +pct(d.OTIF_CIF, d.CIF_LINHAS).toFixed(2) : null; });
+        }
+
+        const meta96 = labels.map(() => OTIF_META);
+        const c      = chartColors();
+        const { min } = yRange([...otifFobVals, ...otifCifVals]);
+        const barLabelDisplay = true;
+
+        cMensal = new Chart(canvas, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              { label: 'OTIF FOB %', data: otifFobVals, backgroundColor: otifFobVals.map(v => v == null ? 'transparent' : '#c17a2f'), borderRadius: 4, order: 2 },
+              { label: 'OTIF CIF %', data: otifCifVals, backgroundColor: otifCifVals.map(v => v == null ? 'transparent' : '#1d4ed8'), borderRadius: 4, order: 3 },
+              { label: 'Meta (85%)', data: meta96, type: 'line', borderColor: chartColors().meta, borderWidth: 2, borderDash: [7,4], pointRadius: 0, fill: false, order: 1 },
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false, animation: { duration: 450 },
+            plugins: {
+              barLabels: { display: barLabelDisplay },
+              legend: { display: false },
+              tooltip: { enabled: false }
+            },
+            scales: {
+              x: { grid: { display: false }, ticks: { color: c.tick, font: { size: isSem ? 9 : 10 }, maxRotation: isSem ? 45 : 0 } },
+              y: { min, max: 100, grid: { display: false }, ticks: { display: false } }
+            }
+          }
+        });
+      } catch (err) {
+        ndEl.textContent = 'Erro: ' + err.message; ndEl.style.display = 'flex'; canvas.style.display = 'none';
+      }
+    }
+
+    /* ── Generic table render ── */
+    function calcRow(d) {
+      const total     = Number(d.TOTAL_LINHAS);
+      const fobLinhas = Number(d.FOB_LINHAS);
+      const cifLinhas = Number(d.CIF_LINHAS);
+      return {
+        ...d,
+        _total:          total,
+        _fobLinhas:      fobLinhas,
+        _cifLinhas:      cifLinhas,
+        _otifFob:        Number(d.OTIF_FOB),
+        _otFob:          Number(d.OT_FOB),
+        _otCif:          Number(d.OT_CIF),
+        _otifCif:        Number(d.OTIF_CIF),
+        _infullFob:      Number(d.INFULL_FOB),
+        _infullCif:      Number(d.INFULL_CIF),
+        _otifFobPct:     pct(d.OTIF_FOB,    fobLinhas),
+        _otFobPct:       pct(d.OT_FOB,      fobLinhas),
+        _otCifPct:       pct(d.OT_CIF,      cifLinhas),
+        _otifCifPct:     pct(d.OTIF_CIF,    cifLinhas),
+        _infullFobPct:   pct(d.INFULL_FOB,  fobLinhas),
+        _infullCifPct:   pct(d.INFULL_CIF,  cifLinhas),
+        _avgAtrasofob:   Number(d.AVG_ATRASO_FOB) || 0,
+        _avgAtrasocif:   Number(d.AVG_ATRASO_CIF) || 0,
+      };
+    }
+
+    function barCell(v, pctVal) {
+      const c = otifColor(pctVal);
+      return `<div style="position:relative;background:rgba(255,255,255,.06);border-radius:4px;height:22px;overflow:hidden"><div style="position:absolute;left:0;top:0;height:100%;width:${Math.min(pctVal,100).toFixed(1)}%;background:${c};border-radius:4px;opacity:.25"></div><span style="position:relative;font-weight:700;font-size:.8rem;line-height:22px;display:block;text-align:center;color:${c}">${pctVal.toFixed(1)}%</span></div>`;
+    }
+
+    function pctCell(pctVal) {
+      const c = otifColor(pctVal);
+      return `<div style="position:relative;background:rgba(255,255,255,.06);border-radius:4px;height:22px;overflow:hidden"><div style="position:absolute;left:0;top:0;height:100%;width:${Math.min(pctVal,100).toFixed(1)}%;background:${c};border-radius:4px;opacity:.25"></div><span style="position:relative;font-weight:700;font-size:.8rem;line-height:22px;display:block;text-align:center;color:${c}">${pctVal.toFixed(1)}%</span></div>`;
+    }
+    function fmtAtraso(min) {
+      const m = Math.round(Number(min) || 0);
+      if (m <= 0) return '<span style="color:#64748b">—</span>';
+      const txt = m < 60 ? `${m} min` : (m % 60 > 0 ? `${Math.floor(m/60)}h ${m%60}min` : `${Math.floor(m/60)}h`);
+      return `<span style="color:#f59e0b;font-weight:700">${txt}</span>`;
+    }
+    function ndCell(pctVal, linhas) {
+      if (linhas === 0) return `<span style="color:#64748b">—</span>`;
+      return pctCell(pctVal);
+    }
+
+    function renderTable(tableData, sortState, bodyId, footPrefix, headId, labelCol) {
+      const tbody = document.getElementById(bodyId);
+      const tfoot = document.getElementById(footPrefix.replace('body','foot').replace('Body','Foot'));
+      const footEl = document.getElementById(footPrefix === 'bodyEmpresa' ? 'footEmpresa' : 'footCliente');
+
+      const data = tableData.map(calcRow);
+
+      if (sortState.col) {
+        const dir = sortState.dir === 'asc' ? 1 : -1;
+        data.sort((a, b) => {
+          if (sortState.col === 'GRUPO') return dir * (a.GRUPO||'').localeCompare(b.GRUPO||'');
+          const map = {
+            TOTAL_LINHAS:  '_total',
+            OT_FOB_PCT:    '_otFobPct',
+            AVG_ATRASO_FOB:'_avgAtrasofob',
+            IF_FOB_PCT:    '_infullFobPct',
+            OTIF_FOB_CNT:  '_otifFobPct',
+            OT_CIF_PCT:    '_otCifPct',
+            AVG_ATRASO_CIF:'_avgAtrasocif',
+            IF_CIF_PCT:    '_infullCifPct',
+            OTIF_CIF_CNT:  '_otifCifPct',
+          };
+          return dir * ((a[map[sortState.col]] || 0) - (b[map[sortState.col]] || 0));
+        });
+      }
+
+      let totTotal = 0, totFobLinhas = 0, totCifLinhas = 0, totOtifFob = 0, totOtFob = 0, totOtCif = 0, totOtifCif = 0, totInfullFob = 0, totInfullCif = 0;
+      tbody.innerHTML = data.map(d => {
+        totTotal      += d._total;
+        totFobLinhas  += d._fobLinhas;
+        totCifLinhas  += d._cifLinhas;
+        totOtifFob    += d._otifFob;
+        totOtFob      += d._otFob;
+        totOtCif      += d._otCif;
+        totOtifCif    += d._otifCif;
+        totInfullFob  += d._infullFob;
+        totInfullCif  += d._infullCif;
+        const noFob = d._fobLinhas === 0;
+        const noCif = d._cifLinhas === 0;
+        return `<tr>
+          <td class="grupo-lbl">${d.GRUPO || '—'}</td>
+          <td>${brl(d._total)}</td>
+          <td>${ndCell(d._otFobPct,     d._fobLinhas)}</td>
+          <td>${noFob ? '<span style="color:#64748b">—</span>' : fmtAtraso(d._avgAtrasofob)}</td>
+          <td>${ndCell(d._infullFobPct, d._fobLinhas)}</td>
+          <td>${noFob ? '<span style="color:#64748b">—</span>' : barCell(d._otifFob, d._otifFobPct)}</td>
+          <td>${ndCell(d._otCifPct,     d._cifLinhas)}</td>
+          <td>${noCif ? '<span style="color:#64748b">—</span>' : fmtAtraso(d._avgAtrasocif)}</td>
+          <td>${ndCell(d._infullCifPct, d._cifLinhas)}</td>
+          <td>${noCif ? '<span style="color:#64748b">—</span>' : barCell(d._otifCif, d._otifCifPct)}</td>
+        </tr>`;
+      }).join('');
+
+      const p = footPrefix === 'bodyEmpresa' ? 'fe' : 'fc';
+      const totOtifFobPct    = pct(totOtifFob,    totFobLinhas);
+      const totOtFobPct      = pct(totOtFob,      totFobLinhas);
+      const totOtCifPct      = pct(totOtCif,      totCifLinhas);
+      const totOtifCifPct    = pct(totOtifCif,    totCifLinhas);
+      const totInfullFobPct  = pct(totInfullFob,  totFobLinhas);
+      const totInfullCifPct  = pct(totInfullCif,  totCifLinhas);
+
+      const fmtFob = (v) => totFobLinhas === 0 ? '<strong style="color:#64748b">—</strong>' : `<div style="position:relative;background:rgba(255,255,255,.06);border-radius:4px;height:22px;overflow:hidden"><div style="position:absolute;left:0;top:0;height:100%;width:${Math.min(v,100).toFixed(1)}%;background:${otifColor(v)};border-radius:4px;opacity:.25"></div><span style="position:relative;font-weight:800;font-size:.8rem;line-height:22px;display:block;text-align:center;color:${otifColor(v)}">${v.toFixed(1)}%</span></div>`;
+      const fmtCif = (v) => totCifLinhas === 0 ? '<strong style="color:#64748b">—</strong>' : `<div style="position:relative;background:rgba(255,255,255,.06);border-radius:4px;height:22px;overflow:hidden"><div style="position:absolute;left:0;top:0;height:100%;width:${Math.min(v,100).toFixed(1)}%;background:${otifColor(v)};border-radius:4px;opacity:.25"></div><span style="position:relative;font-weight:800;font-size:.8rem;line-height:22px;display:block;text-align:center;color:${otifColor(v)}">${v.toFixed(1)}%</span></div>`;
+      document.getElementById(`${p}-total`).textContent         = brl(totTotal);
+      document.getElementById(`${p}-ot-fob-pct`).innerHTML      = fmtFob(totOtFobPct);
+      document.getElementById(`${p}-if-fob-pct`).innerHTML      = fmtFob(totInfullFobPct);
+      document.getElementById(`${p}-otif-fob-pct`).innerHTML    = fmtFob(totOtifFobPct);
+      document.getElementById(`${p}-ot-cif-pct`).innerHTML      = fmtCif(totOtCifPct);
+      document.getElementById(`${p}-if-cif-pct`).innerHTML      = fmtCif(totInfullCifPct);
+      document.getElementById(`${p}-otif-cif-pct`).innerHTML    = fmtCif(totOtifCifPct);
+      footEl.style.display = '';
+
+      document.querySelectorAll(`#${headId} th`).forEach(th => {
+        th.classList.remove('sort-asc','sort-desc');
+        if (th.dataset.sort === sortState.col) th.classList.add(sortState.dir === 'asc' ? 'sort-asc' : 'sort-desc');
+      });
+    }
+
+    async function loadTableEmpresa(f) {
+      const tbody = document.getElementById('bodyEmpresa');
+      const footEl = document.getElementById('footEmpresa');
+      tbody.innerHTML = '<tr class="fr-state"><td colspan="9">Carregando...</td></tr>';
+      footEl.style.display = 'none';
+      dataEmpresa = [];
+      try {
+        const r    = await fetch(`${API}/api/otif2/por-planta?${buildParams(f)}`);
+        const data = await r.json();
+        if (!Array.isArray(data) || !data.length || data.error) {
+          tbody.innerHTML = `<tr class="fr-state"><td colspan="9" ${data.error?'style="color:#DA2E39"':''}>${data.error?'Erro: '+data.error:'Nenhum resultado.'}</td></tr>`;
+          document.getElementById('subEmpresa').textContent = 'Sem dados';
+          return;
+        }
+        dataEmpresa = data;
+        renderTable(dataEmpresa, sortEmpresa, 'bodyEmpresa', 'bodyEmpresa', 'headEmpresa', 'GRUPO');
+        document.getElementById('subEmpresa').textContent = `${data.length} empresa(s)`;
+      } catch (err) {
+        tbody.innerHTML = `<tr class="fr-state"><td colspan="9" style="color:#DA2E39">Erro: ${err.message}</td></tr>`;
+      }
+    }
+
+    async function loadTableCliente(f) {
+      const tbody = document.getElementById('bodyCliente');
+      const footEl = document.getElementById('footCliente');
+      tbody.innerHTML = '<tr class="fr-state"><td colspan="9">Carregando...</td></tr>';
+      footEl.style.display = 'none';
+      dataCliente = [];
+      try {
+        const r    = await fetch(`${API}/api/otif2/por-cliente?${buildParams(f)}&mode=${tableClienteMode}`);
+        const data = await r.json();
+        if (!Array.isArray(data) || !data.length || data.error) {
+          tbody.innerHTML = `<tr class="fr-state"><td colspan="9" ${data.error?'style="color:#DA2E39"':''}>${data.error?'Erro: '+data.error:'Nenhum resultado.'}</td></tr>`;
+          document.getElementById('subCliente').textContent = 'Sem dados';
+          return;
+        }
+        dataCliente = data;
+        const dimLabel = tableClienteMode === 'cliente' ? 'Cliente' : 'Grupo Cliente';
+        document.querySelector('#headCliente th[data-sort="GRUPO"]').childNodes[0].textContent = dimLabel + ' ';
+        renderTable(dataCliente, sortCliente, 'bodyCliente', 'bodyCliente', 'headCliente', 'GRUPO');
+        const noun = tableClienteMode === 'cliente' ? 'cliente(s)' : 'grupo(s)';
+        document.getElementById('subCliente').textContent = `${data.length} ${noun}`;
+      } catch (err) {
+        tbody.innerHTML = `<tr class="fr-state"><td colspan="9" style="color:#DA2E39">Erro: ${err.message}</td></tr>`;
+      }
+    }
+
+    /* ── Load all ── */
+    async function loadAll() {
+      const f = getFilters();
+      await Promise.all([
+        loadResumo(f),
+        loadChartEmpresa(f),
+        loadChartMensal(f),
+      ]);
+    }
+
+    document.querySelectorAll('.btn-detail').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const tbl = document.getElementById(this.dataset.table);
+        const compact = tbl.classList.toggle('tbl-compact');
+        this.classList.toggle('active', !compact);
+        this.textContent = compact ? '＋ Detalhes' : '－ Menos';
+        // Expandir card para largura total quando detalhes estão visíveis
+        const card = this.closest('.fr-table-card');
+        if (card) card.classList.toggle('expanded', !compact);
+      });
+    });
+
+    /* ── Sort headers ── */
+    function bindSort(headId, sortState, dataRef, bodyId, footPrefix, labelCol) {
+      document.querySelectorAll(`#${headId} th[data-sort]`).forEach(th => {
+        th.addEventListener('click', () => {
+          const col = th.dataset.sort;
+          sortState.dir = (sortState.col === col && sortState.dir === 'asc') ? 'desc' : 'asc';
+          sortState.col = col;
+          if (dataRef().length) renderTable(dataRef(), sortState, bodyId, footPrefix, headId, labelCol);
+        });
+      });
+    }
+    bindSort('headEmpresa', sortEmpresa, () => dataEmpresa, 'bodyEmpresa', 'bodyEmpresa', 'GRUPO');
+    bindSort('headCliente', sortCliente, () => dataCliente, 'bodyCliente', 'bodyCliente', 'GRUPO');
+
+    /* ── FOB/CIF column visibility sub-toggle ──
+       Both buttons active by default → all columns visible.
+       Clicking an active button hides that group.
+       At least one must stay active (min selection guard). */
+    function bindFobCifToggle(toggleId, tableId) {
+      const toggle = document.getElementById(toggleId);
+      if (!toggle) return;
+      const table = document.getElementById(tableId);
+      const btns  = toggle.querySelectorAll('.cdt-btn');
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const col      = btn.dataset.col;
+          const isActive = btn.classList.contains('active');
+          const otherActive = [...btns].some(b => b !== btn && b.classList.contains('active'));
+          if (isActive && !otherActive) return; // guard: keep at least one active
+          btn.classList.toggle('active', !isActive);
+          table.classList.toggle('hide-' + col, isActive);
+        });
+      });
+    }
+    bindFobCifToggle('fobCifToggle-empresa', 'tableEmpresaChart');
+    bindFobCifToggle('fobCifToggle-mensal',  'tableMensal');
+
+    /* ── Debounce ── */
+    const _deb = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+    const autoLoad = _deb(loadAll, 600);
+
+    document.getElementById('ms-transportadora').addEventListener('change', () => { _savePageState(); autoLoad(); });
+    document.getElementById('ms-planta').addEventListener('change',  () => { _savePageState(); autoLoad(); });
+    document.getElementById('ms-cliente').addEventListener('change', () => { _savePageState(); autoLoad(); });
+    document.getElementById('ms-grupo-cliente').addEventListener('change', () => {
+      _savePageState();
+      loadClientes(msGrupoCliente.getValues()).then(() => autoLoad());
+    });
+
+    /* ANO / MES: repopula semanas e recarrega */
+    document.getElementById('ms-ano').addEventListener('change', () => { populateSemanas(); _savePageState(); autoLoad(); });
+    document.getElementById('ms-mes').addEventListener('change', () => { populateSemanas(); _savePageState(); autoLoad(); });
+
+    /* DIA / SEMANA: só recarrega */
+    document.getElementById('ms-dia').addEventListener('change',    () => { _savePageState(); autoLoad(); });
+    document.getElementById('ms-semana').addEventListener('change', () => { _savePageState(); autoLoad(); });
+    document.getElementById('ms-responsavel').addEventListener('change', () => { _savePageState(); autoLoad(); });
+
+    document.getElementById('btnClear').addEventListener('click', () => {
+      populateAnos();   // reseta para ano atual
+      populateMeses();  // reseta para mês atual
+      msDia.reset();
+      msSemana.reset();
+      populateSemanas(); // repopula semanas com base no ano/mês atual
+      msPlanta.reset();
+      msGrupoCliente.reset();
+      loadClientes([]);
+      msCliente.reset();
+      msTransportadora.reset();
+      msResponsavel.reset();
+      loadAll();
+    });
+
+    /* ── Export Excel ── */
+    document.getElementById('btnExportOtif').addEventListener('click', exportOtifExcel);
+
+    async function exportOtifExcel() {
+      if (typeof XLSX === 'undefined') { alert('Biblioteca de export não carregada. Recarregue a página.'); return; }
+      const btn = document.getElementById('btnExportOtif');
+      btn.disabled = true; btn.textContent = '⏳ Exportando...';
+      try {
+        const f = getFilters();
+        const params = buildParams(f);
+        const exportDate = new Date().toLocaleString('pt-BR');
+
+        // Fetch fresh data for all tabs
+        const [rPlanta, rGrupo] = await Promise.all([
+          fetch(`${API}/api/otif2/por-planta?${params}`).then(r => r.json()),
+          fetch(`${API}/api/otif2/por-cliente?${params}&mode=grupo`).then(r => r.json()),
+        ]);
+
+        const wb = XLSX.utils.book_new();
+
+        function otifRow(d, label) {
+          const fobL=+d.FOB_LINHAS||0, cifL=+d.CIF_LINHAS||0;
+          return [label,(+d.TOTAL_LINHAS||0),
+            fobL>0?+pct(d.OT_FOB,d.FOB_LINHAS).toFixed(1):null,
+            fobL>0?+pct(d.INFULL_FOB,d.FOB_LINHAS).toFixed(1):null,
+            fobL>0?+pct(d.OTIF_FOB,d.FOB_LINHAS).toFixed(1):null,
+            cifL>0?+pct(d.OT_CIF,d.CIF_LINHAS).toFixed(1):null,
+            cifL>0?+pct(d.INFULL_CIF,d.CIF_LINHAS).toFixed(1):null,
+            cifL>0?+pct(d.OTIF_CIF,d.CIF_LINHAS).toFixed(1):null,
+            exportDate];
+        }
+
+        function addTableSheet(wb, aoa, sheetName, cols) {
+          const ws = XLSX.utils.aoa_to_sheet(aoa);
+          ws['!cols'] = cols;
+          // Native Excel table (auto-filter + banded rows)
+          if (aoa.length > 1) {
+            const rng = XLSX.utils.decode_range(ws['!ref']);
+            ws['!autofilter'] = { ref: ws['!ref'] };
+          }
+          XLSX.utils.book_append_sheet(wb, ws, sheetName);
+        }
+
+        const hdr = ['Dimensão','Remessas','OT FOB %','IF FOB %','OTIF FOB %','OT CIF %','IF CIF %','OTIF CIF %','Data Exportação'];
+        const cols1 = [{wch:26},{wch:10},{wch:10},{wch:10},{wch:11},{wch:10},{wch:10},{wch:11},{wch:22}];
+
+        // Aba 1: OTIF por Planta
+        const s1 = [hdr.slice()];
+        if (Array.isArray(rPlanta) && rPlanta.length) {
+          rPlanta.forEach(d => s1.push(otifRow(d, d.GRUPO||d.PLANTA||'—')));
+        }
+        addTableSheet(wb, s1, 'OTIF por Planta', cols1);
+
+        // Aba 2: OTIF por Grupo Cliente
+        const s2 = [hdr.slice()];
+        if (Array.isArray(rGrupo) && rGrupo.length) {
+          rGrupo.forEach(d => s2.push(otifRow(d, d.GRUPO||'—')));
+        }
+        addTableSheet(wb, s2, 'OTIF por Grupo Cliente', cols1);
+
+        // Aba 3: Evolução
+        const s3 = [['Período','Remessas','OT FOB %','Atraso FOB (min)','IF FOB %','OTIF FOB %','OT CIF %','Atraso CIF (min)','IF CIF %','OTIF CIF %']];
+        if (mensalChartData && mensalChartData.length) {
+          const isSem = mensalChartIsSem;
+          const pad2 = n => String(n).padStart(2,'0');
+          mensalChartData.forEach(d => {
+            const label = isSem
+              ? (()=>{const dt=new Date(d.DT_SEGUNDA+'T00:00:00');return `S${d.SEMANA_NUM} ${pad2(dt.getDate())}/${pad2(dt.getMonth()+1)}`;})()
+              : `${MES_PT[(+d.MES)-1]}/${d.ANO}`;
+            const fobL=+d.FOB_LINHAS||0, cifL=+d.CIF_LINHAS||0;
+            s3.push([label,+d.TOTAL_LINHAS||0,
+              fobL>0?+pct(d.OT_FOB,d.FOB_LINHAS).toFixed(1):null,
+              +(+d.AVG_ATRASO_FOB||0).toFixed(1),
+              fobL>0?+pct(d.INFULL_FOB,d.FOB_LINHAS).toFixed(1):null,
+              fobL>0?+pct(d.OTIF_FOB,d.FOB_LINHAS).toFixed(1):null,
+              cifL>0?+pct(d.OT_CIF,d.CIF_LINHAS).toFixed(1):null,
+              +(+d.AVG_ATRASO_CIF||0).toFixed(1),
+              cifL>0?+pct(d.INFULL_CIF,d.CIF_LINHAS).toFixed(1):null,
+              cifL>0?+pct(d.OTIF_CIF,d.CIF_LINHAS).toFixed(1):null]);
+          });
+        }
+        addTableSheet(wb, s3, 'Evolução', [{wch:18},{wch:10},{wch:10},{wch:14},{wch:10},{wch:11},{wch:10},{wch:14},{wch:10},{wch:11}]);
+
+        XLSX.writeFile(wb, `OTIF_${new Date().toISOString().slice(0,10)}.xlsx`);
+      } catch(e) {
+        alert('Erro ao exportar: ' + e.message);
+      } finally {
+        btn.disabled = false; btn.textContent = '⬇ Exportar Excel';
+      }
+    }
+
+    function buildOtifFilterHeader(f) {
+      const parts = [];
+      if (f.anos && f.anos.length) parts.push(`Ano: ${f.anos.join(', ')}`);
+      if (f.meses && f.meses.length) {
+        const MN = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+        parts.push(`Mês: ${f.meses.map(m => MN[+m-1]).join(', ')}`);
+      }
+      if (f.plantas && f.plantas.length) parts.push(`Planta: ${f.plantas.join(', ')}`);
+      if (f.grupos_cliente && f.grupos_cliente.length) parts.push(`Grupo: ${f.grupos_cliente.join(', ')}`);
+      if (!parts.length) parts.push('Últimos 90 dias');
+      return [`Filtros: ${parts.join(' | ')}  —  Exportado em: ${new Date().toLocaleString('pt-BR')}`];
+    }
+
+    /* ── State persistence across navigation ── */
+    const _PAGE_KEY = 'otif-page-state';
+    const _isReload = (performance.getEntriesByType('navigation')[0]?.type === 'reload');
+    if (_isReload) sessionStorage.removeItem(_PAGE_KEY);
+
+    function _savePageState() {
+      const state = {
+        anos: msAno.getValues(),
+        meses: msMes.getValues(),
+        dias: msDia.getValues(),
+        semanas: msSemana.getValues(),
+        plantas: msPlanta.getValues(),
+        grupos: msGrupoCliente.getValues(),
+        clientes: msCliente.getValues(),
+        transportadoras: msTransportadora.getValues(),
+        responsaveis: msResponsavel.getValues(),
+        chartEmpresaMode,
+        tableClienteMode,
+        mensalMode,
+        empresaView: document.getElementById('empresa-table-view').style.display !== 'none' ? 'tabela' : 'grafico',
+        mensalView: document.getElementById('mensal-table-view').style.display !== 'none' ? 'tabela' : 'grafico',
+      };
+      sessionStorage.setItem(_PAGE_KEY, JSON.stringify(state));
+    }
+    function _getSavedState() {
+      try { return JSON.parse(sessionStorage.getItem(_PAGE_KEY)); } catch { return null; }
+    }
+
+    /* ── Init ── */
+    (function init() {
+      const saved = localStorage.getItem('fr-theme') || 'light';
+      applyTheme(saved === 'dark');
+
+      const ss = _getSavedState();
+
+      populateAnos(ss && ss.anos && ss.anos.length ? ss.anos : undefined);
+      populateMeses(ss && ss.meses && ss.meses.length ? ss.meses : undefined);
+      populateDias();
+      populateSemanas();
+      if (ss) {
+        if (ss.dias && ss.dias.length) msDia.setValues(ss.dias);
+        if (ss.semanas && ss.semanas.length) msSemana.setValues(ss.semanas);
+        // Restore toggle states
+        if (ss.chartEmpresaMode && ss.chartEmpresaMode !== chartEmpresaMode) {
+          chartEmpresaMode = ss.chartEmpresaMode;
+          document.querySelectorAll('#toggleEmpresaGrupo .cdt-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === chartEmpresaMode));
+        }
+        if (ss.mensalMode && ss.mensalMode !== mensalMode) {
+          mensalMode = ss.mensalMode;
+          document.querySelectorAll('#toggleMensal .cdt-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mensalMode));
+        }
+        if (ss.empresaView === 'tabela') {
+          document.querySelectorAll('#toggleEmpresaView .cdt-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === 'tabela'));
+          document.getElementById('empresa-chart-view').style.display = 'none';
+          document.getElementById('empresa-table-view').style.display = '';
+        }
+        if (ss.mensalView === 'tabela') {
+          document.querySelectorAll('#toggleMensalView .cdt-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === 'tabela'));
+          document.getElementById('mensal-chart-view').style.display = 'none';
+          document.getElementById('mensal-table-view').style.display = '';
+        }
+      }
+
+      Promise.all([loadPlantas(), loadClientes(), loadGruposCliente(), loadTransportadoras(), loadResponsaveis()]).then(() => {
+        if (ss) {
+          if (ss.plantas && ss.plantas.length) msPlanta.setValues(ss.plantas);
+          if (ss.grupos && ss.grupos.length) msGrupoCliente.setValues(ss.grupos);
+          if (ss.clientes && ss.clientes.length) msCliente.setValues(ss.clientes);
+          if (ss.transportadoras && ss.transportadoras.length) msTransportadora.setValues(ss.transportadoras);
+        }
+        loadAll();
+      });
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,333 @@
+/* =======================================================
+   PORTAL COMPRAS — Camada responsiva D&A
+   Carregar por ÚLTIMO no <head> (depois dos <style> inline das telas).
+   1. Seletor de escala (view-scale.js)
+   2. Compensações de zoom no desktop
+   3. Navegação mobile (mobile-nav.js)
+   4. Ajustes de tablet (641-1024px)
+   5. Ajustes de celular (<= 640px)
+   ======================================================= */
+
+/* ── 1. Seletor de escala ── */
+.dna-scale-picker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.home-header .dna-scale-picker { margin-left: auto; margin-right: 8px; }
+html:not(.dna-scale-desktop) .dna-scale-picker { display: none !important; }
+
+.dna-scale-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 10px 0 12px;
+  border-radius: var(--r-control, 8px);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color .15s ease, color .15s ease, background-color .15s ease;
+}
+.dna-scale-btn:hover { border-color: var(--primary); color: var(--text-primary); }
+.dna-scale-btn:focus-visible { outline: 2px solid var(--focus-ring, var(--primary)); outline-offset: 2px; }
+.dna-scale-btn[aria-expanded="true"] { border-color: var(--primary); color: var(--primary-strong); background: var(--primary-soft); }
+.dna-scale-chevron { opacity: .7; transition: transform .2s ease; }
+.dna-scale-btn[aria-expanded="true"] .dna-scale-chevron { transform: rotate(180deg); }
+
+.dna-scale-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 300px;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-menu);
+  z-index: 1002;
+  box-sizing: border-box;
+  animation: daFadeSlideDown .18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.dna-scale-dropdown[hidden] { display: none; }
+.scale-dd-title {
+  padding: 8px 10px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.scale-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color .12s ease;
+}
+.scale-option:hover, .scale-option:focus-visible { background: var(--surface-hover); outline: none; }
+.scale-option.active { background: var(--primary-soft); }
+.scale-option.active .scale-opt-title { color: var(--primary-strong); }
+.scale-opt-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.scale-opt-title { font-size: 13px; font-weight: 600; }
+.scale-opt-desc { font-size: 11.5px; color: var(--text-muted); }
+.scale-badge {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.scale-sep { height: 1px; margin: 4px 6px; background: var(--border); }
+
+/* ── 2. Compensações de zoom (desktop) ──
+   --dna-vh = altura da janela em px "internos" do body com zoom (definida em view-scale.js) */
+html.dna-scaled body { zoom: var(--dna-scale, 1); min-height: var(--dna-vh, 100vh); }
+html.dna-scaled .sp-app-layout { min-height: var(--dna-vh, 100vh); }
+html.dna-scaled .sp-sidebar { height: var(--dna-vh, 100vh); }
+html.dna-scaled .modal-content { max-height: calc(var(--dna-vh, 100vh) * .82) !important; }
+
+/* ── 3. Navegação mobile (folha "Mais") ── */
+.dna-more-sheet, .dna-more-backdrop { display: none; }
+
+@media (max-width: 640px) {
+  .dna-mobile-nav { gap: 0; padding-left: 4px; padding-right: 4px; }
+  .dna-mobile-nav-item { min-width: 0; }
+  .dna-mobile-nav-item span {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: -0.01em;
+  }
+  .dna-mobile-nav-item.active { position: relative; }
+  .dna-mobile-nav-item.active::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 28px;
+    height: 3px;
+    margin-left: -14px;
+    border-radius: 0 0 3px 3px;
+    background: var(--primary);
+  }
+
+  .dna-more-backdrop:not([hidden]) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 10, 18, .45);
+    z-index: 46;
+  }
+  .dna-more-sheet:not([hidden]) {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    right: 8px;
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    width: min(260px, calc(100vw - 16px));
+    padding: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-menu);
+    z-index: 47;
+    box-sizing: border-box;
+    animation: dnaSheetUp .18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .dna-more-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 48px;
+    padding: 0 14px;
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .dna-more-item svg { width: 20px; height: 20px; flex-shrink: 0; color: var(--text-muted); }
+  .dna-more-item:active, .dna-more-item:hover { background: var(--surface-hover); }
+  .dna-more-item.active { background: var(--primary-soft); color: var(--primary-strong); font-weight: 600; }
+  .dna-more-item.active svg { color: var(--primary); }
+}
+@keyframes dnaSheetUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── 4. Tablet (641-1024px) ── */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .dna-header { padding: 0 16px; }
+  .sp-page-title, .dna-page-title { max-width: 40vw; overflow: hidden; text-overflow: ellipsis; }
+  .grid-3, .fr-charts-row { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .grid-3 > *, .fr-charts-row > *, .grid-2 > *, .row-2 > *, .fr-charts-row-2 > * { min-width: 0; }
+  .conteudo div:has(> table), .fr-content div:has(> table) { overflow-x: auto; max-width: 100%; }
+}
+
+/* ── 5. Celular (<= 640px) ── */
+@media (max-width: 640px) {
+  /* Sem rolagem horizontal da página (clip não quebra position: sticky) */
+  .sp-main { max-width: 100vw; overflow-x: clip; }
+  .conteudo, .fr-content { min-width: 0; max-width: 100%; }
+
+  /* Cabeçalho compacto */
+  .dna-header { height: 56px; padding: 0 12px; }
+  .sp-mod-crumb { font-size: 12px; }
+  .sp-page-title, .dna-page-title { max-width: calc(100vw - 130px) !important; }
+
+  /* Respiro lateral consistente */
+  .layout { padding: 12px 10px 16px !important; gap: 12px; }
+  .fr-content { padding: 1rem .75rem 2rem !important; }
+
+  /* Cartões não estouram a largura */
+  .card, .gr-cartao, .fr-kpi-card, .table-card { min-width: 0; max-width: 100%; box-sizing: border-box; }
+  .card, .gr-cartao { padding: 12px 12px 10px !important; border-radius: 12px; }
+  .grid-2 > *, .grid-3 > *, .row-2 > *, .fr-charts-row > *, .fr-charts-row-2 > * { min-width: 0; width: 100%; }
+
+  /* Grades definidas inline no HTML (style="grid-template-columns:...") viram 1 coluna */
+  .conteudo [style*="grid-template-columns:1fr 1fr"],
+  .conteudo [style*="grid-template-columns: 1fr 1fr"],
+  .conteudo [style*="grid-template-columns:repeat("],
+  .conteudo [style*="grid-template-columns: repeat("],
+  .fr-content [style*="grid-template-columns:1fr 1fr"],
+  .fr-content [style*="grid-template-columns: 1fr 1fr"],
+  .fr-content [style*="grid-template-columns:repeat("],
+  .fr-content [style*="grid-template-columns: repeat("] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  /* Ordens: cabeçalho inline do aging acompanha as linhas compactas */
+  .conteudo [style*="grid-template-columns:100px 1fr 70px 45px"] {
+    grid-template-columns: 80px 1fr 60px 35px !important;
+  }
+
+  /* Tabelas: rolagem horizontal dentro do cartão, nunca na página */
+  .conteudo div:has(> table), .fr-content div:has(> table), .modal-content div:has(> table) {
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+  .conteudo table th, .conteudo table td { white-space: nowrap; }
+
+  /* Seletores segmentados (tipos de exceção, toggles) rolam na horizontal em vez de quebrar */
+  .exc-selector {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .exc-selector::-webkit-scrollbar { display: none; }
+  .exc-btn { flex: 0 0 auto; min-height: 40px; }
+  .spend-toggle, .oc-toggle, .cat-tipo-toggle { flex-shrink: 0; }
+
+  /* Linha de filtros aplicados: chips em 1 linha rolável, botão Filtros com área de toque */
+  .fp-resumo { flex-wrap: nowrap; gap: 8px; }
+  .fp-chips { flex-wrap: nowrap; }
+  .chip { height: 32px; font-size: 12.5px; }
+
+  /* Modais em tela cheia útil */
+  .modal-overlay { align-items: flex-end !important; }
+  .modal-content {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    max-height: 88dvh !important;
+    padding: 1rem .9rem calc(1rem + env(safe-area-inset-bottom, 0px)) !important;
+    border-radius: 16px 16px 0 0 !important;
+    box-sizing: border-box;
+  }
+  .modal-close { min-width: 44px; min-height: 44px; }
+
+  /* Popovers de filtro de cabeçalho não saem da tela */
+  .hfp-popover, #tableHeaderFilterPopover { max-width: calc(100vw - 20px); box-sizing: border-box; }
+  /* Relatórios: menu "Filtros de Data" abre abaixo do botão (sem flyout lateral fora da tela) */
+  .hfp-popover .hfd-menu,
+  .hfp-popover.hfd-flip .hfd-menu {
+    top: calc(100% + 4px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    min-width: 0 !important;
+    max-height: 55dvh;
+    overflow-y: auto;
+  }
+  .hfp-popover .hfd-has-sub > .hfd-submenu,
+  .hfp-popover.hfd-flip .hfd-has-sub > .hfd-submenu {
+    position: static !important;
+    min-width: 0 !important;
+    flex-basis: 100%;
+    margin: 2px 0 4px 10px;
+    box-shadow: none;
+  }
+  .hfp-popover .hfd-has-sub { flex-wrap: wrap; }
+  .hfd-mi { min-height: 36px; align-items: center; }
+
+  /* iOS: evita zoom automático ao focar campos (< 16px dispara zoom) */
+  input[type="text"], input[type="search"], input[type="number"], input[type="date"], input:not([type]), select, textarea {
+    font-size: 16px !important;
+  }
+
+  /* Gráficos: altura confortável e sem estourar */
+  canvas { max-width: 100% !important; }
+}
+
+/* ── 6. Relatórios (shell de altura fixa) ── */
+/* Desktop com zoom: altura da janela em px internos */
+html.dna-scaled body.fr-page:has(.det-layout) { height: var(--dna-vh, 100vh); }
+
+@media (max-width: 768px) {
+  /* Celular/tablet retrato: página rola normalmente em vez de prender tudo em 100vh */
+  body.fr-page:has(.det-layout) { height: auto !important; min-height: 100dvh; overflow: visible !important; display: block !important; }
+  .conteudo:has(.det-layout) { overflow: visible !important; }
+  .fr-content:has(.det-layout) { overflow: visible !important; }
+  .det-layout { flex-direction: column; height: auto !important; flex: none !important; gap: .75rem; }
+
+  /* Painel de colunas vira barra recolhível no topo */
+  .det-panel, .det-panel.collapsed { width: 100% !important; min-width: 0 !important; align-self: auto; }
+  .det-panel-section { height: auto !important; }
+  .det-panel-body { max-height: 40dvh; }
+  .det-panel.collapsed .det-panel-title-txt,
+  .det-panel.collapsed .det-panel-hdr > svg:first-child { display: inline-block !important; }
+  .det-panel.collapsed .det-panel-hdr { justify-content: flex-start !important; padding: .6rem .85rem !important; }
+  .det-panel-collapse-btn { transform: rotate(-90deg); min-width: 36px; min-height: 36px; justify-content: center; }
+  .det-panel.collapsed .det-panel-collapse-btn { transform: rotate(90deg) !important; margin-left: auto !important; }
+
+  /* Cartão da tabela */
+  .det-content { height: auto !important; }
+  .det-card { height: auto !important; flex: none !important; }
+  .det-card-hdr { flex-direction: column; align-items: stretch !important; gap: .6rem !important; padding: .8rem .85rem .6rem !important; }
+  .det-card-hdr-left { position: static !important; transform: none !important; width: auto !important; align-items: flex-start !important; text-align: left !important; }
+  .det-card-ttl { font-size: .95rem !important; }
+  .det-card-actions { flex-wrap: wrap; width: 100%; gap: .5rem !important; }
+  .det-card-actions .tbl-search-wrap { flex: 1 1 180px; min-width: 0; }
+  .det-card-actions .tbl-search-wrap input { width: 100% !important; }
+  .det-table-wrap { height: auto !important; flex: none !important; max-height: 65dvh; }
+  .det-pagination { flex-wrap: wrap; gap: .5rem; }
+}
+
+@media (max-width: 380px) {
+  .dna-mobile-nav-item span { font-size: 9.5px !important; }
+  .layout { padding: 10px 8px 14px !important; }
+}

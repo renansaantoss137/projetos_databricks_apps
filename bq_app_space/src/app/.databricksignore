@@ -1,0 +1,15 @@
+.venv/
+.databricks/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.git/
+.vscode/
+*.egg-info/
+dist/
+build/
+.env
+area_data.json
+Atualizacao_v2/
+*.zip

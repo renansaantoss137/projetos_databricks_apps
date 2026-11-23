@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin – Portal Bimbo QSR</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(145deg, #0F1B3E 0%, #0C2167 60%, #1a4a8a 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      padding: 32px 20px;
+      text-align: center;
+    }
+    .badge {
+      background: rgba(83,191,226,.2);
+      border: 1px solid #53BFE2;
+      color: #53BFE2;
+      padding: 5px 16px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.2rem); font-weight: 800; margin-bottom: 10px; }
+    h1 span { color: #53BFE2; }
+    p { color: rgba(255,255,255,.6); font-size: clamp(0.9rem, 2vw, 1rem); margin-bottom: 36px; padding: 0 12px; }
+    .placeholder-box {
+      background: rgba(255,255,255,.06);
+      border: 1.5px dashed rgba(83,191,226,.4);
+      border-radius: 16px;
+      padding: clamp(24px, 5vw, 40px) clamp(20px, 6vw, 60px);
+      text-align: center;
+      color: rgba(255,255,255,.4);
+      font-size: 13px;
+      margin-bottom: 40px;
+      width: min(100%, 540px);
+    }
+    .placeholder-box svg { opacity: .35; margin-bottom: 12px; }
+    .btn-sair {
+      text-decoration: none;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.2);
+      color: rgba(255,255,255,.7);
+      padding: 10px 28px;
+      border-radius: 8px;
+      font-size: 13px;
+      transition: background .2s;
+    }
+    .btn-sair:hover { background: rgba(255,255,255,.15); }
+  </style>
+</head>
+<body>
+
+  <div class="badge">Acesso Administrativo</div>
+
+  <h1>Dashboard <span>Admin</span></h1>
+  <p>Esta página está sendo construída. Em breve estará disponível.</p>
+
+  <div class="placeholder-box">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#53BFE2" stroke-width="1.5">
+      <rect x="3" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/>
+      <rect x="14" y="14" width="7" height="7" rx="1"/>
+    </svg>
+    <br/>Conteúdo do painel administrativo será implementado aqui.
+  </div>
+
+  <a href="home.html" class="btn-sair">← Sair</a>
+
+</body>
+</html>

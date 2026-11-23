@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel de filtros D&A</title>
+<!--
+  REFERÊNCIA OBRIGATÓRIA DO PAINEL DE FILTROS D&A (painel lateral retrátil à direita)
+  Adapte ao framework do app sem trocar o COMPORTAMENTO:
+  - desktop (>= 1200 px): painel à direita, 320 px aberto, trilho de 48 px recolhido; o conteúdo
+    ocupa o espaço liberado; o estado (aberto/recolhido) fica salvo por usuário
+  - cada filtro é uma seção expansível com resumo do valor; multiseleção com caixa por item,
+    busca (a partir de 8 opções), "Selecionar todos" e "Somente"; seleção única (rádio) para Mês/Ano
+  - alterações ficam em rascunho até "Aplicar"; "Limpar" volta ao padrão e aplica
+  - acima do conteúdo, uma única linha de chips com os filtros aplicados (some quando não há filtro)
+  - tablet e celular (< 1200 px): botão "Filtros (n)" abre gaveta à direita (<dialog>), largura total no celular
+  Contrato com o app: evento "filtros:aplicar" com { idFiltro: [valores] | valor }.
+  Lista vazia = "Todos" (sem filtro). Ajuste ao contrato que o backend do app já usa.
+-->
+<style>
+:root{
+  --bg-page:#F0F4F8;--bg-glow:none;--bg-header:#FFFFFF;--surface:#FFFFFF;--surface-alt:#F6F9FC;--surface-hover:#EEF3FA;
+  --border:#DCE3EC;--border-input:#7D8CA1;--text-primary:#1E2432;--text-secondary:#465468;--text-muted:#5A6B82;
+  --text-on-accent:#FFFFFF;--link:#1D4ED8;--primary:#2563EB;--primary-strong:#1D4ED8;--primary-soft:#E3ECFD;
+  --focus-ring:#2563EB;--r-card:14px;--r-control:8px;--r-pill:999px;
+  --shadow-card:0 1px 2px rgba(15,23,42,.04),0 4px 16px rgba(15,23,42,.06);--shadow-menu:0 12px 32px rgba(15,23,42,.18);
+  --topo:64px;            /* altura do cabeçalho do app */
+  --fp-aberto:320px;      /* largura do painel aberto */
+  --fp-recolhido:48px;    /* largura do trilho recolhido */
+}
+:root[data-theme="dark"]{
+  --bg-page:#060A12;--bg-glow:radial-gradient(1100px 420px at 50% 0%,#13203A 0%,transparent 70%);--bg-header:#080C17;
+  --surface:#171C28;--surface-alt:#141B29;--surface-hover:#1D2433;--border:#1F2532;--border-input:#5E6E86;
+  --text-primary:#F0F4F8;--text-secondary:#C6D0DC;--text-muted:#94A2B8;--link:#60A5FA;--primary:#3B82F6;
+  --primary-strong:#2563EB;--primary-soft:#142444;--focus-ring:#60A5FA;
+  --shadow-card:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);--shadow-menu:0 16px 40px rgba(0,0,0,.55);
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:Inter,'Segoe UI',system-ui,sans-serif;font-size:14px;color:var(--text-primary);background:var(--bg-glow),var(--bg-page);min-height:100dvh}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+svg{flex:none}
+
+/* ---------- Cabeçalho e conteúdo de demonstração ---------- */
+.demo-topo{height:var(--topo);display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:var(--bg-header);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
+.demo-topo h1{font-size:18px;margin:0}
+.demo-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);box-shadow:var(--shadow-card);padding:20px;min-height:160px;color:var(--text-muted)}
+.demo-grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.demo-card pre{margin:0;font-size:12px;color:var(--text-secondary);white-space:pre-wrap;word-break:break-word}
+
+/* ---------- Layout: conteúdo + painel à direita ---------- */
+.layout{--fp-largura:var(--fp-aberto);display:grid;grid-template-columns:minmax(0,1fr) var(--fp-largura);gap:16px;align-items:start;max-width:1680px;margin:0 auto;padding:16px 24px}
+.layout[data-filtros="recolhido"]{--fp-largura:var(--fp-recolhido)}
+@media (prefers-reduced-motion:no-preference){ .layout{transition:grid-template-columns .2s ease} }
+.conteudo{display:flex;flex-direction:column;gap:16px;min-width:0}
+
+/* Linha de resumo (chips) acima do conteúdo */
+.fp-resumo{display:flex;align-items:center;gap:8px;min-height:36px}
+.fp-resumo[hidden]{display:none}
+.fp-chips{display:flex;gap:6px;overflow-x:auto;flex:1;min-width:0;padding:2px 0}
+.chip{flex:none;display:inline-flex;align-items:center;gap:4px;height:32px;padding:0 6px 0 12px;border-radius:var(--r-pill);background:var(--primary-soft);border:1px solid var(--primary);font-size:13px;white-space:nowrap}
+.chip button{position:relative;width:28px;height:28px;border:0;border-radius:50%;background:transparent;cursor:pointer;display:grid;place-items:center}
+.chip button::after{content:"";position:absolute;inset:-8px} /* área de toque de 44px */
+.btn{height:40px;padding:0 14px;border-radius:var(--r-control);font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn-primario{background:var(--primary);color:var(--text-on-accent)}
+.btn-primario:disabled{background:var(--surface-alt);color:var(--text-muted);border-color:var(--border);cursor:default}
+.btn-secundario{background:var(--surface);border-color:var(--border-input)}
+.btn-secundario:hover{background:var(--surface-hover)}
+.btn-fantasma{background:transparent;color:var(--link)}
+.btn-fantasma:hover{background:var(--surface-hover)}
+.contador{min-width:20px;height:20px;padding:0 6px;border-radius:var(--r-pill);background:var(--primary);color:var(--text-on-accent);font-size:11px;font-weight:600;display:inline-grid;place-items:center}
+.contador[hidden]{display:none}
+#fpAbrirGaveta{display:none}
+
+/* ---------- Painel lateral (desktop) ---------- */
+.fp-lateral{position:sticky;top:calc(var(--topo) + 16px);height:calc(100dvh - var(--topo) - 32px);background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);box-shadow:var(--shadow-card);overflow:hidden;display:flex;flex-direction:column}
+.fp-trilho{display:none;flex-direction:column;align-items:center;gap:12px;width:100%;height:100%;padding:12px 0;border:0;background:transparent;cursor:pointer;color:var(--text-secondary)}
+.fp-trilho:hover{background:var(--surface-hover)}
+.fp-trilho .vertical{writing-mode:vertical-rl;transform:rotate(180deg);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.layout[data-filtros="recolhido"] .fp-trilho{display:flex}
+.layout[data-filtros="recolhido"] .fp-aberto{display:none}
+.fp-aberto{display:flex;flex-direction:column;min-height:0;height:100%}
+
+/* Estrutura comum ao painel e à gaveta */
+.fp-topo{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 8px 12px 16px;border-bottom:1px solid var(--border)}
+.fp-topo h2{font-size:15px;margin:0;display:flex;align-items:center;gap:8px}
+.btn-icone{width:40px;height:40px;border:0;border-radius:var(--r-control);background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--text-secondary)}
+.btn-icone:hover{background:var(--surface-hover)}
+.fp-corpo{overflow:auto;flex:1;min-height:0}
+.fp-rodape{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border)}
+.fp-rodape .btn{flex:1}
+
+/* Seção de cada filtro */
+.fp-secao{border-bottom:1px solid var(--border)}
+.fp-secao summary{display:grid;grid-template-columns:minmax(0,1fr) auto 16px;align-items:center;gap:8px;min-height:52px;padding:6px 16px;cursor:pointer;list-style:none}
+.fp-secao summary::-webkit-details-marker{display:none}
+.fp-secao summary:hover{background:var(--surface-hover)}
+.fp-nome{font-size:13px;font-weight:600}
+.fp-valor{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-muted);font-size:13px}
+.fp-secao.ativo .fp-valor{color:var(--primary-strong);font-weight:600}
+:root[data-theme="dark"] .fp-secao.ativo .fp-valor{color:var(--link)}
+.fp-seta{width:16px;height:16px;color:var(--text-muted);transition:transform .15s}
+.fp-secao[open] .fp-seta{transform:rotate(180deg)}
+.fp-secao[open] summary{background:var(--surface-alt)}
+
+/* Lista de opções */
+.fp-lista-wrap{display:flex;flex-direction:column;padding-bottom:8px}
+.fp-busca{margin:8px 12px 4px;height:36px;padding:0 10px;border:1px solid var(--border-input);border-radius:var(--r-control);background:var(--surface-alt)}
+.fp-lista{max-height:280px;overflow:auto;margin:0;padding:4px 0;list-style:none}
+.fp-opcao{display:flex;align-items:center;gap:4px;padding:0 8px 0 16px}
+.fp-opcao:hover{background:var(--surface-hover)}
+.fp-opcao label{flex:1;min-width:0;display:flex;align-items:center;gap:10px;min-height:36px;cursor:pointer}
+.fp-opcao label span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fp-opcao input{width:16px;height:16px;flex:none;accent-color:var(--primary);margin:0}
+.fp-todos{font-weight:600}
+.fp-somente{flex:none;height:28px;padding:0 8px;border:0;border-radius:6px;background:transparent;color:var(--link);font-size:12px;font-weight:600;cursor:pointer;opacity:0}
+.fp-opcao:hover .fp-somente,.fp-somente:focus-visible{opacity:1}
+@media (hover:none){.fp-somente{opacity:1}}
+@media (pointer:coarse){.fp-opcao label{min-height:44px}.fp-busca{height:44px;font-size:16px}.btn,.btn-icone{min-height:44px;min-width:44px}}
+.fp-vazio{padding:12px 16px;color:var(--text-muted)}
+
+/* ---------- Gaveta (tablet e celular) ---------- */
+dialog.fp-gaveta{margin:0 0 0 auto;width:min(400px,100vw);max-width:100vw;height:100dvh;max-height:100dvh;padding:0;border:0;border-radius:16px 0 0 16px;background:var(--surface);color:var(--text-primary);display:none;flex-direction:column;box-shadow:var(--shadow-menu)}
+dialog.fp-gaveta[open]{display:flex}
+dialog.fp-gaveta::backdrop{background:rgba(6,10,18,.55)}
+.fp-gaveta .fp-rodape{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+.fp-gaveta .fp-rodape .btn,.fp-gaveta .btn-icone{height:44px;min-width:44px}
+.fp-gaveta .fp-busca{height:44px;font-size:16px}
+.fp-gaveta .fp-opcao label{min-height:44px}
+
+@media (max-width:1199px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .fp-lateral{display:none}
+  #fpAbrirGaveta{display:inline-flex}
+  .fp-resumo[hidden]{display:flex}
+}
+@media (max-width:640px){
+  .layout{padding:12px 16px}
+  dialog.fp-gaveta{width:100vw;border-radius:0}
+  #fpAbrirGaveta{height:44px}
+}
+</style>
+</head>
+<body>
+<header class="demo-topo">
+  <h1>Painel de filtros D&A</h1>
+  <button class="btn btn-secundario" id="demoTema" type="button">Alternar tema</button>
+</header>
+
+<div class="layout" id="layout">
+  <main class="conteudo">
+    <!-- Uma linha: botão da gaveta (< 1200 px) + chips dos filtros aplicados -->
+    <div class="fp-resumo" id="fpResumo" hidden>
+      <button class="btn btn-secundario" id="fpAbrirGaveta" type="button" aria-haspopup="dialog"></button>
+      <div class="fp-chips" id="fpChips" aria-label="Filtros aplicados"></div>
+      <button class="btn btn-fantasma" id="fpLimparTudo" type="button" hidden></button>
+    </div>
+    <div class="demo-grade">
+      <div class="demo-card">Conteúdo do app (KPIs)</div>
+      <div class="demo-card">Conteúdo do app (gráfico)</div>
+      <div class="demo-card">Conteúdo do app (tabela)</div>
+    </div>
+    <div class="demo-card"><pre id="demoEvento" aria-live="polite">Evento "filtros:aplicar" aparece aqui.</pre></div>
+  </main>
+
+  <aside class="fp-lateral" id="fpLateral" aria-label="Filtros">
+    <button class="fp-trilho" id="fpExpandir" type="button" aria-expanded="false" aria-controls="fpAberto">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+      <span class="contador" id="fpTrilhoContador" hidden></span>
+      <span class="vertical" id="fpTrilhoTexto"></span>
+    </button>
+    <div class="fp-aberto" id="fpAberto">
+      <div class="fp-topo">
+        <h2><span id="fpTituloLateral"></span><span class="contador" id="fpLateralContador" hidden></span></h2>
+        <button class="btn-icone" id="fpRecolher" type="button" aria-expanded="true" aria-controls="fpAberto"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>
+      </div>
+      <div class="fp-corpo" id="fpCorpoLateral"></div>
+      <div class="fp-rodape">
+        <button class="btn btn-secundario" id="fpLimpar" type="button"></button>
+        <button class="btn btn-primario" id="fpAplicar" type="button" disabled></button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<dialog class="fp-gaveta" id="fpGaveta" aria-labelledby="fpTituloGaveta">
+  <div class="fp-topo">
+    <h2 id="fpTituloGaveta"></h2>
+    <button class="btn-icone" id="fpFecharGaveta" type="button"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="fp-corpo" id="fpCorpoGaveta"></div>
+  <div class="fp-rodape">
+    <button class="btn btn-secundario" id="fpGavetaLimpar" type="button"></button>
+    <button class="btn btn-primario" id="fpGavetaAplicar" type="button"></button>
+  </div>
+</dialog>
+
+<script>
+/* ===== Textos (use o mecanismo de i18n do app) ===== */
+const TXT = {
+  pt:{todos:'Todos',selecionados:n=>`${n} selecionados`,pesquisar:'Pesquisar',selTodos:'Selecionar todos',soResultados:n=>`Somente os resultados (${n})`,somente:'Somente',somenteDe:t=>`Selecionar somente ${t}`,vazio:'Nenhum resultado',aplicar:'Aplicar',limpar:'Limpar',limparTudo:'Limpar tudo',filtros:'Filtros',fechar:'Fechar',recolher:'Recolher filtros',expandir:'Expandir filtros',remover:t=>`Remover filtro ${t}`},
+  en:{todos:'All',selecionados:n=>`${n} selected`,pesquisar:'Search',selTodos:'Select all',soResultados:n=>`Only search results (${n})`,somente:'Only',somenteDe:t=>`Select only ${t}`,vazio:'No results',aplicar:'Apply',limpar:'Clear',limparTudo:'Clear all',filtros:'Filters',fechar:'Close',recolher:'Collapse filters',expandir:'Expand filters',remover:t=>`Remove filter ${t}`},
+  es:{todos:'Todos',selecionados:n=>`${n} seleccionados`,pesquisar:'Buscar',selTodos:'Seleccionar todo',soResultados:n=>`Solo los resultados (${n})`,somente:'Solo',somenteDe:t=>`Seleccionar solo ${t}`,vazio:'Sin resultados',aplicar:'Aplicar',limpar:'Limpiar',limparTudo:'Limpiar todo',filtros:'Filtros',fechar:'Cerrar',recolher:'Contraer filtros',expandir:'Expandir filtros',remover:t=>`Quitar filtro ${t}`},
+};
+const T = TXT[(document.documentElement.lang || 'pt').slice(0,2)] || TXT.pt;
+
+/* ===== Configuração (no app, as opções vêm do backend) ===== */
+const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'].map((t,i)=>({v:String(i+1),t}));
+const FILTROS = [
+  {id:'grupo', rotulo:'Grupo de clientes', tipo:'multi', opcoes:['BURGER KING','MC DONALDS','SUBWAY','POPEYES','JOHNNY ROCKETS','SAM\'S CLUB','BURGER FOODS','ALPI','ALPI MARILIA','BRF','GARDEN','DEMARCHI CURITIBA']},
+  {id:'gerente', rotulo:'Gerente', tipo:'multi', opcoes:['Ana Lima','Bruno Rocha','Carla Souza']},
+  {id:'canal', rotulo:'Canal', tipo:'multi', opcoes:['QSR','DISTRIBUIDORES','CLUBES DE COMPRA','CASUAL DINNING','PARTNER MANUF']},
+  {id:'categoria', rotulo:'Categoria', tipo:'multi', opcoes:['BUNS','NO BUNS','BAGUETES']},
+  {id:'mes', rotulo:'Mês', tipo:'unico', opcoes:MESES, padrao:'10'},
+  {id:'ano', rotulo:'Ano', tipo:'unico', opcoes:['2024','2025','2026'], padrao:'2026'},
+  {id:'filial', rotulo:'Filial', tipo:'multi', opcoes:['01 - Fábrica RJ','02 - Fábrica SP','03 - CD Curitiba']},
+];
+
+/* ===== Estado: rascunho (o que o usuário mexe) e aplicado (o que os dados usam) ===== */
+FILTROS.forEach(f => { f.opcoes = f.opcoes.map(o => typeof o === 'string' ? {v:o,t:o} : o); });
+const padrao = () => Object.fromEntries(FILTROS.map(f => [f.id, f.tipo === 'unico' ? (f.padrao ?? f.opcoes[0].v) : new Set()]));
+const clonar = e => Object.fromEntries(Object.entries(e).map(([k,v]) => [k, v instanceof Set ? new Set(v) : v]));
+const igual = (a,b) => FILTROS.every(f => f.tipo === 'unico' ? a[f.id] === b[f.id] : (a[f.id].size === b[f.id].size && [...a[f.id]].every(v => b[f.id].has(v))));
+let aplicado = padrao();
+let rascunho = clonar(aplicado);
+
+function normalizar(f){ if (f.tipo === 'multi' && rascunho[f.id].size === f.opcoes.length) rascunho[f.id] = new Set(); }
+function ativo(f, est = rascunho){ return f.tipo === 'unico' ? est[f.id] !== (f.padrao ?? f.opcoes[0].v) : est[f.id].size > 0; }
+function resumo(f, est = rascunho){
+  if (f.tipo === 'unico') return f.opcoes.find(o => o.v === est[f.id])?.t ?? '';
+  const s = est[f.id];
+  if (s.size === 0) return T.todos;
+  if (s.size === 1) return f.opcoes.find(o => s.has(o.v)).t;
+  return T.selecionados(s.size);
+}
+const marcado = (f, v) => f.tipo === 'unico' ? rascunho[f.id] === v : (rascunho[f.id].size === 0 || rascunho[f.id].has(v));
+
+/* ===== Lista de opções (mesma no painel e na gaveta) ===== */
+let seq = 0;
+function criarLista(f, aoMudar){
+  const wrap = document.createElement('div');
+  wrap.className = 'fp-lista-wrap';
+  let busca = null;
+  if (f.opcoes.length >= 8){
+    busca = document.createElement('input');
+    busca.type = 'search'; busca.className = 'fp-busca';
+    busca.placeholder = T.pesquisar; busca.setAttribute('aria-label', `${T.pesquisar}: ${f.rotulo}`);
+    wrap.append(busca);
+  }
+  const ul = document.createElement('ul');
+  ul.className = 'fp-lista';
+  wrap.append(ul);
+
+  function linha(texto, checked, onToggle, comSomente, tipo, extraClasse){
+    const li = document.createElement('li');
+    li.className = 'fp-opcao' + (extraClasse ? ' ' + extraClasse : '');
+    const id = `fp-${f.id}-${seq++}`;
+    li.innerHTML = `<label for="${id}"><input id="${id}" type="${tipo}" name="fp-${f.id}-${wrap.dataset.grupo || ''}"><span></span></label>`;
+    const input = li.querySelector('input');
+    li.querySelector('span').textContent = texto;
+    input.checked = checked === true;
+    input.indeterminate = checked === 'misto';
+    input.addEventListener('change', onToggle);
+    if (comSomente){
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'fp-somente'; b.textContent = T.somente;
+      b.setAttribute('aria-label', T.somenteDe(texto));
+      b.addEventListener('click', comSomente);
+      li.append(b);
+    }
+    ul.append(li);
+  }
+
+  function render(){
+    const termo = (busca?.value || '').trim().toLowerCase();
+    const visiveis = f.opcoes.filter(o => o.t.toLowerCase().includes(termo));
+    const focoAntes = ul.contains(document.activeElement) ? [...ul.querySelectorAll('input,button')].indexOf(document.activeElement) : -1;
+    ul.innerHTML = '';
+    if (f.tipo === 'multi' && visiveis.length){
+      const s = rascunho[f.id];
+      if (termo){
+        const exato = s.size === visiveis.length && visiveis.every(o => s.has(o.v));
+        linha(T.soResultados(visiveis.length), exato, () => { rascunho[f.id] = new Set(visiveis.map(o => o.v)); normalizar(f); aoMudar(); render(); }, null, 'checkbox', 'fp-todos');
+      } else {
+        linha(T.selTodos, s.size === 0 ? true : 'misto', () => { rascunho[f.id] = new Set(); aoMudar(); render(); }, null, 'checkbox', 'fp-todos');
+      }
+    }
+    visiveis.forEach(o => {
+      linha(o.t, marcado(f, o.v), (ev) => {
+        if (f.tipo === 'unico'){ rascunho[f.id] = o.v; aoMudar(); return; }
+        const s = rascunho[f.id].size === 0 ? new Set(f.opcoes.map(x => x.v)) : rascunho[f.id];
+        ev.target.checked ? s.add(o.v) : s.delete(o.v);
+        rascunho[f.id] = s;
+        normalizar(f); aoMudar(); render();
+      }, f.tipo === 'multi' ? () => { rascunho[f.id] = new Set([o.v]); normalizar(f); aoMudar(); render(); } : null, f.tipo === 'unico' ? 'radio' : 'checkbox');
+    });
+    if (!visiveis.length){
+      const li = document.createElement('li'); li.className = 'fp-vazio'; li.textContent = T.vazio; ul.append(li);
+    }
+    if (focoAntes >= 0){ const alvos = ul.querySelectorAll('input,button'); (alvos[focoAntes] || alvos[0])?.focus(); }
+  }
+  busca?.addEventListener('input', render);
+  wrap.addEventListener('keydown', ev => {
+    if (!['ArrowDown','ArrowUp'].includes(ev.key)) return;
+    const alvos = [busca, ...ul.querySelectorAll('input')].filter(Boolean);
+    const i = alvos.indexOf(document.activeElement);
+    if (i < 0) return;
+    ev.preventDefault();
+    alvos[Math.max(0, Math.min(alvos.length - 1, i + (ev.key === 'ArrowDown' ? 1 : -1)))].focus();
+  });
+  return {el: wrap, render, limparBusca: () => { if (busca) busca.value = ''; }};
+}
+
+/* ===== Seções (um <details> por filtro) dentro de um container ===== */
+const seta = '<svg class="fp-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+function montarSecoes(container, grupo){
+  return FILTROS.map(f => {
+    const d = document.createElement('details');
+    d.className = 'fp-secao';
+    d.dataset.filtro = f.id;
+    d.innerHTML = `<summary><span class="fp-nome"></span><span class="fp-valor"></span>${seta}</summary>`;
+    d.querySelector('.fp-nome').textContent = f.rotulo;
+    const lista = criarLista(f, atualizar);
+    lista.el.dataset.grupo = grupo;
+    lista.render();          // conteúdo pronto antes de abrir a seção
+    d.append(lista.el);
+    d.addEventListener('toggle', () => { if (d.open){ lista.limparBusca(); lista.render(); } });
+    container.append(d);
+    return {f, d, lista};
+  });
+}
+/* Quando o estado muda por fora da lista (Limpar, chip, abrir/fechar gaveta), todas as listas refletem o novo estado */
+function renderizarListas(){ secoes.forEach(s => s.lista.render()); }
+const $ = id => document.getElementById(id);
+const secoes = [...montarSecoes($('fpCorpoLateral'), 'lateral'), ...montarSecoes($('fpCorpoGaveta'), 'gaveta')];
+
+/* ===== Painel lateral: expandir/recolher e lembrar a escolha ===== */
+const layout = $('layout');
+const CHAVE = 'da.filtros.painel';
+function lerEstado(){ try { return localStorage.getItem(CHAVE); } catch { return null; } }
+function salvarEstado(v){ try { localStorage.setItem(CHAVE, v); } catch {} }
+function definirPainel(estado, focar){
+  layout.dataset.filtros = estado;
+  const aberto = estado === 'aberto';
+  $('fpExpandir').setAttribute('aria-expanded', String(aberto));
+  $('fpRecolher').setAttribute('aria-expanded', String(aberto));
+  salvarEstado(estado);
+  if (focar) (aberto ? $('fpRecolher') : $('fpExpandir')).focus();
+}
+definirPainel(lerEstado() || (window.innerWidth >= 1440 ? 'aberto' : 'recolhido'), false);
+$('fpExpandir').addEventListener('click', () => definirPainel('aberto', true));
+$('fpRecolher').addEventListener('click', () => definirPainel('recolhido', true));
+
+/* ===== Gaveta (tablet e celular) ===== */
+const gaveta = $('fpGaveta');
+$('fpAbrirGaveta').addEventListener('click', () => { rascunho = clonar(aplicado); renderizarListas(); atualizar(); gaveta.showModal(); });
+$('fpFecharGaveta').addEventListener('click', () => { rascunho = clonar(aplicado); renderizarListas(); atualizar(); gaveta.close(); });
+gaveta.addEventListener('cancel', () => { rascunho = clonar(aplicado); renderizarListas(); atualizar(); });
+$('fpGavetaLimpar').addEventListener('click', () => { limpar(); gaveta.close(); });
+$('fpGavetaAplicar').addEventListener('click', () => { aplicar(); gaveta.close(); });
+
+/* ===== Textos fixos ===== */
+$('fpTituloLateral').textContent = T.filtros;
+$('fpTituloGaveta').textContent = T.filtros;
+$('fpTrilhoTexto').textContent = T.filtros;
+$('fpExpandir').setAttribute('aria-label', T.expandir);
+$('fpRecolher').setAttribute('aria-label', T.recolher);
+$('fpFecharGaveta').setAttribute('aria-label', T.fechar);
+['fpLimpar','fpGavetaLimpar'].forEach(id => $(id).textContent = T.limpar);
+['fpAplicar','fpGavetaAplicar'].forEach(id => $(id).textContent = T.aplicar);
+$('fpLimparTudo').textContent = T.limparTudo;
+$('fpLimpar').addEventListener('click', limpar);
+$('fpAplicar').addEventListener('click', aplicar);
+$('fpLimparTudo').addEventListener('click', limpar);
+
+/* ===== Atualizar, aplicar, limpar ===== */
+const iconeFiltro = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>';
+function atualizar(){
+  secoes.forEach(({f, d}) => {
+    d.querySelector('.fp-valor').textContent = resumo(f);
+    d.querySelector('.fp-valor').title = resumo(f);
+    d.classList.toggle('ativo', ativo(f));
+  });
+  $('fpAplicar').disabled = igual(rascunho, aplicado);
+  const ativos = FILTROS.filter(f => ativo(f, aplicado));
+  const n = ativos.length;
+  [['fpTrilhoContador'],['fpLateralContador']].forEach(([id]) => { $(id).hidden = !n; $(id).textContent = n; });
+  $('fpAbrirGaveta').innerHTML = `${iconeFiltro}${T.filtros}${n ? ` <span class="contador">${n}</span>` : ''}`;
+  const chips = $('fpChips'); chips.innerHTML = '';
+  ativos.forEach(f => {
+    const c = document.createElement('span'); c.className = 'chip';
+    c.innerHTML = '<span></span><button type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>';
+    c.querySelector('span').textContent = `${f.rotulo}: ${resumo(f, aplicado)}`;
+    c.querySelector('button').setAttribute('aria-label', T.remover(f.rotulo));
+    c.querySelector('button').addEventListener('click', () => { rascunho = clonar(aplicado); rascunho[f.id] = padrao()[f.id]; aplicar(); });
+    chips.append(c);
+  });
+  $('fpLimparTudo').hidden = !n;
+  $('fpResumo').hidden = !n;   /* sem filtro aplicado, a linha some no desktop (no tablet/celular fica pelo botão) */
+}
+function aplicar(){
+  aplicado = clonar(rascunho);
+  const detalhe = Object.fromEntries(FILTROS.map(f => [f.id, f.tipo === 'unico' ? aplicado[f.id] : [...aplicado[f.id]]]));
+  document.dispatchEvent(new CustomEvent('filtros:aplicar', {detail: detalhe}));
+  renderizarListas();
+  atualizar();
+}
+function limpar(){ rascunho = padrao(); aplicar(); }
+
+/* ===== Demo: no app, o listener chama a busca de dados que já existe ===== */
+document.addEventListener('filtros:aplicar', ev => { $('demoEvento').textContent = 'filtros:aplicar ' + JSON.stringify(ev.detail, null, 2); });
+$('demoTema').addEventListener('click', () => {
+  const r = document.documentElement;
+  r.dataset.theme = r.dataset.theme === 'dark' ? 'light' : 'dark';
+});
+atualizar();
+</script>
+</body>
+</html>

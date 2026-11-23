@@ -1,0 +1,10 @@
+# Configuração de recurso Databricks Volume via Declarative Automation Bundles (DABs)
+# Grupo Bimbo Brasil - DNA Analytics
+resources:
+  volumes:
+    compras_360_volume:
+      name: compras_360
+      catalog_name: cat_dnabb_dv
+      schema_name: grobbcompr_cz
+      volume_type: MANAGED
+      comment: "Volume para arquivos CSV e tabelas de apoio do Compras 360 (Bimbo DNA)"

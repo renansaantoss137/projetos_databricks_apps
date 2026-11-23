@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – Portal Distribuidores</title>
+  <link rel="stylesheet" href="css/kpi_distribuidores.css?v=20261021_v1">
+  <link rel="stylesheet" href="css/guia.css?v=20261021_v1">
+</head>
+<body>
+<div class="kpi-wrapper">
+
+  <!-- ── Fundo escuro azul-marinho profundo do cabeçalho ── -->
+  <div class="header-bg-dark"></div>
+
+  <!-- ── Ondas em Degradê Azul-Escuro Puro (Sem Linhas Claras) ── -->
+  <svg class="bg-waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 260" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <!-- Gradiente 1: Azul-Marinho Profundo Base -->
+      <linearGradient id="darkWaveGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%"   stop-color="#010512"/>
+        <stop offset="40%"  stop-color="#030C24"/>
+        <stop offset="80%"  stop-color="#06163D"/>
+        <stop offset="100%" stop-color="#010512"/>
+      </linearGradient>
+      <!-- Gradiente 2: Camada de Profundidade em Degradê -->
+      <linearGradient id="darkWaveGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%"   stop-color="#02081A" stop-opacity="0.9"/>
+        <stop offset="50%"  stop-color="#081F54" stop-opacity="0.75"/>
+        <stop offset="100%" stop-color="#02081A" stop-opacity="0.9"/>
+      </linearGradient>
+      <!-- Gradiente 3: Crista Suave em Azul Noturno -->
+      <linearGradient id="darkWaveGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%"   stop-color="#0C2D6D" stop-opacity="0.35"/>
+        <stop offset="50%"  stop-color="#153E8A" stop-opacity="0.45"/>
+        <stop offset="100%" stop-color="#0C2D6D" stop-opacity="0.35"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Camada 3: Crista difusa exterior da onda -->
+    <path fill="url(#darkWaveGrad3)" d="M0,0 L1440,0 L1440,135 C1220,165 1000,130 720,185 C440,130 220,165 0,135 Z"/>
+
+    <!-- Camada 2: Onda de profundidade intermediária -->
+    <path fill="url(#darkWaveGrad2)" d="M0,0 L1440,0 L1440,120 C1220,148 1000,118 720,168 C440,118 220,148 0,120 Z"/>
+
+    <!-- Camada 1: Onda principal sólida escura com curva suave no centro -->
+    <path fill="url(#darkWaveGrad1)" d="M0,0 L1440,0 L1440,110 C1220,135 1000,108 720,152 C440,108 220,135 0,110 Z"/>
+  </svg>
+
+  <!-- ── Fundo Suave com Ondas Topográficas & Pontilhado Windows ── -->
+  <svg class="bg-geometric" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <!-- Padrão Pontilhado estilo Windows / Tech Dot Matrix -->
+      <pattern id="windowsDotPattern" width="28" height="28" patternUnits="userSpaceOnUse">
+        <circle cx="14" cy="14" r="1.1" fill="#0A2558" opacity="0.055"/>
+      </pattern>
+    </defs>
+    <!-- Matriz de Pontos em todo o Background -->
+    <rect width="100%" height="100%" fill="url(#windowsDotPattern)"/>
+  </svg>
+
+  <!-- ── Cabeçalho Organizado com Título e Saudação Encaixados na Curva do Centro ── -->
+  <header class="kpi-header">
+    <div class="header-left">
+      <div class="portal-brand-badge">
+        <img src="img/logo_distribuidores.png" alt="Portal Distribuidores" class="dist-icon"/>
+        <span class="dist-title">Portal Distribuidores</span>
+      </div>
+      <div class="user-greeting" id="user-greeting">
+        <svg class="greeting-icon" viewBox="0 0 20 20" fill="none" width="14" height="14"><circle cx="10" cy="6" r="4" stroke="#00C2E0" stroke-width="1.8" fill="rgba(0,194,224,0.2)"/><path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#00C2E0" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span class="greeting-text">Olá, <strong id="greeting-name">BUY FOOD SERVICE DISTRIBUIDORA DE ALIMENTOS LTDA</strong></span>
+      </div>
+    </div>
+    <div class="header-center">
+      <div class="tabs">
+        <button class="tab active" data-tab="kpis">KPI's</button>
+        <button class="tab" data-tab="grade">Pedidos de Compra</button>
+        <button class="tab" data-tab="guia" id="tab-btn-guia" style="display: none;">Guia do Usuário</button>
+      </div>
+    </div>
+    <div class="header-right">
+      <!-- Indicador Discreto de Sincronização do Portal via Databricks Workflow -->
+      <div class="header-sync-pill" id="header-sync-pill" title="Última sincronização do banco de dados via Databricks Workflow (Horário de Brasília)">
+        <span class="sync-pulse-dot"></span>
+        <span class="sync-text">Atualizado: <strong id="header-sync-timestamp">15/10/2026 às 15:54</strong></span>
+      </div>
+      <div class="brand-divider"></div>
+
+      <!-- Botão Guia Discreto (Visível exclusivamente para Administradores Bimbo - Muda de tela no app) -->
+      <button id="btn-admin-guide" class="btn-guide-discreet" style="display: none;" title="Mudar para Guia do Usuário & Documentação Técnica (Admin)" onclick="toggleAdminGuide()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          <line x1="9" y1="7" x2="15" y2="7"></line>
+          <line x1="9" y1="11" x2="13" y2="11"></line>
+        </svg>
+        <span id="btn-admin-guide-text">Guia</span>
+      </button>
+      <div id="btn-admin-guide-divider" class="brand-divider" style="display: none;"></div>
+      <img src="img/logo-bimbo-qsr.png" alt="Grupo Bimbo QSR" class="header-logo logo-bimbo-bq"/>
+      <div class="brand-divider"></div>
+      <a href="/logout" onclick="sessionStorage.removeItem('logged_user'); fetch('/logout', {credentials:'include'}).finally(() => { window.location.href='home.html'; }); return false;" class="btn-logout" aria-label="Encerrar sessão">
+        Sair
+      </a>
+    </div>
+  </header>
+
+  <!-- ── Conteúdo principal ── -->
+  <main class="kpi-main">
+
+    <!-- Barra de Filtros Flutuante com Regra de Exibição Integrada -->
+    <div class="portal-bar">
+      <div class="portal-bar-main-row">
+        <div class="filter-group-container">
+          
+          <!-- Filtro 1: CATEGORIA -->
+          <div class="filter-group filter-wrapper">
+            <span class="group-label">CATEGORIA</span>
+            <div class="custom-select" id="select-categoria">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-categoria" placeholder="Todos" autocomplete="off" aria-label="Filtrar por categoria de produto" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+          <!-- Filtro 2: PRODUTO -->
+          <div class="filter-group filter-wrapper">
+            <span class="group-label">PRODUTO</span>
+            <div class="custom-select" id="select-produto">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-produto" placeholder="Todos" autocomplete="off" aria-label="Filtrar por produto" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+          <!-- Filtro 3: SKU -->
+          <div class="filter-group filter-wrapper">
+            <span class="group-label">SKU</span>
+            <div class="custom-select" id="select-sku">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-sku" placeholder="Todos" autocomplete="off" aria-label="Filtrar por SKU" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+          <!-- Filtro 4: PEDIDO -->
+          <div class="filter-group filter-wrapper">
+            <span class="group-label">Nº PEDIDO</span>
+            <div class="custom-select" id="select-pedido">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-pedido" placeholder="Todos" autocomplete="off" aria-label="Filtrar por número do pedido" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+          <!-- Divisor Vertical Sutil -->
+          <div class="filter-divider" aria-hidden="true"></div>
+
+          <!-- Filtro 5: DIA -->
+          <div class="filter-group filter-wrapper">
+            <span class="group-label">DIA</span>
+            <div class="custom-select" id="select-dia">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-dia" placeholder="Todos" autocomplete="off" aria-label="Filtrar por dia" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+          <!-- Filtro 6: SEMANA -->
+          <div class="filter-group filter-wrapper">
+            <span class="group-label">SEMANA</span>
+            <div class="custom-select" id="select-semana">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-semana" placeholder="Todos" autocomplete="off" aria-label="Filtrar por semana" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+          <!-- Filtro 7: MÊS -->
+          <div class="filter-group filter-wrapper">
+            <span class="group-label">MÊS</span>
+            <div class="custom-select" id="select-mes">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-mes" placeholder="Todos" autocomplete="off" aria-label="Filtrar por mês" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+          <!-- Filtro 8: ANO -->
+          <div class="filter-group filter-wrapper">
+            <span class="group-label">ANO</span>
+            <div class="custom-select" id="select-ano">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-ano" placeholder="Todos" autocomplete="off" aria-label="Filtrar por ano" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Divisor Vertical -->
+        <div class="filter-divider" aria-hidden="true"></div>
+
+        <!-- Toggle Valor / Volume com Toggle no Meio -->
+        <div class="visualization-controls">
+          <div class="toggle-group">
+            <span class="toggle-label active-label" id="lbl-valor">Valor</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggleValVol" aria-label="Alternar entre exibição de valor e volume" />
+              <span class="toggle-track"></span>
+            </label>
+            <span class="toggle-label" id="lbl-volume">Volume</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Regras de Negócio Integrada no Rodapé da Barra de Filtros -->
+      <div class="portal-bar-rule-strip" id="unitInfoPill">
+        <div class="unit-info-badge">
+          <svg class="unit-info-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" style="width: 14px; height: 14px; min-width: 14px; max-width: 14px; display: inline-block;">
+            <circle cx="8" cy="8" r="7" stroke="#0284C7" stroke-width="1.6" fill="#E0F2FE"/>
+            <path d="M8 7.5v3.5M8 5h.01" stroke="#0284C7" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <span>Regras de Negócio:</span>
+        </div>
+        <div class="unit-info-text">
+          <span class="unit-info-item"><strong>Sell-In e Sell-Out:</strong> Pães em dúzias (DZ) e Especialidades em unidades (Und)</span>
+        </div>
+      </div>
+
+    </div>
+
+
+
+    <!-- ── Tab: KPIs ── -->
+    <div class="tab-panel active" id="tab-kpis" style="display:flex;">
+
+    <!-- Grade de KPIs -->
+    <div class="kpi-grid">
+
+      <!-- ── SELL-IN METAS ── -->
+      <div class="card card-sellin">
+        <div class="card-tag">SELL-IN METAS</div>
+        <div class="card-kpi-val">R$ 3.6M <span class="kpi-target">/ R$ 7.7M</span></div>
+        <div class="gauge-wrap">
+          <svg class="gauge-svg" width="118" height="118" viewBox="0 0 120 120">
+            <defs>
+              <linearGradient id="grad-sellin" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#0C2167"></stop>
+                <stop offset="60%" stop-color="#1e4ea8"></stop>
+                <stop offset="100%" stop-color="#53BFE2"></stop>
+              </linearGradient>
+            </defs>
+            <circle class="gauge-track" cx="60" cy="60" r="46"></circle>
+            <circle class="gauge-arc" cx="60" cy="60" r="46" stroke="url(#grad-sellin)" data-pct="0.47" style="stroke-dasharray: 289.027; stroke-dashoffset: 153.184;"></circle>
+            <text class="gauge-pct-txt" x="60" y="56" text-anchor="middle" fill="#051336">47%</text>
+            <text class="gauge-sub-txt" x="60" y="71" text-anchor="middle" fill="#64748B">ATINGIDO</text>
+          </svg>
+        </div>
+        <div class="kpi-diff-box" id="sellin-diff-info" style="color: rgb(239, 68, 68);"><span style="font-size: 15px; font-weight: 800; line-height: 1;">↓</span> <span>Diferença:</span> <span style="font-weight: 850;">-R$ 4.1M</span></div>
+      </div>
+
+      <!-- ── SELL-OUT METAS ── -->
+      <div class="card card-sellout">
+        <div class="card-tag">SELL-OUT METAS</div>
+        <div class="card-kpi-val">R$ 7.5M <span class="kpi-target">/ R$ 11.1M</span></div>
+        <div class="gauge-wrap">
+          <svg class="gauge-svg" width="118" height="118" viewBox="0 0 120 120">
+            <defs>
+              <linearGradient id="grad-sellout" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#0C2167"></stop>
+                <stop offset="60%" stop-color="#1e4ea8"></stop>
+                <stop offset="100%" stop-color="#62F9EF"></stop>
+              </linearGradient>
+            </defs>
+            <circle class="gauge-track" cx="60" cy="60" r="46"></circle>
+            <circle class="gauge-arc" cx="60" cy="60" r="46" stroke="url(#grad-sellout)" data-pct="0.68" style="stroke-dasharray: 289.027; stroke-dashoffset: 92.4885;"></circle>
+            <text class="gauge-pct-txt" x="60" y="56" text-anchor="middle" fill="#051336">68%</text>
+            <text class="gauge-sub-txt" x="60" y="71" text-anchor="middle" fill="#64748B">ATINGIDO</text>
+          </svg>
+        </div>
+        <div class="kpi-diff-box" id="sellout-diff-info" style="color: rgb(239, 68, 68);"><span style="font-size: 15px; font-weight: 800; line-height: 1;">↓</span> <span>Diferença:</span> <span style="font-weight: 850;">-R$ 3.6M</span></div>
+      </div>
+
+      <!-- ── STATUS DA CARTEIRA (Trio de Cards Individuais: Faturado, Aberto, Total) ── -->
+      <div class="orders-pipeline-group">
+        <!-- Card 1: Faturado (Invoiced) -->
+        <div class="card card-pipeline card-pipeline-invoiced">
+          <div class="card-pipeline-header">
+            <span class="pipeline-pill-title">FATURADO</span>
+          </div>
+          <div class="card-pipeline-body">
+            <div class="pipeline-main-val" id="kpi-invoiced-val">R$ 0</div>
+          </div>
+          <div class="card-pipeline-footer">
+            <span class="pipeline-status-dot dot-invoiced"></span>
+            <span class="pipeline-subtext">Pedidos atendidos (líquido)</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Carteira em Aberto (Open Order) -->
+        <div class="card card-pipeline card-pipeline-open">
+          <div class="card-pipeline-header">
+            <span class="pipeline-pill-title">CARTEIRA EM ABERTO</span>
+          </div>
+          <div class="card-pipeline-body">
+            <div class="pipeline-main-val" id="kpi-open-val">--</div>
+          </div>
+          <div class="card-pipeline-footer">
+            <span class="pipeline-status-dot dot-open"></span>
+            <span class="pipeline-subtext">Pedidos pendentes (líquido)</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Faturado + Carteira (Invoiced + Open Order) -->
+        <div class="card card-pipeline card-pipeline-total">
+          <div class="card-pipeline-header">
+            <span class="pipeline-pill-title">FATURADO + CARTEIRA</span>
+          </div>
+          <div class="card-pipeline-body">
+            <div class="pipeline-main-val" id="kpi-total-order-val">R$ 0</div>
+          </div>
+          <div class="card-pipeline-footer">
+            <span class="pipeline-status-dot dot-total"></span>
+            <span class="pipeline-subtext" id="kpi-total-order-desc">Total consolidado (líquido)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── LINHA 2 (ESQUERDA): CHART Realizado vs Meta (Sell-in / Sell-out com Seletor) ── -->
+      <div class="card card-chart">
+        <div class="chart-header has-toggle">
+          <div class="chart-header-left">
+            <div class="chart-title-row">
+              <span class="card-tag">REALIZADO</span>
+              <span class="chart-sep">-</span>
+              <span class="chart-title-text" id="chart-title-text">Sell-in vs Meta</span>
+              <div class="chart-kpi-pill" title="Desvio Realizado vs Meta Acumulado no Período">
+                <span class="pill-label">Acumulado vs Meta:</span>
+                <span class="badge-up" id="chart-diff-badge">↑ +0%</span>
+              </div>
+            </div>
+            <div class="chart-legend" id="chart-legend">
+              <span class="leg-item"><span class="leg-dot" id="chart-leg-dot-realized" style="background:#0A2558"></span> <span id="chart-leg-lbl-realized">Sell-in</span></span>
+              <span class="leg-item" style="margin-left:12px"><span class="leg-dot" id="chart-leg-dot-meta" style="background:#38BDF8"></span> <span id="chart-leg-lbl-meta">Meta</span></span>
+              <span class="leg-item leg-perf-group" style="margin-left:14px" title="Atingimento da Meta: Verde ≥100% | Vermelho <100% | Cinza 0%">
+                <span class="leg-perf-pill perf-positive">≥100%</span>
+                <span class="leg-perf-pill perf-negative">&lt;100%</span>
+                <span class="leg-perf-text">% Ating.</span>
+              </span>
+            </div>
+          </div>
+          <div class="chart-toggle-group">
+            <span class="toggle-label active-label" id="lbl-chart-sellin">Sell-in</span>
+            <label class="toggle-switch" title="Alternar entre Sell-in e Sell-out">
+              <input type="checkbox" id="toggleChartMode" aria-label="Alternar gráfico entre Sell-in e Sell-out" />
+              <span class="toggle-track"></span>
+            </label>
+            <span class="toggle-label" id="lbl-chart-sellout">Sell-out</span>
+          </div>
+        </div>
+        <div class="bar-chart-area" id="barChart"></div>
+      </div>
+
+      <!-- ── DIAS DE ESTOQUE (Resumo Conciso de Item e Dias) ── -->
+      <div class="card card-estoque">
+        <div class="drill-card-header">
+          <div>
+            <div class="card-tag">ESTOQUE POR SKU</div>
+            <div class="drill-card-title">Dias de Estoque</div>
+          </div>
+          <div class="drill-total-wrap">
+            <div class="drill-total" id="total-skus-count">-- <span>dias</span></div>
+            <button class="btn-expand-card" onclick="openEstoqueModal('all')" title="Ampliar Visão Completa de Estoque">
+              <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Ampliar</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="estoque-resumo-wrap">
+          <table class="estoque-resumo-table">
+            <thead>
+              <tr>
+                <th style="text-align: left;">Item (Produto / SKU)</th>
+                <th style="text-align: right; width: 110px;">Dias de Estoque</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-estoque-resumo">
+              <!-- Preenchido dinamicamente pelo JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── LINHA 3: GRÁFICO HISTÓRICO DE POSITIVAÇÃO & TRACKING DE ENVIO ── -->
+      <!-- Card Positivação (Lado Esquerdo: 50% / 6 Colunas) -->
+      <div class="card card-chart card-positiv-chart">
+        <div class="chart-header has-action">
+          <div class="chart-header-left">
+            <div class="chart-title-row">
+              <span class="card-tag">POSITIVAÇÃO</span>
+              <span class="chart-sep">-</span>
+              <span class="chart-title-text" id="positiv-chart-title">Clientes Positivados, Meta &amp; Ticket Médio</span>
+              <div class="chart-kpi-pill" title="Desvio Realizado vs Meta Acumulado no Ano (YTD)">
+                <span class="pill-label">Acumulado vs Meta:</span>
+                <span class="badge-up" id="positiv-chart-badge">↑ +0%</span>
+              </div>
+            </div>
+            <div class="chart-legend" id="positiv-chart-legend">
+              <span class="leg-item"><span class="leg-dot" style="background:#0A2558"></span> Positivados (Realizado)</span>
+              <span class="leg-item" style="margin-left:14px"><span class="leg-dot" style="background:#38BDF8"></span> Meta (Qtd Clientes)</span>
+              <span class="leg-item" style="margin-left:14px"><span style="display:inline-block; width:16px; height:2px; background:#64748B; border-radius:1px; vertical-align:middle; margin-right:5px;"></span> Ticket Médio</span>
+            </div>
+          </div>
+          <button class="btn-expand-card btn-positiv-action" onclick="openPositivacaoModal('all')" title="Ver Lista Completa de Clientes Positivados">
+            <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Ver Clientes</span>
+          </button>
+        </div>
+        <div class="bar-chart-area" id="positivChart"></div>
+      </div>
+
+      <!-- Card Tracking de Envio (Lado Direito: 50% / 6 Colunas) -->
+      <div class="card card-tracking-ribbon" id="card-tracking-ribbon">
+        <div class="tracking-ribbon-header">
+          <div class="tracking-header-left">
+            <div class="tracking-tag-row">
+              <span class="card-tag">TRACKING DE ENVIO & SELL-OUT</span>
+              <span class="tracking-month-pill" id="tracking-month-pill">--</span>
+            </div>
+            <div class="tracking-main-title">Frequência Diária de Vendas & Envio</div>
+          </div>
+          <div class="tracking-header-metrics">
+            <div class="tracking-kpi-chip" title="Dias com pelo menos uma venda de sell-out realizada vs total de dias úteis transcorridos">
+              <span class="chip-status-dot dot-active"></span>
+              <span class="chip-label">Dias com Venda:</span>
+              <span class="chip-value" id="tracking-active-days">--</span>
+            </div>
+            <div class="tracking-kpi-chip" title="Percentual de regularidade de envio nos dias úteis transcorridos">
+              <span class="chip-status-dot dot-regularity"></span>
+              <span class="chip-label">Regularidade:</span>
+              <span class="chip-value" id="tracking-regularity-pct">--%</span>
+            </div>
+            <div class="tracking-kpi-chip chip-neutral" title="Média de faturamento diário nos dias com sell-out ativo">
+              <span class="chip-label">Média / Dia Ativo:</span>
+              <span class="chip-value" id="tracking-avg-daily">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grade Dinâmica de Dias do Mês (Dias Atuais para Trás) -->
+        <div class="tracking-ribbon-container">
+          <div class="tracking-days-track" id="tracking-days-track">
+            <!-- Pílulas de cada dia geradas dinamicamente via JS -->
+            <div class="tracking-loading-state">Carregando tracking diário...</div>
+          </div>
+        </div>
+
+        <div class="tracking-ribbon-footer">
+          <div class="tracking-legend">
+            <span class="leg-item"><span class="leg-badge leg-active">●</span> Venda Ativa</span>
+            <span class="leg-item"><span class="leg-badge leg-inactive">✕</span> Sem Venda</span>
+            <span class="leg-item"><span class="leg-badge leg-weekend-empty"></span> Fim de Semana</span>
+          </div>
+          <div class="tracking-hint">
+            <svg viewBox="0 0 16 16" fill="none" width="13" height="13" style="vertical-align: -2px; margin-right: 4px;"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M8 7v4M8 5h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Passe o mouse sobre o dia para detalhes
+          </div>
+        </div>
+      </div>
+
+    </div><!-- .kpi-grid -->
+
+    </div><!-- #tab-kpis -->
+
+    <!-- ── Tab: Pedidos de Compra (Grade Logística) ── -->
+    <div class="tab-panel" id="tab-grade" style="display:none;">
+      <div class="card grade-card">
+
+        <!-- Barra de Ações & Título da Grade -->
+        <div class="grade-header-bar">
+          <div>
+            <div class="card-tag">ACOMPANHAMENTO LOGÍSTICO</div>
+            <div class="grade-main-title">Grade de Pedidos de Compra</div>
+          </div>
+          <a href="https://bimbo.mercanet.com.br/PRD/Login/Login.aspx?ReturnUrl=%2fPRD%2fDefault.aspx" 
+             target="_blank" 
+             rel="noopener noreferrer" 
+             class="btn-mercanet"
+             title="Ir para o portal Mercanet para emitir um novo pedido de compra">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            <span>Realizar novo pedido</span>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12" style="margin-left: 2px;">
+              <path d="M5 11l6-6M6 5h5v5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="grade-table-wrap">
+          <table class="grade-table">
+            <thead>
+              <tr>
+                <th style="width: 46px; text-align: center;" title="Expandir itens do pedido"></th>
+                <th style="text-align: center;">Nº DO PEDIDO</th>
+                <th style="text-align: center;">DATA DO PEDIDO</th>
+                <th style="text-align: center;">DATA SOLICITADA P/ ENTREGA</th>
+                <th style="text-align: center;">DATA ENTREGA REAL</th>
+                <th style="text-align: center;">STATUS PEDIDO</th>
+                <th style="text-align: right; padding-right: 20px;">VALOR TOTAL (R$)</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-grade-logistica">
+              <!-- Preenchido dinamicamente pelo JS / Databricks -->
+            </tbody>
+          </table>
+        </div><!-- .grade-table-wrap -->
+
+        <div class="grade-footer">
+          <span class="grade-count" id="grade-count-txt">Mostrando 0 de 0 registros</span>
+          <div class="grade-pagination" id="grade-pagination-wrap">
+            <!-- Preenchido dinamicamente com os botões de página -->
+          </div>
+        </div>
+
+      </div><!-- .grade-card -->
+    </div><!-- #tab-grade -->
+
+    <!-- ── Tab: Guia do Usuário & Documentação Técnica (Apenas Admin - Muda de tela no App) ── -->
+    <div class="tab-panel" id="tab-guia" style="display: none; flex-direction: column; width: 100%;">
+      <div class="guia-top-banner" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; padding: 1rem 1.4rem; background: rgba(10, 37, 88, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; backdrop-filter: blur(12px);">
+        <div>
+          <span style="font-size: 11px; font-weight: 800; color: #38BDF8; letter-spacing: 0.08em; text-transform: uppercase;">DOCUMENTAÇÃO TÉCNICA &amp; REGRAS DE NEGÓCIO</span>
+          <h2 style="font-size: 1.25rem; font-weight: 850; color: #FFFFFF; margin: 2px 0 0 0;">Manual de Operação, Métricas &amp; Arquitetura</h2>
+        </div>
+        <button onclick="activateTab('kpis')" class="btn-guide-discreet" style="padding: 7px 14px; font-size: 12px; border-color: rgba(56, 189, 248, 0.4); background: rgba(14, 165, 233, 0.2);" title="Voltar para a tela de KPIs">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>← Voltar ao Dashboard</span>
+        </button>
+      </div>
+
+      <div class="guia-container" style="padding: 0; max-width: 100%;">
+<!-- Barra de Abas do Guia (Padrão Compras 360) -->
+    <div class="guia-tab-bar" role="tablist">
+      <button class="guia-tab-btn active" onclick="switchGuiaSubTab('guia-sub-negocio')" id="btn-sub-negocio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+        <span>1. Guia de Negócio &amp; Navegação</span>
+      </button>
+
+      <button class="guia-tab-btn" onclick="switchGuiaSubTab('guia-sub-arquitetura')" id="btn-sub-arquitetura">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+          <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+          <line x1="6" y1="6" x2="6.01" y2="6"></line>
+          <line x1="6" y1="18" x2="6.01" y2="18"></line>
+        </svg>
+        <span>2. Arquitetura &amp; Pipeline</span>
+      </button>
+
+      <button class="guia-tab-btn" onclick="switchGuiaSubTab('guia-sub-metricas')" id="btn-sub-metricas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+        <span>3. Manual de Métricas &amp; Fórmulas</span>
+      </button>
+
+      <button class="guia-tab-btn" onclick="switchGuiaSubTab('guia-sub-schema')" id="btn-sub-schema">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+          <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+          <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+        </svg>
+        <span>4. Star Schema &amp; Dicionário</span>
+      </button>
+
+      <button class="guia-tab-btn" onclick="switchGuiaSubTab('guia-sub-rls')" id="btn-sub-rls">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>5. Governança &amp; RLS</span>
+      </button>
+
+      <button class="guia-tab-btn" onclick="switchGuiaSubTab('guia-sub-runbook')" id="btn-sub-runbook">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="4 17 10 11 4 5"></polyline>
+          <line x1="12" y1="19" x2="20" y2="19"></line>
+        </svg>
+        <span>6. Runbook do Desenvolvedor</span>
+      </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- SUB-ABA 1: GUIA DE NEGÓCIO & NAVEGAÇÃO                            -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="guia-tab-content active" id="guia-sub-negocio">
+      <div class="tech-section">
+        <h2><span class="sec-num">01</span> Visão Geral do Portal de Distribuidores</h2>
+        <p>O <strong>Portal de Distribuidores Bimbo QSR</strong> é a plataforma analítica oficial de monitoramento de performance comercial, logística e de estoques da rede de distribuição credenciada no Brasil. Desenvolvido nativamente sobre o <strong>Databricks Lakehouse</strong>, o portal unifica os fluxos de <strong>Sell-in</strong> (faturamento da Bimbo para o distribuidor) e <strong>Sell-out</strong> (vendas do distribuidor para restaurantes, hamburguerias e clientes finais), eliminando defasagens manuais em planilhas.</p>
+        
+        <div class="tech-alert alert-success">
+          <span style="font-size:1.2rem;">🔒</span>
+          <div>
+            <strong>Segurança &amp; Isolamento de Dados (RLS Nativo):</strong><br>
+            Cada distribuidor acessa o portal via Single Sign-On (SSO) corporativo e visualiza <strong>estritamente os dados do seu próprio CNPJ</strong>. Nenhuma informação de concorrentes, clientes ou preços de outros distribuidores é trafegada para o navegador.
+          </div>
+        </div>
+
+        <div class="mod-grid">
+          <div class="mod-card">
+            <div class="mod-num">SI</div>
+            <div class="mod-info">
+              <div class="mod-name">Sell-In (Bimbo → Distribuidor)</div>
+              <div class="mod-desc">Acompanhamento das compras realizadas junto à Bimbo QSR vs Forecast planejado, em valor monetário e volume de caixas/dúzias.</div>
+            </div>
+          </div>
+          <div class="mod-card">
+            <div class="mod-num">SO</div>
+            <div class="mod-info">
+              <div class="mod-name">Sell-Out (Distribuidor → Clientes)</div>
+              <div class="mod-desc">Vendas faturadas aos estabelecimentos de alimentação vs Metas comerciais, permitindo identificar oportunidades de expansão de demanda.</div>
+            </div>
+          </div>
+          <div class="mod-card">
+            <div class="mod-num">ET</div>
+            <div class="mod-info">
+              <div class="mod-name">Estoque &amp; Giro por SKU</div>
+              <div class="mod-desc">Posição de cobertura em dias de estoque calculada com base na média diária de vendas, sinalizando riscos de ruptura ou excesso.</div>
+            </div>
+          </div>
+          <div class="mod-card">
+            <div class="mod-num">PS</div>
+            <div class="mod-info">
+              <div class="mod-name">Positivação por Linha</div>
+              <div class="mod-desc">Penetração de clientes atendidos no período por linha de produto (Gourmet Brioche, Tradicionais, Hot Dog, Artesanais e Bolos).</div>
+            </div>
+          </div>
+          <div class="mod-card">
+            <div class="mod-num">PD</div>
+            <div class="mod-info">
+              <div class="mod-name">Fluxo de Pedidos &amp; Faturamento</div>
+              <div class="mod-desc">Status da carteira de compras: pedidos faturados (Invoiced), pedidos em aberto (Open Order) e acompanhamento de entregas.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tech-section">
+        <h2><span class="sec-num">02</span> Como Usar os Filtros Analíticos</h2>
+        <p>A barra de filtros superior possui controles interativos sincronizados que recalculam todos os visuais instantaneamente:</p>
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th style="width: 20%;">Filtro</th>
+              <th style="width: 25%;">Opções &amp; Comportamento</th>
+              <th style="width: 55%;">Regra de Aplicação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Ano</strong></td>
+              <td>Padrão nativo: <code>2026</code> (permite 2025 ou Todos)</td>
+              <td>Filtra todas as frentes pelo ano contábil do fato.</td>
+            </tr>
+            <tr>
+              <td><strong>Mês</strong></td>
+              <td>Padrão nativo: <code>09 - Set</code> (ou seleção múltipla / Todos)</td>
+              <td>Filtra os cards de KPIs pelo mês selecionado. No gráfico anual de barras, exibe os 12 meses para comparação e destaca o período filtrado.</td>
+            </tr>
+            <tr>
+              <td><strong>Semana / Dia</strong></td>
+              <td>Semanas (1 a 52) / Dias (01 a 31)</td>
+              <td>Permite análise tática semanal e diária da evolução de vendas e pedidos.</td>
+            </tr>
+            <tr>
+              <td><strong>Produto &amp; SKU</strong></td>
+              <td>Dropdown pesquisável com autocomplete</td>
+              <td>Filtra por descrição corporativa Bimbo ou código SKU de catálogo do distribuidor.</td>
+            </tr>
+            <tr>
+              <td><strong>Nº Pedido</strong></td>
+              <td>Lista de ordens de compra oficiais</td>
+              <td>Rastreia um pedido específico da emissão até a entrega física.</td>
+            </tr>
+            <tr>
+              <td><strong>Seletor Valor / Volume</strong></td>
+              <td>Chave seletora no canto superior direito</td>
+              <td>Alterna toda a tela entre <strong>R$ (Reais)</strong> e <strong>Volume Físico</strong>. Pães são apresentados em <strong>Dúzias (DZ)</strong> e demais produtos em <strong>Unidades (UN)</strong>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- SUB-ABA 2: ARQUITETURA & PIPELINE DE DADOS (END-TO-END)            -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="guia-tab-content" id="guia-sub-arquitetura">
+      <div class="tech-section">
+        <h2><span class="sec-num">01</span> Arquitetura do Pipeline de Dados (End-to-End)</h2>
+        <p>O fluxo de dados parte dos sistemas transacionais operacionais dos distribuidores e da Bimbo QSR até a exibição no navegador. A arquitetura segue o padrão <strong>Medallion Lakehouse</strong> no Azure Databricks com governança unificada pelo <strong>Unity Catalog</strong>:</p>
+
+        <div class="tech-diagram"><span class="diag-box">[ORIGEM: AZURE SQL DATABASE &amp; ERPs DE DISTRIBUIÇÃO]</span>
+  │   • Bancos transacionais dos distribuidores (pedidos, clientes, estoque)
+  │   • ERP SAP / QSR Bimbo (faturamento corporativo Sell-in, forecast e pedidos)
+  │   • Arquivos de coleta diária padronizada de distribuidores (PASTA_FONTE = 'BQB')
+  ▼
+<span class="diag-hl">┌─────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="diag-hl">│ CAMADA BRONZE / LANDING ZONE (cat_dnabb_dv.bracatlg_lz)                     │</span>
+<span class="diag-hl">├─────────────────────────────────────────────────────────────────────────────┤</span>
+│ • <span class="diag-hl">clientes_distribuidores</span> : Base cadastral de CNPJs de clientes atendidos  │
+│ • <span class="diag-hl">produtos_distribuidores</span> : Tabela de de-para SKU Distribuidor vs SKU Bimbo │
+│ • <span class="diag-hl">calendario_bimbo</span>        : Calendário fiscal corporativo Bimbo              │
+<span class="diag-hl">└─────────────────────────────────────────────────────────────────────────────┘</span>
+  │
+  │  Pipeline PySpark ETL Diário (Padronização, Limpeza, Tratamento de Nulos)
+  ▼
+<span class="diag-hl">┌─────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="diag-hl">│ CAMADA SILVER / MODELO STAR SCHEMA (cat_dnabb_dv.opebrapodis_sz)            │</span>
+<span class="diag-hl">├─────────────────────────────────────────────────────────────────────────────┤</span>
+│ • <span class="diag-hl">tbl_dim_distributor_user_mapping</span> : Mapeamento E-mail SSO ↔ CNPJ + is_admin│
+│ • <span class="diag-hl">tbl_factdy_sellin</span>               : Fato diária Sell-in Realizado e Forecast│
+│ • <span class="diag-hl">tbl_factdy_sellout</span>              : Fato diária Sell-out Realizado e Metas  │
+│ • <span class="diag-hl">tbl_factdy_stock</span>                : Posição diária de Estoque e Giro por SKU│
+│ • <span class="diag-hl">tbl_factdy_order</span>                : Pedidos de Compra colocados à Bimbo     │
+<span class="diag-hl">└─────────────────────────────────────────────────────────────────────────────┘</span>
+  │
+  │  Aplicado Row-Level Security (Row Filter) pelo Unity Catalog:
+  │  <code>fn_rls_distribuidor(CNPJ_DISTRIBUIDOR)</code>
+  ▼
+<span class="diag-box">┌─────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="diag-box">│ CAMADA DE SEGURANÇA UNITY CATALOG (RLS)                                     │</span>
+<span class="diag-box">├─────────────────────────────────────────────────────────────────────────────┤</span>
+│ • Service Principal App DEV  : 46439f81-6e3f-4c66-ae17-232900143dc9 (Bypass)│
+│ • Service Principal App PROD : 05577799-e0de-4e37-8e4b-d06a8f306e72 (Bypass)│
+│ • Consultas SQL Interativas  : Filtradas estritamente por session_user()    │
+<span class="diag-box">└─────────────────────────────────────────────────────────────────────────────┘</span>
+  │
+  │  Execução via Statement Execution API no Databricks SQL Warehouse (f4a2e26b8410f1e3)
+  ▼
+<span class="diag-hl">┌─────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="diag-hl">│ BACKEND PYTHON FLASK — DATABRICKS APPS (src/app/app.py)                     │</span>
+<span class="diag-hl">├─────────────────────────────────────────────────────────────────────────────┤</span>
+│ 1. Captura e-mail autenticado via header <code>X-Forwarded-Email</code>                 │
+│ 2. Consulta <code>tbl_dim_distributor_user_mapping</code> para validar CNPJs autorizados│
+│ 3. Injeta cláusulas parametrizadas <code>WHERE f.CNPJ_DISTRIBUIDOR IN (...)</code>    │
+│ 4. Executa 6 queries simultâneas em paralelo via ThreadPoolExecutor (max 6) │
+│ 5. Constrói JSON estruturado com cards, gráficos, drilldowns e paginação    │
+<span class="diag-hl">└─────────────────────────────────────────────────────────────────────────────┘</span>
+  │
+  │  REST API HTTP JSON Payload (/api/me, /api/kpi, /api/filtros)
+  ▼
+<span class="diag-box">[FRONTEND: Navegador do Usuário (dashboard.html + kpi_distribuidores.js)]</span>
+  • Atualização dinâmica de cards, medidores de atingimento e gráfico de barras
+  • Drilldown com modais de alta resolução (Estoque e Positivação de Clientes)</div>
+
+        <h3>Linha do Tempo e Frequência das Cargas</h3>
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th>Camada</th>
+              <th>Origem</th>
+              <th>Destino</th>
+              <th>Mecanismo / Ferramenta</th>
+              <th>Frequência</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Ingestão Bronze</strong></td>
+              <td>Azure SQL Database / Pastas de Coleta</td>
+              <td><code>cat_dnabb_dv.bracatlg_lz</code></td>
+              <td>Azure Data Factory (ADF) / Cópia Delta Lake</td>
+              <td>Diária (Madrugada)</td>
+            </tr>
+            <tr>
+              <td><strong>Processamento Silver</strong></td>
+              <td>Landing Zone</td>
+              <td><code>cat_dnabb_dv.opebrapodis_sz</code></td>
+              <td>PySpark ETL Notebooks (Agregações e Validações)</td>
+              <td>Diária (05:00 AM)</td>
+            </tr>
+            <tr>
+              <td><strong>Acesso do App</strong></td>
+              <td>Tabelas Fato com RLS</td>
+              <td>Flask API (Databricks Apps)</td>
+              <td>Databricks SQL Statement Execution API (HTTPS)</td>
+              <td>Tempo Real / On-Demand</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- SUB-ABA 3: MANUAL DE MÉTRICAS & FÓRMULAS                           -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="guia-tab-content" id="guia-sub-metricas">
+      <div class="tech-section">
+        <h2><span class="sec-num">01</span> Manual Detalhado de Métricas, Fórmulas e Regras de Negócio</h2>
+        <p>Detalhamento exaustivo de cada card, gráfico e tabela analítica do Portal de Distribuidores. Todas as métricas respeitam rigorosamente a âncora temporal e as regras de negócio corporativas.</p>
+
+        <div class="tech-alert">
+          <span style="font-size:1.1rem;">ℹ️</span>
+          <div>
+            <strong>Âncoras de Data dos Filtros no Sistema:</strong><br>
+            • <strong>Sell-in</strong>: incide estritamente sobre <span class="badge-date-anchor">tbl_factdy_sellin.DT_SELL_IN</span>.<br>
+            • <strong>Sell-out &amp; Positivação</strong>: incidem estritamente sobre <span class="badge-date-anchor">tbl_factdy_sellout.DATA_SELL_OUT</span>.<br>
+            • <strong>Estoque &amp; Giro</strong>: incide sobre <span class="badge-date-anchor">tbl_factdy_stock.DATA_ESTOQUE</span> com partição por data mais recente.<br>
+            • <strong>Pedidos de Compra</strong>: incide sobre <span class="badge-date-anchor">tbl_factdy_order.DATA_EMISSAO_PEDIDO</span>.
+          </div>
+        </div>
+
+        <!-- Card 1: SELL-IN METAS -->
+        <div class="metric-module-card">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num">01</span> Card Sell-in Metas (Compras do Distribuidor junto à Bimbo QSR)
+            </h3>
+            <span class="metric-module-badge">Tabela: tbl_factdy_sellin</span>
+          </div>
+          <div class="metric-module-body">
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 18%;">Métrica</th>
+                  <th style="width: 28%;">Fórmula de Cálculo</th>
+                  <th style="width: 24%;">Colunas &amp; Tabela de Origem</th>
+                  <th style="width: 30%;">Regras &amp; Regra de Negócio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Sell-in Realizado</strong></td>
+                  <td><code>SUM(VL_SELL_IN)</code> (se Valor)<br><code>SUM(QTDE_SELL_IN)</code> (se Volume)</td>
+                  <td><code>tbl_factdy_sellin.VL_SELL_IN</code><br><code>tbl_factdy_sellin.QTDE_SELL_IN</code></td>
+                  <td>Soma das compras faturadas no período filtrado. No modo Volume, pães são calculados em DZ e demais itens em UN.</td>
+                </tr>
+                <tr>
+                  <td><strong>Forecast (Previsão)</strong></td>
+                  <td><code>SUM(VL_FORECAST)</code> (se Valor)<br><code>SUM(QTDE_FORECAST)</code> (se Volume)</td>
+                  <td><code>tbl_factdy_sellin.VL_FORECAST</code><br><code>tbl_factdy_sellin.QTDE_FORECAST</code></td>
+                  <td>Volume ou valor acordado de previsão comercial entre Bimbo e distribuidor para o período.</td>
+                </tr>
+                <tr>
+                  <td><strong>% Atingimento</strong></td>
+                  <td><code>ROUND((Realizado / Forecast) * 100, 0)</code></td>
+                  <td>Cálculo direto de atingimento</td>
+                  <td>Representado no mini-gauge circular. Badge verde para &gt;= 100%, amarelo para 70-99% e vermelho para &lt; 70%.</td>
+                </tr>
+                <tr>
+                  <td><strong>Diferença (Gap)</strong></td>
+                  <td><code>Realizado - Forecast</code><br><code>% Gap = Atingimento - 100%</code></td>
+                  <td>Diferença absoluta e complementar</td>
+                  <td>Exemplo: Se o atingimento for 18%, a diferença exibe <code>↓ Diferença: -R$ 13.0M (-82%)</code>, garantindo soma complementar exata (18 + 82 = 100%).</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Card 2: SELL-OUT METAS -->
+        <div class="metric-module-card">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num">02</span> Card Sell-out Metas (Vendas do Distribuidor aos Clientes Finais)
+            </h3>
+            <span class="metric-module-badge">Tabela: tbl_factdy_sellout</span>
+          </div>
+          <div class="metric-module-body">
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 18%;">Métrica</th>
+                  <th style="width: 28%;">Fórmula de Cálculo</th>
+                  <th style="width: 24%;">Colunas &amp; Tabela de Origem</th>
+                  <th style="width: 30%;">Regras &amp; Regra de Negócio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Sell-out Realizado</strong></td>
+                  <td><code>SUM(VL_SELL_OUT)</code> (se Valor)<br><code>SUM(QTDE_UNITARIO_SELL_OUT)</code></td>
+                  <td><code>tbl_factdy_sellout.VL_SELL_OUT</code><br><code>tbl_factdy_sellout.QTDE_UNITARIO_SELL_OUT</code></td>
+                  <td><strong>Regra Crítica P4:</strong> Filtra <code>SKU_PROD_BQ != 'META' OR SKU_PROD_BQ IS NULL</code> para computar somente as vendas reais sem duplicar linhas de meta.</td>
+                </tr>
+                <tr>
+                  <td><strong>Meta de Sell-out</strong></td>
+                  <td><code>SUM(VL_META)</code></td>
+                  <td><code>tbl_factdy_sellout.VL_META</code></td>
+                  <td>Filtra linhas onde <code>(SKU_PROD_BQ = 'META' OR VL_SELL_OUT = 0) AND VL_META &gt; 0</code>. Isola as metas cadastradas, evitando distorção por cruzamento cartesiano.</td>
+                </tr>
+                <tr>
+                  <td><strong>% Atingimento &amp; Gap</strong></td>
+                  <td><code>(Realizado / Meta) * 100</code><br><code>% Gap = Atingimento - 100%</code></td>
+                  <td>Relação percentual entre realizado e meta comercial</td>
+                  <td>Indica se o distribuidor atingiu a meta de abastecimento do mercado no período selecionado.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Card 3: GRÁFICO COMPARATIVO SELL-IN VS SELL-OUT -->
+        <div class="metric-module-card">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num">03</span> Gráfico Anual de Barras (Sell-in Realizado vs Sell-out Realizado)
+            </h3>
+            <span class="metric-module-badge">Visual Comparativo Mensal</span>
+          </div>
+          <div class="metric-module-body">
+            <p>Compara as vendas da Bimbo para o Distribuidor (Sell-In, barra azul marinho <code>#0A2558</code>) com as vendas do Distribuidor para as lanchonetes e restaurantes (Sell-Out, barra azul ciano <code>#38BDF8</code>) em todos os 12 meses do ano:</p>
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 20%;">Elemento</th>
+                  <th style="width: 40%;">Lógica de Construção</th>
+                  <th style="width: 40%;">Interpretação de Negócio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Barra Sell-in</strong></td>
+                  <td>Agrupamento mensal <code>MONTH(DT_SELL_IN)</code> sobre a tabela fato <code>tbl_factdy_sellin</code>.</td>
+                  <td>Quanto estoque novo entrou no armazém do distribuidor naquele mês.</td>
+                </tr>
+                <tr>
+                  <td><strong>Barra Sell-out</strong></td>
+                  <td>Agrupamento mensal <code>MONTH(DATA_SELL_OUT)</code> sobre a tabela fato <code>tbl_factdy_sellout</code>.</td>
+                  <td>Quanto produto efetivamente saiu para o mercado consumidor.</td>
+                </tr>
+                <tr>
+                  <td><strong>Badge de Variação</strong></td>
+                  <td><code>((Total Sell-out / Total Sell-in) - 1) * 100</code> no topo do gráfico.</td>
+                  <td>Se positivo (↑ verde), o mercado demandou mais produto do que a reposição (estoque baixou). Se negativo, reposição superou a demanda (estoque subiu).</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Card 4: ESTOQUE E GIRO -->
+        <div class="metric-module-card">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num">04</span> Estoque por SKU &amp; Dias de Cobertura (Giro)
+            </h3>
+            <span class="metric-module-badge">Tabela: tbl_factdy_stock</span>
+          </div>
+          <div class="metric-module-body">
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 20%;">Campo / Métrica</th>
+                  <th style="width: 35%;">Fórmula / Regra SQL</th>
+                  <th style="width: 45%;">Comportamento Operacional</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Data de Posição Mais Recente</strong></td>
+                  <td><code>ROW_NUMBER() OVER (PARTITION BY CNPJ_DISTRIBUIDOR, SKU ORDER BY DATA_ESTOQUE DESC) = 1</code></td>
+                  <td>Garante que o dashboard exiba rigorosamente a posição de estoque do último inventário/dia informado pelo distribuidor.</td>
+                </tr>
+                <tr>
+                  <td><strong>Dias de Estoque (Giro)</strong></td>
+                  <td><code>ROUND(COALESCE(GIRO_ESTOQUE, CASE WHEN MEDIA_VENDA &gt; 0 THEN QTDE_ESTOQUE / MEDIA_VENDA ELSE 0 END), 0)</code></td>
+                  <td>Quantos dias de vendas a quantidade atual em armazém é capaz de suportar com base no histórico de giro diário.</td>
+                </tr>
+                <tr>
+                  <td><strong>Alerta de Dias</strong></td>
+                  <td>Pílula colorida ao lado do item</td>
+                  <td>
+                    <span style="color:#22C55E;font-weight:700;">&gt;= 10 dias</span>: Cobertura saudável.<br>
+                    <span style="color:#F59E0B;font-weight:700;">4 a 9 dias</span>: Atenção para reabastecimento.<br>
+                    <span style="color:#EF4444;font-weight:700;">&lt;= 3 dias</span>: Risco crítico de ruptura de estoque.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Card 5: POSITIVAÇÃO -->
+        <div class="metric-module-card">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num">05</span> Positivação por Grupo de Produtos
+            </h3>
+            <span class="metric-module-badge">Tabela: tbl_factdy_sellout</span>
+          </div>
+          <div class="metric-module-body">
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 25%;">Grupo Classificado</th>
+                  <th style="width: 40%;">Regra de Classificação (CASE WHEN no SQL)</th>
+                  <th style="width: 35%;">Objetivo Comercial</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Linha Gourmet &amp; Brioche</strong></td>
+                  <td><code>UPPER(DESC_PROD_BQ) LIKE '%BRIOCHE%'</code></td>
+                  <td>Monitorar penetração de pães premium para hambúrguer artesanal.</td>
+                </tr>
+                <tr>
+                  <td><strong>Pães Tradicionais</strong></td>
+                  <td><code>UPPER(DESC_PROD_BQ) LIKE '%HB%' OR '%HAMB%' OR '%TRADICIONAL%'</code></td>
+                  <td>Linha de alto volume com e sem gergelim.</td>
+                </tr>
+                <tr>
+                  <td><strong>Pães de Hot Dog</strong></td>
+                  <td><code>UPPER(DESC_PROD_BQ) LIKE '%HOT DOG%'</code></td>
+                  <td>Acompanhamento de lanchonetes e redes de fast-food.</td>
+                </tr>
+                <tr>
+                  <td><strong>Pães Especiais &amp; Artesanais</strong></td>
+                  <td><code>UPPER(DESC_PROD_BQ) LIKE '%AUSTRALIANO%' OR '%ARTESANO%' OR '%NUVEM%'</code></td>
+                  <td>Linhas gourmet diferenciadas.</td>
+                </tr>
+                <tr>
+                  <td><strong>Bolos, Snacks &amp; Doces</strong></td>
+                  <td><code>UPPER(DESC_PROD_BQ) LIKE '%ANA MARIA%' OR '%BOLO%' OR '%BISNAG%'</code></td>
+                  <td>Linha de sobremesas e lanches rápidos.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- SUB-ABA 4: STAR SCHEMA & DICIONÁRIO DE DADOS                       -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="guia-tab-content" id="guia-sub-schema">
+      <div class="tech-section">
+        <h2><span class="sec-num">01</span> Modelo Dimensional Star Schema</h2>
+        <p>Todas as tabelas residem no catálogo corporativo <code>cat_dnabb_dv</code>. A modelagem estrela separa dimensões descritivas das métricas quantitativas de fato:</p>
+
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th style="width: 28%;">Tabela / View</th>
+              <th style="width: 15%;">Tipo</th>
+              <th style="width: 27%;">Chaves &amp; Campos Principais</th>
+              <th style="width: 30%;">Finalidade no Lakehouse</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>opebrapodis_sz.tbl_factdy_sellin</code></td>
+              <td>Fato Diária</td>
+              <td><code>CNPJ_DISTRIBUIDOR</code>, <code>DT_SELL_IN</code>, <code>SKU_PROD_BQ</code>, <code>VL_SELL_IN</code>, <code>VL_FORECAST</code></td>
+              <td>Faturamento de Sell-in da Bimbo QSR para a rede de distribuidores.</td>
+            </tr>
+            <tr>
+              <td><code>opebrapodis_sz.tbl_factdy_sellout</code></td>
+              <td>Fato Diária</td>
+              <td><code>CNPJ_DISTRIBUIDOR</code>, <code>CNPJ_CLIENTE</code>, <code>DATA_SELL_OUT</code>, <code>VL_SELL_OUT</code>, <code>VL_META</code></td>
+              <td>Vendas do distribuidor para restaurantes e clientes finais.</td>
+            </tr>
+            <tr>
+              <td><code>opebrapodis_sz.tbl_factdy_stock</code></td>
+              <td>Fato Diária</td>
+              <td><code>CNPJ_DISTRIBUIDOR</code>, <code>DATA_ESTOQUE</code>, <code>SKU_PROD_DIST</code>, <code>QTDE_ESTOQUE</code>, <code>GIRO_ESTOQUE</code></td>
+              <td>Posição diária de inventário e giro calculada por armazém.</td>
+            </tr>
+            <tr>
+              <td><code>opebrapodis_sz.tbl_factdy_order</code></td>
+              <td>Fato Diária</td>
+              <td><code>CNPJ_DISTRIBUIDOR</code>, <code>NUMERO_PEDIDO</code>, <code>DATA_EMISSAO_PEDIDO</code>, <code>VL_PEDIDO_BRUTO</code></td>
+              <td>Ordens de compra colocadas pelos distribuidores junto à Bimbo.</td>
+            </tr>
+            <tr>
+              <td><code>opebrapodis_sz.tbl_dim_distributor_user_mapping</code></td>
+              <td>Dimensão RLS</td>
+              <td><code>user_email</code>, <code>distributor_cnpj_code</code>, <code>is_admin</code>, <code>is_active</code></td>
+              <td>Controle centralizado de autenticação SSO e permissões RLS.</td>
+            </tr>
+            <tr>
+              <td><code>bracatlg_lz.vw_dim_clientes_rls</code></td>
+              <td>Dimensão</td>
+              <td><code>CNPJ_CLIENTE</code>, <code>CNPJ_DISTRIBUIDOR</code>, <code>RAZAO_SOCIAL</code>, <code>PASTA_FONTE</code></td>
+              <td>Cadastro oficial de clientes atendidos com filtro <code>PASTA_FONTE = 'BQB'</code>.</td>
+            </tr>
+            <tr>
+              <td><code>bracatlg_lz.vw_dim_produtos_rls</code></td>
+              <td>Dimensão</td>
+              <td><code>SKU_DISTRIB</code>, <code>DESC_PRODUTO_ARQUIVO_DIST</code>, <code>CNPJ_DISTRIBUIDOR</code></td>
+              <td>Catálogo de de-para entre SKUs do distribuidor e SKUs corporativos Bimbo.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- SUB-ABA 5: GOVERNANÇA & RLS                                        -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="guia-tab-content" id="guia-sub-rls">
+      <div class="tech-section">
+        <h2><span class="sec-num">01</span> Governança de Acesso e Row-Level Security (RLS)</h2>
+        <p>O isolamento de dados no Portal de Distribuidores é garantido na camada de dados do Unity Catalog por meio da função nativa <code>fn_rls_distribuidor</code>, vinculada como <strong>Row Filter</strong> nas tabelas <code>tbl_factdy_sellin</code>, <code>tbl_factdy_sellout</code> e <code>tbl_factdy_stock</code>.</p>
+
+        <div class="tech-alert alert-warning">
+          <span style="font-size:1.1rem;">⚠️</span>
+          <div>
+            <strong>Como a Função Opera:</strong><br>
+            A função avalia quem é o <code>session_user()</code> que está executando a consulta no SQL Warehouse:
+            <ol style="margin: .5rem 0 .2rem; padding-left: 1.2rem;">
+              <li><strong>Service Principals do App</strong>: Os IDs das aplicações Databricks Apps (<code>46439f81-6e3f-4c66-ae17-232900143dc9</code> em DEV e <code>05577799-e0de-4e37-8e4b-d06a8f306e72</code> em PROD) possuem <strong>acesso total</strong> para que o backend Flask filtre os CNPJs autorizados do usuário autenticado no header SSO.</li>
+              <li><strong>Usuários Distribuidores</strong>: Ao executar uma query diretamente no Databricks, o Unity Catalog busca o e-mail na tabela <code>tbl_dim_distributor_user_mapping</code> e restringe os registros rigorosamente ao CNPJ cadastrado.</li>
+              <li><strong>Administradores Bimbo</strong>: Usuários corporativos com <code>is_admin = TRUE</code> possuem visibilidade de todos os distribuidores. Caso um administrador deseje <strong>simular</strong> um distribuidor específico, basta cadastrá-lo com <code>is_admin = FALSE</code> vinculado ao CNPJ de teste.</li>
+            </ol>
+          </div>
+        </div>
+
+        <h3>DDL Oficial da Função de RLS no Unity Catalog</h3>
+        <div class="tech-diagram">CREATE OR REPLACE FUNCTION cat_dnabb_dv.opebrapodis_sz.fn_rls_distribuidor(
+  cnpj_distribuidor_linha STRING
+)
+RETURN 
+  -- 1. Identidades de Serviço do Databricks Apps (Bypass para o Backend)
+  LOWER(TRIM(session_user())) LIKE '%46439f81%'
+  OR LOWER(TRIM(session_user())) LIKE '%05577799%'
+  OR LOWER(TRIM(session_user())) LIKE '%portal-distribuidores%'
+  OR LOWER(TRIM(session_user())) IN (
+    '46439f81-6e3f-4c66-ae17-232900143dc9',
+    '05577799-e0de-4e37-8e4b-d06a8f306e72',
+    'app-4q6vld portal-distribuidores-dev',
+    'app-4q6vld portal-distribuidores'
+  )
+  OR
+  -- 2. Consultas Diretas no Databricks por Usuários Distribuidores
+  (
+    EXISTS (
+      SELECT 1
+      FROM cat_dnabb_dv.opebrapodis_sz.tbl_dim_distributor_user_mapping d
+      WHERE LOWER(TRIM(d.user_email)) = LOWER(TRIM(session_user()))
+        AND d.is_active = TRUE
+        AND (d.valid_to_date IS NULL OR d.valid_to_date &gt;= CURRENT_DATE())
+        AND LPAD(REGEXP_REPLACE(d.distributor_cnpj_code, '[^0-9]', ''), 14, '0')
+          = LPAD(REGEXP_REPLACE(cnpj_distribuidor_linha, '[^0-9]', ''), 14, '0')
+    )
+  )
+  OR
+  -- 3. Administradores Corporativos Bimbo QSR com is_admin = True
+  (
+    NOT EXISTS (
+      SELECT 1
+      FROM cat_dnabb_dv.opebrapodis_sz.tbl_dim_distributor_user_mapping d
+      WHERE LOWER(TRIM(d.user_email)) = LOWER(TRIM(session_user()))
+        AND d.is_active = TRUE
+        AND (d.valid_to_date IS NULL OR d.valid_to_date &gt;= CURRENT_DATE())
+        AND COALESCE(d.is_admin, FALSE) = FALSE
+    )
+    AND LOWER(TRIM(session_user())) IN (
+      'bruno.fellipe@grupobimbo.com',
+      'ana.ferraz@grupobimbo.com',
+      'daniel.moreira@grupobimbo.com',
+      'renan.ferreira@grupobimbo.com'
+    )
+  );</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- SUB-ABA 6: RUNBOOK DO DESENVOLVEDOR                                -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="guia-tab-content" id="guia-sub-runbook">
+      <div class="tech-section">
+        <h2><span class="sec-num">01</span> Runbook do Desenvolvedor (Guia de Manutenção e Deploy)</h2>
+        <p>Este guia foi concebido para fornecer autonomia completa a qualquer engenheiro ou desenvolvedor que precise evoluir ou depurar o Portal de Distribuidores.</p>
+
+        <h3>Estrutura de Diretórios do Projeto</h3>
+        <div class="tech-diagram">bq_app_portal_distribuidores/
+├── databricks.yml                      # Configuração do Databricks Asset Bundle (DAB)
+├── resources/
+│   └── portal_distribuidores.app.yml  # Definição do recurso App DEV/PROD
+└── src/app/
+    ├── app.py                          # Backend Python Flask (Endpoints, SSO, SQL Execution)
+    ├── app.yaml                        # Manifesto de runtime do Databricks Apps (Comando e Escopos)
+    ├── requirements.txt                # Dependências Python (Flask, databricks-sdk)
+    ├── dashboard.html                  # Interface do Dashboard Principal
+    ├── guia.html                       # Página dedicada do Guia Técnico & Usuário (Nova Aba)
+    ├── preview_dashboard.html          # Ambiente de visualização rápida local
+    ├── css/
+    │   ├── kpi_distribuidores.css      # Design System do Dashboard
+    │   └── guia.css                    # Estilos da Documentação Técnica (Padrão Compras 360)
+    ├── js/
+    │   └── kpi_distribuidores.js       # Controladora Front-end (Fetch, KPIs, Filtros e Modais)
+    └── img/                            # Logotipos oficiais Bimbo QSR e DNA</div>
+
+        <h3>Comandos Essenciais de Desenvolvimento &amp; Deploy</h3>
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th style="width: 25%;">Ação</th>
+              <th style="width: 45%;">Comando Terminal (PowerShell / Bash)</th>
+              <th style="width: 30%;">Efeito</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Validar Bundle</strong></td>
+              <td><code>databricks bundle validate -t dev -p DEFAULT</code></td>
+              <td>Verifica sintaxe do <code>databricks.yml</code> e permissões do workspace.</td>
+            </tr>
+            <tr>
+              <td><strong>Deploy em DEV</strong></td>
+              <td><code>databricks bundle deploy -t dev -p DEFAULT</code></td>
+              <td>Faz upload do código para o workspace de desenvolvimento.</td>
+            </tr>
+            <tr>
+              <td><strong>Reiniciar App DEV</strong></td>
+              <td><code>databricks bundle run portal_distribuidores_dev -t dev -p DEFAULT</code></td>
+              <td>Reinicia o contêiner Databricks Apps para aplicar novas alterações.</td>
+            </tr>
+            <tr>
+              <td><strong>Sincronizar com PROD (Staging)</strong></td>
+              <td><code>databricks sync "src/app" "/Workspace/Shared/CONSULTAS_AUTOMATIZADAS/bq_app_portal_distribuidores/prod/files" -p DEFAULT</code></td>
+              <td>Atualiza o diretório oficial de homologação/staging para release em produção.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Troubleshooting Comum (Perguntas &amp; Respostas Técnicas)</h3>
+        <div class="tech-alert alert-warning">
+          <div>
+            <strong>Visuais do Dashboard aparecem zerados ou em branco:</strong><br>
+            1. Verifique se o e-mail autenticado possui cadastro ativo em <code>cat_dnabb_dv.opebrapodis_sz.tbl_dim_distributor_user_mapping</code>.<br>
+            2. Verifique se a conta proprietária do token do SQL Warehouse (variável <code>MY_DATABRICKS_TOKEN</code> em <code>app.yaml</code>) está com <code>is_admin = TRUE</code> na tabela de mapping. Se estiver com <code>is_admin = FALSE</code>, a função <code>fn_rls_distribuidor</code> restringirá o warehouse apenas ao CNPJ daquela conta, zerando as consultas dos demais distribuidores.
+          </div>
+        </div>
+
+        <div class="tech-alert">
+          <div>
+            <strong>Como simular o acesso de um distribuidor específico:</strong><br>
+            1. Na tabela <code>tbl_dim_distributor_user_mapping</code>, insira ou atualize seu e-mail apontando para o <code>distributor_cnpj_code</code> desejado (ex.: Jedimix <code>31448685000167</code>) com <code>is_admin = FALSE</code>.<br>
+            2. Abra o app no navegador. O portal detectará o vínculo e operará estritamente como aquele distribuidor.<br>
+            3. Para voltar a ver todos os distribuidores, adicione <code>?perfil=admin</code> na URL ou atualize <code>is_admin = TRUE</code>.
+          </div>
+        </div>
+
+      </div>
+    </div>
+      </div>
+    </div><!-- #tab-guia -->
+
+
+
+    
+
+  </main>
+
+  <!-- ── Campo de Ondas Fluídas em Pontilhados Puros (Particle Wave Matrix - Sem Sombras) ── -->
+  <svg class="bg-waves-bottom" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 190" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <!-- Gradientes Azuis para os Pontos -->
+      <linearGradient id="dotWaveGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%"   stop-color="#0284C7" stop-opacity="0.18"/>
+        <stop offset="35%"  stop-color="#00C2E0" stop-opacity="0.45"/>
+        <stop offset="70%"  stop-color="#0C2D6D" stop-opacity="0.40"/>
+        <stop offset="100%" stop-color="#0284C7" stop-opacity="0.18"/>
+      </linearGradient>
+      <linearGradient id="dotWaveGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%"   stop-color="#0C2D6D" stop-opacity="0.15"/>
+        <stop offset="40%"  stop-color="#0284C7" stop-opacity="0.38"/>
+        <stop offset="80%"  stop-color="#1E40AF" stop-opacity="0.32"/>
+        <stop offset="100%" stop-color="#0C2D6D" stop-opacity="0.15"/>
+      </linearGradient>
+      <linearGradient id="dotWaveGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%"   stop-color="#1E40AF" stop-opacity="0.12"/>
+        <stop offset="50%"  stop-color="#0C2D6D" stop-opacity="0.30"/>
+        <stop offset="100%" stop-color="#0284C7" stop-opacity="0.12"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Onda Pontilhada 1 (Crista Superior Alta) -->
+    <path fill="none" stroke="url(#dotWaveGrad1)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="2 8" d="M-40,40 C200,90 420,15 720,55 C1020,95 1240,20 1480,50"/>
+
+    <!-- Onda Pontilhada 2 -->
+    <path fill="none" stroke="url(#dotWaveGrad2)" stroke-width="2.0" stroke-linecap="round" stroke-dasharray="2 7" d="M-40,55 C220,105 440,30 720,70 C1000,110 1220,35 1480,65"/>
+
+    <!-- Onda Pontilhada 3 -->
+    <path fill="none" stroke="url(#dotWaveGrad1)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="2 9" d="M-40,70 C240,120 460,45 720,85 C980,125 1200,50 1480,80"/>
+
+    <!-- Onda Pontilhada 4 (Harmônica Central) -->
+    <path fill="none" stroke="url(#dotWaveGrad2)" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="2.2 8" d="M-40,85 C260,135 480,60 720,100 C960,140 1180,65 1480,95"/>
+
+    <!-- Onda Pontilhada 5 -->
+    <path fill="none" stroke="url(#dotWaveGrad3)" stroke-width="2.0" stroke-linecap="round" stroke-dasharray="2 10" d="M-40,100 C280,150 500,75 720,115 C940,155 1160,80 1480,110"/>
+
+    <!-- Onda Pontilhada 6 -->
+    <path fill="none" stroke="url(#dotWaveGrad1)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="2 8" d="M-40,115 C300,165 520,90 720,130 C920,170 1140,95 1480,125"/>
+
+    <!-- Onda Pontilhada 7 -->
+    <path fill="none" stroke="url(#dotWaveGrad2)" stroke-width="2.0" stroke-linecap="round" stroke-dasharray="2 9" d="M-40,130 C320,180 540,105 720,145 C900,185 1120,110 1480,140"/>
+
+    <!-- Onda Pontilhada 8 (Crista Inferior) -->
+    <path fill="none" stroke="url(#dotWaveGrad3)" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="2 11" d="M-40,145 C340,195 560,120 720,160 C880,200 1100,125 1480,155"/>
+
+    <!-- Onda Pontilhada 9 -->
+    <path fill="none" stroke="url(#dotWaveGrad1)" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="2 8" d="M-40,160 C360,210 580,135 720,175 C860,215 1080,140 1480,170"/>
+
+    <!-- Micro-nós de dispersão de partículas -->
+    <g fill="#0284C7" opacity="0.35">
+      <circle cx="210" cy="92" r="2.2"/><circle cx="430" cy="22" r="2"/><circle cx="730" cy="62" r="2.4"/><circle cx="1010" cy="102" r="2.2"/><circle cx="1230" cy="28" r="2"/>
+      <circle cx="250" cy="122" r="1.8"/><circle cx="470" cy="52" r="1.6"/><circle cx="710" cy="92" r="2"/><circle cx="970" cy="132" r="1.8"/><circle cx="1190" cy="58" r="1.6"/>
+    </g>
+  </svg>
+
+  <!-- Logo Bimbo QSR rodapé direito -->
+  <div class="footer-logo">
+    <img src="img/logo-bimbo-qsr.png" alt="Bimbo QSR"/>
+  </div>
+
+  <!-- ── Overlay Global de Carregamento (Loading Screen com Símbolo e Efeito Cósmico) ── -->
+  <div id="global-loading-overlay" class="global-loading-overlay" aria-live="polite" aria-busy="true">
+    <div class="loading-glass-card">
+      <div class="loading-symbol-wrap">
+        <div class="loading-spinner-ring"></div>
+        <img src="img/logo_distribuidores.png" alt="Portal Distribuidores" class="loading-brand-icon" />
+      </div>
+      <h2 class="loading-title">
+        Carregando os Dados<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
+      </h2>
+      <p class="loading-subtitle">Conectando ao Databricks e processando regras analíticas...</p>
+      <div class="loading-progress-bar">
+        <div class="loading-progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Expandido de Estoque por SKU -->
+  <div id="modal-estoque-expand" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeEstoqueModal();">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-header-titles">
+          <span class="modal-tag" id="modal-block-tag">ESTOQUE POR SKU • VISÃO AMPLIADA</span>
+          <h2 class="modal-title" id="modal-block-title">Detalhamento Completo de Dias de Estoque</h2>
+        </div>
+        <div class="modal-header-actions">
+          <!-- Filtro Cliente -->
+          <div class="filter-wrapper">
+            <span class="filter-label">Cliente:</span>
+            <div class="custom-select modal-select" id="select-modal-est-cliente">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-modal-est-cliente" placeholder="Todos" autocomplete="off" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+          <!-- Filtro Produto -->
+          <div class="filter-wrapper">
+            <span class="filter-label">Produto:</span>
+            <div class="custom-select modal-select" id="select-modal-est-produto">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-modal-est-produto" placeholder="Todos" autocomplete="off" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+          <button class="btn-modal-close" onclick="closeEstoqueModal()" title="Fechar (Esc)">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <table class="modal-table">
+          <thead>
+            <tr>
+              <th style="width: 44%;">Cliente</th>
+              <th style="width: 44%;">Descrição do Produto</th>
+              <th style="width: 12%; text-align: center;">Dias</th>
+            </tr>
+          </thead>
+          <tbody id="modal-tbody-estoque">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <span class="modal-count-info" id="modal-records-count">Exibindo 0 registros</span>
+        <button class="btn-modal-done" onclick="closeEstoqueModal()">Concluído</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Expandido de Positivação por Grupo de Produtos -->
+  <div id="modal-positivacao-expand" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closePositivacaoModal();">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-header-titles">
+          <span class="modal-tag" id="modal-positiv-tag">POSITIVAÇÃO POR GRUPO DE PRODUTOS • VISÃO AMPLIADA</span>
+          <h2 class="modal-title" id="modal-positiv-title">Detalhamento Completo de Positivação por Cliente</h2>
+        </div>
+        <div class="modal-header-actions">
+          <!-- Filtro Cliente -->
+          <div class="filter-wrapper">
+            <span class="filter-label">Cliente:</span>
+            <div class="custom-select modal-select" id="select-modal-pos-cliente">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-modal-pos-cliente" placeholder="Todos" autocomplete="off" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+          <!-- Filtro Grupo -->
+          <div class="filter-wrapper">
+            <span class="filter-label">Grupo:</span>
+            <div class="custom-select modal-select" id="select-modal-pos-grupo">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-modal-pos-grupo" placeholder="Todos" autocomplete="off" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+          <button class="btn-modal-close" onclick="closePositivacaoModal()" title="Fechar (Esc)">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <table class="modal-table">
+          <thead>
+            <tr>
+              <th style="width: 32%;">Cliente (Razão Social)</th>
+              <th style="width: 32%;">Grupo de Produto (GRUPO_PRODUTO_DESC_BQ)</th>
+              <th style="width: 18%; text-align: center;">Status de Positivação</th>
+              <th style="width: 18%; text-align: center;">Classificação</th>
+            </tr>
+          </thead>
+          <tbody id="modal-tbody-positivacao">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <span class="modal-count-info" id="modal-positiv-records-count">Exibindo 0 registros</span>
+        <button class="btn-modal-done" onclick="closePositivacaoModal()">Concluído</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/kpi_distribuidores.js?v=20261021_v1"></script>
+</body>
+</html>

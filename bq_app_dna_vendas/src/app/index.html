@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DNA de Vendas (SPACE) · Bimbo Brasil · QSR</title>
+  <meta name="theme-color" content="#071437">
+  <link rel="stylesheet" href="styles.css?v=3.2.5">
+  <link rel="stylesheet" href="home.css?v=3.0.3">
+</head>
+<body class="home">
+
+  <div class="sp-app-layout">
+    <aside class="sp-sidebar" id="spSidebar">
+      <button type="button" class="sp-sidebar-toggle-btn" id="btnToggleSidebar" aria-label="Expandir ou recolher menu" title="Expandir/recolher menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <a href="/" class="sp-nav-item active" title="Início">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Início</span>
+      </a>
+      <a href="vendometro.html?v=3.3.0" class="sp-nav-item" title="Vendômetro">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        <span>Vendômetro</span>
+      </a>
+      <a href="previsoes.html?v=3.3.0" class="sp-nav-item" title="Previsões de Invoiced">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        <span>Previsões</span>
+      </a>
+      <a href="relatorios.html?v=3.3.0" class="sp-nav-item" title="Report Dinâmico">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        <span>Report</span>
+      </a>
+    </aside>
+
+    <div class="sp-main">
+      <header class="home-top">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <img class="home-dna" src="logo-dna.png" alt="Data &amp; Analytics Bimbo">
+    </div>
+    <div class="home-top-right">
+      <div class="app-menu-container" id="app-menu-container"></div>
+    </div>
+  </header>
+
+  <main class="home-main" id="main">
+    <section class="home-copy">
+      <img class="home-logo" src="logo-bimbo-qsr.png" alt="Bimbo QSR">
+      <h1 class="home-title">
+        DNA de Vendas
+      </h1>
+      <p class="home-lead">
+        Acompanhe invoiced, open orders e metas como Budget e Forecast.
+      </p>
+      <div class="home-cta-row">
+        <a href="vendometro.html?v=3.2.0" class="home-cta">
+          Entrar no portal
+          <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </a>
+        <button type="button" class="home-secondary-btn" id="btn-conhecer" aria-expanded="false" aria-controls="apresentacao">
+          <span id="txt-conhecer">Conhecer a Solução</span>
+          <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+      </div>
+      <ul class="home-feats">
+        <li><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Metas e atingimento diário (Invoiced vs Budget)</li>
+        <li><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Pedidos faturados e em carteira (Open Orders)</li>
+        <li><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Report Dinâmico multidimensional com exportação Excel</li>
+      </ul>
+    </section>
+
+    <!-- Ilustração de rota animada: Fábrica Bimbo QSR -> Canal QSR (Grandes Redes) & Canal Distribuidores (CDs -> Restaurantes) -->
+    <figure class="home-route" aria-label="Fluxo operacional Bimbo QSR: Canal QSR Direto e Canal Distribuidores">
+      <svg class="rt" viewBox="0 0 600 430" fill="none">
+        <!-- Rota Superior: Canal QSR (Venda Direta para Grandes Redes: McDonald's, BK, Madero, Subway) -->
+        <path id="rt-qsr-direct" class="rt-path rt-path-primary rt-branch-qsr" d="M95 174 C 95 95, 145 78, 224 78"/>
+        <path id="rt-qsr-net1" class="rt-path rt-path-primary rt-branch-qsr" d="M402 78 C 448 78, 462 44, 506 44"/>
+        <path id="rt-qsr-net2" class="rt-path rt-path-primary rt-branch-qsr" d="M402 78 C 448 78, 462 114, 506 114"/>
+
+        <!-- Rota Inferior: Canal Distribuidores (Sell-in para CDs -> Sell-out para Food Service) -->
+        <path id="rt-sellin" class="rt-path rt-branch-dist" d="M95 246 C 95 316, 145 332, 224 332"/>
+        <path id="rt-out1" class="rt-path rt-out rt-branch-dist" d="M402 332 C 448 332, 462 272, 506 272"/>
+        <path id="rt-out2" class="rt-path rt-out rt-branch-dist" d="M402 332 C 448 332, 462 368, 506 368"/>
+
+        <!-- Rótulos dos fluxos -->
+        <g class="rt-tag rt-branch-qsr" transform="translate(56 96)">
+          <rect width="94" height="24" rx="12"/>
+          <text x="47" y="16">Venda Direta</text>
+        </g>
+        <g class="rt-tag rt-branch-dist" transform="translate(64 292)">
+          <rect width="78" height="24" rx="12"/>
+          <text x="39" y="16">Sell-in CD</text>
+        </g>
+        <g class="rt-tag rt-tag-out rt-branch-dist" transform="translate(418 308)">
+          <rect width="72" height="24" rx="12"/>
+          <text x="36" y="16">Sell-out</text>
+        </g>
+
+        <!-- Origem: Bimbo QSR Fábrica -->
+        <g class="rt-node" transform="translate(16 174)">
+          <rect width="162" height="72" rx="12"/>
+          <svg x="16" y="24" width="24" height="24" viewBox="0 0 24 24" class="rt-ic"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1M12 18h1M7 18h1"/></svg>
+          <text class="rt-t" x="50" y="32">Bimbo QSR</text>
+          <text class="rt-s" x="50" y="50">Fábricas Brasil</text>
+        </g>
+
+        <!-- Hub 1: QSR -->
+        <g id="hub-qsr" class="rt-node rt-node-hub rt-branch-qsr" tabindex="0" transform="translate(224 48)">
+          <rect width="178" height="60" rx="12">
+            <animate attributeName="stroke-width" values="1;2.4;1;1" keyTimes="0;0.38;0.5;1" dur="8s" repeatCount="indefinite"/>
+          </rect>
+          <svg x="16" y="18" width="24" height="24" viewBox="0 0 24 24" class="rt-ic"><path d="M3 9 4.5 4h15L21 9"/><path d="M3 9h18v1.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0Z"/><path d="M5 13v7h14v-7M10 20v-4h4v4"/></svg>
+          <text class="rt-t" x="50" y="35">QSR</text>
+        </g>
+
+        <!-- Hub 2: Distribuidores -->
+        <g id="hub-distrib" class="rt-node rt-node-hub rt-branch-dist" tabindex="0" transform="translate(224 302)">
+          <rect width="178" height="60" rx="12">
+            <animate attributeName="stroke-width" values="1;1;2.4;1" keyTimes="0;0.35;0.48;1" dur="8s" repeatCount="indefinite"/>
+          </rect>
+          <svg x="16" y="18" width="24" height="24" viewBox="0 0 24 24" class="rt-ic"><path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z"/><path d="M6 18h12M6 14h12"/><rect x="6" y="10" width="12" height="12"/></svg>
+          <text class="rt-t" x="50" y="35">Distribuidores</text>
+        </g>
+
+        <!-- Destinos Superiores: Grandes Contas QSR -->
+        <g class="rt-pin rt-branch-qsr" transform="translate(528 44)">
+          <circle r="22"/>
+          <svg x="-11" y="-11" width="22" height="22" viewBox="0 0 24 24" class="rt-ic"><path d="M4 11a8 8 0 0 1 16 0H4z"/><rect x="4" y="15" width="16" height="4" rx="2"/><line x1="4" y1="13" x2="20" y2="13"/></svg>
+        </g>
+        <g class="rt-pin rt-branch-qsr" transform="translate(528 114)">
+          <circle r="22"/>
+          <svg x="-11" y="-11" width="22" height="22" viewBox="0 0 24 24" class="rt-ic"><path d="M3 9 4.5 4h15L21 9"/><path d="M3 9h18v1.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0Z"/><path d="M5 13v7h14v-7M10 20v-4h4v4"/></svg>
+        </g>
+        <text class="rt-t rt-t-sm rt-branch-qsr" x="528" y="156" text-anchor="middle">Redes Fast-Food</text>
+
+        <!-- Destinos Inferiores: Restaurantes & Food Service -->
+        <g class="rt-pin rt-branch-dist" transform="translate(528 272)">
+          <circle r="22"/>
+          <svg x="-11" y="-11" width="22" height="22" viewBox="0 0 24 24" class="rt-ic"><path d="M3 9 4.5 4h15L21 9"/><path d="M3 9h18v1.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0Z"/><path d="M5 13v7h14v-7M10 20v-4h4v4"/></svg>
+        </g>
+        <g class="rt-pin rt-branch-dist" transform="translate(528 368)">
+          <circle r="22"/>
+          <svg x="-11" y="-11" width="22" height="22" viewBox="0 0 24 24" class="rt-ic"><path d="M3 9 4.5 4h15L21 9"/><path d="M3 9h18v1.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0Z"/><path d="M5 13v7h14v-7M10 20v-4h4v4"/></svg>
+        </g>
+        <text class="rt-t rt-t-sm rt-branch-dist" x="528" y="410" text-anchor="middle">Food Service &amp; Rotas</text>
+
+        <!-- Caminhão 1: Fábrica -> Canal QSR Direto -->
+        <g class="rt-truck rt-truck-move">
+          <circle r="17"/>
+          <svg x="-9.5" y="-9.5" width="19" height="19" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+          <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.38;1" calcMode="spline" keySplines="0.42 0 0.2 1;0 0 1 1"><mpath href="#rt-qsr-direct"/></animateMotion>
+          <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.04;0.35;0.41;1" dur="8s" repeatCount="indefinite"/>
+        </g>
+
+        <!-- Entrega QSR -> Redes 1 e 2 -->
+        <g class="rt-truck rt-truck-move rt-truck-sm">
+          <circle r="13"/>
+          <svg x="-7.5" y="-7.5" width="15" height="15" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+          <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.42;0.82;1" calcMode="spline" keySplines="0 0 1 1;0.4 0 0.2 1;0 0 1 1"><mpath href="#rt-qsr-net1"/></animateMotion>
+          <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.42;0.45;0.78;0.82;1" dur="8s" repeatCount="indefinite"/>
+        </g>
+        <g class="rt-truck rt-truck-move rt-truck-sm">
+          <circle r="13"/>
+          <svg x="-7.5" y="-7.5" width="15" height="15" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+          <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.46;0.86;1" calcMode="spline" keySplines="0 0 1 1;0.4 0 0.2 1;0 0 1 1"><mpath href="#rt-qsr-net2"/></animateMotion>
+          <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.46;0.49;0.82;0.86;1" dur="8s" repeatCount="indefinite"/>
+        </g>
+
+        <!-- Caminhão 2: Fábrica -> Canal Distribuidores (CDs) -->
+        <g class="rt-truck rt-truck-move">
+          <circle r="17"/>
+          <svg x="-9.5" y="-9.5" width="19" height="19" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+          <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.08;0.46;1" calcMode="spline" keySplines="0 0 1 1;0.42 0 0.2 1;0 0 1 1"><mpath href="#rt-sellin"/></animateMotion>
+          <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.08;0.12;0.43;0.48;1" dur="8s" repeatCount="indefinite"/>
+        </g>
+
+        <!-- Sell-out: CDs -> Restaurantes 1 e 2 -->
+        <g class="rt-truck rt-truck-move rt-truck-sm">
+          <circle r="13"/>
+          <svg x="-7.5" y="-7.5" width="15" height="15" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+          <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.5;0.88;1" calcMode="spline" keySplines="0 0 1 1;0.4 0 0.2 1;0 0 1 1"><mpath href="#rt-out1"/></animateMotion>
+          <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.5;0.53;0.84;0.88;1" dur="8s" repeatCount="indefinite"/>
+        </g>
+        <g class="rt-truck rt-truck-move rt-truck-sm">
+          <circle r="13"/>
+          <svg x="-7.5" y="-7.5" width="15" height="15" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+          <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.54;0.92;1" calcMode="spline" keySplines="0 0 1 1;0.4 0 0.2 1;0 0 1 1"><mpath href="#rt-out2"/></animateMotion>
+          <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.54;0.57;0.88;0.92;1" dur="8s" repeatCount="indefinite"/>
+        </g>
+
+        <g class="rt-truck rt-truck-still" transform="translate(145 102)">
+          <circle r="17"/>
+          <svg x="-9.5" y="-9.5" width="19" height="19" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+        </g>
+      </svg>
+    </figure>
+  </main>
+
+  <!-- ═══════════════════════ APRESENTAÇÃO ENXUTA COM TOGGLE ═══════════════════════ -->
+  <section class="home-presentation" id="apresentacao" aria-label="Apresentação do DNA de Vendas">
+    
+    <!-- Objetivo Direto -->
+    <div class="obj-strip">
+      <div class="obj-tag">Objetivo</div>
+      <p class="obj-highlight">
+        A plataforma corporativa nativa de <strong>Data &amp; Analytics</strong> e <strong>Bimbo QSR</strong> para acompanhamento analítico e operacional de faturamento, pedidos em carteira e atingimento de metas diárias.
+      </p>
+    </div>
+
+    <!-- 3 Funcionalidades Principais -->
+    <div class="quick-section">
+      <h2 class="quick-title">O que você acompanha no DNA de Vendas</h2>
+      <div class="quick-grid">
+        <div class="quick-card">
+          <div class="quick-card-head">
+            <div class="quick-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <h3>Vendômetro Executivo</h3>
+          </div>
+          <p>Acompanhe Invoiced realizado, Budget até a data, gap financeiro e cobertura em Valor (R$) e Volume físico (kg).</p>
+        </div>
+
+        <div class="quick-card">
+          <div class="quick-card-head">
+            <div class="quick-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+            </div>
+            <h3>Previsões de Invoiced</h3>
+          </div>
+          <p>Projeção estatística de fechamento com 96,8% de assertividade, ritmo diário necessário e matriz por SKU.</p>
+        </div>
+
+        <div class="quick-card">
+          <div class="quick-card-head">
+            <div class="quick-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            </div>
+            <h3>Report Dinâmico</h3>
+          </div>
+          <p>Construtor analítico flexível com filtros de Gerente, Canal, Cliente e SKU, com exportação nativa para Excel.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Benefícios e Guia em 3 Passos -->
+    <div class="two-col-summary">
+      <div class="summary-box">
+        <h3 class="box-title">Vantagens da Solução Corporativa</h3>
+        <ul class="clean-list">
+          <li><strong>Verdade Única dos Dados:</strong> Métricas auditadas diretamente nas tabelas governadas no Databricks Unity Catalog.</li>
+          <li><strong>Alta Performance Photon:</strong> Execução em alta velocidade via Databricks SQL Warehouse com cache inteligente.</li>
+          <li><strong>Mobilidade Total:</strong> Experiência nativa fluida do desktop corporativo aos tablets e smartphones em campo.</li>
+        </ul>
+      </div>
+
+      <div class="summary-box">
+        <h3 class="box-title">Como usar em 3 passos</h3>
+        <ol class="clean-steps">
+          <li><span>1</span> Entre com sua conta corporativa autorizada (SSO Databricks).</li>
+          <li><span>2</span> Acompanhe os gaps e metas diárias no Vendômetro.</li>
+          <li><span>3</span> Filtre e exporte visões multidimensionais no Report Dinâmico.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Botão de Ação Direto -->
+    <div class="quick-cta-row">
+      <a href="vendometro.html?v=3.2.0" class="home-cta">Acessar Vendômetro →</a>
+      <button type="button" class="home-secondary-btn" id="btn-recolher">
+        Recolher detalhes ▴
+      </button>
+    </div>
+
+  </section>
+
+  <footer class="home-foot">
+    <span>Grupo Bimbo Brasil · Bimbo QSR</span>
+    <span>Desenvolvido por Data &amp; Analytics</span>
+  </footer>
+  </div><!-- /.sp-main -->
+  </div><!-- /.sp-app-layout -->
+
+  <!-- NAVEGAÇÃO MOBILE INFERIOR -->
+  <nav class="dna-mobile-nav" aria-label="Navegação mobile">
+    <a href="/" class="dna-mobile-nav-item active" aria-current="page">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="vendometro.html?v=3.3.0" class="dna-mobile-nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      <span>Vendômetro</span>
+    </a>
+    <a href="previsoes.html?v=3.3.0" class="dna-mobile-nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+      <span>Previsões</span>
+    </a>
+    <a href="relatorios.html?v=3.3.0" class="dna-mobile-nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      <span>Report</span>
+    </a>
+  </nav>
+
+  <script src="app-menu.js?v=3.2.0"></script>
+  <script src="view-scale.js?v=1.0.2"></script>
+  <script>
+  (function() {
+    var btnConhecer = document.getElementById('btn-conhecer');
+    var txtConhecer = document.getElementById('txt-conhecer');
+    var secApresentacao = document.getElementById('apresentacao');
+    var btnRecolher = document.getElementById('btn-recolher');
+
+    function toggleApresentacao(expand) {
+      if (!secApresentacao) return;
+      var isOpen = secApresentacao.classList.contains('is-open');
+      var shouldOpen = (typeof expand === 'boolean') ? expand : !isOpen;
+
+      if (shouldOpen) {
+        secApresentacao.classList.add('is-open');
+        if (btnConhecer) {
+          btnConhecer.classList.add('is-active');
+          btnConhecer.setAttribute('aria-expanded', 'true');
+        }
+        if (txtConhecer) txtConhecer.textContent = 'Recolher detalhes';
+        setTimeout(function() {
+          secApresentacao.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 120);
+      } else {
+        secApresentacao.classList.remove('is-open');
+        if (btnConhecer) {
+          btnConhecer.classList.remove('is-active');
+          btnConhecer.setAttribute('aria-expanded', 'false');
+        }
+        if (txtConhecer) txtConhecer.textContent = 'Conhecer a Solução';
+        var mainEl = document.getElementById('main');
+        if (mainEl) {
+          mainEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }
+
+    if (btnConhecer) {
+      btnConhecer.addEventListener('click', function(e) {
+        e.preventDefault();
+        toggleApresentacao();
+      });
+    }
+
+    if (btnRecolher) {
+      btnRecolher.addEventListener('click', function(e) {
+        e.preventDefault();
+        toggleApresentacao(false);
+      });
+    }
+
+    /* Suporte a links âncoras adicionais caso existam */
+    document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+      anchor.addEventListener('click', function(e) {
+        var href = this.getAttribute('href');
+        if (href === '#apresentacao') {
+          e.preventDefault();
+          toggleApresentacao(true);
+        } else {
+          var target = document.querySelector(href);
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      });
+    });
+    /* Foco interativo por canal na rota animada */
+    var rtSvg = document.querySelector('.home-route .rt');
+    var hubQsr = document.getElementById('hub-qsr');
+    var hubDist = document.getElementById('hub-distrib');
+    if (rtSvg && hubQsr && hubDist) {
+      var setBranchFocus = function(cls) {
+        rtSvg.classList.remove('is-focus-qsr', 'is-focus-dist');
+        if (cls) rtSvg.classList.add(cls);
+      };
+      hubQsr.addEventListener('mouseenter', function() { setBranchFocus('is-focus-qsr'); });
+      hubQsr.addEventListener('focus', function() { setBranchFocus('is-focus-qsr'); });
+      hubQsr.addEventListener('mouseleave', function() { setBranchFocus(''); });
+      hubQsr.addEventListener('blur', function() { setBranchFocus(''); });
+      hubDist.addEventListener('mouseenter', function() { setBranchFocus('is-focus-dist'); });
+      hubDist.addEventListener('focus', function() { setBranchFocus('is-focus-dist'); });
+      hubDist.addEventListener('mouseleave', function() { setBranchFocus(''); });
+      hubDist.addEventListener('blur', function() { setBranchFocus(''); });
+    }
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BQ VCM - Análise por Cliente | Grupo Bimbo</title>
+  <link rel="stylesheet" href="styles.css?v=5">
+  <style>
+    /* ── Estilos da Barra de Filtros e Dropdowns (Padrão Oficial) ── */
+    .filter-bar {
+      background: var(--fr-surface, #282f3f);
+      border: 1px solid var(--fr-border, rgba(100, 116, 139, 0.2));
+      border-radius: 12px;
+      padding: 1.1rem 1.4rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      align-items: flex-end;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      min-width: 130px;
+      flex: 1;
+    }
+    .fg label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--fr-txt-soft, #7a9dba);
+    }
+    .ms-dropdown {
+      position: relative;
+      min-width: 120px;
+    }
+    .ms-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.42rem 0.65rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(100, 116, 139, 0.28);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      color: #E8F4FD;
+      min-height: 34px;
+      gap: 0.3rem;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+    .ms-trigger:hover {
+      border-color: rgba(100, 116, 139, 0.55);
+    }
+    .ms-trigger .ms-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .ms-trigger .ms-arrow {
+      font-size: 0.55rem;
+      color: #94a3b8;
+      flex-shrink: 0;
+    }
+    .ms-panel {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      min-width: 100%;
+      width: max-content;
+      max-width: 280px;
+      background: #1e2433;
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      padding: 0.4rem;
+      box-sizing: border-box;
+    }
+    .ms-panel.open {
+      display: block;
+    }
+    .ms-search {
+      width: 100%;
+      padding: 0.35rem 0.5rem;
+      border: 1px solid rgba(100, 116, 139, 0.2);
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #E8F4FD;
+      font-size: 0.7rem;
+      margin-bottom: 0.35rem;
+      outline: none;
+      box-sizing: border-box;
+    }
+    .ms-search:focus {
+      border-color: #3b82f6;
+    }
+    .ms-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.35rem;
+      padding: 0 0.2rem;
+    }
+    .ms-actions a {
+      font-size: 0.62rem;
+      color: #60a5fa;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .ms-actions a:hover {
+      text-decoration: underline;
+    }
+    .ms-options {
+      max-height: 180px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .ms-option {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.3rem 0.4rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.72rem;
+      color: #cbd5e1;
+      transition: background 0.1s;
+      user-select: none;
+    }
+    .ms-option:hover {
+      background: rgba(59, 130, 246, 0.1);
+    }
+    .ms-option input[type=checkbox] {
+      width: 13px;
+      height: 13px;
+      accent-color: #3b82f6;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin: 0;
+    }
+    .ms-option label {
+      cursor: pointer;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .ms-badge {
+      background: #3b82f6;
+      color: #fff;
+      font-size: 0.55rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 10px;
+      margin-left: 4px;
+      vertical-align: middle;
+      display: inline-block;
+    }
+
+    /* ── Botões de Mais Filtros e Limpar ── */
+    .btn-adv-filters {
+      padding: .4rem .75rem;
+      font-size: .72rem;
+      font-weight: 700;
+      border-radius: 8px;
+      border: 1px solid rgba(100, 116, 139, .35);
+      background: rgba(100, 116, 139, .1);
+      color: #94a3b8;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      transition: all .15s ease;
+      line-height: 1.2;
+      box-sizing: border-box;
+      outline: none;
+      min-height: 34px;
+    }
+    .btn-adv-filters:hover {
+      background: rgba(100, 116, 139, .2);
+      color: #cbd5e1;
+      border-color: rgba(100, 116, 139, .5);
+    }
+    .btn-adv-filters.filter-btn-active,
+    .filter-btn-active {
+      background: rgba(59, 130, 246, .2) !important;
+      border-color: rgba(59, 130, 246, .6) !important;
+      color: #60a5fa !important;
+    }
+    .btn-filter-clear {
+      padding: .45rem 1.15rem;
+      font-size: .75rem;
+      font-weight: 700;
+      border-radius: 8px;
+      border: 1px solid rgba(100, 116, 139, .35);
+      background: rgba(100, 116, 139, .1);
+      color: #94a3b8;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .15s ease;
+      line-height: 1.2;
+      box-sizing: border-box;
+      outline: none;
+      min-height: 34px;
+    }
+    .btn-filter-clear:hover {
+      background: rgba(100, 116, 139, .25);
+      color: #ffffff;
+      border-color: rgba(100, 116, 139, .55);
+    }
+
+    /* ── Light Mode Overrides para Filtros ── */
+    [data-theme="light"] .filter-bar {
+      background: #ffffff !important;
+      border-color: rgba(38, 53, 118, 0.12) !important;
+    }
+    [data-theme="light"] .fg label {
+      color: #475569 !important;
+    }
+    [data-theme="light"] .ms-trigger {
+      background: #f8fafc !important;
+      border-color: rgba(38, 53, 118, 0.2) !important;
+      color: #1e293b !important;
+    }
+    [data-theme="light"] .ms-panel {
+      background: #ffffff !important;
+      border-color: rgba(38, 53, 118, 0.2) !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
+    }
+    [data-theme="light"] .ms-option {
+      color: #334155 !important;
+    }
+    [data-theme="light"] .ms-option:hover {
+      background: rgba(37, 99, 235, 0.08) !important;
+    }
+    [data-theme="light"] .ms-search {
+      background: #f8fafc !important;
+      border-color: rgba(38, 53, 118, 0.2) !important;
+      color: #1e293b !important;
+    }
+    [data-theme="light"] .btn-adv-filters {
+      background: #f8fafc;
+      border-color: rgba(38, 53, 118, 0.2);
+      color: #475569;
+    }
+    [data-theme="light"] .btn-adv-filters:hover {
+      background: #f1f5f9;
+      color: #1e293b;
+      border-color: rgba(38, 53, 118, 0.35);
+    }
+    [data-theme="light"] .btn-adv-filters.filter-btn-active {
+      background: rgba(37, 99, 235, 0.12) !important;
+      border-color: #2563eb !important;
+      color: #2563eb !important;
+    }
+    [data-theme="light"] .btn-filter-clear {
+      background: #f8fafc;
+      border-color: rgba(38, 53, 118, 0.2);
+      color: #475569;
+    }
+    [data-theme="light"] .btn-filter-clear:hover {
+      background: #f1f5f9;
+      color: #1e293b;
+      border-color: rgba(38, 53, 118, 0.35);
+    }
+
+    /* ── Tabela Analítica de VCM por Cliente ── */
+    .vcm-table-container {
+      background: var(--fr-surface, #282f3f);
+      border: 1px solid var(--fr-border, rgba(100, 116, 139, 0.2));
+      border-radius: 12px;
+      padding: 1.25rem 1.4rem;
+      margin-top: 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      overflow-x: auto;
+    }
+    .vcm-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.1rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .vcm-title-box h2 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--fr-txt, #e2e8f0);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .vcm-title-box p {
+      font-size: 0.78rem;
+      color: var(--fr-txt-soft, #94a3b8);
+      margin: 2px 0 0 0;
+    }
+    .vcm-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .search-input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--fr-border, rgba(100, 116, 139, 0.3));
+      border-radius: 8px;
+      padding: 0.45rem 0.8rem;
+      color: var(--fr-txt, #f8fafc);
+      font-size: 0.8rem;
+      width: 240px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus {
+      border-color: #3b82f6;
+    }
+    [data-theme="light"] .search-input {
+      background: #f8fafc;
+      color: #1e293b;
+      border-color: rgba(38, 53, 118, 0.2);
+    }
+    .btn-export {
+      background: #107c41;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-export:hover {
+      background: #0b5a2f;
+    }
+    .table-vcm {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.78rem;
+    }
+    .table-vcm th {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--fr-txt-soft, #94a3b8);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.75rem 0.85rem;
+      text-align: right;
+      border-bottom: 2px solid var(--fr-border, rgba(100, 116, 139, 0.3));
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    .table-vcm th:first-child {
+      text-align: left;
+      min-width: 220px;
+    }
+    .table-vcm th:hover {
+      background: rgba(255, 255, 255, 0.09);
+      color: #ffffff;
+    }
+    .table-vcm th.sorted-active {
+      color: #60a5fa !important;
+      background: rgba(59, 130, 246, 0.08);
+    }
+    .table-vcm th .sort-icon {
+      display: inline-block;
+      margin-left: 4px;
+      font-size: 0.65rem;
+      opacity: 0.45;
+      vertical-align: middle;
+    }
+    .table-vcm th.sorted-active .sort-icon {
+      opacity: 1;
+      color: #60a5fa;
+      font-weight: 900;
+    }
+    .table-vcm td {
+      padding: 0.65rem 0.85rem;
+      border-bottom: 1px solid rgba(100, 116, 139, 0.12);
+      color: var(--fr-txt, #f8fafc);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .table-vcm td:first-child {
+      text-align: left;
+      font-weight: 600;
+    }
+    .table-vcm tbody tr:hover td {
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .table-vcm tfoot tr td {
+      background: rgba(255, 255, 255, 0.06);
+      font-weight: 800;
+      border-top: 2px solid var(--fr-border, rgba(100, 116, 139, 0.4));
+      color: #ffffff;
+    }
+    [data-theme="light"] .table-vcm th {
+      background: #f1f5f9;
+      color: #475569;
+      border-bottom-color: rgba(38, 53, 118, 0.15);
+    }
+    [data-theme="light"] .table-vcm th:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    [data-theme="light"] .table-vcm th.sorted-active {
+      color: #2563eb !important;
+      background: rgba(37, 99, 235, 0.08);
+    }
+    [data-theme="light"] .table-vcm th.sorted-active .sort-icon {
+      color: #2563eb;
+    }
+    [data-theme="light"] .table-vcm td {
+      color: #1e293b;
+      border-bottom-color: rgba(38, 53, 118, 0.08);
+    }
+    [data-theme="light"] .table-vcm tbody tr:hover td {
+      background: #f8fafc;
+    }
+    [data-theme="light"] .table-vcm tfoot tr td {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    .badge-var-pos {
+      color: #34d399;
+      font-weight: 700;
+    }
+    .badge-var-neg {
+      color: #f87171;
+      font-weight: 700;
+    }
+    .badge-pct {
+      background: rgba(59, 130, 246, 0.12);
+      color: #60a5fa;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.72rem;
+    }
+  </style>
+</head>
+<body class="fr-page">
+
+  <!-- NAVBAR PADRÃO BQ LANDING -->
+  <nav class="navbar">
+    <div class="nav-title-area" style="margin-left: 2rem;">
+      <span class="nav-crumb">BQ VCM</span>
+      <span class="nav-page-title">VCM por Cliente</span>
+    </div>
+    <div class="nav-links">
+      <a href="vcm.html" class="nav-link active">VCM</a>
+      <a href="cadastros.html" class="nav-link">Base VCM</a>
+      <a href="guia.html" class="nav-link">Guia</a>
+    </div>
+    <div class="nav-actions">
+      <!-- Identificação do Usuário Oficial -->
+      <div class="user-badge" id="operatorBadge">
+        <span class="user-icon">👤</span>
+        <span id="operatorEmailText">renan.ferreira@grupobimbo.com (Admin)</span>
+      </div>
+
+      <!-- Alternador de Tema Oficial com SVG Sol/Lua -->
+      <button class="theme-toggle" onclick="toggleTheme()" title="Alternar tema">
+        <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.5" />
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20">
+          <circle cx="12" cy="12" r="4" fill="#fbbf24" />
+          <path
+            d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+            stroke="#f59e0b" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <div class="fr-content">
+
+    <!-- BARRA DE FILTROS PRINCIPAIS (APARENTES: ANO, MES, CANAL, DIRETOR) -->
+    <div class="filter-bar">
+      <div class="fg">
+        <label>Ano</label>
+        <div class="ms-dropdown" id="fAno"></div>
+      </div>
+      <div class="fg">
+        <label>Mês</label>
+        <div class="ms-dropdown" id="fMes"></div>
+      </div>
+      <div class="fg">
+        <label>Canal</label>
+        <div class="ms-dropdown" id="fCanal"></div>
+      </div>
+      <div class="fg">
+        <label>Diretor</label>
+        <div class="ms-dropdown" id="fDiretor"></div>
+      </div>
+
+      <!-- AÇÕES À DIREITA: Botão Mais Filtros + Botão Limpar -->
+      <div style="display:flex; align-items:flex-end; gap:.55rem; margin-left:auto; flex-wrap:wrap;">
+        <!-- Botão Mais Filtros -->
+        <button id="btnAdvFilters" onclick="toggleAdvFilters()" title="Mais filtros" class="btn-adv-filters">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="21" x2="4" y2="14" />
+            <line x1="4" y1="10" x2="4" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12" y2="3" />
+            <line x1="20" y1="21" x2="20" y2="16" />
+            <line x1="20" y1="12" x2="20" y2="3" />
+            <line x1="1" y1="14" x2="7" y2="14" />
+            <line x1="9" y1="8" x2="15" y2="8" />
+            <line x1="17" y1="16" x2="23" y2="16" />
+          </svg>
+          Mais Filtros
+        </button>
+
+        <!-- Botão Limpar -->
+        <button onclick="limparFiltros()" class="btn-filter-clear">
+          Limpar
+        </button>
+      </div>
+    </div>
+
+    <!-- SEGUNDA LINHA DE FILTROS EXPANSÍVEL (#advFiltersBar) -->
+    <!-- Contém: GESTOR, SUPERVISOR, COORDENADOR, CATEGORIA, LINHA, MARCA, FAMILIA E PLANTA -->
+    <div class="filter-bar" id="advFiltersBar" style="display:none; margin-top:-0.5rem; margin-bottom:1.2rem;">
+      <div class="fg">
+        <label>Gestor</label>
+        <div class="ms-dropdown" id="fGestor"></div>
+      </div>
+      <div class="fg">
+        <label>Supervisor</label>
+        <div class="ms-dropdown" id="fSupervisor"></div>
+      </div>
+      <div class="fg">
+        <label>Coordenador</label>
+        <div class="ms-dropdown" id="fCoordenador"></div>
+      </div>
+      <div class="fg">
+        <label>Categoria</label>
+        <div class="ms-dropdown" id="fCategoria"></div>
+      </div>
+      <div class="fg">
+        <label>Linha</label>
+        <div class="ms-dropdown" id="fLinha"></div>
+      </div>
+      <div class="fg">
+        <label>Marca</label>
+        <div class="ms-dropdown" id="fMarca"></div>
+      </div>
+      <div class="fg">
+        <label>Família</label>
+        <div class="ms-dropdown" id="fFamilia"></div>
+      </div>
+      <div class="fg">
+        <label>Planta</label>
+        <div class="ms-dropdown" id="fPlanta"></div>
+      </div>
+    </div>
+
+    <!-- TABELA ANALÍTICA DE VCM POR CLIENTE -->
+    <div class="vcm-table-container">
+      <div class="vcm-header-bar">
+        <div class="vcm-title-box">
+          <h2>📊 Rentabilidade e VCM por Cliente</h2>
+          <p id="subtituloFiltro">Consolidação de ACT, BGT, Prior Year (PY) e % sobre a Receita Líquida (Clique nos cabeçalhos para ordenar)</p>
+        </div>
+        <div class="vcm-actions">
+          <input type="text" class="search-input" id="searchClientInput" placeholder="🔍 Buscar cliente..." oninput="filtrarTabelaPorBusca()">
+          <button class="btn-export" onclick="exportarExcelTabela()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar XLS
+          </button>
+        </div>
+      </div>
+
+      <table class="table-vcm" id="vcmTable">
+        <thead>
+          <tr>
+            <th onclick="ordenarTabela('client')" title="Clique para ordenar por Cliente">CLIENT <span class="sort-icon" id="sort-client">↕</span></th>
+            <th onclick="ordenarTabela('act')" title="Clique para ordenar por ACT">ACT <span class="sort-icon" id="sort-act">▼</span></th>
+            <th onclick="ordenarTabela('bgt')" title="Clique para ordenar por BGT">BGT <span class="sort-icon" id="sort-bgt">↕</span></th>
+            <th onclick="ordenarTabela('var_bgt')" title="Clique para ordenar por Var BGT">Var BGT <span class="sort-icon" id="sort-var_bgt">↕</span></th>
+            <th onclick="ordenarTabela('py')" title="Clique para ordenar por PY">PY <span class="sort-icon" id="sort-py">↕</span></th>
+            <th onclick="ordenarTabela('var_py')" title="Clique para ordenar por Var PY">Var PY <span class="sort-icon" id="sort-var_py">↕</span></th>
+            <th onclick="ordenarTabela('act_pct')" title="Clique para ordenar por ACT%">ACT% <span class="sort-icon" id="sort-act_pct">↕</span></th>
+            <th onclick="ordenarTabela('bgt_pct')" title="Clique para ordenar por BGT%">BGT% <span class="sort-icon" id="sort-bgt_pct">↕</span></th>
+            <th onclick="ordenarTabela('py_pct')" title="Clique para ordenar por PY%">PY% <span class="sort-icon" id="sort-py_pct">↕</span></th>
+          </tr>
+        </thead>
+        <tbody id="vcmTableBody">
+          <tr>
+            <td colspan="9" style="text-align:center; padding: 2.5rem; color: var(--fr-txt-soft);">Carregando dados de VCM...</td>
+          </tr>
+        </tbody>
+        <tfoot id="vcmTableFoot" style="display:none;">
+          <tr>
+            <td>TOTAL GERAL</td>
+            <td id="totAct">-</td>
+            <td id="totBgt">-</td>
+            <td id="totVarBgt">-</td>
+            <td id="totPy">-</td>
+            <td id="totVarPy">-</td>
+            <td id="totActPct">-</td>
+            <td id="totBgtPct">-</td>
+            <td id="totPyPct">-</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+  </div>
+
+  <script>
+    // ── Componente MultiSelect Autônomo e Confiável ──
+    class MultiSelectVCM {
+      constructor(el, opts = [], onChange = null) {
+        this.container = el;
+        this.options = [];
+        this.selected = new Set();
+        this.onChange = onChange;
+        this.render();
+        if (opts && opts.length) {
+          this.setOptions(opts);
+        }
+      }
+
+      render() {
+        this.container.innerHTML = `
+          <div class="ms-trigger" tabindex="0">
+            <span class="ms-text">Todos</span>
+            <span class="ms-arrow">▼</span>
+          </div>
+          <div class="ms-panel">
+            <input type="text" class="ms-search" placeholder="Pesquisar...">
+            <div class="ms-actions">
+              <a class="ms-sel-all">Selecionar tudo</a>
+              <a class="ms-desel-all">Limpar</a>
+            </div>
+            <div class="ms-options"></div>
+          </div>
+        `;
+        this.trigger = this.container.querySelector('.ms-trigger');
+        this.panel = this.container.querySelector('.ms-panel');
+        this.search = this.container.querySelector('.ms-search');
+        this.optionsEl = this.container.querySelector('.ms-options');
+
+        this.trigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          document.querySelectorAll('.ms-panel.open').forEach(p => {
+            if (p !== this.panel) p.classList.remove('open');
+          });
+          this.panel.classList.toggle('open');
+        });
+
+        this.panel.addEventListener('click', (e) => e.stopPropagation());
+        this.search.addEventListener('input', () => this.filterOptions());
+
+        this.container.querySelector('.ms-sel-all').addEventListener('click', () => {
+          this.options.forEach(o => this.selected.add(o));
+          this.renderCheckboxes();
+          this.updateLabel();
+          if (this.onChange) this.onChange();
+        });
+
+        this.container.querySelector('.ms-desel-all').addEventListener('click', () => {
+          this.selected.clear();
+          this.renderCheckboxes();
+          this.updateLabel();
+          if (this.onChange) this.onChange();
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!this.container.contains(e.target)) {
+            this.panel.classList.remove('open');
+          }
+        });
+      }
+
+      setOptions(opts) {
+        this.options = opts.map(String).filter(o => o.trim() && o.toLowerCase() !== 'todos');
+        this.selected = new Set(this.options);
+        this.renderCheckboxes();
+        this.updateLabel();
+      }
+
+      renderCheckboxes() {
+        this.optionsEl.innerHTML = this.options.map((o, idx) => `
+          <div class="ms-option" data-idx="${idx}">
+            <input type="checkbox" ${this.selected.has(o) ? 'checked' : ''}>
+            <label>${o}</label>
+          </div>
+        `).join('');
+
+        this.optionsEl.querySelectorAll('.ms-option').forEach(row => {
+          row.addEventListener('click', (e) => {
+            const idx = parseInt(row.dataset.idx, 10);
+            const val = this.options[idx];
+            if (this.selected.has(val)) {
+              this.selected.delete(val);
+            } else {
+              this.selected.add(val);
+            }
+            const cb = row.querySelector('input');
+            if (cb) cb.checked = this.selected.has(val);
+            this.updateLabel();
+            if (this.onChange) this.onChange();
+          });
+        });
+      }
+
+      filterOptions() {
+        const q = this.search.value.toLowerCase().trim();
+        this.optionsEl.querySelectorAll('.ms-option').forEach(row => {
+          const idx = parseInt(row.dataset.idx, 10);
+          const val = (this.options[idx] || '').toLowerCase();
+          row.style.display = val.includes(q) ? 'flex' : 'none';
+        });
+      }
+
+      updateLabel() {
+        const textEl = this.trigger.querySelector('.ms-text');
+        const t = this.options.length;
+        const s = this.selected.size;
+        if (!textEl) return;
+
+        if (s === 0) {
+          textEl.textContent = 'Nenhum';
+        } else if (s === t) {
+          textEl.textContent = 'Todos';
+        } else if (s <= 2) {
+          textEl.textContent = [...this.selected].join(', ');
+        } else {
+          textEl.innerHTML = `${s} selecionados <span class="ms-badge">${s}</span>`;
+        }
+      }
+
+      getSelected() {
+        if (!this.options || this.options.length === 0) return [];
+        if (this.selected.size === 0) return ['__NONE__'];
+        if (this.selected.size === this.options.length) return [];
+        return [...this.selected];
+      }
+    }
+
+    const meses = [
+      { id: 1, nome: "Jan" }, { id: 2, nome: "Fev" }, { id: 3, nome: "Mar" },
+      { id: 4, nome: "Abr" }, { id: 5, nome: "Mai" }, { id: 6, nome: "Jun" },
+      { id: 7, nome: "Jul" }, { id: 8, nome: "Ago" }, { id: 9, nome: "Set" },
+      { id: 10, nome: "Out" }, { id: 11, nome: "Nov" }, { id: 12, nome: "Dez" }
+    ];
+
+    const vcmDropdowns = {};
+    let cachedClientes = [];
+    let cachedTotais = null;
+
+    // Estado da Ordenação da Tabela
+    let currentSortCol = 'act';
+    let currentSortDir = 'desc';
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      inicializarTema();
+      await loadUserInfo();
+      await carregarFiltros();
+    });
+
+    async function loadUserInfo() {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.email) {
+            const badge = document.getElementById("operatorEmailText");
+            if (badge) {
+              badge.innerText = `${data.email} ${data.is_admin ? "(Admin)" : ""}`;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("Credenciais do usuário:", e);
+      }
+    }
+
+    // Toggle da barra expansível "Mais Filtros" (Padrão Landing)
+    function toggleAdvFilters() {
+      const bar = document.getElementById("advFiltersBar");
+      const btn = document.getElementById("btnAdvFilters");
+      if (bar.style.display === "none" || !bar.style.display) {
+        bar.style.display = "flex";
+        btn.classList.add("filter-btn-active");
+      } else {
+        bar.style.display = "none";
+        btn.classList.remove("filter-btn-active");
+      }
+    }
+
+    async function carregarFiltros() {
+      try {
+        const res = await fetch("/api/filtros");
+        const data = await res.json();
+
+        const anos = data.anos && data.anos.length ? data.anos : ["2026", "2025", "2024"];
+
+        const configs = [
+          // Principais (Aparentes)
+          { id: "fAno", opts: anos },
+          { id: "fCanal", opts: data.canais || [] },
+          { id: "fDiretor", opts: data.diretores || [] },
+          // Secundários (Mais Filtros)
+          { id: "fGestor", opts: data.gestores || [] },
+          { id: "fSupervisor", opts: data.supervisores || [] },
+          { id: "fCoordenador", opts: data.coordenadores || [] },
+          { id: "fCategoria", opts: data.categorias || [] },
+          { id: "fLinha", opts: data.linhas || [] },
+          { id: "fMarca", opts: data.marcas || [] },
+          { id: "fFamilia", opts: data.familias || [] },
+          { id: "fPlanta", opts: data.plantas || [] }
+        ];
+
+        configs.forEach(cfg => {
+          const el = document.getElementById(cfg.id);
+          if (el) {
+            vcmDropdowns[cfg.id] = new MultiSelectVCM(el, cfg.opts, () => aplicarFiltros());
+          }
+        });
+
+        // Configuração de Mês com opções legíveis
+        const mesEl = document.getElementById("fMes");
+        if (mesEl) {
+          const mesOpts = meses.map(m => `${m.id} - ${m.nome}`);
+          vcmDropdowns["fMes"] = new MultiSelectVCM(mesEl, mesOpts, () => aplicarFiltros());
+
+          // PADRÃO SOLICITADO: MÊS ATUAL DINÂMICO
+          const currentMonthNum = new Date().getMonth() + 1;
+          const mesPadraoObj = meses.find(m => m.id === currentMonthNum);
+          const mesPadraoStr = mesPadraoObj ? `${mesPadraoObj.id} - ${mesPadraoObj.nome}` : `${currentMonthNum}`;
+
+          vcmDropdowns["fMes"].selected = new Set([mesPadraoStr]);
+          vcmDropdowns["fMes"].renderCheckboxes();
+          vcmDropdowns["fMes"].updateLabel();
+        }
+
+        // Padrão do Ano: 2026
+        if (vcmDropdowns["fAno"] && anos.includes("2026")) {
+          vcmDropdowns["fAno"].selected = new Set(["2026"]);
+          vcmDropdowns["fAno"].renderCheckboxes();
+          vcmDropdowns["fAno"].updateLabel();
+        }
+
+        await aplicarFiltros();
+      } catch (err) {
+        console.error("Erro ao carregar filtros:", err);
+      }
+    }
+
+    async function aplicarFiltros() {
+      const tbody = document.getElementById("vcmTableBody");
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 2.5rem; color: var(--fr-txt-soft);">Carregando dados de VCM...</td></tr>`;
+
+      const params = new URLSearchParams();
+
+      // Ano
+      if (vcmDropdowns["fAno"]) {
+        const selAnos = vcmDropdowns["fAno"].getSelected();
+        if (selAnos.length && selAnos[0] !== "__NONE__") {
+          params.set("ano", selAnos[0]);
+        }
+      }
+
+      // Mês
+      if (vcmDropdowns["fMes"]) {
+        const selMeses = [...vcmDropdowns["fMes"].selected];
+        if (selMeses.length === 0) {
+          params.append("mes", "__NONE__");
+        } else if (selMeses.length === vcmDropdowns["fMes"].options.length) {
+          // Todos os 12 meses selecionados (ano completo)
+          params.append("mes", "all");
+        } else {
+          selMeses.forEach(mStr => {
+            const num = mStr.split("-")[0].trim();
+            params.append("mes", num);
+          });
+        }
+      }
+
+      const mapF = {
+        fCanal: "canal",
+        fDiretor: "diretor",
+        fGestor: "gestor",
+        fSupervisor: "supervisor",
+        fCoordenador: "coordenador",
+        fCategoria: "categoria",
+        fLinha: "linha",
+        fMarca: "marca",
+        fFamilia: "familia",
+        fPlanta: "planta"
+      };
+
+      Object.entries(mapF).forEach(([fId, queryParam]) => {
+        if (vcmDropdowns[fId]) {
+          const sel = vcmDropdowns[fId].getSelected();
+          sel.forEach(val => {
+            if (val !== "__NONE__") {
+              params.append(queryParam, val);
+            }
+          });
+        }
+      });
+
+      try {
+        const res = await fetch(`/api/vcm?${params.toString()}`);
+        const data = await res.json();
+
+        if (data.sucesso) {
+          cachedClientes = sortList(data.clientes || [], currentSortCol, currentSortDir);
+          cachedTotais = data.totais || null;
+          atualizarIconesOrdenacao();
+
+          // Subtítulo informativo com indicação do período
+          const subEl = document.getElementById("subtituloFiltro");
+          if (subEl) {
+            let infoPeriodo = "Ano " + (data.ano || 2026);
+            if (data.meses && data.meses.length === 12) {
+              infoPeriodo += " (Acumulado Jan-Dez)";
+            } else if (data.meses && data.meses.length > 0) {
+              const nomesMeses = data.meses.map(m => meses.find(item => item.id === m)?.nome || m);
+              infoPeriodo += ` (${nomesMeses.join(", ")})`;
+            }
+            if (cachedTotais && cachedTotais.act === 0 && data.meses && data.meses.every(m => m >= 9)) {
+              infoPeriodo += " • ℹ️ Base 2026 possui realizado (ACT) lançado até Agosto (mês 08)";
+            }
+            subEl.innerText = `${infoPeriodo} • Clique nos cabeçalhos para ordenar`;
+          }
+
+          const q = (document.getElementById("searchClientInput").value || "").trim().toLowerCase();
+          if (q) {
+            const filtrados = cachedClientes.filter(c => c.client.toLowerCase().includes(q));
+            renderTabela(filtrados, cachedTotais);
+          } else {
+            renderTabela(cachedClientes, cachedTotais);
+          }
+        } else {
+          tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: #f87171; padding: 2rem;">Erro ao carregar dados: ${data.erro || "desconhecido"}</td></tr>`;
+        }
+      } catch (e) {
+        console.error("Erro na consulta de VCM:", e);
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: #f87171; padding: 2rem;">Falha na comunicação com o servidor.</td></tr>`;
+      }
+    }
+
+    // ── Algoritmo de Ordenação Crescente/Decrescente ──
+    function sortList(list, col, dir) {
+      return [...list].sort((a, b) => {
+        let valA = a[col];
+        let valB = b[col];
+        if (col === 'client') {
+          valA = (valA || '').toString();
+          valB = (valB || '').toString();
+          return dir === 'asc'
+            ? valA.localeCompare(valB, 'pt-BR', { sensitivity: 'base' })
+            : valB.localeCompare(valA, 'pt-BR', { sensitivity: 'base' });
+        } else {
+          valA = Number(valA) || 0;
+          valB = Number(valB) || 0;
+          return dir === 'asc' ? valA - valB : valB - valA;
+        }
+      });
+    }
+
+    function atualizarIconesOrdenacao() {
+      const cols = ['client', 'act', 'bgt', 'var_bgt', 'py', 'var_py', 'act_pct', 'bgt_pct', 'py_pct'];
+      cols.forEach(col => {
+        const iconEl = document.getElementById(`sort-${col}`);
+        const thEl = iconEl ? iconEl.closest('th') : null;
+        if (!iconEl) return;
+        if (col === currentSortCol) {
+          iconEl.textContent = currentSortDir === 'asc' ? ' ▲' : ' ▼';
+          if (thEl) thEl.classList.add('sorted-active');
+        } else {
+          iconEl.textContent = ' ↕';
+          if (thEl) thEl.classList.remove('sorted-active');
+        }
+      });
+    }
+
+    function ordenarTabela(col) {
+      if (currentSortCol === col) {
+        currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSortCol = col;
+        currentSortDir = (col === 'client') ? 'asc' : 'desc';
+      }
+      cachedClientes = sortList(cachedClientes, currentSortCol, currentSortDir);
+      atualizarIconesOrdenacao();
+
+      const q = (document.getElementById("searchClientInput").value || "").trim().toLowerCase();
+      if (q) {
+        const filtrados = cachedClientes.filter(c => c.client.toLowerCase().includes(q));
+        renderTabela(filtrados, cachedTotais);
+      } else {
+        renderTabela(cachedClientes, cachedTotais);
+      }
+    }
+
+    function renderTabela(clientes, totais) {
+      const tbody = document.getElementById("vcmTableBody");
+      const tfoot = document.getElementById("vcmTableFoot");
+
+      if (!clientes || clientes.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 2.5rem; color: var(--fr-txt-soft);">Nenhum cliente com dados encontrado para os filtros selecionados.</td></tr>`;
+        tfoot.style.display = "none";
+        return;
+      }
+
+      const fmtMoeda = (val) => {
+        if (val === 0 || val === null || val === undefined) return "R$ 0";
+        const n = Math.round(val);
+        if (n < 0) {
+          return `-R$ ${Math.abs(n).toLocaleString("pt-BR")}`;
+        }
+        return `R$ ${n.toLocaleString("pt-BR")}`;
+      };
+
+      const fmtPct = (val) => {
+        const n = val || 0;
+        const cls = n >= 0 ? "badge-var-pos" : "badge-var-neg";
+        const sinal = n > 0 ? "+" : "";
+        return `<span class="${cls}">${sinal}${n.toFixed(1)}%</span>`;
+      };
+
+      const fmtPctDireto = (val) => {
+        return `<span class="badge-pct">${(val || 0).toFixed(1)}%</span>`;
+      };
+
+      let html = "";
+      clientes.forEach(c => {
+        html += `
+          <tr>
+            <td><strong>${c.client}</strong></td>
+            <td>${fmtMoeda(c.act)}</td>
+            <td>${fmtMoeda(c.bgt)}</td>
+            <td>${fmtPct(c.var_bgt)}</td>
+            <td>${fmtMoeda(c.py)}</td>
+            <td>${fmtPct(c.var_py)}</td>
+            <td>${fmtPctDireto(c.act_pct)}</td>
+            <td>${fmtPctDireto(c.bgt_pct)}</td>
+            <td>${fmtPctDireto(c.py_pct)}</td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+
+      if (totais) {
+        tfoot.style.display = "";
+        document.getElementById("totAct").innerText = fmtMoeda(totais.act);
+        document.getElementById("totBgt").innerText = fmtMoeda(totais.bgt);
+        document.getElementById("totVarBgt").innerHTML = fmtPct(totais.var_bgt);
+        document.getElementById("totPy").innerText = fmtMoeda(totais.py);
+        document.getElementById("totVarPy").innerHTML = fmtPct(totais.var_py);
+        document.getElementById("totActPct").innerHTML = fmtPctDireto(totais.act_pct);
+        document.getElementById("totBgtPct").innerHTML = fmtPctDireto(totais.bgt_pct);
+        document.getElementById("totPyPct").innerHTML = fmtPctDireto(totais.py_pct);
+      }
+    }
+
+    function filtrarTabelaPorBusca() {
+      const q = document.getElementById("searchClientInput").value.trim().toLowerCase();
+      if (!q) {
+        renderTabela(cachedClientes, cachedTotais);
+        return;
+      }
+      const filtrados = cachedClientes.filter(c => c.client.toLowerCase().includes(q));
+      renderTabela(filtrados, cachedTotais);
+    }
+
+    async function exportarExcelTabela() {
+      const q = (document.getElementById("searchClientInput").value || "").trim().toLowerCase();
+      let linhas = cachedClientes || [];
+      if (q) {
+        linhas = linhas.filter(c => c.client.toLowerCase().includes(q));
+      }
+
+      if (!linhas || linhas.length === 0) {
+        alert("Nenhum dado para exportar.");
+        return;
+      }
+
+      const btn = document.querySelector(".btn-export");
+      const originalText = btn ? btn.innerHTML : "";
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Gerando...`;
+      }
+
+      try {
+        const res = await fetch("/api/vcm/export_excel", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            rows: linhas,
+            totais: cachedTotais
+          })
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.erro || `Erro HTTP ${res.status}`);
+        }
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Rentabilidade_VCM_Clientes_${new Date().toISOString().slice(0, 10)}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error("Erro na exportação para Excel:", err);
+        alert("Falha ao exportar Excel: " + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
+      }
+    }
+
+    function limparFiltros() {
+      Object.values(vcmDropdowns).forEach(d => {
+        d.selected.clear();
+        d.options.forEach(o => d.selected.add(o));
+        d.renderCheckboxes();
+        d.updateLabel();
+      });
+
+      // Restaura padrões solicitados: Mês Atual e Ano 2026
+      const currentMonthNum = new Date().getMonth() + 1;
+      const mesPadraoObj = meses.find(m => m.id === currentMonthNum);
+      const mesPadraoStr = mesPadraoObj ? `${mesPadraoObj.id} - ${mesPadraoObj.nome}` : `${currentMonthNum}`;
+
+      if (vcmDropdowns["fMes"]) {
+        vcmDropdowns["fMes"].selected = new Set([mesPadraoStr]);
+        vcmDropdowns["fMes"].renderCheckboxes();
+        vcmDropdowns["fMes"].updateLabel();
+      }
+      if (vcmDropdowns["fAno"]) {
+        vcmDropdowns["fAno"].selected = new Set(["2026"]);
+        vcmDropdowns["fAno"].renderCheckboxes();
+        vcmDropdowns["fAno"].updateLabel();
+      }
+      aplicarFiltros();
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const atual = html.getAttribute("data-theme") || "dark";
+      const novo = atual === "dark" ? "light" : "dark";
+      html.setAttribute("data-theme", novo);
+      localStorage.setItem("theme_preference", novo);
+      localStorage.setItem("portal_theme", novo);
+    }
+
+    function inicializarTema() {
+      const salvo = localStorage.getItem("theme_preference") || localStorage.getItem("portal_theme") || "dark";
+      document.documentElement.setAttribute("data-theme", salvo);
+    }
+  </script>
+</body>
+</html>

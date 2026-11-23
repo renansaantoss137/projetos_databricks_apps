@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gráfico de referência D&A</title>
+<!--
+  REFERÊNCIA OBRIGATÓRIA PARA GRÁFICO DE BARRAS COM COMPARAÇÃO (realizado vs meta, vs ano anterior, vs budget)
+  Origem: gráfico "Sell-in vs meta" do Portal Distribuidores v2. Copie a ESTRUTURA e o COMPORTAMENTO:
+  - cabeçalho: eyebrow + título curto + legenda (quadrado da barra, traço da comparação);
+    à direita, pílula "Acumulado vs …" com selo de status e seletor segmentado
+  - barras: meses comuns em tom discreto; mês filtrado em cor forte; mês sob o cursor em tom intermediário
+  - comparação: TRAÇO horizontal por mês (nunca barra)
+  - rótulo de dado SOMENTE no mês filtrado
+  - sem eixo Y e sem grade; só a linha de base; mês filtrado em negrito no eixo X
+  - linha de percentuais abaixo dos meses, em pílulas coloridas por status
+  - tooltip escuro: mês por extenso; rótulo à esquerda, valor em negrito à direita
+  - tabela alternativa acessível em <details>
+  Ajuste ao app: CONFIG (modo, regra de status, rótulos, formatação) e os dados vindos do backend.
+-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg-page:#F0F4F8;--surface:#FFFFFF;--border:#DCE3EC;--text-primary:#1E2432;--text-muted:#5A6B82;--focus-ring:#2563EB;
+  --gr-eyebrow:#78808E;--gr-titulo:#161A22;--gr-eixo:#78808E;--gr-eixo-foco:#161A22;
+  --gr-barra:#B2C2EA;--gr-barra-foco:#0C2066;--gr-barra-hover:#3C4C84;--gr-traco:#161A22;--gr-base:#DCE3EC;
+  --gr-bom-bg:#E6F6EC;--gr-bom-tx:#0E7A3C;--gr-atencao-bg:#FEF4DA;--gr-atencao-tx:#905C0C;--gr-ruim-bg:#FCECEA;--gr-ruim-tx:#B4261A;
+  --gr-tip-bg:#161A22;--gr-tip-titulo:#FFFFFF;--gr-tip-rotulo:#A8AAAC;--gr-tip-valor:#FFFFFF;--gr-tip-ruim:#FAA098;--gr-tip-bom:#7FD9A0;--gr-tip-atencao:#F5CF7A;
+  --gr-seg-trilho:#EEF0F2;--gr-seg-ativo:#FFFFFF;
+}
+:root[data-theme="dark"]{
+  --bg-page:#060A12;--surface:#171C28;--border:#1F2532;--text-primary:#F0F4F8;--text-muted:#94A2B8;--focus-ring:#60A5FA;
+  --gr-eyebrow:#94A2B8;--gr-titulo:#F0F4F8;--gr-eixo:#94A2B8;--gr-eixo-foco:#F0F4F8;
+  --gr-barra:#2C3E63;--gr-barra-foco:#60A5FA;--gr-barra-hover:#4B6AA5;--gr-traco:#F0F4F8;--gr-base:#2A3242;
+  --gr-bom-bg:rgba(74,222,128,.14);--gr-bom-tx:#4ADE80;--gr-atencao-bg:rgba(251,191,36,.14);--gr-atencao-tx:#FBBF24;--gr-ruim-bg:rgba(248,113,113,.14);--gr-ruim-tx:#FCA5A5;
+  --gr-tip-bg:#F0F4F8;--gr-tip-titulo:#161A22;--gr-tip-rotulo:#5A6B82;--gr-tip-valor:#161A22;--gr-tip-ruim:#B4261A;--gr-tip-bom:#0E7A3C;--gr-tip-atencao:#905C0C;
+  --gr-seg-trilho:#141B29;--gr-seg-ativo:#2A3242;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;padding:24px;font-family:Inter,'Segoe UI',system-ui,sans-serif;background:var(--bg-page);color:var(--text-primary)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px}
+.demo-acoes{max-width:1100px;margin:0 auto 12px;display:flex;justify-content:flex-end}
+.demo-acoes button{height:36px;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--surface);cursor:pointer}
+
+/* ---------- Cartão ---------- */
+.gr-cartao{max-width:1100px;margin:0 auto;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 24px 16px}
+.gr-topo{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.gr-eyebrow{margin:0;font-size:13px;color:var(--gr-eyebrow)}
+.gr-titulo{margin:2px 0 8px;font-size:20px;font-weight:600;color:var(--gr-titulo)}
+.gr-legenda{display:flex;gap:16px;font-size:12px;color:var(--gr-eyebrow)}
+.gr-legenda span{display:inline-flex;align-items:center;gap:6px}
+.sw-barra{width:10px;height:10px;border-radius:2px;background:var(--gr-barra-foco)}
+.sw-traco{width:14px;height:2px;background:var(--gr-traco)}
+.gr-acoes{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.gr-acumulado{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 4px 0 12px;border:1px solid var(--border);border-radius:999px;font-size:13px;color:var(--gr-eyebrow)}
+.selo{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;font-size:13px;font-weight:600}
+.selo.bom{background:var(--gr-bom-bg);color:var(--gr-bom-tx)}
+.selo.atencao{background:var(--gr-atencao-bg);color:var(--gr-atencao-tx)}
+.selo.ruim{background:var(--gr-ruim-bg);color:var(--gr-ruim-tx)}
+.segmentado{display:inline-flex;padding:4px;border-radius:10px;background:var(--gr-seg-trilho)}
+.segmentado button{height:34px;padding:0 14px;border:0;border-radius:8px;background:transparent;font-size:13px;font-weight:600;color:var(--gr-eyebrow);cursor:pointer}
+.segmentado button[aria-selected="true"]{background:var(--gr-seg-ativo);color:var(--gr-titulo);box-shadow:0 1px 3px rgba(15,23,42,.12)}
+
+.gr-rolagem{margin-top:12px}
+.gr-area{position:relative;height:320px}
+.gr-tabela{margin-top:8px;font-size:13px;color:var(--text-muted)}
+.gr-tabela summary{cursor:pointer;min-height:32px;display:flex;align-items:center}
+.gr-tabela table{width:100%;border-collapse:collapse;margin-top:8px;font-variant-numeric:tabular-nums}
+.gr-tabela th,.gr-tabela td{padding:6px 8px;border-bottom:1px solid var(--border);text-align:right}
+.gr-tabela th:first-child,.gr-tabela td:first-child{text-align:left}
+
+/* ---------- Tooltip ---------- */
+.gr-tip{position:fixed;z-index:100;min-width:200px;padding:12px 14px;border-radius:10px;background:var(--gr-tip-bg);box-shadow:0 12px 32px rgba(0,0,0,.28);pointer-events:none;font-size:13px}
+.gr-tip[hidden]{display:none}
+.gr-tip h3{margin:0 0 8px;font-size:14px;color:var(--gr-tip-titulo)}
+.gr-tip dl{margin:0;display:grid;grid-template-columns:auto auto;gap:6px 24px}
+.gr-tip dt{color:var(--gr-tip-rotulo)}
+.gr-tip dd{margin:0;text-align:right;font-weight:700;color:var(--gr-tip-valor);font-variant-numeric:tabular-nums}
+.gr-tip dd.ruim{color:var(--gr-tip-ruim)}.gr-tip dd.bom{color:var(--gr-tip-bom)}.gr-tip dd.atencao{color:var(--gr-tip-atencao)}
+
+@media (max-width:640px){
+  body{padding:12px}
+  .gr-cartao{padding:16px}
+  .gr-rolagem{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .gr-area{min-width:560px}       /* rolagem localizada para manter barras e pílulas legíveis */
+  .segmentado button{height:40px}
+}
+</style>
+</head>
+<body>
+<div class="demo-acoes"><button type="button" id="demoTema">Alternar tema</button></div>
+
+<article class="gr-cartao" aria-labelledby="grTitulo">
+  <header class="gr-topo">
+    <div>
+      <p class="gr-eyebrow" id="grEyebrow"></p>
+      <h2 class="gr-titulo" id="grTitulo"></h2>
+      <div class="gr-legenda"><span><i class="sw-barra"></i><b id="grLegSerie" style="font-weight:400"></b></span><span><i class="sw-traco"></i><b id="grLegComp" style="font-weight:400"></b></span></div>
+    </div>
+    <div class="gr-acoes">
+      <span class="gr-acumulado"><span id="grAcumRotulo"></span><span class="selo" id="grAcumSelo"></span></span>
+      <div class="segmentado" role="tablist" id="grSeg"></div>
+    </div>
+  </header>
+  <div class="gr-rolagem"><div class="gr-area"><canvas id="grCanvas" role="img"></canvas></div></div>
+  <details class="gr-tabela"><summary>Ver dados em tabela</summary><table id="grTabela"></table></details>
+</article>
+<div class="gr-tip" id="grTip" role="tooltip" hidden></div>
+
+<script>
+/* ===== Configuração (no app: dados do backend, regra de status e rótulos do próprio app) ===== */
+const CONFIG = {
+  locale: 'pt-BR',
+  moeda: 'BRL',
+  eyebrow: 'Realizado',
+  modo: 'meta',          // 'meta': % = realizado / comparação (atingimento) | 'anterior': % = realizado / comparação − 1 (variação)
+  // Regra de status do APP (confirme no código; não invente). Demo: atingimento >= 100 bom, 90–99 atenção, < 90 ruim.
+  status: pct => pct >= 100 ? 'bom' : pct >= 90 ? 'atencao' : 'ruim',
+  meses: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out'],
+  mesesExtenso: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro'],
+  mesFiltrado: 9,        // índice do mês selecionado no filtro
+  visoes: {
+    'Sell-in':  {titulo:'Sell-in vs meta',  serie:'Sell-in realizado',  comparacao:'Meta', percentual:'Atingimento',
+                 realizado:[12.6,11.1,10.7,10.5,12.1,10.9,11.5,11.4,11.9,8.4], comp:[10.2,10.9,12.2,11.5,11.4,13.5,14.9,13.4,14.5,17.5]},
+    'Sell-out': {titulo:'Sell-out vs meta', serie:'Sell-out realizado', comparacao:'Meta', percentual:'Atingimento',
+                 realizado:[11.8,10.6,11.2,10.1,11.4,11.0,12.3,11.9,12.6,9.1], comp:[10.2,10.9,12.2,11.5,11.4,13.5,14.9,13.4,14.5,17.5]},
+  },
+  escala: 1e6,           // dados em milhões
+};
+
+/* ===== Formatação pelo locale ===== */
+const fmtMi = v => new Intl.NumberFormat(CONFIG.locale, {style:'currency', currency:CONFIG.moeda, maximumFractionDigits:1, minimumFractionDigits:1}).format(v) + ' mi';
+const fmtPct = (v, sinal=false) => new Intl.NumberFormat(CONFIG.locale, {maximumFractionDigits:sinal ? 1 : 0, minimumFractionDigits:sinal ? 1 : 0, signDisplay:sinal ? 'exceptZero' : 'auto'}).format(v) + '%';
+const fmtDif = v => (v < 0 ? '−' : '+') + fmtMi(Math.abs(v)).replace(/^-/, '');
+const percentual = (r, c) => CONFIG.modo === 'meta' ? (r / c) * 100 : (r / c - 1) * 100;
+
+/* ===== Estado ===== */
+const $ = id => document.getElementById(id);
+let visaoAtual = Object.keys(CONFIG.visoes)[0];
+let grafico = null;
+const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+/* ===== Plugins: traço de comparação, rótulo do mês filtrado e pílulas sob o eixo ===== */
+const pluginTraco = {
+  id: 'traco',
+  afterDatasetsDraw(chart){
+    const v = CONFIG.visoes[visaoAtual], meta = chart.getDatasetMeta(0), y = chart.scales.y, c = chart.ctx;
+    c.save(); c.strokeStyle = tok('--gr-traco'); c.lineWidth = 2;
+    meta.data.forEach((bar, i) => {
+      if (v.comp[i] == null) return;
+      const py = Math.round(y.getPixelForValue(v.comp[i])) + .5, meia = bar.width * 0.62;
+      c.beginPath(); c.moveTo(bar.x - meia, py); c.lineTo(bar.x + meia, py); c.stroke();
+    });
+    c.restore();
+  }
+};
+const pluginRotulo = {
+  id: 'rotuloFoco',
+  afterDatasetsDraw(chart){
+    const i = CONFIG.mesFiltrado, v = CONFIG.visoes[visaoAtual], bar = chart.getDatasetMeta(0).data[i];
+    if (!bar || v.realizado[i] == null) return;
+    const c = chart.ctx, yTraco = v.comp[i] != null ? chart.scales.y.getPixelForValue(v.comp[i]) : null;
+    // rótulo logo acima da barra; só sobe para cima do traço se os dois se encostarem
+    const encosta = yTraco != null && yTraco > bar.y - 24 && yTraco < bar.y + 4;
+    const yTexto = (encosta ? Math.min(bar.y, yTraco) : bar.y) - 8;
+    c.save(); c.fillStyle = tok('--gr-titulo'); c.font = '600 13px Inter, "Segoe UI", system-ui, sans-serif';
+    c.textAlign = 'center'; c.textBaseline = 'bottom';
+    c.fillText(fmtMi(v.realizado[i]), bar.x, yTexto);
+    c.restore();
+  }
+};
+const pluginPilulas = {
+  id: 'pilulas',
+  afterDraw(chart){
+    const v = CONFIG.visoes[visaoAtual], c = chart.ctx, x = chart.scales.x, y0 = x.bottom + 6;
+    c.save(); c.font = '600 12px Inter, "Segoe UI", system-ui, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
+    v.realizado.forEach((r, i) => {
+      if (r == null || !v.comp[i]) return;           // sem dado ou denominador zero: sem pílula
+      const pct = percentual(r, v.comp[i]), st = CONFIG.status(pct);
+      const txt = CONFIG.modo === 'meta' ? fmtPct(pct) : fmtPct(pct, true);
+      const w = c.measureText(txt).width + 16, h = 22, px = x.getPixelForValue(i);
+      c.fillStyle = tok(`--gr-${st}-bg`);
+      c.beginPath(); c.roundRect(px - w / 2, y0, w, h, 11); c.fill();
+      c.fillStyle = tok(`--gr-${st}-tx`); c.fillText(txt, px, y0 + h / 2 + .5);
+    });
+    c.restore();
+  }
+};
+
+/* ===== Tooltip externo ===== */
+function tooltipExterno({chart, tooltip}){
+  const tip = $('grTip');
+  if (!tooltip || tooltip.opacity === 0 || !tooltip.dataPoints?.length){ tip.hidden = true; return; }
+  const i = tooltip.dataPoints[0].dataIndex, v = CONFIG.visoes[visaoAtual];
+  const r = v.realizado[i], cp = v.comp[i];
+  const pct = cp ? percentual(r, cp) : null, st = pct == null ? '' : CONFIG.status(pct);
+  const linhas = [
+    ['Realizado', fmtMi(r), ''],
+    [v.comparacao, cp == null ? '—' : fmtMi(cp), ''],
+    [v.percentual, pct == null ? '—' : (CONFIG.modo === 'meta' ? fmtPct(pct) : fmtPct(pct, true)), st],
+    ['Diferença', cp == null ? '—' : fmtDif(r - cp), st],
+  ];
+  tip.innerHTML = `<h3></h3><dl>${linhas.map(() => '<dt></dt><dd></dd>').join('')}</dl>`;
+  tip.querySelector('h3').textContent = CONFIG.mesesExtenso[i];
+  const dts = tip.querySelectorAll('dt'), dds = tip.querySelectorAll('dd');
+  linhas.forEach(([a, b, s], k) => { dts[k].textContent = a; dds[k].textContent = b; if (s) dds[k].className = s; });
+  tip.hidden = false;
+  const caixa = chart.canvas.getBoundingClientRect(), bar = chart.getDatasetMeta(0).data[i];
+  const topoBarra = Math.min(bar.y, cp != null ? chart.scales.y.getPixelForValue(cp) : bar.y);
+  let left = caixa.left + bar.x - tip.offsetWidth / 2;
+  let top = caixa.top + topoBarra - tip.offsetHeight - 14;
+  left = Math.max(8, Math.min(left, window.innerWidth - tip.offsetWidth - 8));
+  if (top < 8) top = caixa.top + bar.y + 14;
+  tip.style.left = `${left}px`; tip.style.top = `${top}px`;
+}
+
+/* ===== Montagem ===== */
+function renderCabecalho(){
+  const v = CONFIG.visoes[visaoAtual];
+  $('grEyebrow').textContent = CONFIG.eyebrow;
+  $('grTitulo').textContent = v.titulo;
+  $('grLegSerie').textContent = v.serie;
+  $('grLegComp').textContent = v.comparacao;
+  const ate = CONFIG.mesFiltrado + 1;
+  const somaR = v.realizado.slice(0, ate).reduce((a, b) => a + (b ?? 0), 0);
+  const somaC = v.comp.slice(0, ate).reduce((a, b) => a + (b ?? 0), 0);
+  const varAcum = somaC ? (somaR / somaC - 1) * 100 : null;
+  $('grAcumRotulo').textContent = `Acumulado vs ${v.comparacao.toLowerCase()}`;
+  const selo = $('grAcumSelo');
+  selo.textContent = varAcum == null ? '—' : `${varAcum < 0 ? '↓' : '↑'} ${fmtPct(varAcum, true).replace('-', '−')}`;
+  selo.className = 'selo ' + (varAcum == null ? '' : CONFIG.status(CONFIG.modo === 'meta' ? somaR / somaC * 100 : varAcum));
+  $('grCanvas').setAttribute('aria-label', `${v.titulo}: ${v.serie} por mês com ${v.comparacao.toLowerCase()} como traço; ${CONFIG.mesesExtenso[CONFIG.mesFiltrado]} em destaque com ${fmtMi(v.realizado[CONFIG.mesFiltrado])}.`);
+  const t = $('grTabela');
+  t.innerHTML = `<thead><tr><th>Mês</th><th>${v.serie}</th><th>${v.comparacao}</th><th>${v.percentual}</th></tr></thead><tbody>${CONFIG.meses.map((m, i) => {
+    const r = v.realizado[i], c = v.comp[i];
+    return `<tr><td>${CONFIG.mesesExtenso[i]}</td><td>${r == null ? '—' : fmtMi(r)}</td><td>${c == null ? '—' : fmtMi(c)}</td><td>${r == null || !c ? '—' : fmtPct(percentual(r, c), CONFIG.modo !== 'meta')}</td></tr>`;
+  }).join('')}</tbody>`;
+}
+function renderSegmentado(){
+  const seg = $('grSeg'); seg.innerHTML = '';
+  Object.keys(CONFIG.visoes).forEach(nome => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.setAttribute('role', 'tab'); b.textContent = nome;
+    b.setAttribute('aria-selected', String(nome === visaoAtual));
+    b.addEventListener('click', () => { visaoAtual = nome; renderSegmentado(); renderCabecalho(); renderGrafico(); });
+    seg.append(b);
+  });
+}
+function renderGrafico(){
+  grafico?.destroy();
+  $('grTip').hidden = true;
+  const v = CONFIG.visoes[visaoAtual], foco = CONFIG.mesFiltrado;
+  const maximo = Math.max(...v.realizado.filter(x => x != null), ...v.comp.filter(x => x != null));
+  const reduzir = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  grafico = new Chart($('grCanvas'), {
+    type: 'bar',
+    data: {labels: CONFIG.meses, datasets: [{
+      label: v.serie, data: v.realizado,
+      backgroundColor: ctx => ctx.dataIndex === foco ? tok('--gr-barra-foco') : tok('--gr-barra'),
+      hoverBackgroundColor: ctx => ctx.dataIndex === foco ? tok('--gr-barra-foco') : tok('--gr-barra-hover'),
+      borderRadius: 3, barPercentage: .92, categoryPercentage: .62,
+    }]},
+    options: {
+      responsive: true, maintainAspectRatio: false, locale: CONFIG.locale,
+      animation: reduzir ? false : {duration: 250},
+      layout: {padding: {top: 28, bottom: 30}},
+      interaction: {mode: 'index', intersect: false},
+      plugins: {legend: {display: false}, tooltip: {enabled: false, external: tooltipExterno}},
+      scales: {
+        y: {display: false, beginAtZero: true, max: maximo * 1.12},
+        x: {grid: {display: false}, border: {display: true, color: tok('--gr-base')},
+            ticks: {color: ctx => ctx.index === foco ? tok('--gr-eixo-foco') : tok('--gr-eixo'),
+                    font: ctx => ({size: 13, weight: ctx.index === foco ? '700' : '400', family: 'Inter, "Segoe UI", system-ui, sans-serif'})}},
+      },
+    },
+    plugins: [pluginTraco, pluginRotulo, pluginPilulas],
+  });
+  grafico.canvas.addEventListener('mouseleave', () => { $('grTip').hidden = true; });
+}
+window.addEventListener('scroll', () => { $('grTip').hidden = true; }, {passive: true});
+$('demoTema').addEventListener('click', () => {
+  const r = document.documentElement;
+  r.dataset.theme = r.dataset.theme === 'dark' ? 'light' : 'dark';
+  renderGrafico();   // cores lidas dos tokens na criação
+});
+renderSegmentado(); renderCabecalho(); renderGrafico();
+</script>
+</body>
+</html>

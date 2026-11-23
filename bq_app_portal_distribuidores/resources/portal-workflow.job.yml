@@ -1,0 +1,83 @@
+targets:
+  prod:
+    resources:
+      jobs:
+        portal_distribuidores_workflow:
+          name: WF_Databricks_PortalDistribuidores_prod
+          performance_target: PERFORMANCE_OPTIMIZED
+          max_concurrent_runs: 1
+          queue:
+            enabled: true
+          tags:
+            aidevkit_project: ai-dev-kit
+            ambiente: producao
+          schedule:
+            quartz_cron_expression: '2 30 15 * * ?'
+            timezone_id: America/Sao_Paulo
+            pause_status: UNPAUSED
+          email_notifications:
+            on_failure:
+              - daniel.moreira@grupobimbo.com
+              - renan.ferreira@grupobimbo.com
+            on_success:
+              - daniel.moreira@grupobimbo.com
+          permissions:
+            - user_name: daniel.moreira@grupobimbo.com
+              level: CAN_MANAGE
+            - user_name: renan.ferreira@grupobimbo.com
+              level: CAN_MANAGE
+            - group_name: "DNA - GB Brasil Leaders"
+              level: CAN_MANAGE
+          tasks:
+            - task_key: LZ_Source
+              notebook_task:
+                notebook_path: /Workspace/Shared/CONSULTAS_AUTOMATIZADAS/ProjetoPortalDistribuidores/Landing/NB_DATA_LoadSourceTables
+              max_retries: 1
+              timeout_seconds: 1800
+            - task_key: CZ_CleanTable
+              depends_on: [{task_key: LZ_Source}]
+              notebook_task:
+                notebook_path: /Workspace/Shared/CONSULTAS_AUTOMATIZADAS/ProjetoPortalDistribuidores/Curated/NB_TRAN_CleanDistribuidores
+              max_retries: 1
+              timeout_seconds: 1800
+            - task_key: SZ_FTP
+              depends_on: [{task_key: CZ_CleanTable}]
+              notebook_task:
+                notebook_path: /Workspace/Shared/CONSULTAS_AUTOMATIZADAS/ProjetoPortalDistribuidores/Semantic/NB_TRAN_LoadFactArquivoFTP
+              max_retries: 1
+              timeout_seconds: 1800
+            - task_key: SZ_Order
+              depends_on: [{task_key: CZ_CleanTable}]
+              notebook_task:
+                notebook_path: /Workspace/Shared/CONSULTAS_AUTOMATIZADAS/ProjetoPortalDistribuidores/Semantic/NB_TRAN_LoadFactOrder
+              max_retries: 1
+              timeout_seconds: 1800
+            - task_key: SZ_Sell_In
+              depends_on: [{task_key: CZ_CleanTable}]
+              notebook_task:
+                notebook_path: /Workspace/Shared/CONSULTAS_AUTOMATIZADAS/ProjetoPortalDistribuidores/Semantic/NB_TRAN_LoadFactSellIn
+              max_retries: 1
+              timeout_seconds: 1800
+            - task_key: SZ_Sell_Out
+              depends_on: [{task_key: CZ_CleanTable}]
+              notebook_task:
+                notebook_path: /Workspace/Shared/CONSULTAS_AUTOMATIZADAS/ProjetoPortalDistribuidores/Semantic/NB_TRAN_LoadFactSellOut
+              max_retries: 1
+              timeout_seconds: 1800
+            - task_key: SZ_Stock
+              depends_on: [{task_key: CZ_CleanTable}]
+              notebook_task:
+                notebook_path: /Workspace/Shared/CONSULTAS_AUTOMATIZADAS/ProjetoPortalDistribuidores/Semantic/NB_TRAN_LoadFactStock
+              max_retries: 1
+              timeout_seconds: 1800
+            - task_key: DQ_DataQuality
+              depends_on:
+                - {task_key: SZ_FTP}
+                - {task_key: SZ_Order}
+                - {task_key: SZ_Sell_In}
+                - {task_key: SZ_Sell_Out}
+                - {task_key: SZ_Stock}
+              notebook_task:
+                notebook_path: /Workspace/Shared/CONSULTAS_AUTOMATIZADAS/ProjetoPortalDistribuidores/Semantic/NB_DQ_DataQualityChecks
+              max_retries: 1
+              timeout_seconds: 1800

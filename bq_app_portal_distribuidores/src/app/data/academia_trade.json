@@ -1,0 +1,143 @@
+{
+  "versao": "2026.11",
+  "total_promotores_cadastrados": 142,
+  "taxa_adesao_rede_pct": 78.4,
+  "trilhas": [
+    {
+      "id": "TRILHA-01",
+      "titulo": "Armazenamento, Descongelamento & Shelf Life",
+      "descricao": "Guia prático para garantir a integridade, maciez e aroma dos pães de hambúrguer desde o recebimento na câmara fria até a chapa.",
+      "carga_horaria_min": 18,
+      "modulos_count": 3,
+      "progresso_usuario_pct": 100,
+      "status": "concluido",
+      "modulos": [
+        {
+          "id": "MOD-101",
+          "titulo": "Recebimento e Inspeção Térmica (-18°C)",
+          "tipo": "video",
+          "duracao": "4 min",
+          "concluido": true,
+          "video_placeholder": "Boas práticas de recebimento de carretas frigorificadas"
+        },
+        {
+          "id": "MOD-102",
+          "titulo": "Curva Correta de Descongelamento (Shelf Life de 5 dias)",
+          "tipo": "pdf",
+          "duracao": "6 min de leitura",
+          "concluido": true,
+          "download_url": "/api/treinamentos/MOD-102/download"
+        },
+        {
+          "id": "MOD-103",
+          "titulo": "Quiz de Certificação de Manuseio",
+          "tipo": "quiz",
+          "duracao": "5 min",
+          "concluido": true,
+          "nota": 100
+        }
+      ]
+    },
+    {
+      "id": "TRILHA-02",
+      "titulo": "Padrão de Visita Comercial & Positivação",
+      "descricao": "Como abordar hamburguerias artesanais, demonstrar a rentabilidade do Brioche 503833 e fechar pedidos semanais consistentes.",
+      "carga_horaria_min": 25,
+      "modulos_count": 4,
+      "progresso_usuario_pct": 65,
+      "status": "em_andamento",
+      "modulos": [
+        {
+          "id": "MOD-201",
+          "titulo": "Argumentos de Venda: Linha Brioche vs Clássico",
+          "tipo": "video",
+          "duracao": "5 min",
+          "concluido": true
+        },
+        {
+          "id": "MOD-202",
+          "titulo": "Cálculo de Custo por Porção e Margem da Hamburgueria",
+          "tipo": "interativo",
+          "duracao": "8 min",
+          "concluido": true
+        },
+        {
+          "id": "MOD-203",
+          "titulo": "Checklist de Visita e Positivação no PDV",
+          "tipo": "pdf",
+          "duracao": "4 min",
+          "concluido": false
+        },
+        {
+          "id": "MOD-204",
+          "titulo": "Quiz Prático de Objeções de Clientes",
+          "tipo": "quiz",
+          "duracao": "8 min",
+          "concluido": false
+        }
+      ]
+    },
+    {
+      "id": "TRILHA-03",
+      "titulo": "Merchandising, Planograma e Visibilidade",
+      "descricao": "Técnicas de exposição em redes com autosserviço, displays de balcão e aplicação correta da marca Bimbo QSR.",
+      "carga_horaria_min": 15,
+      "modulos_count": 2,
+      "progresso_usuario_pct": 0,
+      "status": "nao_iniciado",
+      "modulos": [
+        {
+          "id": "MOD-301",
+          "titulo": "Guia Visual de Exposição e Ponta de Gôndola",
+          "tipo": "pdf",
+          "duracao": "8 min",
+          "concluido": false
+        },
+        {
+          "id": "MOD-302",
+          "titulo": "Quiz de Aplicação de Merchandising",
+          "tipo": "quiz",
+          "duracao": "7 min",
+          "concluido": false
+        }
+      ]
+    }
+  ],
+  "ranking_adesao_distribuidores": [
+    {
+      "dist_id": 1,
+      "nome": "Disdal Distribuidora",
+      "promotores": 28,
+      "capacitados_pct": 92.8,
+      "status": "excelente"
+    },
+    {
+      "dist_id": 4,
+      "nome": "Transpão Logística",
+      "promotores": 19,
+      "capacitados_pct": 84.2,
+      "status": "bom"
+    },
+    {
+      "dist_id": 7,
+      "nome": "PanExpress Distribuição",
+      "promotores": 14,
+      "capacitados_pct": 78.5,
+      "status": "regular"
+    },
+    {
+      "dist_id": 2,
+      "nome": "Marfood Alimentos",
+      "promotores": 32,
+      "capacitados_pct": 62.5,
+      "status": "atencao"
+    },
+    {
+      "dist_id": 3,
+      "nome": "Jedimix Distribuidora",
+      "promotores": 45,
+      "capacitados_pct": 48.9,
+      "status": "critico"
+    }
+  ]
+}

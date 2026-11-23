@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Central de Performance | Bimbo Brasil</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="home-page"> 
+
+  <!-- ══════════════════ HEADER FLUTUANTE ══════════════════ -->
+  <header class="home-header">
+    <a href="index.html" class="hh-left">
+      <img src="logo-dna.png" alt="DNA" class="hh-logo">
+    </a>
+
+    <div class="hh-right">
+      <!-- Language toggle -->
+      <div class="lang-toggle" role="group">
+        <button class="lang-btn active" id="btnPT" onclick="setLang('pt')">PT</button>
+        <button class="lang-btn" id="btnES" onclick="setLang('es')">ES</button>
+      </div>
+
+      <!-- Portal badge -->
+      <span class="portal-badge">
+        <span class="dot"></span>
+        <span data-pt="Portal Operacional" data-es="Portal Operacional">Portal Operacional</span>
+      </span>
+
+    </div>
+  </header>
+
+  <!-- ══════════════════ HERO ══════════════════ -->
+  <section class="home-hero">
+    <img src="logo-bimbo-qsr.png" alt="Bimbo Brasil" class="hero-logo">
+
+    <div class="hero-title-block">
+      <span class="hero-welcome" data-pt="Bem-vindo ao" data-es="Bienvenido al">Bem-vindo ao</span>
+      <h1 class="hero-page-title" data-pt="Central de Performance" data-es="Central de Rendimiento">Central de Performance</h1>
+      <div class="hero-title-line"></div>
+    </div>
+
+    <p class="hero-subtitle"
+       data-pt="A plataforma estratégica para acompanhamento da performance de atendimento de pedidos."
+       data-es="La plataforma estratégica para el seguimiento del rendimiento de atención de pedidos.">
+      A plataforma estratégica para acompanhamento da performance de atendimento de pedidos.
+    </p>
+
+    <div class="hero-body">
+      <p data-pt="Monitore os principais indicadores operacionais, acompanhe o nível de atendimento em toda a cadeia logística e obtenha uma visão integrada dos processos — da programação à entrega final."
+         data-es="Monitorea los principales indicadores operacionales, sigue el nivel de atención en toda la cadena logística y obtén una visión integrada de los procesos — desde la programación hasta la entrega final.">
+        Monitore os principais indicadores operacionais, acompanhe o nível de atendimento em toda a cadeia logística e obtenha uma visão integrada dos processos — da programação à entrega final.
+      </p>
+      <p data-pt="Centralize informações críticas, identifique desvios com agilidade e potencialize a tomada de decisão por meio de dados confiáveis, visibilidade operacional e gestão orientada à performance."
+         data-es="Centraliza información crítica, identifica desviaciones con agilidad y potencia la toma de decisiones mediante datos confiables, visibilidad operacional y gestión orientada al rendimiento.">
+        Centralize informações críticas, identifique desvios com agilidade e potencialize a tomada de decisão por meio de dados confiáveis, visibilidade operacional e gestão orientada à performance.
+      </p>
+    </div>
+  </section>
+
+  <!-- ══════════════════ MODULE SELECTOR ══════════════════ -->
+  <p class="modules-label" data-pt="Selecione o módulo desejado" data-es="Selecciona el módulo deseado">
+    Selecione o módulo desejado
+  </p>
+
+  <section class="modules-section">
+    <div class="modules-grid">
+
+      <!-- ── PAINEL EXECUTIVO ── -->
+      <a class="mc-wrap mc-orders" href="painel-executivo.html">
+        <div class="mc-inner">
+          <div class="mc-top">
+            <div class="mc-icon">
+              <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><polyline points="2 20 22 20"/></svg>
+            </div>
+            <span class="mc-badge" data-pt="Executivo" data-es="Ejecutivo">Executivo</span>
+          </div>
+          <h3 class="mc-title" data-pt="Painel Executivo" data-es="Panel Ejecutivo">Painel Executivo</h3>
+          <p class="mc-desc"
+             data-pt="Cockpit estratégico com KPIs consolidados, Pareto de perdas por impacto e leitura executiva orientada à ação."
+             data-es="Cockpit estratégico con KPIs consolidados, Pareto de pérdidas por impacto y lectura ejecutiva orientada a la acción.">
+            Cockpit estratégico com KPIs consolidados, Pareto de perdas por impacto e leitura executiva orientada à ação.
+          </p>
+          <ul class="mc-features">
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="KPIs Fill Rate, OTIF Geral, CIF e FOB com variação mensal" data-es="KPIs Fill Rate, OTIF General, CIF y FOB con variación mensual">KPIs Fill Rate, OTIF Geral, CIF e FOB com variação mensal</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Pareto de perdas vs. meta 96% com referência acumulada 80%" data-es="Pareto de pérdidas vs. meta 96% con referencia acumulada 80%">Pareto de perdas vs. meta 96% com referência acumulada 80%</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Prioridades de ação + Leitura Executiva" data-es="Prioridades de acción + Lectura Ejecutiva">Prioridades de ação + Leitura Executiva</span>
+            </li>
+          </ul>
+          <div class="mc-foot">
+            <span class="mc-open" data-pt="Abrir módulo" data-es="Abrir módulo">Abrir módulo</span>
+            <span class="mc-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- ── FILL RATE ── -->
+      <a class="mc-wrap mc-orders" href="fillrate.html">
+        <div class="mc-inner">
+          <div class="mc-top">
+            <div class="mc-icon">
+              <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <span class="mc-badge" data-pt="Análise" data-es="Análisis">Análise</span>
+          </div>
+          <h3 class="mc-title">Fill Rate</h3>
+          <p class="mc-desc"
+             data-pt="Visão analítica de Fill Rate agregado por empresa e evolução mensal."
+             data-es="Visión analítica de Fill Rate agregado por empresa y evolución mensual.">
+            Visão analítica de Fill Rate agregado por empresa e evolução mensal.
+          </p>
+          <ul class="mc-features">
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="KPIs: FR %, Pedida, Atendida, Corte" data-es="KPIs: FR %, Pedida, Atendida, Corte">KPIs: FR %, Pedida, Atendida, Corte</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Gráfico por empresa com meta 96%" data-es="Gráfico por empresa con meta 96%">Gráfico por empresa com meta 96%</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Evolução mensal + tema claro/escuro" data-es="Evolución mensual + tema claro/oscuro">Evolução mensal + tema claro/escuro</span>
+            </li>
+          </ul>
+          <div class="mc-foot">
+            <span class="mc-open" data-pt="Abrir módulo" data-es="Abrir módulo">Abrir módulo</span>
+            <span class="mc-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- ── OTIF ── -->
+      <a class="mc-wrap mc-orders" href="otif.html">
+        <div class="mc-inner">
+          <div class="mc-top">
+            <div class="mc-icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <span class="mc-badge" data-pt="Análise" data-es="Análisis">Análise</span>
+          </div>
+          <h3 class="mc-title" data-pt="OTIF" data-es="OTIF">OTIF</h3>
+          <p class="mc-desc"
+             data-pt="Acompanhamento do indicador On Time In Full: pontualidade e integridade das entregas em um único painel."
+             data-es="Seguimiento del indicador On Time In Full: puntualidad e integridad de las entregas en un único panel.">
+            Acompanhamento do indicador On Time In Full: pontualidade e integridade das entregas em um único painel.
+          </p>
+          <ul class="mc-features">
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="KPIs: OTIF %, On Time %, In Full %" data-es="KPIs: OTIF %, On Time %, In Full %">KPIs: OTIF %, On Time %, In Full %</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Gráfico por empresa com meta 96%" data-es="Gráfico por empresa con meta 96%">Gráfico por empresa com meta 96%</span>
+            </li>
+            <li>
+              <span class="chk"><svg viewBox="0 0 12 12"><polyline points="2 6 5 9 10 3"/></svg></span>
+              <span data-pt="Evolução mensal + tema claro/escuro" data-es="Evolución mensual + tema claro/oscuro">Evolução mensal + tema claro/escuro</span>
+            </li>
+          </ul>
+          <div class="mc-foot">
+            <span class="mc-open" data-pt="Abrir módulo" data-es="Abrir módulo">Abrir módulo</span>
+            <span class="mc-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+
+    </div>
+  </section>
+
+  <!-- ══════════════════ FOOTER ══════════════════ -->
+  <footer class="home-footer">
+    <span>Bimbo QSR &mdash; Grupo Bimbo</span>
+    <span id="footerDate"></span>
+  </footer>
+
+  <!-- ══════════════════ SCRIPT ══════════════════ -->
+  <script>
+    const html = document.documentElement;
+
+    /* ── LANGUAGE ── */
+    function setLang(lang) {
+      document.querySelectorAll('[data-pt]').forEach(el => {
+        const val = el.dataset[lang];
+        if (val) el.textContent = val;
+      });
+      document.getElementById('btnPT').classList.toggle('active', lang === 'pt');
+      document.getElementById('btnES').classList.toggle('active', lang === 'es');
+      html.setAttribute('lang', lang === 'es' ? 'es' : 'pt-BR');
+      localStorage.setItem('fr-lang', lang);
+    }
+
+    const storedLang = localStorage.getItem('fr-lang') || 'pt';
+    if (storedLang === 'es') setLang('es');
+    document.getElementById('btn' + storedLang.toUpperCase()).classList.add('active');
+
+    /* ── FOOTER DATE ── */
+    const d = new Date();
+    const lang = localStorage.getItem('fr-lang') || 'pt';
+    const locale = lang === 'es' ? 'es-MX' : 'pt-BR';
+    const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('footerDate').textContent = d.toLocaleDateString(locale, opts);
+  </script>
+
+</body>
+</html>

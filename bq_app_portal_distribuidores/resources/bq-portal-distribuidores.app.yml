@@ -1,0 +1,22 @@
+# Configuracao de recurso Databricks App para deploy via Declarative Automation Bundles (DABs)
+resources:
+  apps:
+    bq-portal-distribuidores:
+      name: bq-portal-distribuidores-${bundle.target}
+      description: "Portal Distribuidores Bimbo QSR - Grupo Bimbo Brasil"
+      source_code_path: "../src/app"
+      permissions:
+        - group_name: GRP_BQ_VENDAS_DISTRIBUIDORES
+          level: CAN_USE
+        - group_name: GRP_BB_D&A
+          level: CAN_USE
+        - group_name: "DNA - GB Brasil Leaders"
+          level: CAN_MANAGE
+        - user_name: lecivaldo.santana@grupobimbo.com
+          level: CAN_MANAGE
+        - user_name: bruno.fellipe@grupobimbo.com
+          level: CAN_MANAGE
+        - user_name: ana.ferraz@grupobimbo.com
+          level: CAN_MANAGE
+        - user_name: cadmc.cadmc@grupobimbo.com
+          level: CAN_MANAGE

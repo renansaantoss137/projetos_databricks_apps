@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPACE - Administration</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=20260814_18">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}?v=20260911_02">
+</head>
+<body class="admin-page-body dark-theme">
+    <script>if (localStorage.getItem('theme') === 'light') document.body.classList.remove('dark-theme');</script>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="hamburger-menu" id="hamburger-btn" aria-label="Menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <div class="logo-container">
+                <a href="/" class="logo-link">
+                    <img src="{{ url_for('static', filename='images/space-one-logo.png') }}" alt="SPACE" class="logo-img">
+                </a>
+            </div>
+        </div>
+
+        <div class="topbar-center">
+            <div class="admin-topbar-title">
+                <span style="color: #ffffff; font-weight: 700; font-size: 1.1rem; letter-spacing: 1.2px; text-transform: uppercase;">PAINEL ADMIN</span>
+            </div>
+        </div>
+
+        <div class="topbar-right">
+            {% if local_mode %}
+            <!-- MOCK USER SWITCHER -->
+            <div class="mock-user-switcher-container">
+                <button class="mock-user-btn" id="mock-user-btn" title="Simular Usuário/Grupos">
+                    <i data-lucide="user-cog"></i>
+                    <span class="mock-user-email-badge">{{ user_email }}</span>
+                </button>
+                <div class="mock-user-dropdown" id="mock-user-dropdown">
+                    <form action="/mock-user" method="POST" class="mock-user-form">
+                        <h4>Simular Usuário (Local)</h4>
+                        <div class="form-group">
+                            <label for="mock_email">E-mail</label>
+                            <input type="email" id="mock_email" name="email" value="{{ user_email }}" required>
+                        </div>
+                        <div class="form-group" style="flex-direction: row; align-items: center; gap: 8px; justify-content: flex-start;">
+                            <input type="checkbox" id="mock_is_admin" name="is_admin" value="true" {% if is_admin %}checked{% endif %}>
+                            <label for="mock_is_admin" style="margin: 0; cursor: pointer;">Administrador</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="mock_groups">Grupos AD (separados por vírgula)</label>
+                            <textarea id="mock_groups" name="groups" placeholder="Ex: Grupo-People,Grupo-Commercial">{{ user_groups }}</textarea>
+                        </div>
+                        <button type="submit" class="btn-submit-mock">Aplicar Alterações</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+            <button class="theme-toggle" id="theme-toggle-btn" aria-label="Alternar Tema">
+                <i data-lucide="moon" class="theme-icon-moon" style="display: none;"></i>
+                <i data-lucide="sun" class="theme-icon-sun"></i>
+            </button>
+            <div class="language-selector" id="lang-selector">
+                <span class="lang-badge">EN</span>
+                <i data-lucide="chevron-down" class="chevron-icon"></i>
+                <!-- Idioma Dropdown -->
+                <div class="lang-dropdown" id="lang-dropdown">
+                    <a href="#" data-lang="en" class="active">EN</a>
+                    <a href="#" data-lang="pt">PT</a>
+                    <a href="#" data-lang="es">ES</a>
+                </div>
+            </div>
+            <div class="user-analytics-logo">
+                <span class="data-text">Data</span><span class="analytics-text">&Analytics</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- SIDE DRAWER MENU -->
+    <div class="drawer" id="side-drawer">
+        <div class="drawer-header">
+            <span class="drawer-title" data-i18n="menu_title">Menu</span>
+        </div>
+        <nav class="drawer-content">
+            <a href="/" class="drawer-item">
+                <div class="drawer-icon-wrapper">
+                    <i data-lucide="home" class="drawer-item-icon"></i>
+                </div>
+                <span class="drawer-item-label">Home</span>
+            </a>
+            <a href="/admin" class="drawer-item">
+                <div class="drawer-icon-wrapper">
+                    <i data-lucide="settings" class="drawer-item-icon"></i>
+                </div>
+                <span class="drawer-item-label" data-i18n="admin_panel">Administração</span>
+            </a>
+        </nav>
+    </div>
+    <div class="drawer-overlay" id="drawer-overlay"></div>
+
+    <!-- CONTENT WRAPPER -->
+    <div class="content-wrapper">
+        <main class="main-content">
+            
+            <!-- FLASH MESSAGES -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages-container">
+                        {% for category, message in messages %}
+                            <div class="flash-message alert-{{ category }}">
+                                <i data-lucide="info" class="flash-icon"></i>
+                                <span>{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}            <!-- ADMIN TABS NAVIGATION -->
+            <div class="admin-tabs">
+                <button class="admin-tab-btn active" data-tab="tab-components">
+                    <i data-lucide="layers"></i>
+                    <span data-i18n="registered_components">Componentes (Apps & Dashboards)</span>
+                </button>
+                <button class="admin-tab-btn" data-tab="tab-areas">
+                    <i data-lucide="layout-grid"></i>
+                    <span data-i18n="areas">Áreas</span>
+                </button>
+                <button class="admin-tab-btn" data-tab="tab-sidebar-apps">
+                    <i data-lucide="panel-left"></i>
+                    <span>Aplicativos da Sidebar</span>
+                </button>
+                <button class="admin-tab-btn" data-tab="tab-digital-maturity">
+                    <i data-lucide="radar"></i>
+                    <span>Digital Maturity</span>
+                </button>
+            </div>
+
+            <!-- TAB 1: COMPONENTS -->
+            <div id="tab-components" class="admin-tab-pane active">
+                <div class="admin-grid">
+                    <!-- FORM CARD -->
+                    <section class="section-box admin-form-section">
+                        <h2 class="section-title">
+                            <span data-i18n="new_component">Novo Componente</span>
+                            <i data-lucide="plus-circle" style="color: var(--color-icon);"></i>
+                        </h2>
+                        
+                        <form action="/admin/add" method="POST" class="admin-form">
+                            <div class="form-group">
+                                <label for="type" data-i18n="type_label">Tipo</label>
+                                <select name="type" id="type" required>
+                                    <option value="dashboard">Dashboard</option>
+                                    <option value="application">Aplicativo</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="area" data-i18n="target_area">Área Alvo</label>
+                                <select name="area" id="area" required>
+                                    {% for area in area_options %}
+                                        <option value="{{ area.key }}" data-icon="{{ area.default_icon }}">{{ area.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="title" data-i18n="title_label">Título / Nome</label>
+                                <input type="text" name="title" id="title" placeholder="Ex: Relatório Mensal" required autocomplete="off">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="link" data-i18n="embed_url">URL de Embed (iframe)</label>
+                                <input type="url" name="link" id="link"
+                                    placeholder="Ex: https://app.powerbi.com/reportEmbed?reportId=..."
+                                    autocomplete="off">
+                                <small class="form-hint" data-i18n-html="hint_component_url">Para dashboards: use a URL de embed do Power BI.<br>Para aplicativos: URL da aplicação web (abre em nova aba).</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="link_mobile" data-i18n="embed_url_mobile">URL de Embed Mobile (opcional)</label>
+                                <input type="url" name="link_mobile" id="link_mobile"
+                                    placeholder="Ex: https://app.powerbi.com/reportEmbed?reportId=..."
+                                    autocomplete="off">
+                                <small class="form-hint" data-i18n-html="hint_component_mobile_url">Opcional. Usado automaticamente quando o portal for acessado de um celular.</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="icon" data-i18n="icon_label">Ícone</label>
+                                <div class="icon-select-wrapper">
+                                    <div class="icon-preview-badge" id="icon-preview">
+                                        <i data-lucide="link" id="icon-preview-svg"></i>
+                                    </div>
+                                    <select name="icon" id="icon" required>
+                                        <option value="link">Link (Padrão)</option>
+                                        <option value="bar-chart-3">Gráfico de Barras</option>
+                                        <option value="trending-up">Tendência de Subida</option>
+                                        <option value="users">Usuários / Equipe</option>
+                                        <option value="briefcase">Maleta / Comercial</option>
+                                        <option value="shield-check">Escudo Aprovado</option>
+                                        <option value="activity">Atividade / OEE</option>
+                                        <option value="database">Banco de Dados</option>
+                                        <option value="settings">Configurações</option>
+                                        <option value="file-text">Documento / Relatório</option>
+                                        <option value="package">Pacote / Industrial</option>
+                                        <option value="truck">Caminhão / Logística</option>
+                                        <option value="coins">Moedas / Finanças</option>
+                                        <option value="award">Prêmio / Qualidade</option>
+                                        <option value="target">Alvo / OKR</option>
+                                        <option value="wrench">Ferramenta / Manutenção</option>
+                                        <option value="scale">Balança / Jurídico</option>
+                                        <option value="archive">Arquivo / Supply</option>
+                                        <option value="git-fork">Linhagem de Dados</option>
+                                        <option value="pie-chart">Pizza / Análise</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+
+                            
+                            <button type="submit" class="admin-submit-btn" data-i18n="add_component_btn">Adicionar Componente</button>
+                        </form>
+                    </section>
+
+                    <!-- LIST CARD -->
+                    <section class="section-box admin-list-section">
+                        <div class="admin-list-header">
+                            <h2 class="section-title" style="margin: 0;">
+                                <span data-i18n="registered_components">Componentes Cadastrados</span>
+                                <i data-lucide="list" style="color: var(--color-icon);"></i>
+                            </h2>
+                            <span class="admin-row-count" id="adminRowCount"></span>
+                        </div>
+
+                        <!-- FILTER BAR -->
+                        <div class="admin-filter-bar">
+                            <div class="admin-filter-search">
+                                <i data-lucide="search" class="admin-filter-icon"></i>
+                                <input
+                                    type="text"
+                                    id="filterText"
+                                    placeholder="Buscar por nome..."
+                                    autocomplete="off"
+                                    oninput="applyFilters()"
+                                >
+                            </div>
+                            <select id="filterArea" onchange="applyFilters()">
+                                <option value="" data-i18n="all_areas_option">Todas as Áreas</option>
+                                {% for area in area_options %}
+                                    <option value="{{ area.key }}">{{ area.title }}</option>
+                                {% endfor %}
+                            </select>
+                            <select id="filterType" onchange="applyFilters()">
+                                <option value="" data-i18n="all_types_option">Todos os Tipos</option>
+                                <option value="dashboard">Dashboard</option>
+                                <option value="application">Aplicativo</option>
+                            </select>
+                            <button class="admin-filter-clear" id="filterClearBtn" onclick="clearFilters()" style="display:none;">
+                                <i data-lucide="x"></i> <span data-i18n="clear_btn">Limpar</span>
+                            </button>
+                        </div>
+
+                        <div class="admin-table-wrapper">
+                            <table class="admin-table" id="adminTable">
+                                <thead>
+                                    <tr>
+                                        <th data-i18n="area_th">Área</th>
+                                        <th data-i18n="type_th">Tipo</th>
+                                        <th data-i18n="name_th">Nome</th>
+                                        <th data-i18n="link_th">Link</th>
+                                        <th data-i18n="visible_th">Visível</th>
+                                        <th data-i18n="actions_th">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminTableBody">
+                                    {% for area_key, area_val in data.items() %}
+                                        <!-- Dashboards -->
+                                        {% for db in area_val.dashboards %}
+                                            <tr data-area="{{ area_key }}" data-type="dashboard" data-name="{{ db.title | lower }}" {% if db.hidden %}class="row-hidden"{% endif %}>
+                                                <td class="td-area">{{ area_key | capitalize }}</td>
+                                                <td class="td-type"><span class="badge badge-dashboard">Dashboard</span></td>
+                                                <td class="td-name">{{ db.title }}{% if db.hidden %} <span class="hidden-badge" data-i18n="status_hidden">Oculto</span>{% endif %}</td>
+                                                <td class="td-link">
+                                                    <div>
+                                                        <span style="font-weight: 500; font-size: 0.75rem; color: var(--color-text-muted);">Desk:</span>
+                                                        {% if db.link and db.link != '#' %}
+                                                            <a href="{{ db.link }}" target="_blank" class="table-link-preview" title="{{ db.link }}">{{ db.link }}</a>
+                                                        {% else %}
+                                                            <span class="table-no-link">-</span>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div style="margin-top: 4px;">
+                                                        <span style="font-weight: 500; font-size: 0.75rem; color: var(--color-text-muted);">Mob:</span>
+                                                        {% if db.link_mobile and db.link_mobile != '#' %}
+                                                            <a href="{{ db.link_mobile }}" target="_blank" class="table-link-preview" title="{{ db.link_mobile }}">{{ db.link_mobile }}</a>
+                                                        {% else %}
+                                                            <span class="table-no-link">-</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+
+                                                <td>
+                                                    <form action="/admin/toggle-item" method="POST" style="display:inline;">
+                                                        <input type="hidden" name="area" value="{{ area_key }}">
+                                                        <input type="hidden" name="type" value="dashboard">
+                                                        <input type="hidden" name="title_key" value="{{ db.title_key }}">
+                                                        <button type="submit" class="table-toggle-btn {% if db.hidden %}btn-show{% else %}btn-hide{% endif %}" title="{% if db.hidden %}Exibir{% else %}Ocultar{% endif %}" data-i18n-title="{% if db.hidden %}action_show{% else %}action_hide{% endif %}">
+                                                            <i data-lucide="{% if db.hidden %}eye{% else %}eye-off{% endif %}"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="table-edit-btn" title="Editar"
+                                                            data-area="{{ area_key }}"
+                                                            data-type="dashboard"
+                                                            data-title-key="{{ db.title_key }}"
+                                                            data-title="{{ db.title }}"
+                                                            data-icon="{{ db.icon }}"
+                                                            data-link="{{ db.link }}"
+                                                            data-link-mobile="{{ db.link_mobile }}"
+                                                            data-required-group="{{ db.required_group }}"
+                                                            onclick="openEditComponentModal(this)">
+                                                        <i data-lucide="pencil"></i>
+                                                    </button>
+                                                    <form action="/admin/delete" method="POST" onsubmit="return confirm('Deseja realmente excluir este dashboard?');" style="display:inline;">
+                                                        <input type="hidden" name="area" value="{{ area_key }}">
+                                                        <input type="hidden" name="type" value="dashboard">
+                                                        <input type="hidden" name="title_key" value="{{ db.title_key }}">
+                                                        <button type="submit" class="table-delete-btn" title="Excluir" data-i18n-title="action_delete"><i data-lucide="trash-2"></i></button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        <!-- Applications -->
+                                        {% for app in area_val.applications %}
+                                            <tr data-area="{{ area_key }}" data-type="application" data-name="{{ app.title | lower }}" {% if app.hidden %}class="row-hidden"{% endif %}>
+                                                <td class="td-area">{{ area_key | capitalize }}</td>
+                                                <td class="td-type"><span class="badge badge-app">Aplicativo</span></td>
+                                                <td class="td-name">{{ app.title }}{% if app.hidden %} <span class="hidden-badge" data-i18n="status_hidden">Oculto</span>{% endif %}</td>
+                                                <td class="td-link">
+                                                    {% if app.link and app.link != '#' %}
+                                                        <a href="{{ app.link }}" target="_blank" class="table-link-preview" title="{{ app.link }}">{{ app.link }}</a>
+                                                    {% else %}
+                                                        <span class="table-no-link">-</span>
+                                                    {% endif %}
+                                                </td>
+
+                                                <td>
+                                                    <form action="/admin/toggle-item" method="POST" style="display:inline;">
+                                                        <input type="hidden" name="area" value="{{ area_key }}">
+                                                        <input type="hidden" name="type" value="application">
+                                                        <input type="hidden" name="title_key" value="{{ app.title_key }}">
+                                                        <button type="submit" class="table-toggle-btn {% if app.hidden %}btn-show{% else %}btn-hide{% endif %}" title="{% if app.hidden %}Exibir{% else %}Ocultar{% endif %}" data-i18n-title="{% if app.hidden %}action_show{% else %}action_hide{% endif %}">
+                                                            <i data-lucide="{% if app.hidden %}eye{% else %}eye-off{% endif %}"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="table-edit-btn" title="Editar"
+                                                            data-area="{{ area_key }}"
+                                                            data-type="application"
+                                                            data-title-key="{{ app.title_key }}"
+                                                            data-title="{{ app.title }}"
+                                                            data-icon="{{ app.icon }}"
+                                                            data-link="{{ app.link }}"
+                                                            data-link-mobile="{{ app.link_mobile }}"
+                                                            data-required-group="{{ app.required_group }}"
+                                                            onclick="openEditComponentModal(this)">
+                                                        <i data-lucide="pencil"></i>
+                                                    </button>
+                                                    <form action="/admin/delete" method="POST" onsubmit="return confirm('Deseja realmente excluir este aplicativo?');" style="display:inline;">
+                                                        <input type="hidden" name="area" value="{{ area_key }}">
+                                                        <input type="hidden" name="type" value="application">
+                                                        <input type="hidden" name="title_key" value="{{ app.title_key }}">
+                                                        <button type="submit" class="table-delete-btn" title="Excluir" data-i18n-title="action_delete"><i data-lucide="trash-2"></i></button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <!-- Empty state when no filter results -->
+                            <div class="admin-table-empty" id="adminTableEmpty" style="display:none;">
+                                <i data-lucide="search-x"></i>
+                                <p>Nenhum componente encontrado para os filtros selecionados.</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            
+            <!-- TAB 2: AREAS -->
+            <div id="tab-areas" class="admin-tab-pane">
+                <div class="admin-grid">
+                    
+                    <!-- NEW AREA FORM CARD -->
+                    <section class="section-box admin-form-section">
+                        <h2 class="section-title">
+                            <span data-i18n="new_area">Nova Área</span>
+                            <i data-lucide="plus-circle" style="color: var(--color-icon);"></i>
+                        </h2>
+                        
+                        <form action="/admin/add-area" method="POST" class="admin-form">
+                            <div class="form-group">
+                                <label for="area_key" data-i18n="area_key_label">Chave da Área (ID único em minúsculo)</label>
+                                <input type="text" name="area_key" id="area_key" placeholder="Ex: faturamento" required autocomplete="off">
+                                <small class="form-hint" data-i18n="hint_area_key">Apenas letras minúsculas, números e sublinhados.</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="area_title" data-i18n="area_title_label">Título da Área</label>
+                                <input type="text" name="area_title" id="area_title" placeholder="Ex: Faturamento" required autocomplete="off">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="area_icon" data-i18n="icon_label">Ícone</label>
+                                <div class="icon-select-wrapper">
+                                    <div class="icon-preview-badge" id="area-icon-preview">
+                                        <i data-lucide="layout-grid"></i>
+                                    </div>
+                                    <select name="area_icon" id="area_icon" required onchange="updateAreaIconPreview(this.value)">
+                                        <option value="layout-grid">Grid (Padrão)</option>
+                                        <option value="users">Usuários</option>
+                                        <option value="trending-up">Tendência de Subida</option>
+                                        <option value="coins">Moedas / Finanças</option>
+                                        <option value="truck">Caminhão / Logística</option>
+                                        <option value="database">Banco de Dados</option>
+                                        <option value="activity">Atividade</option>
+                                        <option value="briefcase">Comercial</option>
+                                        <option value="line-chart">Gráfico de Linha</option>
+                                        <option value="archive">Arquivo / Supply</option>
+                                        <option value="file-text">Documento</option>
+                                        <option value="package">Pacote</option>
+                                        <option value="award">Prêmio / Qualidade</option>
+                                        <option value="target">Alvo / OKR</option>
+                                        <option value="scale">Balança / Jurídico</option>
+                                        <option value="shield-check">Escudo</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+
+                            
+                            <button type="submit" class="admin-submit-btn" data-i18n="create_area_btn">Criar Área</button>
+                        </form>
+                    </section>
+
+                    <!-- AREAS VISIBILITY CARD -->
+                    <section class="section-box admin-list-section">
+                        <div class="admin-list-header">
+                            <h2 class="section-title" style="margin: 0;">
+                                <span data-i18n="areas_visibility">Visibilidade das Áreas</span>
+                                <i data-lucide="layout-grid" style="color: var(--color-icon);"></i>
+                            </h2>
+                        </div>
+                        <span style="font-size: 0.8rem; color: var(--color-text-muted); display: block; margin-bottom: 16px;" data-i18n="areas_visibility_desc">
+                            Ocultar uma área remove ela da página inicial e impede acesso direto via URL.
+                        </span>
+                        
+                        <div class="area-visibility-grid">
+                            {% for area in area_visibility %}
+                            <div class="area-vis-card {% if area.hidden %}area-vis-hidden{% endif %}">
+                                <div class="area-vis-icon">
+                                    <i data-lucide="{{ area.icon }}"></i>
+                                </div>
+                                <span class="area-vis-title">{{ area.title }}</span>
+                                {% if area.hidden %}
+                                    <span class="area-vis-status status-hidden" data-i18n="status_hidden">Oculta</span>
+                                {% else %}
+                                    <span class="area-vis-status status-visible" data-i18n="status_visible">Visível</span>
+                                {% endif %}
+                                
+
+
+                                <div class="area-actions-row" style="margin-top: 8px; display: flex; gap: 8px; width: 100%;">
+                                    <form action="/admin/toggle-area" method="POST" style="flex: 1;">
+                                        <input type="hidden" name="area" value="{{ area.key }}">
+                                        <button type="submit" class="area-vis-btn {% if area.hidden %}btn-show{% else %}btn-hide{% endif %}" style="width: 100%; justify-content: center;">
+                                            <i data-lucide="{% if area.hidden %}eye{% else %}eye-off{% endif %}"></i>
+                                            <span data-i18n="{% if area.hidden %}action_show{% else %}action_hide{% endif %}">{% if area.hidden %}Exibir{% else %}Ocultar{% endif %}</span>
+                                        </button>
+                                    </form>
+                                    <button type="button" class="area-vis-btn btn-hide" style="flex: none; padding: 6px 10px;" title="Editar Área"
+                                            data-key="{{ area.key }}"
+                                            data-title="{{ area.title }}"
+                                            data-icon="{{ area.icon }}"
+                                            data-required-group="{{ area.required_group }}"
+                                            onclick="openEditAreaModal(this)">
+                                        <i data-lucide="pencil"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </section>
+
+                </div>
+            </div>
+
+            <!-- TAB 3: SIDEBAR APPS -->
+            <div id="tab-sidebar-apps" class="admin-tab-pane">
+                <div class="admin-grid" style="grid-template-columns: 1fr;">
+                    
+                    <!-- SIDEBAR APPS LIST SECTION -->
+                    <section class="section-box admin-list-section" style="max-width: 100%;">
+                        <div class="admin-list-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <h2 class="section-title" style="margin: 0;">
+                                <span>Aplicativos Laterais (Sidebar)</span>
+                                <i data-lucide="layout-sidebar" style="color: var(--color-icon);"></i>
+                            </h2>
+                            <button type="button" class="admin-submit-btn" style="width: auto; padding: 8px 14px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;" onclick="openAddSidebarAppModal()">
+                                <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                                <span>Adicionar Aplicativo</span>
+                            </button>
+                        </div>
+                        <span style="font-size: 0.8rem; color: var(--color-text-muted); display: block; margin-bottom: 16px;">
+                            Gerencie os links, logos/ícones e a visibilidade dos cartões de aplicativos que aparecem na barra lateral direita da página inicial.
+                        </span>
+                        
+                        <div class="area-visibility-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+                            {% for app in sidebar_apps %}
+                            <div class="area-vis-card {% if app.hidden %}area-vis-hidden{% endif %}" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+                                <div style="width: 100%;">
+                                    <div class="area-vis-icon" style="background: rgba(15, 61, 108, 0.1); color: #0f3d6c; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                                        {% if app.icon and ('/' in app.icon or '.' in app.icon or app.icon.startswith('http')) %}
+                                            <img src="{{ app.icon }}" alt="{{ app.title }}" style="max-width: 32px; max-height: 32px; object-fit: contain;">
+                                        {% elif app.icon %}
+                                            <i data-lucide="{{ app.icon }}"></i>
+                                        {% else %}
+                                            {% if app.app_key == 'space_copilot' %}
+                                                <i data-lucide="bot"></i>
+                                            {% elif app.app_key == 'threego' %}
+                                                <i data-lucide="dna"></i>
+                                            {% elif app.app_key == 'fermenta' %}
+                                                <i data-lucide="activity"></i>
+                                            {% else %}
+                                                <i data-lucide="rocket"></i>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    <span class="area-vis-title" style="font-size: 1.1rem; font-weight: 700;">{{ app.title }}</span>
+                                    {% if app.hidden %}
+                                        <span class="area-vis-status status-hidden">Oculto</span>
+                                    {% else %}
+                                        <span class="area-vis-status status-visible">Visível</span>
+                                    {% endif %}
+                                    
+                                    <div style="margin-top: 12px; width: 100%; box-sizing: border-box; text-align: left; background: var(--bg-card-inner); padding: 8px; border-radius: 4px; border: 1px solid var(--border-color-section);">
+                                        <span style="font-size: 0.72rem; font-weight: 700; color: var(--color-text-muted); display: block; margin-bottom: 2px;">Link Configurado:</span>
+                                        {% if app.link and app.link != '#' %}
+                                            <a href="{{ app.link }}" target="_blank" style="color: #60a5fa; font-size: 0.8rem; text-decoration: none; word-break: break-all; display: inline-block;">{{ app.link }}</a>
+                                        {% else %}
+                                            <span style="color: var(--color-text-muted); font-size: 0.8rem; font-style: italic;">Nenhum link configurado (#)</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="area-actions-row" style="margin-top: 16px; display: flex; gap: 8px; width: 100%;">
+                                    <form action="/admin/toggle-sidebar-app" method="POST" style="flex: 1;">
+                                        <input type="hidden" name="app_key" value="{{ app.app_key }}">
+                                        <button type="submit" class="area-vis-btn {% if app.hidden %}btn-show{% else %}btn-hide{% endif %}" style="width: 100%; justify-content: center;">
+                                            <i data-lucide="{% if app.hidden %}eye{% else %}eye-off{% endif %}"></i>
+                                            <span>{% if app.hidden %}Exibir{% else %}Ocultar{% endif %}</span>
+                                        </button>
+                                    </form>
+                                    <button type="button" class="area-vis-btn btn-hide" style="flex: none; padding: 6px 10px;" title="Editar Aplicativo"
+                                            data-key="{{ app.app_key }}"
+                                            data-title="{{ app.title }}"
+                                            data-link="{{ app.link }}"
+                                            data-icon="{{ app.icon or '' }}"
+                                            onclick="openEditSidebarAppModal(this)">
+                                        <i data-lucide="pencil"></i>
+                                    </button>
+                                    <form action="/admin/delete-sidebar-app" method="POST" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir o aplicativo &quot;{{ app.title }}&quot;?');">
+                                        <input type="hidden" name="app_key" value="{{ app.app_key }}">
+                                        <button type="submit" class="area-vis-btn" style="flex: none; padding: 6px 10px; background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3);" title="Excluir Aplicativo">
+                                            <i data-lucide="trash-2"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- TAB 4: DIGITAL MATURITY -->
+            <div id="tab-digital-maturity" class="admin-tab-pane">
+                <div class="admin-grid" style="grid-template-columns: 1fr;">
+                    <section class="section-box admin-list-section" style="max-width: 100%;">
+                        <div class="admin-list-header">
+                            <h2 class="section-title" style="margin: 0;">
+                                <span>Digital Maturity — Nota por Área</span>
+                                <i data-lucide="radar" style="color: var(--color-icon);"></i>
+                            </h2>
+                            <p style="font-size: 0.82rem; color: var(--color-text-secondary); margin: 4px 0 0 0;">Defina as notas de cada dimensão para o gráfico radar de Maturidade Digital. Escala de 0 a 5. A nota final é calculada automaticamente.</p>
+                        </div>
+
+                        <div class="dm-admin-table-wrapper">
+                            <table class="admin-table dm-admin-table" id="dmAdminTable">
+                                <thead>
+                                    <tr>
+                                        <th class="dm-th-area">Área</th>
+                                        <th class="dm-th-bo" style="min-width: 180px;">Business Owner(s)</th>
+                                        <th class="dm-th-dim">Adoção</th>
+                                        <th class="dm-th-dim">Portfólio</th>
+                                        <th class="dm-th-dim">Autonomia</th>
+                                        <th class="dm-th-dim">Capacitação</th>
+                                        <th class="dm-th-dim">Estratégia</th>
+                                        <th class="dm-th-final">Nota Final</th>
+                                        <th class="dm-th-action"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for area in area_visibility %}
+                                    {% if area.key != 'geral' %}
+                                    {% set dm = data[area.key].about.digital_maturity if (data[area.key] and data[area.key].about and data[area.key].about.digital_maturity) else None %}
+                                    {% set dims = dm.dimensions if dm else [] %}
+                                    {% set bo_raw = dm.business_owners if (dm and dm.business_owners is defined and dm.business_owners is not none) else [] %}
+                                    {% set bo_val = (bo_raw | join(', ')) if (bo_raw is sequence and not bo_raw is string) else (bo_raw | default('')) %}
+                                    <tr data-area-key="{{ area.key }}">
+                                        <td class="dm-td-area">
+                                            <div class="dm-area-label">
+                                                <i data-lucide="{{ area.icon }}" style="width:16px;height:16px;color:var(--color-icon);"></i>
+                                                <span>{{ area.title }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="dm-td-bo">
+                                            <input type="text" class="dm-input-bo" name="business_owners" 
+                                                   value="{{ bo_val }}" placeholder="ex: Ana Carolina, Carlos Eduardo"
+                                                   data-area="{{ area.key }}"
+                                                   style="width: 100%; min-width: 170px; padding: 5px 8px; font-size: 0.8rem; border-radius: 4px; border: 1px solid var(--border-color-section); background: var(--bg-card-inner); color: var(--color-text-main);">
+                                        </td>
+                                        {% set dim_names = ['Adoção', 'Portfólio', 'Autonomia', 'Capacitação', 'Estratégia'] %}
+                                        {% for dname in dim_names %}
+                                        {% set found_val = namespace(v=0) %}
+                                        {% for d in dims %}
+                                            {% if d.name == dname %}
+                                                {% set found_val.v = d.value %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        <td class="dm-td-dim">
+                                            <input type="number" class="dm-input" name="{{ dname }}" 
+                                                   value="{{ found_val.v }}" min="0" max="5" step="0.1"
+                                                   data-area="{{ area.key }}" data-dim="{{ dname }}">
+                                        </td>
+                                        {% endfor %}
+                                        <td class="dm-td-final">
+                                            <span class="dm-nota-final" data-area="{{ area.key }}">—</span>
+                                        </td>
+                                        <td class="dm-td-action">
+                                            <button type="button" class="dm-save-btn" data-area="{{ area.key }}" title="Salvar">
+                                                <i data-lucide="save" style="width:15px;height:15px;"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="margin-top: 14px; display: flex; gap: 10px; justify-content: flex-end;">
+                            <button type="button" class="btn-submit-mock" id="dmSaveAllBtn" style="padding: 8px 20px; font-size: 0.85rem;">
+                                <i data-lucide="save" style="width:15px;height:15px;margin-right:6px;"></i>
+                                Salvar Todas as Áreas
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Component Modal -->
+    <div class="modal-overlay" id="editComponentModal" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Editar Componente</h3>
+                <button type="button" class="modal-close-btn" onclick="closeEditComponentModal()"><i data-lucide="x"></i></button>
+            </div>
+            <form action="/admin/edit" method="POST" class="admin-form">
+                <input type="hidden" name="area" id="edit_comp_area">
+                <input type="hidden" name="type" id="edit_comp_type">
+                <input type="hidden" name="old_title_key" id="edit_comp_old_title_key">
+                
+                <div class="form-group">
+                    <label for="edit_comp_title">Título / Nome</label>
+                    <input type="text" name="title" id="edit_comp_title" required autocomplete="off" style="width:100%; padding:8px 10px; background:var(--bg-card-inner); border:1px solid var(--border-color-section); color:var(--color-text-main); border-radius:4px;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_comp_link">URL de Embed (iframe)</label>
+                    <input type="text" name="link" id="edit_comp_link" required autocomplete="off" style="width:100%; padding:8px 10px; background:var(--bg-card-inner); border:1px solid var(--border-color-section); color:var(--color-text-main); border-radius:4px;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_comp_link_mobile">URL de Embed Mobile (opcional)</label>
+                    <input type="text" name="link_mobile" id="edit_comp_link_mobile" autocomplete="off" style="width:100%; padding:8px 10px; background:var(--bg-card-inner); border:1px solid var(--border-color-section); color:var(--color-text-main); border-radius:4px;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_comp_icon">Ícone</label>
+                    <div class="icon-select-wrapper">
+                        <div class="icon-preview-badge" id="edit-comp-icon-preview">
+                            <i data-lucide="link"></i>
+                        </div>
+                        <select name="icon" id="edit_comp_icon" required onchange="updateEditCompIconPreview(this.value)">
+                            <option value="link">Link (Padrão)</option>
+                            <option value="bar-chart-3">Gráfico de Barras</option>
+                            <option value="trending-up">Tendência de Subida</option>
+                            <option value="users">Usuários / Equipe</option>
+                            <option value="briefcase">Maleta / Comercial</option>
+                            <option value="shield-check">Escudo Aprovado</option>
+                            <option value="activity">Atividade / OEE</option>
+                            <option value="database">Banco de Dados</option>
+                            <option value="settings">Configurações</option>
+                            <option value="file-text">Documento / Relatório</option>
+                            <option value="package">Pacote / Industrial</option>
+                            <option value="truck">Caminhão / Logística</option>
+                            <option value="coins">Moedas / Finanças</option>
+                            <option value="award">Prêmio / Qualidade</option>
+                            <option value="target">Alvo / OKR</option>
+                            <option value="wrench">Ferramenta / Manutenção</option>
+                            <option value="scale">Balança / Jurídico</option>
+                            <option value="archive">Arquivo / Supply</option>
+                            <option value="git-fork">Linhagem de Dados</option>
+                            <option value="pie-chart">Pizza / Análise</option>
+                        </select>
+                    </div>
+                </div>
+                
+
+                
+                <button type="submit" class="admin-submit-btn" style="margin-top: 12px;">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Area Modal -->
+    <div class="modal-overlay" id="editAreaModal" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Editar Área</h3>
+                <button type="button" class="modal-close-btn" onclick="closeEditAreaModal()"><i data-lucide="x"></i></button>
+            </div>
+            <form action="/admin/edit-area" method="POST" class="admin-form">
+                <input type="hidden" name="area_key" id="edit_area_key">
+                
+                <div class="form-group">
+                    <label for="edit_area_title">Título da Área</label>
+                    <input type="text" name="area_title" id="edit_area_title" required autocomplete="off" style="width:100%; padding:8px 10px; background:var(--bg-card-inner); border:1px solid var(--border-color-section); color:var(--color-text-main); border-radius:4px;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_area_icon">Ícone</label>
+                    <div class="icon-select-wrapper">
+                        <div class="icon-preview-badge" id="edit-area-icon-preview">
+                            <i data-lucide="layout-grid"></i>
+                        </div>
+                        <select name="area_icon" id="edit_area_icon" required onchange="updateEditAreaIconPreview(this.value)">
+                            <option value="layout-grid">Grid (Padrão)</option>
+                            <option value="users">Usuários</option>
+                            <option value="trending-up">Tendência de Subida</option>
+                            <option value="coins">Moedas / Finanças</option>
+                            <option value="truck">Caminhão / Logística</option>
+                            <option value="database">Banco de Dados</option>
+                            <option value="activity">Atividade</option>
+                            <option value="briefcase">Comercial</option>
+                            <option value="line-chart">Gráfico de Linha</option>
+                            <option value="archive">Arquivo / Supply</option>
+                            <option value="file-text">Documento</option>
+                            <option value="package">Pacote</option>
+                            <option value="award">Prêmio / Qualidade</option>
+                            <option value="target">Alvo / OKR</option>
+                            <option value="scale">Balança / Jurídico</option>
+                            <option value="shield-check">Escudo</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                
+                <button type="submit" class="admin-submit-btn" style="margin-top: 12px;">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Sidebar App Modal -->
+    <div class="modal-overlay" id="addSidebarAppModal" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Adicionar Aplicativo à Sidebar</h3>
+                <button type="button" class="modal-close-btn" onclick="closeAddSidebarAppModal()"><i data-lucide="x"></i></button>
+            </div>
+            <form action="/admin/add-sidebar-app" method="POST" enctype="multipart/form-data" class="admin-form">
+                <div class="form-group">
+                    <label for="add_app_title">Título / Nome</label>
+                    <input type="text" name="title" id="add_app_title" required autocomplete="off" placeholder="ex: Meu App Copilot" style="width:100%; padding:8px 10px; background:var(--bg-card-inner); border:1px solid var(--border-color-section); color:var(--color-text-main); border-radius:4px;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="add_app_link">Link do Aplicativo</label>
+                    <input type="text" name="link" id="add_app_link" autocomplete="off" placeholder="https://..." style="width:100%; padding:8px 10px; background:var(--bg-card-inner); border:1px solid var(--border-color-section); color:var(--color-text-main); border-radius:4px;">
+                </div>
+
+                <div class="form-group">
+                    <label for="add_app_icon_file">Anexar Logo / Imagem</label>
+                    <input type="file" name="icon_file" id="add_app_icon_file" accept="image/*" style="width:100%; padding:6px 8px; background:var(--bg-card-inner); border:1px solid var(--border-color-section); color:var(--color-text-main); border-radius:4px;">
+                    <span style="font-size:0.75rem; color:var(--color-text-muted); display:block; margin-top:2px;">Envie um arquivo PNG, JPG, SVG ou WEBP.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="add_app_icon">Ou nome do Ícone Lucide / URL</label>
+                    <input type="text" name="icon" id="add_app_icon" placeholder="ex: rocket, bot, dna, activity" style="width:100%; padding:8px 10px; background:var(--bg-card-inner); border:1px solid var(--border-color-section); color:var(--color-text-main); border-radius:4px;">
+                </div>
+                
+                <button type="submit" class="admin-submit-btn" style="margin-top: 12px;">Criar Aplicativo</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Sidebar App Modal -->
+    <div class="modal-overlay" id="editSidebarAppModal" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Editar Aplicativo da Sidebar</h3>
+                <button type="button" class="modal-close-btn" onclick="closeEditSidebarAppModal()"><i data-lucide="x"></i></button>
+            </div>
+            <form action="/admin/edit-sidebar-app" method="POST" enctype="multipart/form-data" class="admin-form">
+                <input type="hidden" name="app_key" id="edit_app_key">
+                
+                <div class="form-group">
+                    <label for="edit_app_title">Título / Nome</label>
+                    <input type="text" name="title" id="edit_app_title" required autocomplete="off" style="width:100%; padding:8px 10px; background:var(--bg-card-inner); border:1px solid var(--border-color-section); color:var(--color-text-main); border-radius:4px;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_app_link">Link do Aplicativo</label>
+                    <input type="text" name="link" id="edit_app_link" required autocomplete="off" style="width:100%; padding:8px 10px; background:var(--bg-card-inner); border:1px solid var(--border-color-section); color:var(--color-text-main); border-radius:4px;">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit_app_icon_file">Alterar Logo / Imagem (Anexo)</label>
+                    <input type="file" name="icon_file" id="edit_app_icon_file" accept="image/*" style="width:100%; padding:6px 8px; background:var(--bg-card-inner); border:1px solid var(--border-color-section); color:var(--color-text-main); border-radius:4px;">
+                    <span style="font-size:0.75rem; color:var(--color-text-muted); display:block; margin-top:2px;">Envie uma nova imagem se desejar substituir a atual.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit_app_icon">Ou Ícone Lucide / Caminho da Imagem</label>
+                    <input type="text" name="icon" id="edit_app_icon" placeholder="ex: bot, rocket ou /static/images/..." style="width:100%; padding:8px 10px; background:var(--bg-card-inner); border:1px solid var(--border-color-section); color:var(--color-text-main); border-radius:4px;">
+                </div>
+                
+                <button type="submit" class="admin-submit-btn" style="margin-top: 12px;">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // =============================================
+        // AREA → DEFAULT ICON MAPPING
+        // =============================================
+        const AREA_ICON_MAP = {
+            'people':       'users',
+            'commercial':   'trending-up',
+            'marketing':    'line-chart',
+            'adm_finances': 'coins',
+            'logistics':    'truck',
+            'rgm':          'bar-chart-3',
+            'supply_chain': 'archive',
+            'purchase':     'file-text',
+            'dna':          'database',
+            'industrial':   'activity',
+            'transformation': 'target',
+            'fpa':          'bar-chart-3',
+            'legal':        'scale',
+            'audit':        'shield-check',
+            'quality':      'award',
+            'wickbold':     'package'
+        };
+
+        const areaSelect = document.getElementById('area');
+        const iconSelect = document.getElementById('icon');
+        const iconPreviewContainer = document.getElementById('icon-preview');
+
+        function updateIconPreview(iconName) {
+            if (!iconPreviewContainer) return;
+            // Lucide replaces <i> with <svg> permanently, so we must
+            // inject a fresh <i> each time for createIcons() to work.
+            iconPreviewContainer.innerHTML = `<i data-lucide="${iconName}"></i>`;
+            lucide.createIcons({ nodes: [iconPreviewContainer] });
+        }
+
+        function setIconByArea(areaKey) {
+            const defaultIcon = AREA_ICON_MAP[areaKey] || 'link';
+            // Select the matching option in the icon dropdown
+            for (let i = 0; i < iconSelect.options.length; i++) {
+                if (iconSelect.options[i].value === defaultIcon) {
+                    iconSelect.selectedIndex = i;
+                    break;
+                }
+            }
+            updateIconPreview(defaultIcon);
+        }
+
+        // Auto-select icon when area changes
+        areaSelect.addEventListener('change', () => {
+            setIconByArea(areaSelect.value);
+        });
+
+        // Update preview when icon is manually changed
+        iconSelect.addEventListener('change', () => {
+            updateIconPreview(iconSelect.value);
+        });
+
+        // Set default on page load
+        setIconByArea(areaSelect.value);
+
+        // =============================================
+        // TABLE FILTER ENGINE
+        // =============================================
+        const filterTextEl   = document.getElementById('filterText');
+        const filterAreaEl   = document.getElementById('filterArea');
+        const filterTypeEl   = document.getElementById('filterType');
+        const filterClearBtn = document.getElementById('filterClearBtn');
+        const tableBody      = document.getElementById('adminTableBody');
+        const rowCountEl     = document.getElementById('adminRowCount');
+        const emptyState     = document.getElementById('adminTableEmpty');
+
+        function applyFilters() {
+            const textQuery = (filterTextEl ? filterTextEl.value || '' : '').toLowerCase().trim();
+            const areaQuery = filterAreaEl ? filterAreaEl.value : '';
+            const typeQuery = filterTypeEl ? filterTypeEl.value : '';
+
+            // Persist filter values across page reloads (e.g. after deletion or action submit)
+            if (filterTextEl) sessionStorage.setItem('admin_filter_text', filterTextEl.value);
+            if (filterAreaEl) sessionStorage.setItem('admin_filter_area', filterAreaEl.value);
+            if (filterTypeEl) sessionStorage.setItem('admin_filter_type', filterTypeEl.value);
+
+            const rows = tableBody ? tableBody.querySelectorAll('tr') : [];
+            let visible = 0;
+
+            rows.forEach(row => {
+                const rowArea = row.getAttribute('data-area') || '';
+                const rowType = row.getAttribute('data-type') || '';
+                const rowName = row.getAttribute('data-name') || '';
+
+                const matchText = !textQuery || rowName.includes(textQuery);
+                const matchArea = !areaQuery || rowArea === areaQuery;
+                const matchType = !typeQuery || rowType === typeQuery;
+
+                if (matchText && matchArea && matchType) {
+                    row.style.display = '';
+                    visible++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Update counter
+            if (rowCountEl) {
+                rowCountEl.textContent = visible === rows.length
+                    ? `${rows.length} itens`
+                    : `${visible} de ${rows.length} itens`;
+            }
+
+            // Show/hide empty state
+            if (emptyState) {
+                emptyState.style.display = visible === 0 ? 'flex' : 'none';
+            }
+
+            // Show/hide clear button
+            const hasFilter = textQuery || areaQuery || typeQuery;
+            if (filterClearBtn) {
+                filterClearBtn.style.display = hasFilter ? 'inline-flex' : 'none';
+            }
+        }
+
+        function clearFilters() {
+            if (filterTextEl) filterTextEl.value = '';
+            if (filterAreaEl) filterAreaEl.value = '';
+            if (filterTypeEl) filterTypeEl.value = '';
+            sessionStorage.removeItem('admin_filter_text');
+            sessionStorage.removeItem('admin_filter_area');
+            sessionStorage.removeItem('admin_filter_type');
+            applyFilters();
+        }
+
+        // Restore filters from sessionStorage on page load
+        if (filterTextEl && sessionStorage.getItem('admin_filter_text') !== null) {
+            filterTextEl.value = sessionStorage.getItem('admin_filter_text');
+        }
+        if (filterAreaEl && sessionStorage.getItem('admin_filter_area') !== null) {
+            filterAreaEl.value = sessionStorage.getItem('admin_filter_area');
+        }
+        if (filterTypeEl && sessionStorage.getItem('admin_filter_type') !== null) {
+            filterTypeEl.value = sessionStorage.getItem('admin_filter_type');
+        }
+
+        // Initialize counter and filters on page load
+        applyFilters();
+
+        // =============================================
+        // TABS CONTROLLER
+        // =============================================
+        const tabButtons = document.querySelectorAll('.admin-tab-btn');
+        const tabPanes = document.querySelectorAll('.admin-tab-pane');
+
+        function activateTab(tabId) {
+            const targetBtn = document.querySelector(`.admin-tab-btn[data-tab="${tabId}"]`);
+            const targetPane = document.getElementById(tabId);
+
+            if (targetBtn && targetPane) {
+                // Remove active from all buttons & panes
+                tabButtons.forEach(b => b.classList.remove('active'));
+                tabPanes.forEach(p => p.classList.remove('active'));
+
+                // Add active to current
+                targetBtn.classList.add('active');
+                targetPane.classList.add('active');
+                localStorage.setItem('admin_active_tab', tabId);
+            }
+        }
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetTab = btn.getAttribute('data-tab');
+                activateTab(targetTab);
+            });
+        });
+
+        // Restore tab from localStorage on page load
+        const savedTab = localStorage.getItem('admin_active_tab');
+        if (savedTab) {
+            activateTab(savedTab);
+        }
+
+        // =============================================
+        // NEW AREA ICON PREVIEW
+        // =============================================
+        const areaIconPreviewContainer = document.getElementById('area-icon-preview');
+        function updateAreaIconPreview(iconName) {
+            if (!areaIconPreviewContainer) return;
+            areaIconPreviewContainer.innerHTML = `<i data-lucide="${iconName}"></i>`;
+            lucide.createIcons({ nodes: [areaIconPreviewContainer] });
+        }
+        window.updateAreaIconPreview = updateAreaIconPreview;
+
+        // =============================================
+        // AUTO-SAVE GROUP ASSIGNMENTS (AJAX)
+        // =============================================
+        function saveComponentGroup(area, type, titleKey, value) {
+            const inputs = document.querySelectorAll(`.td-group-input[onblur*="'${titleKey}'"]`);
+            const inputEl = Array.from(inputs).find(el => el.value === value);
+            
+            const formData = new FormData();
+            formData.append('area', area);
+            formData.append('type', type);
+            formData.append('title_key', titleKey);
+            formData.append('required_group', value);
+
+            fetch('/admin/update-group', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (inputEl) {
+                        inputEl.style.borderColor = '#22c55e';
+                        setTimeout(() => { inputEl.style.borderColor = ''; }, 1500);
+                    }
+                } else {
+                    if (inputEl) {
+                        inputEl.style.borderColor = '#ef4444';
+                        setTimeout(() => { inputEl.style.borderColor = ''; }, 1500);
+                    }
+                    alert(data.message || 'Erro ao salvar grupo do componente.');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                if (inputEl) {
+                    inputEl.style.borderColor = '#ef4444';
+                    setTimeout(() => { inputEl.style.borderColor = ''; }, 1500);
+                }
+                alert('Erro de conexão ao salvar.');
+            });
+        }
+        window.saveComponentGroup = saveComponentGroup;
+
+        function saveAreaGroup(area, value) {
+            const inputs = document.querySelectorAll(`.td-group-input[onblur*="'${area}'"]`);
+            const inputEl = Array.from(inputs).find(el => el.value === value);
+
+            const formData = new FormData();
+            formData.append('area', area);
+            formData.append('required_group', value);
+
+            fetch('/admin/update-area-group', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (inputEl) {
+                        inputEl.style.borderColor = '#22c55e';
+                        setTimeout(() => { inputEl.style.borderColor = ''; }, 1500);
+                    }
+                } else {
+                    if (inputEl) {
+                        inputEl.style.borderColor = '#ef4444';
+                        setTimeout(() => { inputEl.style.borderColor = ''; }, 1500);
+                    }
+                    alert(data.message || 'Erro ao salvar grupo da área.');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                if (inputEl) {
+                    inputEl.style.borderColor = '#ef4444';
+                    setTimeout(() => { inputEl.style.borderColor = ''; }, 1500);
+                }
+                alert('Erro de conexão ao salvar.');
+            });
+        }
+        window.saveAreaGroup = saveAreaGroup;
+
+        // =============================================
+        // EDIT MODAL CONTROLLERS
+        // =============================================
+        const editCompModal = document.getElementById('editComponentModal');
+        const editAreaModal = document.getElementById('editAreaModal');
+
+        function openEditComponentModal(btn) {
+            const area = btn.getAttribute('data-area');
+            const type = btn.getAttribute('data-type');
+            const titleKey = btn.getAttribute('data-title-key');
+            const title = btn.getAttribute('data-title');
+            const icon = btn.getAttribute('data-icon');
+            const link = btn.getAttribute('data-link');
+            const linkMobile = btn.getAttribute('data-link-mobile');
+            const requiredGroup = btn.getAttribute('data-required-group') || '';
+
+            document.getElementById('edit_comp_area').value = area;
+            document.getElementById('edit_comp_type').value = type;
+            document.getElementById('edit_comp_old_title_key').value = titleKey;
+            document.getElementById('edit_comp_title').value = title;
+            document.getElementById('edit_comp_link').value = link === '#' ? '' : link;
+            document.getElementById('edit_comp_link_mobile').value = (linkMobile === '#' || linkMobile === 'none') ? '' : linkMobile;
+            const elCompReq = document.getElementById('edit_comp_required_group');
+            if (elCompReq) elCompReq.value = requiredGroup;
+            
+            const selectEl = document.getElementById('edit_comp_icon');
+            selectEl.value = icon || 'link';
+            updateEditCompIconPreview(selectEl.value);
+
+            editCompModal.style.display = 'flex';
+        }
+        window.openEditComponentModal = openEditComponentModal;
+
+        function closeEditComponentModal() {
+            editCompModal.style.display = 'none';
+        }
+        window.closeEditComponentModal = closeEditComponentModal;
+
+        function updateEditCompIconPreview(iconName) {
+            const preview = document.getElementById('edit-comp-icon-preview');
+            if (preview) {
+                preview.innerHTML = `<i data-lucide="${iconName}"></i>`;
+                lucide.createIcons({ nodes: [preview] });
+            }
+        }
+        window.updateEditCompIconPreview = updateEditCompIconPreview;
+
+        function openEditAreaModal(btn) {
+            const key = btn.getAttribute('data-key');
+            const title = btn.getAttribute('data-title');
+            const icon = btn.getAttribute('data-icon');
+            const requiredGroup = btn.getAttribute('data-required-group') || '';
+
+            document.getElementById('edit_area_key').value = key;
+            document.getElementById('edit_area_title').value = title;
+            const elAreaReq = document.getElementById('edit_area_required_group');
+            if (elAreaReq) elAreaReq.value = requiredGroup;
+            
+            const selectEl = document.getElementById('edit_area_icon');
+            selectEl.value = icon || 'layout-grid';
+            updateEditAreaIconPreview(selectEl.value);
+
+            editAreaModal.style.display = 'flex';
+        }
+        window.openEditAreaModal = openEditAreaModal;
+
+        function closeEditAreaModal() {
+            editAreaModal.style.display = 'none';
+        }
+        window.closeEditAreaModal = closeEditAreaModal;
+
+        function updateEditAreaIconPreview(iconName) {
+            const preview = document.getElementById('edit-area-icon-preview');
+            if (preview) {
+                preview.innerHTML = `<i data-lucide="${iconName}"></i>`;
+                lucide.createIcons({ nodes: [preview] });
+            }
+        }
+        window.updateEditAreaIconPreview = updateEditAreaIconPreview;
+
+        // =============================================
+        // SIDEBAR APPS MODAL CONTROLLER
+        // =============================================
+        const addSidebarAppModal = document.getElementById('addSidebarAppModal');
+        const editSidebarAppModal = document.getElementById('editSidebarAppModal');
+
+        function openAddSidebarAppModal() {
+            if (addSidebarAppModal) {
+                addSidebarAppModal.style.display = 'flex';
+            }
+        }
+        window.openAddSidebarAppModal = openAddSidebarAppModal;
+
+        function closeAddSidebarAppModal() {
+            if (addSidebarAppModal) {
+                addSidebarAppModal.style.display = 'none';
+            }
+        }
+        window.closeAddSidebarAppModal = closeAddSidebarAppModal;
+
+        function openEditSidebarAppModal(btn) {
+            const key = btn.getAttribute('data-key');
+            const title = btn.getAttribute('data-title');
+            const link = btn.getAttribute('data-link');
+            const icon = btn.getAttribute('data-icon') || '';
+
+            document.getElementById('edit_app_key').value = key;
+            document.getElementById('edit_app_title').value = title;
+            document.getElementById('edit_app_link').value = link === '#' ? '' : link;
+            const iconInput = document.getElementById('edit_app_icon');
+            if (iconInput) iconInput.value = icon;
+
+            editSidebarAppModal.style.display = 'flex';
+        }
+        window.openEditSidebarAppModal = openEditSidebarAppModal;
+
+        function closeEditSidebarAppModal() {
+            editSidebarAppModal.style.display = 'none';
+        }
+        window.closeEditSidebarAppModal = closeEditSidebarAppModal;
+
+        // Close modal when clicking on overlay background
+        window.addEventListener('click', (e) => {
+            if (e.target === editCompModal) closeEditComponentModal();
+            if (e.target === editAreaModal) closeEditAreaModal();
+            if (e.target === editSidebarAppModal) closeEditSidebarAppModal();
+        });
+
+        // =============================================
+        // DIGITAL MATURITY ADMIN CONTROLLER
+        // =============================================
+        function updateRowNotaFinal(row) {
+            const inputs = row.querySelectorAll('.dm-input');
+            let sum = 0;
+            let count = 0;
+            inputs.forEach(input => {
+                const val = parseFloat(input.value);
+                if (!isNaN(val)) {
+                    sum += val;
+                    count++;
+                }
+            });
+            const notaFinalSpan = row.querySelector('.dm-nota-final');
+            if (notaFinalSpan) {
+                if (count > 0) {
+                    const avg = sum / count;
+                    const formatted = Number.isInteger(avg) ? avg.toFixed(1) : (Math.round(avg * 100) / 100).toString();
+                    notaFinalSpan.textContent = formatted;
+                } else {
+                    notaFinalSpan.textContent = '—';
+                }
+            }
+        }
+
+        const dmRows = document.querySelectorAll('#dmAdminTable tbody tr[data-area-key]');
+        dmRows.forEach(row => {
+            updateRowNotaFinal(row);
+            row.querySelectorAll('.dm-input').forEach(input => {
+                input.addEventListener('input', () => updateRowNotaFinal(row));
+                input.addEventListener('change', () => updateRowNotaFinal(row));
+            });
+        });
+
+        function getAreaDimensions(row) {
+            const inputs = row.querySelectorAll('.dm-input');
+            const dimensions = [];
+            inputs.forEach(input => {
+                dimensions.push({
+                    name: input.getAttribute('data-dim'),
+                    value: parseFloat(input.value) || 0
+                });
+            });
+            return dimensions;
+        }
+
+        function getAreaBOs(row) {
+            const boInput = row.querySelector('.dm-input-bo');
+            if (!boInput) return [];
+            const val = boInput.value || '';
+            return val.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        }
+
+        // Single row save
+        document.querySelectorAll('.dm-save-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const areaKey = btn.getAttribute('data-area');
+                const row = btn.closest('tr');
+                if (!row) return;
+
+                const dimensions = getAreaDimensions(row);
+                const business_owners = getAreaBOs(row);
+                btn.disabled = true;
+                btn.innerHTML = '<i data-lucide="loader-2" class="spin" style="width:15px;height:15px;"></i>';
+                lucide.createIcons({ nodes: [btn] });
+
+                try {
+                    const res = await fetch('/admin/save-digital-maturity', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ area: areaKey, dimensions: dimensions, business_owners: business_owners })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        btn.innerHTML = '<i data-lucide="check" style="width:15px;height:15px;color:#22c55e;"></i>';
+                        setTimeout(() => {
+                            btn.innerHTML = '<i data-lucide="save" style="width:15px;height:15px;"></i>';
+                            btn.disabled = false;
+                            lucide.createIcons({ nodes: [btn] });
+                        }, 1800);
+                    } else {
+                        alert('Erro ao salvar: ' + (data.error || 'Falha na requisição'));
+                        btn.innerHTML = '<i data-lucide="save" style="width:15px;height:15px;"></i>';
+                        btn.disabled = false;
+                        lucide.createIcons({ nodes: [btn] });
+                    }
+                } catch (err) {
+                    alert('Erro de conexão ao salvar.');
+                    btn.innerHTML = '<i data-lucide="save" style="width:15px;height:15px;"></i>';
+                    btn.disabled = false;
+                    lucide.createIcons({ nodes: [btn] });
+                }
+            });
+        });
+
+        // Save All
+        const dmSaveAllBtn = document.getElementById('dmSaveAllBtn');
+        if (dmSaveAllBtn) {
+            dmSaveAllBtn.addEventListener('click', async () => {
+                const updates = [];
+                dmRows.forEach(row => {
+                    const areaKey = row.getAttribute('data-area-key');
+                    const dimensions = getAreaDimensions(row);
+                    const business_owners = getAreaBOs(row);
+                    updates.push({ area: areaKey, dimensions: dimensions, business_owners: business_owners });
+                });
+
+                dmSaveAllBtn.disabled = true;
+                dmSaveAllBtn.innerHTML = '<i data-lucide="loader-2" class="spin" style="width:15px;height:15px;margin-right:6px;"></i> Salvando...';
+                lucide.createIcons({ nodes: [dmSaveAllBtn] });
+
+                try {
+                    const res = await fetch('/admin/save-digital-maturity', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ updates: updates })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        dmSaveAllBtn.innerHTML = '<i data-lucide="check" style="width:15px;height:15px;margin-right:6px;color:#22c55e;"></i> Salvo com Sucesso!';
+                        setTimeout(() => {
+                            dmSaveAllBtn.innerHTML = '<i data-lucide="save" style="width:15px;height:15px;margin-right:6px;"></i> Salvar Todas as Áreas';
+                            dmSaveAllBtn.disabled = false;
+                            lucide.createIcons({ nodes: [dmSaveAllBtn] });
+                        }, 2000);
+                    } else {
+                        alert('Erro ao salvar: ' + (data.error || 'Falha na requisição'));
+                        dmSaveAllBtn.innerHTML = '<i data-lucide="save" style="width:15px;height:15px;margin-right:6px;"></i> Salvar Todas as Áreas';
+                        dmSaveAllBtn.disabled = false;
+                        lucide.createIcons({ nodes: [dmSaveAllBtn] });
+                    }
+                } catch (err) {
+                    alert('Erro de conexão ao salvar.');
+                    dmSaveAllBtn.innerHTML = '<i data-lucide="save" style="width:15px;height:15px;margin-right:6px;"></i> Salvar Todas as Áreas';
+                    dmSaveAllBtn.disabled = false;
+                    lucide.createIcons({ nodes: [dmSaveAllBtn] });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+resources:
+  jobs:
+    job_bq_landing:
+      name: job_bq_landing_${bundle.target}
+      max_concurrent_runs: 1
+      trigger:
+        pause_status: UNPAUSED
+        file_arrival:
+          url: /Volumes/${var.catalog}/${var.schema}/${var.volume_name}/
+      tasks:
+        - task_key: ingestao_dados_bq
+          notebook_task:
+            notebook_path: ../src/dados/ingestao_bq_landing.py
+            source: WORKSPACE
+            base_parameters:
+              arquivo: "{{job.trigger.file_arrival.location}}"
+              catalogo: "${var.catalog}"
+              esquema: "${var.schema}"
+              tabela: "${var.table_name}"
+      tags:
+        AMBIENTE: ${bundle.target}
+        PROJETO: BQ_LANDING
+      queue:
+        enabled: true
+      environments:
+        - environment_key: Default
+          spec:
+            environment_version: "5"
+      performance_target: PERFORMANCE_OPTIMIZED

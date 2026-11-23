@@ -1,0 +1,35 @@
+# Declarative Automation Bundle definition for bq_app_dna_vendas
+# Grupo Bimbo Brasil - DNA Analytics
+bundle:
+  name: bq_app_dna_vendas
+
+include:
+  - resources/*.yml
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://adb-8674310331778219.19.azuredatabricks.net
+      root_path: /Shared/CONSULTAS_AUTOMATIZADAS/${workspace.current_user.userName}/${bundle.name}/${bundle.target}/
+    permissions:
+      - user_name: ${workspace.current_user.userName}
+        level: CAN_MANAGE
+      - group_name: DNA - GB Brasil Leaders
+        level: CAN_MANAGE
+
+  prod:
+    mode: production
+    workspace:
+      host: https://adb-8674310331778219.19.azuredatabricks.net
+      root_path: /Shared/CONSULTAS_AUTOMATIZADAS/${bundle.name}/${bundle.target}
+    permissions:
+      - user_name: ${workspace.current_user.userName}
+        level: CAN_MANAGE
+      - group_name: DNA - GB Brasil Leaders
+        level: CAN_MANAGE
+    resources:
+      apps:
+        dna_vendas:
+          name: dna-vendas

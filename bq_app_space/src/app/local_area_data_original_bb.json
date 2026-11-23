@@ -1,0 +1,2004 @@
+{
+    "geral": {
+        "title_key": "Geral",
+        "icon": "building-2",
+        "hidden": false,
+        "applications": [],
+        "dashboards": [
+            {
+                "title": "Operational Discipline",
+                "title_key": "operational_discipline",
+                "icon": "file-text",
+                "link": "https://prioridades-bb-8674310331778219.19.azure.databricksapps.com",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": "Grupo_Executivos"
+            }
+        ],
+        "required_group": ""
+    },
+    "people": {
+        "title_key": "people",
+        "tagline": "Gestão de Talentos, Cultura e Desenvolvimento de Pessoas no Grupo Bimbo",
+        "about": {
+            "description": "A área de Pessoas (Recursos Humanos) é responsável por atrair, desenvolver e valorizar os colaboradores do Grupo Bimbo. Focada em cultura organizacional, gestão do conhecimento e experiência do colaborador, a equipe impulsiona o crescimento contínuo de nossos talentos.",
+            "pillars": [
+                {
+                    "icon": "users",
+                    "title": "Gestão de Talentos & Atração",
+                    "desc": "Recrutamento estratégico, programas de onboarding e desenvolvimento de planos de carreira."
+                },
+                {
+                    "icon": "award",
+                    "title": "T&D e Cultura Organizacional",
+                    "desc": "Capacitações contínuas, universidade corporativa e fortalecimento da cultura Grupo Bimbo."
+                },
+                {
+                    "icon": "heart",
+                    "title": "Experiência & Bem-Estar",
+                    "desc": "Clima organizacional, gestão de benefícios, saúde e qualidade de vida dos colaboradores."
+                }
+            ],
+            "stats": [
+                {
+                    "label": "Colaboradores",
+                    "value": "+5.000"
+                },
+                {
+                    "label": "Satisfação & Clima",
+                    "value": "98%"
+                },
+                {
+                    "label": "Capacitações/Ano",
+                    "value": "+120"
+                }
+            ],
+            "techs": [
+                "Workday",
+                "SuccessFactors",
+                "Power BI",
+                "Microsoft Forms",
+                "Azure AD"
+            ],
+            "digital_maturity": {
+                "title": "Digital Maturity",
+                "target": 3.2,
+                "frequency": "Atualizado trimestralmente",
+                "scale_max": 5,
+                "business_owners": [
+                    "Ana Carolina",
+                    "Carlos Eduardo"
+                ],
+                "dimensions": [
+                    {
+                        "name": "Adoção",
+                        "value": 1
+                    },
+                    {
+                        "name": "Portfólio",
+                        "value": 1
+                    },
+                    {
+                        "name": "Autonomia",
+                        "value": 1
+                    },
+                    {
+                        "name": "Capacitação",
+                        "value": 2
+                    },
+                    {
+                        "name": "Estratégia",
+                        "value": 1
+                    }
+                ]
+            }
+        },
+        "applications": [
+            {
+                "title": "Gestão de Aprovadores e Acessos",
+                "title_key": "app_people_approvers",
+                "icon": "shield-check",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Controle de Bônus Auto",
+                "title_key": "app_people_bonus",
+                "icon": "car",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Descrição de Cargos",
+                "title_key": "app_people_job_desc",
+                "icon": "clipboard-list",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Temporários",
+                "title_key": "app_people_temp",
+                "icon": "users",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "dashboards": [
+            {
+                "title": "Labour Executive",
+                "title_key": "db_people_labour_exec",
+                "icon": "users",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "People Analytics",
+                "title_key": "db_people_analytics",
+                "icon": "users",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "GEP",
+                "title_key": "db_people_gep",
+                "icon": "users",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Labour",
+                "title_key": "db_people_labour",
+                "icon": "users",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "icon": "users",
+        "hidden": false,
+        "required_group": ""
+    },
+    "commercial": {
+        "title_key": "Commercial",
+        "applications": [
+            {
+                "title": "Cadastro de Clientes",
+                "title_key": "app_comm_cust",
+                "icon": "user-plus",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Simulação de Preços",
+                "title_key": "app_comm_price",
+                "icon": "calculator",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Gestão de Contratos",
+                "title_key": "app_comm_contr",
+                "icon": "file-text",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "dashboards": [
+            {
+                "title": "Performance de Vendas",
+                "title_key": "performance_de_vendas",
+                "icon": "trending-up",
+                "link": "https://prioridades-bb-8674310331778219.19.azure.databricksapps.com/",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": "Grupo - Vendas"
+            },
+            {
+                "title": "Faturamento Diário",
+                "title_key": "db_comm_revenue",
+                "icon": "bar-chart-3",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Metas e Comissões",
+                "title_key": "db_comm_targets",
+                "icon": "award",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Faturamento Diario",
+                "title_key": "faturamento_diario",
+                "icon": "trending-up",
+                "link": "https://example.com",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "icon": "trending-up",
+        "hidden": false,
+        "required_group": "",
+        "tagline": "Estratégia de Vendas, Execução de Mercado e Relacionamento com Clientes",
+        "about": {
+            "description": "A área Comercial lidera a estratégia de crescimento em vendas do Grupo Bimbo, garantindo forte presença no ponto de venda (PDV), metas regionais e relacionamento de alto valor com clientes e grandes contas.",
+            "pillars": [
+                {
+                    "icon": "trending-up",
+                    "title": "Estratégia de Vendas & Metas",
+                    "desc": "Planejamento comercial, gestão de metas regionais e expansão de mercado."
+                },
+                {
+                    "icon": "shopping-cart",
+                    "title": "Execução no PDV & Trade",
+                    "desc": "Gestão de loja, presença de marca e ativação eficiente dos canais de distribuição."
+                },
+                {
+                    "icon": "users",
+                    "title": "Relacionamento & Clientes",
+                    "desc": "Parcerias estratégicas com Key Accounts e inteligência comercial."
+                }
+            ],
+            "stats": [
+                {
+                    "label": "Pontos de Venda",
+                    "value": "+100k"
+                },
+                {
+                    "label": "Atingimento Meta",
+                    "value": "99%"
+                },
+                {
+                    "label": "Canais Ativos",
+                    "value": "Omnichannel"
+                }
+            ],
+            "techs": [
+                "Salesforce",
+                "Power BI",
+                "Databricks",
+                "Excel Advanced",
+                "Azure AD"
+            ],
+            "digital_maturity": {
+                "title": "Digital Maturity",
+                "target": 3.2,
+                "frequency": "Atualizado trimestralmente",
+                "scale_max": 5,
+                "business_owners": [
+                    "Mariana Costa",
+                    "Roberto Almeida"
+                ],
+                "dimensions": [
+                    {
+                        "name": "Adoção",
+                        "value": 2
+                    },
+                    {
+                        "name": "Portfólio",
+                        "value": 2
+                    },
+                    {
+                        "name": "Autonomia",
+                        "value": 1
+                    },
+                    {
+                        "name": "Capacitação",
+                        "value": 1
+                    },
+                    {
+                        "name": "Estratégia",
+                        "value": 2
+                    }
+                ]
+            }
+        }
+    },
+    "marketing": {
+        "title_key": "marketing",
+        "applications": [
+            {
+                "title": "Criativo de Campanhas",
+                "title_key": "app_mkt_campaign",
+                "icon": "image",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Gerador de Links UTM",
+                "title_key": "app_mkt_utm",
+                "icon": "link",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "dashboards": [
+            {
+                "title": "Performance de Mídia",
+                "title_key": "db_mkt_media",
+                "icon": "line-chart",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "ROI de Marketing",
+                "title_key": "db_mkt_roi",
+                "icon": "coins",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Conversão de Funil",
+                "title_key": "db_mkt_funnel",
+                "icon": "filter",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "icon": "line-chart",
+        "hidden": false,
+        "required_group": "",
+        "tagline": "Construção de Marcas, Campanhas e Inteligência de Mercado",
+        "about": {
+            "description": "A área de Marketing fortalece o posicionamento das marcas do Grupo Bimbo, conectando consumidores através de campanhas impactantes, análise de tendências de mercado e inteligência de dados.",
+            "pillars": [
+                {
+                    "icon": "award",
+                    "title": "Gestão de Marcas & Branding",
+                    "desc": "Posicionamento estratégico das marcas Bimbo, Wickbold, Pullman e Ana Maria."
+                },
+                {
+                    "icon": "target",
+                    "title": "Campanhas & Mídia Digital",
+                    "desc": "Estratégia de mídia, marketing de influenciadores e engajamento multi-canal."
+                },
+                {
+                    "icon": "pie-chart",
+                    "title": "Pesquisa & Consumer Insights",
+                    "desc": "Estudo de comportamento do consumidor, pesquisas de mercado e inovação."
+                }
+            ],
+            "stats": [
+                {
+                    "label": "Marcas Líderes",
+                    "value": "+10"
+                },
+                {
+                    "label": "Brand Awareness",
+                    "value": "95%"
+                },
+                {
+                    "label": "Estratégia",
+                    "value": "Digital First"
+                }
+            ],
+            "techs": [
+                "Google Analytics",
+                "Meta Ads",
+                "Power BI",
+                "Canva",
+                "Databricks"
+            ],
+            "digital_maturity": {
+                "title": "Digital Maturity",
+                "target": 3.2,
+                "frequency": "Atualizado trimestralmente",
+                "scale_max": 5,
+                "dimensions": [
+                    {
+                        "name": "Adoção",
+                        "value": 2
+                    },
+                    {
+                        "name": "Portfólio",
+                        "value": 0
+                    },
+                    {
+                        "name": "Autonomia",
+                        "value": 0
+                    },
+                    {
+                        "name": "Capacitação",
+                        "value": 0
+                    },
+                    {
+                        "name": "Estratégia",
+                        "value": 0
+                    }
+                ],
+                "business_owners": [
+                    "Mariana Costa",
+                    "Roberto Almeida"
+                ]
+            }
+        }
+    },
+    "adm_finances": {
+        "title_key": "adm_finances",
+        "applications": [],
+        "dashboards": [
+            {
+                "title": "Fluxo de Caixa",
+                "title_key": "db_fin_cashflow",
+                "icon": "trending-up",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Controle de Custos",
+                "title_key": "db_fin_costs",
+                "icon": "pie-chart",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Orçado vs Realizado",
+                "title_key": "db_fin_budget",
+                "icon": "scale",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Dashboard Teste Truncamento de Link Longo",
+                "title_key": "dashboard_teste_truncamento_de_link_longo",
+                "icon": "coins",
+                "link": "https://app.powerbi.com/reportEmbed?reportId=12345678-1234-1234-1234-1234567890ab&autoAuth=True&ctid=87654321-4321-4321-4321-ba0987654321&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly93YWJpLXVzLWVhc3QyLXJlZGlyZWN0LmFuYWx5c2lzLndpbmRvd3MubmV0LyJ9",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "icon": "coins",
+        "hidden": false,
+        "required_group": "",
+        "tagline": "Gestão Financeira, Controladoria e Eficiência Operacional",
+        "about": {
+            "description": "A área de ADM & Finanças garante a saúde financeira e a sustentabilidade corporativa do Grupo Bimbo através de contabilidade rigorosa, gestão de caixa, governança fiscal e controle de custos.",
+            "pillars": [
+                {
+                    "icon": "dollar-sign",
+                    "title": "Controladoria & Contabilidade",
+                    "desc": "Gestão fiscal, contábil e conformidade com normas financeiras e auditoria."
+                },
+                {
+                    "icon": "credit-card",
+                    "title": "Tesouraria & Fluxo de Caixa",
+                    "desc": "Controle de capital de giro, contas a pagar/receber e gestão de liquidez."
+                },
+                {
+                    "icon": "file-text",
+                    "title": "Eficiência & Custos",
+                    "desc": "Automação financeira, governança de despesas e otimização de custos corporativos."
+                }
+            ],
+            "stats": [
+                {
+                    "label": "Auditoria Fiscal",
+                    "value": "100% OK"
+                },
+                {
+                    "label": "Resultado",
+                    "value": "EBITDA Positivo"
+                },
+                {
+                    "label": "ERP Central",
+                    "value": "SAP S/4HANA"
+                }
+            ],
+            "techs": [
+                "SAP S/4HANA",
+                "Power BI",
+                "Excel Advanced",
+                "Azure AD"
+            ],
+            "digital_maturity": {
+                "title": "Digital Maturity",
+                "target": 3.2,
+                "frequency": "Atualizado trimestralmente",
+                "scale_max": 5,
+                "dimensions": [
+                    {
+                        "name": "Adoção",
+                        "value": 1
+                    },
+                    {
+                        "name": "Portfólio",
+                        "value": 2
+                    },
+                    {
+                        "name": "Autonomia",
+                        "value": 1
+                    },
+                    {
+                        "name": "Capacitação",
+                        "value": 1
+                    },
+                    {
+                        "name": "Estratégia",
+                        "value": 2
+                    }
+                ]
+            }
+        }
+    },
+    "logistics": {
+        "title_key": "logistics",
+        "applications": [
+            {
+                "title": "Rastreio de Frota",
+                "title_key": "app_log_tracking",
+                "icon": "map-pin",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Escala de Motoristas",
+                "title_key": "app_log_schedule",
+                "icon": "calendar",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "dashboards": [
+            {
+                "title": "Indicadores de Frota (OEE)",
+                "title_key": "db_log_oee",
+                "icon": "truck",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Custos de Frete",
+                "title_key": "db_log_freight",
+                "icon": "dollar-sign",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Tempo de Espera (OTIF)",
+                "title_key": "db_log_otif",
+                "icon": "clock",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "icon": "truck",
+        "hidden": false,
+        "required_group": "",
+        "tagline": "Malha Logística Inteligente, Frota e Entrega Eficiente",
+        "about": {
+            "description": "A área de Logística gerencia a malha de distribuição do Grupo Bimbo, garantindo roteirização eficiente, transporte seguro e pontualidade na entrega de produtos frescos em todos os pontos de venda.",
+            "pillars": [
+                {
+                    "icon": "truck",
+                    "title": "Gestão de Frotas & Transporte",
+                    "desc": "Roteirização inteligente, frotas sustentáveis e entregas fracionadas com eficiência."
+                },
+                {
+                    "icon": "map-pin",
+                    "title": "Centros de Distribuição (CDs)",
+                    "desc": "Operação de depósitos, expedição rápida e gestão de estoque em tempo real."
+                },
+                {
+                    "icon": "clock",
+                    "title": "SLA de Entrega & On-Time",
+                    "desc": "Garantia de frescor dos produtos nas prateleiras dos clientes com alto OTIF."
+                }
+            ],
+            "stats": [
+                {
+                    "label": "Centros Distribuição",
+                    "value": "+50 CDs"
+                },
+                {
+                    "label": "Nível de Serviço",
+                    "value": "98.5% OTIF"
+                },
+                {
+                    "label": "Roteirização",
+                    "value": "IA Ativa"
+                }
+            ],
+            "techs": [
+                "SAP WMS",
+                "TMS",
+                "Power BI",
+                "Databricks",
+                "Azure"
+            ],
+            "digital_maturity": {
+                "title": "Digital Maturity",
+                "target": 3.2,
+                "frequency": "Atualizado trimestralmente",
+                "scale_max": 5,
+                "dimensions": [
+                    {
+                        "name": "Adoção",
+                        "value": 2
+                    },
+                    {
+                        "name": "Portfólio",
+                        "value": 1
+                    },
+                    {
+                        "name": "Autonomia",
+                        "value": 1
+                    },
+                    {
+                        "name": "Capacitação",
+                        "value": 2
+                    },
+                    {
+                        "name": "Estratégia",
+                        "value": 1
+                    }
+                ]
+            }
+        }
+    },
+    "rgm": {
+        "title_key": "rgm",
+        "applications": [
+            {
+                "title": "Otimização de Preços",
+                "title_key": "app_rgm_price_opt",
+                "icon": "sliders",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Simulador de Elasticidade",
+                "title_key": "app_rgm_elasticity",
+                "icon": "activity",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "dashboards": [
+            {
+                "title": "Margens de Categoria",
+                "title_key": "db_rgm_margin",
+                "icon": "bar-chart-3",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Análise de Mix de Vendas",
+                "title_key": "db_rgm_mix",
+                "icon": "pie-chart",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "icon": "bar-chart-3",
+        "hidden": false,
+        "required_group": "",
+        "tagline": "Preificação Estratégica, Mix de Produtos e Otimização de Margem",
+        "about": {
+            "description": "A área de RGM (Revenue Growth Management) otimiza a lucratividade da empresa por meio de modelos avançados de preço elástico, eficácia promocional e arquitetura de portfólio por canal.",
+            "pillars": [
+                {
+                    "icon": "dollar-sign",
+                    "title": "Preificação & Promoções",
+                    "desc": "Modelos elásticos de preços e mensuração do retorno sobre investimento promocional."
+                },
+                {
+                    "icon": "bar-chart-3",
+                    "title": "Gestão de Mix & Embalagens",
+                    "desc": "Price Pack Architecture e otimização de margens por canal de vendas."
+                },
+                {
+                    "icon": "target",
+                    "title": "Lucratividade & Margem",
+                    "desc": "Maximização da receita líquida unitária e expansão sustentável da margem."
+                }
+            ],
+            "stats": [
+                {
+                    "label": "Expansão Margem",
+                    "value": "+12%"
+                },
+                {
+                    "label": "Preço Elástico",
+                    "value": "Modelado"
+                },
+                {
+                    "label": "ROI Promocional",
+                    "value": "Otimizado"
+                }
+            ],
+            "techs": [
+                "Databricks",
+                "Python",
+                "Power BI",
+                "SQL",
+                "Excel"
+            ],
+            "digital_maturity": {
+                "title": "Digital Maturity",
+                "target": 3.2,
+                "frequency": "Atualizado trimestralmente",
+                "scale_max": 5,
+                "dimensions": [
+                    {
+                        "name": "Adoção",
+                        "value": 2
+                    },
+                    {
+                        "name": "Portfólio",
+                        "value": 2
+                    },
+                    {
+                        "name": "Autonomia",
+                        "value": 1
+                    },
+                    {
+                        "name": "Capacitação",
+                        "value": 1
+                    },
+                    {
+                        "name": "Estratégia",
+                        "value": 2
+                    }
+                ]
+            }
+        }
+    },
+    "supply_chain": {
+        "title_key": "supply_chain",
+        "applications": [
+            {
+                "title": "Planejamento de Demanda",
+                "title_key": "app_sc_demand",
+                "icon": "calendar-days",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Gestão de Rupturas",
+                "title_key": "app_sc_ruptures",
+                "icon": "alert-triangle",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "dashboards": [
+            {
+                "title": "Cobertura de Estoque",
+                "title_key": "db_sc_inventory",
+                "icon": "archive",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Desempenho de Fornecedores",
+                "title_key": "db_sc_suppliers",
+                "icon": "thumbs-up",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Tempo de Ciclo (Lead Time)",
+                "title_key": "db_sc_leadtime",
+                "icon": "clock",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Fill Rate",
+                "title_key": "fill_rate",
+                "icon": "archive",
+                "link": "https://gestao-pedidos-8674310331778219.19.azure.databricksapps.com/",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "icon": "archive",
+        "hidden": false,
+        "required_group": "",
+        "tagline": "Planejamento Integrado de Suprimentos, Demanda e Giro de Estoque",
+        "about": {
+            "description": "A área de Supply Chain orquestra a integração entre previsão de demanda, insumos e capacidade produtiva, reduzindo rupturas e garantindo a continuidade do fornecimento.",
+            "pillars": [
+                {
+                    "icon": "boxes",
+                    "title": "Planejamento de Demanda (S&OP)",
+                    "desc": "Previsão de vendas integrada com a capacidade de produção e insumos de fábrica."
+                },
+                {
+                    "icon": "refresh-cw",
+                    "title": "Gestão de Estoque & Giro",
+                    "desc": "Otimização de matérias-primas e produtos acabados com baixo nível de desperdício."
+                },
+                {
+                    "icon": "layers",
+                    "title": "Cadeia de Suprimentos Integrada",
+                    "desc": "Sincronização entre fábrica, fornecedores e malha de distribuição."
+                }
+            ],
+            "stats": [
+                {
+                    "label": "Acurácia Demanda",
+                    "value": "99%"
+                },
+                {
+                    "label": "Desperdício",
+                    "value": "Mínimo"
+                },
+                {
+                    "label": "S&OP",
+                    "value": "Ativo"
+                }
+            ],
+            "techs": [
+                "SAP APO",
+                "Databricks",
+                "Power BI",
+                "Python"
+            ],
+            "digital_maturity": {
+                "title": "Digital Maturity",
+                "target": 3.2,
+                "frequency": "Atualizado trimestralmente",
+                "scale_max": 5,
+                "dimensions": [
+                    {
+                        "name": "Adoção",
+                        "value": 2
+                    },
+                    {
+                        "name": "Portfólio",
+                        "value": 2
+                    },
+                    {
+                        "name": "Autonomia",
+                        "value": 1
+                    },
+                    {
+                        "name": "Capacitação",
+                        "value": 2
+                    },
+                    {
+                        "name": "Estratégia",
+                        "value": 1
+                    }
+                ]
+            }
+        }
+    },
+    "purchase": {
+        "title_key": "purchase",
+        "applications": [
+            {
+                "title": "Portal de Cotações",
+                "title_key": "app_pur_quotes",
+                "icon": "file-text",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Aprovação de Pedidos",
+                "title_key": "app_pur_approvals",
+                "icon": "check-square",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "dashboards": [
+            {
+                "title": "Savings de Compras",
+                "title_key": "db_pur_savings",
+                "icon": "piggy-bank",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Painel de Spend Analysis",
+                "title_key": "db_pur_spend",
+                "icon": "credit-card",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "icon": "file-text",
+        "hidden": false,
+        "required_group": "",
+        "tagline": "Gestão Estratégica de Insumos, Fornecedores e Savings",
+        "about": {
+            "description": "A área de Compras (Purchasing) é responsável por negociar matérias-primas essenciais, embalagens, energia e serviços corporativos, gerando economia sustentável e parcerias com fornecedores.",
+            "pillars": [
+                {
+                    "icon": "shopping-bag",
+                    "title": "Strategic Sourcing & Commodities",
+                    "desc": "Negociação estratégica de trigo, embalagens, energia e insumos agroindustriais."
+                },
+                {
+                    "icon": "handshake",
+                    "title": "Gestão de Fornecedores",
+                    "desc": "Homologação de parceiros, avaliação de SLAs e compliance com a sustentabilidade."
+                },
+                {
+                    "icon": "trending-down",
+                    "title": "Savings & Eficiência",
+                    "desc": "Geração contínua de economia de custos e gestão eficiente do Spend corporativo."
+                }
+            ],
+            "stats": [
+                {
+                    "label": "Savings Gerados",
+                    "value": "+R$ 15M"
+                },
+                {
+                    "label": "Fornecedores Ativos",
+                    "value": "+300"
+                },
+                {
+                    "label": "Sourcing",
+                    "value": "Estratégico"
+                }
+            ],
+            "techs": [
+                "SAP Ariba",
+                "Power BI",
+                "Excel Advanced",
+                "Azure AD"
+            ],
+            "digital_maturity": {
+                "title": "Digital Maturity",
+                "target": 3.2,
+                "frequency": "Atualizado trimestralmente",
+                "scale_max": 5,
+                "dimensions": [
+                    {
+                        "name": "Adoção",
+                        "value": 1
+                    },
+                    {
+                        "name": "Portfólio",
+                        "value": 1
+                    },
+                    {
+                        "name": "Autonomia",
+                        "value": 1
+                    },
+                    {
+                        "name": "Capacitação",
+                        "value": 1
+                    },
+                    {
+                        "name": "Estratégia",
+                        "value": 2
+                    }
+                ]
+            }
+        }
+    },
+    "dna": {
+        "title_key": "dna",
+        "tagline": "Data & Analytics — Transformando dados em decisões inteligentes no Grupo Bimbo",
+        "about": {
+            "description": "A área de Data & Analytics (DNA) é responsável por estruturar, governar e potencializar o ecossistema de dados da empresa. Combinando a arquitetura moderna de Databricks Lakehouse, Unity Catalog e ferramentas avançadas de self-service BI, o time de DNA gera inteligência estratégica para todas as operações do Grupo Bimbo.",
+            "pillars": [
+                {
+                    "icon": "database",
+                    "title": "Lakehouse & Engenharia",
+                    "desc": "Pipelines de dados escaláveis, processamento em tempo real com Delta Lake e arquitetura moderna."
+                },
+                {
+                    "icon": "shield-check",
+                    "title": "Governança & Qualidade",
+                    "desc": "Curadoria de dados, gestão de acessos via Unity Catalog e conformidade com políticas de segurança."
+                },
+                {
+                    "icon": "bar-chart-2",
+                    "title": "Analytics & Self-Service BI",
+                    "desc": "Dashboards de alta performance, indicadores estratégicos e democratização no uso dos dados."
+                },
+                {
+                    "icon": "cpu",
+                    "title": "IA & Ciência de Dados",
+                    "desc": "Modelagem preditiva e inteligência artificial para otimização comercial, logística e industrial."
+                }
+            ],
+            "stats": [
+                {
+                    "label": "Pipelines de Dados",
+                    "value": "+50"
+                },
+                {
+                    "label": "Qualidade & Uptime",
+                    "value": "99.9%"
+                },
+                {
+                    "label": "Engine Analítica",
+                    "value": "Databricks"
+                },
+                {
+                    "label": "Usuários Conectados",
+                    "value": "+500"
+                }
+            ],
+            "techs": [
+                "Databricks",
+                "Delta Lake",
+                "Unity Catalog",
+                "Power BI",
+                "Python",
+                "SQL",
+                "Azure AD"
+            ],
+            "digital_maturity": {
+                "title": "Digital Maturity",
+                "target": 3.2,
+                "frequency": "Atualizado trimestralmente",
+                "scale_max": 5,
+                "dimensions": [
+                    {
+                        "name": "Adoção",
+                        "value": 4
+                    },
+                    {
+                        "name": "Portfólio",
+                        "value": 4
+                    },
+                    {
+                        "name": "Autonomia",
+                        "value": 4
+                    },
+                    {
+                        "name": "Capacitação",
+                        "value": 1.5
+                    },
+                    {
+                        "name": "Estratégia",
+                        "value": 4
+                    }
+                ]
+            }
+        },
+        "applications": [
+            {
+                "title": "Catálogo de Dados (Data Catalog)",
+                "title_key": "app_dna_catalog",
+                "icon": "book-open",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Linhagem de Dados",
+                "title_key": "app_dna_lineage",
+                "icon": "git-fork",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "KPIs Analytics",
+                "title_key": "kpis_analytics",
+                "icon": "database",
+                "link": "https://kpis-analytics-8674310331778219.19.azure.databricksapps.com/index.html",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "dashboards": [
+            {
+                "title": "Qualidade de Dados",
+                "title_key": "db_dna_quality",
+                "icon": "check-circle",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Acessos e Governança",
+                "title_key": "db_dna_gov",
+                "icon": "shield-check",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "icon": "database",
+        "hidden": false,
+        "required_group": ""
+    },
+    "industrial": {
+        "title_key": "industrial",
+        "applications": [
+            {
+                "title": "Apontamento de Paradas",
+                "title_key": "app_ind_stops",
+                "icon": "pause-circle",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Checklist de Manutenção",
+                "title_key": "app_ind_maintenance",
+                "icon": "wrench",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "dashboards": [
+            {
+                "title": "OEE Industrial",
+                "title_key": "db_ind_oee",
+                "icon": "activity",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Volume de Produção",
+                "title_key": "db_ind_production",
+                "icon": "package",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Consumo Energético",
+                "title_key": "db_ind_energy",
+                "icon": "zap",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "icon": "activity",
+        "hidden": false,
+        "required_group": "",
+        "tagline": "Excelência Operacional na Manufatura de Panificados e Segurança",
+        "about": {
+            "description": "A área Industrial gerencia as plantas fabris do Grupo Bimbo, aplicando automação avançada, manutenção preventiva rigorosa e altos padrões de segurança na produção de alimentos.",
+            "pillars": [
+                {
+                    "icon": "activity",
+                    "title": "Manufatura & OEE Industrial",
+                    "desc": "Alta eficiência global dos equipamentos, produção contínua 24/7 e automação fabril."
+                },
+                {
+                    "icon": "wrench",
+                    "title": "Manutenção Preditiva",
+                    "desc": "Confiabilidade das linhas automatizadas de fornada e redução de paradas não programadas."
+                },
+                {
+                    "icon": "shield-check",
+                    "title": "Segurança & TPM",
+                    "desc": "Manufatura enxuta, segurança do trabalho rigorosa e desperdício zero."
+                }
+            ],
+            "stats": [
+                {
+                    "label": "OEE Global",
+                    "value": "88%"
+                },
+                {
+                    "label": "Segurança Trabalho",
+                    "value": "Zero Acidentes"
+                },
+                {
+                    "label": "Operação",
+                    "value": "24/7"
+                }
+            ],
+            "techs": [
+                "SCADA",
+                "MES",
+                "SAP PM",
+                "Power BI",
+                "Databricks"
+            ],
+            "digital_maturity": {
+                "title": "Digital Maturity",
+                "target": 3.2,
+                "frequency": "Atualizado trimestralmente",
+                "scale_max": 5,
+                "dimensions": [
+                    {
+                        "name": "Adoção",
+                        "value": 1
+                    },
+                    {
+                        "name": "Portfólio",
+                        "value": 2
+                    },
+                    {
+                        "name": "Autonomia",
+                        "value": 1
+                    },
+                    {
+                        "name": "Capacitação",
+                        "value": 2
+                    },
+                    {
+                        "name": "Estratégia",
+                        "value": 1
+                    }
+                ]
+            }
+        }
+    },
+    "transformation": {
+        "title_key": "transformation",
+        "applications": [
+            {
+                "title": "Cadastro de Projetos (PMO)",
+                "title_key": "app_tf_pmo",
+                "icon": "folder-kanban",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Acompanhamento de OKRs",
+                "title_key": "app_tf_okr",
+                "icon": "target",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "dashboards": [
+            {
+                "title": "Cronograma e Marcos",
+                "title_key": "db_tf_timeline",
+                "icon": "milestone",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Captura de Sinergias",
+                "title_key": "db_tf_synergy",
+                "icon": "trending-up",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "icon": "target",
+        "hidden": false,
+        "required_group": "",
+        "tagline": "Gestão de Projetos Estratégicos, Inovação e OKRs Globais",
+        "about": {
+            "description": "A área de Transformação (PMO) impulsiona iniciativas estratégicas, governança de projetos e captura de sinergias para manter o Grupo Bimbo na vanguarda do setor alimentício.",
+            "pillars": [
+                {
+                    "icon": "folder-kanban",
+                    "title": "PMO & Governança de Projetos",
+                    "desc": "Acompanhamento rigoroso de prazos, entregáveis e escopo das iniciativas corporativas."
+                },
+                {
+                    "icon": "trending-up",
+                    "title": "Captura de Sinergias",
+                    "desc": "Geração de valor financeiro, integração de aquisições e eficiência de processos."
+                },
+                {
+                    "icon": "target",
+                    "title": "Gestão de OKRs",
+                    "desc": "Alinhamento das metas regionais aos objetivos globais do Grupo Bimbo."
+                }
+            ],
+            "stats": [
+                {
+                    "label": "Projetos Ativos",
+                    "value": "+30"
+                },
+                {
+                    "label": "Acompanhamento OKR",
+                    "value": "100%"
+                },
+                {
+                    "label": "Governança",
+                    "value": "PMO Ágil"
+                }
+            ],
+            "techs": [
+                "Jira",
+                "Miro",
+                "Power BI",
+                "MS Project"
+            ],
+            "digital_maturity": {
+                "title": "Digital Maturity",
+                "target": 3.2,
+                "frequency": "Atualizado trimestralmente",
+                "scale_max": 5,
+                "dimensions": [
+                    {
+                        "name": "Adoção",
+                        "value": 2
+                    },
+                    {
+                        "name": "Portfólio",
+                        "value": 3
+                    },
+                    {
+                        "name": "Autonomia",
+                        "value": 2
+                    },
+                    {
+                        "name": "Capacitação",
+                        "value": 2
+                    },
+                    {
+                        "name": "Estratégia",
+                        "value": 2
+                    }
+                ]
+            }
+        }
+    },
+    "fpa": {
+        "title_key": "fpa",
+        "applications": [
+            {
+                "title": "Simulador de Cenários",
+                "title_key": "app_fpa_scenarios",
+                "icon": "sliders",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Consolidação de Forecast",
+                "title_key": "app_fpa_forecast",
+                "icon": "briefcase",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "dashboards": [
+            {
+                "title": "DRE Corporativo",
+                "title_key": "db_fpa_pnl",
+                "icon": "bar-chart-3",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Margem de Contribuição",
+                "title_key": "db_fpa_margin",
+                "icon": "percent",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Análise de Desvios (Variação)",
+                "title_key": "db_fpa_variance",
+                "icon": "split",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Teste",
+                "title_key": "teste",
+                "icon": "bar-chart-3",
+                "link": "https://app.powerbi.com/reportEmbed?reportId=4edf51b7-18ab-4a33-b594-6ca115ba2822&autoAuth=True&ctid=973ba820-4a58-4246-84bf-170e50b3152a",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "icon": "bar-chart-3",
+        "hidden": false,
+        "required_group": "",
+        "tagline": "Modelagem Financeira, Forecast, Budget e Performance",
+        "about": {
+            "description": "A área de FP&A (Planejamento Financeiro) lidera a elaboração do orçamento anual, projeções de fluxo de caixa e análises de desempenho para apoiar decisões executivas.",
+            "pillars": [
+                {
+                    "icon": "calculator",
+                    "title": "Orçamento & Budget Anual",
+                    "desc": "Elaboração e acompanhamento das metas orçamentárias e investimento em capital (CapEx)."
+                },
+                {
+                    "icon": "sliders",
+                    "title": "Forecast & Cenários",
+                    "desc": "Projeções financeiras contínuas e simulação de impactos macroeconômicos."
+                },
+                {
+                    "icon": "bar-chart-3",
+                    "title": "Análise DRE & Variâncias",
+                    "desc": "Acompanhamento da Demonstração de Resultado (P&L) e análise explicativa de desvios."
+                }
+            ],
+            "stats": [
+                {
+                    "label": "Previsão P&L",
+                    "value": "99% Acurácia"
+                },
+                {
+                    "label": "Modelo Forecast",
+                    "value": "Rolling"
+                },
+                {
+                    "label": "Ciclo Budget",
+                    "value": "Anual"
+                }
+            ],
+            "techs": [
+                "SAP BPC",
+                "Databricks",
+                "Power BI",
+                "Excel Advanced"
+            ],
+            "digital_maturity": {
+                "title": "Digital Maturity",
+                "target": 3.2,
+                "frequency": "Atualizado trimestralmente",
+                "scale_max": 5,
+                "dimensions": [
+                    {
+                        "name": "Adoção",
+                        "value": 2
+                    },
+                    {
+                        "name": "Portfólio",
+                        "value": 2
+                    },
+                    {
+                        "name": "Autonomia",
+                        "value": 1
+                    },
+                    {
+                        "name": "Capacitação",
+                        "value": 1
+                    },
+                    {
+                        "name": "Estratégia",
+                        "value": 2
+                    }
+                ]
+            }
+        }
+    },
+    "legal": {
+        "title_key": "legal",
+        "applications": [
+            {
+                "title": "Gerenciador de Processos",
+                "title_key": "app_leg_lawsuits",
+                "icon": "scale",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Repositório de Atas",
+                "title_key": "app_leg_repository",
+                "icon": "archive",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "dashboards": [
+            {
+                "title": "Provisões Financeiras",
+                "title_key": "db_leg_provisions",
+                "icon": "dollar-sign",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Contratos a Vencer",
+                "title_key": "db_leg_contracts",
+                "icon": "clock",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "icon": "scale",
+        "hidden": false,
+        "required_group": "",
+        "tagline": "Governança Jurídica, Contratos e Conformidade Regulatória",
+        "about": {
+            "description": "A área Jurídica assegura a segurança jurídica das operações do Grupo Bimbo, gerando valor por meio da prevenção de riscos, compliance com a LGPD e suporte contratual estratégico.",
+            "pillars": [
+                {
+                    "icon": "scale",
+                    "title": "Gestão Contratual",
+                    "desc": "Elaboração, análise e revisão estratégica de contratos comerciais e operacionais."
+                },
+                {
+                    "icon": "shield",
+                    "title": "Contencioso & Prevenção",
+                    "desc": "Defesa jurídica da companhia e mitigação proativa de riscos cíveis e trabalhistas."
+                },
+                {
+                    "icon": "check-circle",
+                    "title": "Compliance & LGPD",
+                    "desc": "Garantia de conformidade com a legislação da indústria e proteção de dados."
+                }
+            ],
+            "stats": [
+                {
+                    "label": "Conformidade LGPD",
+                    "value": "100% OK"
+                },
+                {
+                    "label": "Contratos",
+                    "value": "Digitais"
+                },
+                {
+                    "label": "Risco Jurídico",
+                    "value": "Mitigado"
+                }
+            ],
+            "techs": [
+                "TOTVS Jurídico",
+                "DocuSign",
+                "Power BI",
+                "Excel"
+            ],
+            "digital_maturity": {
+                "title": "Digital Maturity",
+                "target": 3.2,
+                "frequency": "Atualizado trimestralmente",
+                "scale_max": 5,
+                "dimensions": [
+                    {
+                        "name": "Adoção",
+                        "value": 1
+                    },
+                    {
+                        "name": "Portfólio",
+                        "value": 1
+                    },
+                    {
+                        "name": "Autonomia",
+                        "value": 1
+                    },
+                    {
+                        "name": "Capacitação",
+                        "value": 1
+                    },
+                    {
+                        "name": "Estratégia",
+                        "value": 1
+                    }
+                ]
+            }
+        }
+    },
+    "audit": {
+        "title_key": "audit",
+        "applications": [
+            {
+                "title": "Checklist de Controles",
+                "title_key": "app_aud_checklist",
+                "icon": "clipboard-check",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Apontamento de Planos de Ação",
+                "title_key": "app_aud_actions",
+                "icon": "check-square",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "dashboards": [
+            {
+                "title": "Status de Auditoria",
+                "title_key": "db_aud_status",
+                "icon": "pie-chart",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Matriz de Riscos",
+                "title_key": "db_aud_risks",
+                "icon": "shield-alert",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "icon": "shield-check",
+        "hidden": false,
+        "required_group": "",
+        "tagline": "Avaliação de Controles Internos, Riscos e Mapeamento de Processos",
+        "about": {
+            "description": "A área de Auditoria Interna assegura a integridade dos processos corporativos, realizando testes de controles, mitigação de riscos e garantindo governança nas operações.",
+            "pillars": [
+                {
+                    "icon": "clipboard-check",
+                    "title": "Auditoria Operacional & Financeira",
+                    "desc": "Revisão periódica de processos, inventários e procedimentos internos."
+                },
+                {
+                    "icon": "shield-alert",
+                    "title": "Matriz de Riscos Corporativos",
+                    "desc": "Identificação, avaliação e monitoramento contínuo de riscos de negócios."
+                },
+                {
+                    "icon": "check-square",
+                    "title": "Planos de Ação & Remedias",
+                    "desc": "Acompanhamento do cumprimento das recomendações de melhorias e auditorias."
+                }
+            ],
+            "stats": [
+                {
+                    "label": "Mapeamento Riscos",
+                    "value": "100%"
+                },
+                {
+                    "label": "Governança",
+                    "value": "SOX Compliance"
+                },
+                {
+                    "label": "Fraudes",
+                    "value": "Zero Tolerância"
+                }
+            ],
+            "techs": [
+                "ACL Analytics",
+                "Power BI",
+                "SAP",
+                "Databricks"
+            ],
+            "digital_maturity": {
+                "title": "Digital Maturity",
+                "target": 3.2,
+                "frequency": "Atualizado trimestralmente",
+                "scale_max": 5,
+                "dimensions": [
+                    {
+                        "name": "Adoção",
+                        "value": 1
+                    },
+                    {
+                        "name": "Portfólio",
+                        "value": 1
+                    },
+                    {
+                        "name": "Autonomia",
+                        "value": 1
+                    },
+                    {
+                        "name": "Capacitação",
+                        "value": 1
+                    },
+                    {
+                        "name": "Estratégia",
+                        "value": 1
+                    }
+                ]
+            }
+        }
+    },
+    "quality": {
+        "title_key": "quality",
+        "applications": [
+            {
+                "title": "Registro de RNC",
+                "title_key": "app_qty_rnc",
+                "icon": "alert-circle",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Gestão de Certificações",
+                "title_key": "app_qty_certificates",
+                "icon": "award",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "dashboards": [
+            {
+                "title": "Índice de Reclamações",
+                "title_key": "db_qty_complaints",
+                "icon": "thumbs-down",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Capabilidade de Processo",
+                "title_key": "db_qty_process",
+                "icon": "activity",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "icon": "award",
+        "hidden": false,
+        "required_group": "",
+        "tagline": "Garantia de Qualidade, Padrões Sanitários e Segurança dos Alimentos",
+        "about": {
+            "description": "A área de Qualidade assegura o sabor inconfundível e o padrão sanitário rigoroso de todos os produtos do Grupo Bimbo, da recepção do trigo até a mesa do consumidor.",
+            "pillars": [
+                {
+                    "icon": "award",
+                    "title": "Segurança Alimentar & FSSC 22000",
+                    "desc": "Garantia dos mais altos padrões de higiene, sanidade e certificações internacionais."
+                },
+                {
+                    "icon": "alert-circle",
+                    "title": "Gestão de Não Conformidades (RNC)",
+                    "desc": "Tratamento de causas raiz e melhoria contínua dos processos de fabricação."
+                },
+                {
+                    "icon": "thumbs-up",
+                    "title": "Qualidade na Mesa do Consumidor",
+                    "desc": "Monitoramento constante de satisfação, frescor e sabor dos alimentos."
+                }
+            ],
+            "digital_maturity": {
+                "title": "Digital Maturity",
+                "target": 3.2,
+                "frequency": "Atualizado trimestralmente",
+                "scale_max": 5,
+                "dimensions": [
+                    {
+                        "name": "Adoção",
+                        "value": 1
+                    },
+                    {
+                        "name": "Portfólio",
+                        "value": 2
+                    },
+                    {
+                        "name": "Autonomia",
+                        "value": 1
+                    },
+                    {
+                        "name": "Capacitação",
+                        "value": 1
+                    },
+                    {
+                        "name": "Estratégia",
+                        "value": 1
+                    }
+                ]
+            }
+        }
+    },
+    "wickbold": {
+        "title_key": "wickbold",
+        "applications": [
+            {
+                "title": "Lançamento de Produção Wickbold",
+                "title_key": "app_wb_production",
+                "icon": "package-plus",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Ficha de Qualidade (Fornada)",
+                "title_key": "app_wb_quality",
+                "icon": "clipboard-check",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "dashboards": [
+            {
+                "title": "Indicadores Industriais Wickbold",
+                "title_key": "db_wb_perf",
+                "icon": "activity",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Relatório de Qualidade",
+                "title_key": "db_wb_quality_report",
+                "icon": "award",
+                "link": "#",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "icon": "package",
+        "hidden": false,
+        "required_group": "",
+        "tagline": "Integração Operacional, Tradição na Panificação e Excelência Wickbold",
+        "about": {
+            "description": "A área da Wickbold integra a tradição das fornadas artesanais e pães especiais à força logística e tecnológica do Grupo Bimbo, encantando famílias brasileiras.",
+            "pillars": [
+                {
+                    "icon": "package-plus",
+                    "title": "Produção & Fornadas Especiais",
+                    "desc": "Fabricação com tradição de pães especiais, torradas e linhas de nutrição."
+                },
+                {
+                    "icon": "clipboard-check",
+                    "title": "Fichas de Qualidade & Padrão",
+                    "desc": "Controle rigoroso de fermentação, forneamento e textura impecável."
+                },
+                {
+                    "icon": "activity",
+                    "title": "Sinergia com Grupo Bimbo",
+                    "desc": "Integração logística, comercial e tecnológica das operações em todo o Brasil."
+                }
+            ],
+            "stats": [
+                {
+                    "label": "Tradição em Pães",
+                    "value": "+80 Anos"
+                },
+                {
+                    "label": "Fornadas",
+                    "value": "Operação 24/7"
+                },
+                {
+                    "label": "Sinergia",
+                    "value": "Grupo Bimbo"
+                }
+            ],
+            "techs": [
+                "SAP S/4HANA",
+                "SCADA",
+                "Power BI",
+                "Databricks"
+            ],
+            "digital_maturity": {
+                "title": "Digital Maturity",
+                "target": 3.2,
+                "frequency": "Atualizado trimestralmente",
+                "scale_max": 5,
+                "dimensions": [
+                    {
+                        "name": "Adoção",
+                        "value": 1
+                    },
+                    {
+                        "name": "Portfólio",
+                        "value": 2
+                    },
+                    {
+                        "name": "Autonomia",
+                        "value": 1
+                    },
+                    {
+                        "name": "Capacitação",
+                        "value": 1
+                    },
+                    {
+                        "name": "Estratégia",
+                        "value": 1
+                    }
+                ]
+            }
+        }
+    }
+}

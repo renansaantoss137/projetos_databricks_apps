@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>OTIF – Detalhe | Bimbo Brasil</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body.fr-page { background: var(--fr-bg); color: var(--fr-txt); margin: 0; }
+
+    .theme-toggle {
+      width:34px; height:34px; border-radius:50%;
+      border:1.5px solid rgba(255,255,255,0.22);
+      background:rgba(255,255,255,0.08);
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      font-size:1rem; transition:background .2s; flex-shrink:0;
+    }
+    .theme-toggle:hover { background:rgba(255,255,255,0.16); }
+    [data-theme="light"] .theme-toggle { border-color:rgba(38,53,118,0.2); background:rgba(38,53,118,0.06); }
+
+    /* ── Layout ── */
+    .det-layout {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem 1.75rem 4rem;
+      max-width: 1700px;
+      margin: 0 auto;
+      align-items: stretch;
+    }
+
+    /* ── Left panel ── */
+    .det-panel {
+      width: 210px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      position: sticky;
+      top: 100px;
+    }
+    .det-panel-section {
+      background: var(--fr-surface);
+      border: 1px solid var(--fr-border);
+      border-radius: 12px;
+      overflow: hidden;
+      height: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+    .det-panel-hdr {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .6rem .85rem;
+      border-bottom: 1px solid var(--fr-border);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--fr-txt-soft);
+    }
+    .det-panel-hdr svg { flex-shrink:0; }
+    /* ── Panel collapse ── */
+    .det-panel { transition: width .2s; }
+    .det-panel.collapsed { width:36px; min-width:36px; overflow:visible; }
+    .det-panel.collapsed .det-panel-section { height:auto; overflow:visible; }
+    .det-panel.collapsed .det-panel-body,
+    .det-panel.collapsed .det-panel-title-txt,
+    .det-panel.collapsed .det-panel-hdr > svg:first-child { display:none; }
+    .det-panel.collapsed .det-panel-hdr { justify-content:center; padding:.6rem .45rem; border-bottom:none; }
+    .det-panel-collapse-btn { background:none; border:none; cursor:pointer; color:var(--fr-txt-soft); padding:4px; display:flex; align-items:center; margin-left:auto; transition:transform .2s; }
+    .det-panel-collapse-btn:hover { color:var(--fr-txt); }
+    .det-panel.collapsed .det-panel-collapse-btn { transform:rotate(180deg); margin-left:0; }
+    .det-panel-body {
+      padding: .4rem .5rem .5rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .det-search {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--fr-border);
+      border-radius: 6px;
+      color: var(--fr-txt);
+      font-size: .75rem;
+      padding: .3rem .6rem;
+      margin-bottom: .35rem;
+      outline: none;
+    }
+    .det-search::placeholder { color: var(--fr-txt-soft); }
+    .det-check-item {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .22rem .35rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: .77rem;
+      color: var(--fr-txt);
+      transition: background .12s;
+      user-select: none;
+    }
+    .det-check-item:hover { background: rgba(255,255,255,.06); }
+    .det-check-item input[type=checkbox] { accent-color: #6366f1; width: 13px; height: 13px; flex-shrink:0; cursor:pointer; }
+    .det-check-item.all-item { font-weight: 700; color: var(--fr-txt-soft); font-size: .72rem; border-bottom: 1px solid var(--fr-border); margin-bottom: .2rem; padding-bottom: .35rem; }
+
+    /* ── KPI Card inner elements (same pattern as otif.html) ── */
+    .fr-kpi-row { display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem; margin-bottom:1.5rem; }
+    .fr-kpi-card {
+      background: linear-gradient(#282f3f,#232a38) padding-box, var(--kpi-border-grad) border-box;
+      border:1.5px solid transparent; border-radius:12px;
+      padding:.5rem .9rem .4rem; position:relative; overflow:hidden;
+      box-shadow:0 2px 16px rgba(0,0,0,.4), 0 0 0 0 var(--kpi-glow);
+      transition:transform .2s,box-shadow .25s;
+      display:flex; flex-direction:column; gap:.1rem;
+      --kpi-border-grad: linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.04));
+      --kpi-glow: rgba(255,255,255,0);
+    }
+    .fr-kpi-card:hover { transform:translateY(-3px); box-shadow:0 6px 28px rgba(0,0,0,.5), 0 0 18px 2px var(--kpi-glow); }
+    .fr-kpi-card { --fr-txt: #E8F4FD; --fr-txt-soft: rgba(168,204,223,0.72); }
+    .k-green { --kpi-border-grad: linear-gradient(135deg,#059669,#34d399,#047857); --kpi-glow: rgba(16,185,129,.4); }
+    .k-amber { --kpi-border-grad: linear-gradient(135deg,#d97706,#fbbf24,#b45309); --kpi-glow: rgba(245,158,11,.4); }
+    .k-red   { --kpi-border-grad: linear-gradient(135deg,#dc2626,#f87171,#b91c1c); --kpi-glow: rgba(239,68,68,.35); }
+
+    .kpi-head { display:flex; justify-content:center; align-items:center; position:relative; padding:0; min-height:20px; }
+    .kpi-title { font-size:.6rem; text-transform:uppercase; letter-spacing:.07em; font-weight:800; color:#ffffff; line-height:1.2; text-align:center; }
+    .kpi-badge { width:22px; height:22px; border-radius:6px; background:rgba(255,255,255,.07); display:flex; align-items:center; justify-content:center; flex-shrink:0; position:absolute; right:0; top:0; }
+    .kpi-badge svg { width:12px; height:12px; max-width:12px; max-height:12px; }
+    .kpi-val-row { display:flex; align-items:baseline; justify-content:center; position:relative; }
+    .kpi-val-row .fr-kpi-val.big { flex-shrink:0; }
+    .kpi-val-row .kpi-delta-meta { display:flex; flex-direction:column; align-items:flex-start; gap:.1rem; position:absolute; right:.4rem; top:50%; transform:translateY(-50%); }
+    .kpi-meta-line { font-size:.44rem; text-transform:uppercase; letter-spacing:.05em; color:var(--fr-txt-soft); white-space:nowrap; }
+    .kpi-dual-vals { display:flex; gap:1.2rem; justify-content:center; align-items:flex-start; margin-bottom:0; }
+    .kpi-dual-item { display:flex; flex-direction:column; align-items:center; gap:1px; }
+    .kpi-dual-item-lbl { font-size:.44rem; text-transform:uppercase; letter-spacing:.06em; color:var(--fr-txt-soft); }
+    .kpi-dual-item .fr-kpi-val { font-size:.82rem; }
+    .kpi-foot { display:grid; grid-template-columns:1fr 1fr minmax(70px,auto); gap:0; margin-top:auto; padding-top:.15rem; border-top:1px solid rgba(255,255,255,.06); }
+    .kpi-metric { display:flex; flex-direction:column; gap:2px; }
+    .kpi-metric:nth-child(2) { border-left:1px solid rgba(255,255,255,.06); padding-left:.5rem; }
+    .kpi-metric.kpi-atraso { border-left:1px solid rgba(255,255,255,.06); padding-left:.5rem; text-align:right; }
+    .kpi-metric.kpi-atraso .kpi-metric-val { color:#f59e0b; }
+    .kpi-metric-lbl { font-size:.55rem; text-transform:uppercase; letter-spacing:.06em; color:var(--fr-txt-soft); white-space:nowrap; }
+    .kpi-metric-val { font-size:.78rem; font-weight:700; font-variant-numeric:tabular-nums; color:var(--fr-txt); }
+    .kpi-delta { display:flex; align-items:center; justify-content:center; gap:2px; font-size:.52rem; font-weight:700; }
+    .kpi-delta.above { color:#22c55e; }
+    .kpi-delta.below { color:#ef4444; }
+    .fr-kpi-val { font-size:1.3rem; font-weight:900; line-height:1; color:var(--fr-txt); font-variant-numeric:tabular-nums; text-align:center; margin-top:auto; margin-bottom:auto; }
+    .fr-kpi-val.big { font-size:1.4rem; }
+
+    /* Per-card border gradients — ID specificity overrides .k-red/.k-amber/.k-green */
+    #det-kpi-fob-card   { --kpi-border-grad: linear-gradient(135deg,#c17a2f,#d09b57,#8a5326); --kpi-glow: rgba(193,122,47,.45); }
+    #det-kpi-cif-card   { --kpi-border-grad: linear-gradient(135deg,#1d4ed8,#60a5fa,#1e40af); --kpi-glow: rgba(59,130,246,.45); }
+    #det-kpi-geral-card { --kpi-border-grad: linear-gradient(135deg,#059669,#34d399,#047857); --kpi-glow: rgba(16,185,129,.45); }
+
+    @media (max-width:900px) { .fr-kpi-row { grid-template-columns:1fr; } }
+
+    /* ── Main content ── */
+    .det-content { flex: 1; min-width: 0; }
+
+    .det-card {
+      background: var(--fr-surface);
+      border: 1px solid var(--fr-border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .det-card-hdr {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 1rem 1.2rem .75rem;
+      border-bottom: 1px solid var(--fr-border);
+      gap: 1rem;
+    }
+    .det-card-hdr-left {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: .15rem;
+      align-items: center;
+      text-align: center;
+      width: max-content;
+      min-width: 0;
+    }
+    .det-card-ttl {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--fr-txt);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      line-height: 1.15;
+    }
+    .det-card-sub { font-size: .82rem; color: var(--fr-txt-soft); }
+    .det-card-actions { display: flex; align-items: center; gap: .6rem; justify-self: end; }
+    .det-count { font-size: .78rem; color: var(--fr-txt-soft); }
+    .det-count strong { color: var(--fr-txt); font-variant-numeric: tabular-nums; }
+
+    .btn-csv {
+      display: flex; align-items: center; gap: .4rem;
+      background: rgba(99,102,241,.15);
+      border: 1px solid rgba(99,102,241,.35);
+      color: #a5b4fc;
+      font-size: .76rem; font-weight: 600;
+      padding: .38rem .85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-csv:hover { background: rgba(99,102,241,.28); }
+
+    /* ── Table ── */
+    .det-table-wrap {
+      overflow-x: auto;
+      max-height: calc(100vh - 280px);
+      overflow-y: auto;
+    }
+    .det-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .79rem;
+      white-space: nowrap;
+    }
+    .det-table thead th {
+      position: sticky; top: 0; z-index: 3;
+      background: var(--fr-th-bg);
+      color: var(--fr-th-txt);
+      font-size: .68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .05em;
+      padding: .55rem .85rem;
+      text-align: left;
+      border-bottom: 2px solid rgba(100,116,139,0.2);
+      white-space: nowrap;
+      transition: background .2s, color .2s;
+    }
+    [data-theme="light"] .det-table thead th {
+      background: #e8edf4;
+      color: #1e2433;
+      border-bottom: 2px solid rgba(38,53,118,0.15);
+    }
+    [data-theme="light"] .det-table th:hover {
+      background: #dbe4ef;
+    }
+    [data-theme="light"] .det-table th .sort-icon {
+      color: #1e2433;
+    }
+    .det-table tbody tr { border-bottom: 1px solid var(--fr-sep); }
+    .det-table tbody tr:hover { background: rgba(99,102,241,.07); }
+    .det-table tbody td { padding: .48rem .85rem; color: var(--fr-txt); }
+    .det-table tfoot { position: sticky; bottom: 0; z-index: 2; }
+    .det-state { text-align: center; color: var(--fr-txt-soft); padding: 3rem 1rem; font-size: .85rem; }
+
+    /* ── Pagination ── */
+    .det-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .75rem;
+      padding: .8rem 1.2rem;
+      border-top: 1px solid var(--fr-border);
+      font-size: .82rem;
+      color: var(--fr-txt-soft);
+      flex-wrap: wrap;
+    }
+    .pg-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 98px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      color: var(--fr-txt);
+      font-size: .8rem;
+      font-weight: 600;
+      padding: .45rem .95rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .pg-btn:hover:not(:disabled) { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.24); }
+    .pg-btn:disabled { opacity: .35; cursor: default; }
+    .pg-info { padding: 0 .75rem; color: var(--fr-txt); font-weight: 700; }
+
+    /* ── Flag cells ── */
+    .flag-sim { color: #22c55e; font-weight: 700; }
+    .flag-nao { color: #DA2E39; font-weight: 700; }
+    .flag-nd  { color: #64748b; }
+
+    /* ── Sortable headers ── */
+    .det-table th { cursor: pointer; user-select: none; white-space: nowrap; }
+    .det-table th:hover { background: rgba(100,116,139,0.15); }
+    .det-table th .sort-icon { display: inline-flex; flex-direction: column; gap: 1px; margin-left: 5px; vertical-align: middle; opacity: .35; }
+    .det-table th .sort-icon svg { display: block; }
+    .det-table th.sort-asc  .sort-icon,
+    .det-table th.sort-desc .sort-icon { opacity: 1; }
+    .det-table th.sort-asc  .sort-icon .arr-up   { opacity: 1; }
+    .det-table th.sort-asc  .sort-icon .arr-down  { opacity: .25; }
+    .det-table th.sort-desc .sort-icon .arr-up   { opacity: .25; }
+    .det-table th.sort-desc .sort-icon .arr-down  { opacity: 1; }
+
+    /* ── Filter bar ── */
+    .ptb-filters { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .ptb-fg { display:flex; flex-direction:column; gap:2px; }
+    .ptb-fg label { font-size:.62rem; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; }
+    .ptb-fg .ms-btn { background:#282f3f !important; border-color:rgba(100,116,139,0.3) !important; color:#E8F4FD !important; padding:.3rem .55rem !important; font-size:.79rem !important; min-width:110px; }
+    .ptb-fg .ms-drop { background:#232a38 !important; border-color:rgba(100,116,139,.3) !important; }
+    .ptb-fg .ms-item { color:#E8F4FD !important; }
+    .ptb-fg .btn-ghost { padding:.32rem .7rem; font-size:.79rem; align-self:flex-end; }
+    .ms-search-wrap { padding:6px 8px 4px; }
+    .ms-search { width:100%; box-sizing:border-box; background:#282f3f; border:1px solid rgba(100,116,139,0.35); border-radius:5px; color:#E8F4FD; font-size:.78rem; padding:.28rem .5rem; outline:none; }
+    .ms-search::placeholder { color:rgba(232,244,253,.4); }
+  </style>
+</head>
+<body class="fr-page">
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="otif-detalhe.html" class="nav-brand">
+        <span style="font-size:1.4rem;font-weight:900;letter-spacing:.04em;text-transform:uppercase;margin-left:2rem;">OTIF Detalhe</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="painel-executivo.html">Painel Executivo</a></li>
+        <li><a href="fillrate.html">Fill Rate</a></li>
+        <li><a href="gestao-pedidos.html">Fill Rate Detalhe</a></li>
+        <li><a href="otif.html">OTIF</a></li>
+        <li><a href="otif-detalhe.html" class="active">OTIF Detalhe</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="btnTheme" title="Alternar tema">☀️</button>
+        <img src="logo-bimbo-qsr.png" alt="Bimbo QSR" class="ptb-logo-bimbo">
+      </div>
+    </div>
+  </nav>
+
+  <!-- FILTER BAR -->
+  <div class="page-title-bar">
+    <div class="ptb-left"></div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <div class="ptb-filters">
+        <div class="ptb-fg" style="min-width:95px"><label>Ano</label><div class="ms-wrap" id="ms-ano"></div></div>
+        <div class="ptb-fg" style="min-width:95px"><label>Mês</label><div class="ms-wrap" id="ms-mes"></div></div>
+        <div class="ptb-fg" style="min-width:85px"><label>Dia</label><div class="ms-wrap" id="ms-dia"></div></div>
+        <div class="ptb-fg" style="min-width:175px"><label>Semana</label><div class="ms-wrap" id="ms-semana"></div></div>
+        <div class="ptb-fg" style="min-width:120px"><label>Planta</label><div class="ms-wrap" id="ms-planta"></div></div>
+        <div class="ptb-fg" style="min-width:130px"><label>Cliente</label><div class="ms-wrap" id="ms-cliente"></div></div>
+        <div class="ptb-fg" style="min-width:175px"><label>Grupo Cliente</label><div class="ms-wrap" id="ms-grupo-cliente"></div></div>
+          <div class="ptb-fg" style="min-width:160px"><label>Responsável</label><div class="ms-wrap" id="ms-responsavel"></div></div>
+        <div class="ptb-fg" style="min-width:140px"><label>Status</label><div class="ms-wrap" id="ms-status"></div></div>
+        <div class="ptb-fg" style="min-width:140px"><label>Pedido</label><div class="ms-wrap" id="ms-pedido"></div></div>
+        <div class="ptb-fg" style="min-width:140px"><label>Remessa</label><div class="ms-wrap" id="ms-remessa"></div></div>
+        <button class="btn-ghost" id="btnClear" style="align-self:flex-end;padding:.32rem .7rem;font-size:.79rem">Limpar</button>
+      </div>
+    </div>
+  </div>
+  <div class="gradient-line"></div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="det-layout">
+
+    <!-- LEFT PANEL -->
+    <aside class="det-panel">
+      <!-- COLUNAS -->
+      <div class="det-panel-section">
+        <div class="det-panel-hdr">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          <span class="det-panel-title-txt">Colunas</span>
+          <button class="det-panel-collapse-btn" id="btnCollapseDetPanel" title="Minimizar painel">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+        </div>
+        <div class="det-panel-body">
+          <input class="det-search" id="search-dim" type="text" placeholder="Pesquisar...">
+          <label class="det-check-item all-item">
+            <input type="checkbox" id="chk-all-dim" checked> Selecionar tudo
+          </label>
+          <div id="list-dim"></div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- TABLE AREA -->
+    <div class="det-content">
+      <div class="det-card">
+        <div class="det-card-hdr">
+          <div class="det-card-hdr-left">
+            <span class="det-card-ttl">Dados OTIF</span>
+            <span class="det-card-sub" id="det-sub">Aplique os filtros e clique em Carregar</span>
+          </div>
+          <div class="det-card-actions">
+            <span class="det-count" id="det-count"></span>
+            <button class="btn-csv" id="btnCsv">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              CSV
+            </button>
+          </div>
+        </div>
+        <div class="det-table-wrap">
+          <table class="det-table" id="detTable">
+            <thead id="detThead"><tr><th colspan="18" class="det-state">—</th></tr></thead>
+            <tbody id="detTbody"><tr><td colspan="18" class="det-state">Aplique os filtros e clique em Carregar.</td></tr></tbody>
+          </table>
+        </div>
+        <div class="det-pagination" id="detPagination" style="display:none">
+          <button class="pg-btn" id="pgPrev">&#8592; Anterior</button>
+          <span class="pg-info" id="pgInfo">—</span>
+          <button class="pg-btn" id="pgNext">Próxima &#8594;</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* ── Column definitions ── */
+    const DIMS = [
+      { key: 'PEDIDO_MERCANET',      label: 'Pedido',                on: true  },
+      { key: 'REMESSA',              label: 'Remessa',               on: true  },
+      { key: 'CLIENTE',              label: 'Cliente',               on: false },
+      { key: 'GRUPO_CLIENTE',        label: 'Grupo Cliente',         on: true  },
+      { key: 'TIPO_FRETE',           label: 'Tipo Frete',            on: true  },
+      { key: 'PLANTA',               label: 'Planta',                on: true  },
+      { key: 'TRANSPORTADORA',       label: 'Transportadora',        on: false },
+      { key: 'DATA_GRADE',           label: 'Data Grade',            on: true  },
+      { key: 'DATA_AGENDA_ENTREGA',  label: 'Data Agenda Entrega',   on: true  },
+      { key: 'DATA_CHEGADA_PLANTA',  label: 'Data Chegada Planta',   on: true  },
+      { key: 'DATA_CHEGADA_DESTINO', label: 'Data Chegada Destino',  on: true  },
+      { key: 'OT_FOB',               label: 'On Time FOB',           on: false },
+      { key: 'OT_CIF',               label: 'On Time CIF',           on: false },
+      { key: 'INFULL',               label: 'In Full',               on: false },
+      { key: 'OTIF_FOB',             label: 'OTIF FOB',              on: true  },
+      { key: 'OTIF_CIF',             label: 'OTIF CIF',              on: true  },
+      { key: 'TEMPO_ATRASO_FOB',     label: 'Atraso FOB',            on: false },
+      { key: 'TEMPO_ATRASO_CIF',     label: 'Atraso CIF',            on: false },
+    ];
+    const MEDS = [];
+    const FLAG_COLS = new Set(['OT_FOB','OT_CIF','INFULL','OTIF_FOB','OTIF_CIF']);
+
+    /* ── State ── */
+    const API       = '';
+    let currentPage = 1;
+    let totalRows   = 0;
+    const PAGE_SIZE = 500;
+    let lastFilters = null;
+
+    /* ── Theme ── */
+    function isDark() { return document.documentElement.getAttribute('data-theme') !== 'light'; }
+    function applyTheme(dark) {
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+      document.getElementById('btnTheme').textContent = dark ? '🌙' : '☀️';
+      localStorage.setItem('fr-theme', dark ? 'dark' : 'light');
+    }
+    document.getElementById('btnTheme').addEventListener('click', () => applyTheme(!isDark()));
+
+    /* ── Column checkbox panels ── */
+    function buildPanel(listId, defs, searchId, allId) {
+      const list = document.getElementById(listId);
+      list.innerHTML = defs.map(d => `
+        <label class="det-check-item" data-key="${d.key}">
+          <input type="checkbox" value="${d.key}"${d.on !== false ? ' checked' : ''}> ${d.label}
+        </label>`).join('');
+
+      const allCb = document.getElementById(allId);
+      const total   = list.querySelectorAll('input').length;
+      const checked = list.querySelectorAll('input:checked').length;
+      allCb.checked = checked === total;
+      allCb.indeterminate = checked > 0 && checked < total;
+
+      document.getElementById(searchId).addEventListener('input', e => {
+        const q = e.target.value.toLowerCase();
+        list.querySelectorAll('.det-check-item').forEach(el => {
+          el.style.display = el.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+      });
+
+      allCb.addEventListener('change', e => {
+        list.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = e.target.checked);
+        renderTable();
+      });
+
+      list.addEventListener('change', () => {
+        const tot = list.querySelectorAll('input').length;
+        const chk = list.querySelectorAll('input:checked').length;
+        allCb.checked = chk === tot;
+        allCb.indeterminate = chk > 0 && chk < tot;
+        renderTable();
+      });
+    }
+
+    buildPanel('list-dim', DIMS, 'search-dim', 'chk-all-dim');
+
+    function getVisibleCols() {
+      const vis = [];
+      document.querySelectorAll('#list-dim input:checked').forEach(cb => vis.push(cb.value));
+      return vis;
+    }
+
+    /* ── MultiSelect ── */
+    class MultiSelect {
+      constructor(wrapperId, placeholder = 'Todas', { searchable = false } = {}) {
+        this.el = document.getElementById(wrapperId);
+        this.placeholder = placeholder;
+        this.searchable = searchable;
+        this._selected = new Set();
+        this._items = [];
+        this._query = '';
+        this._isOpen = false;
+        this._build();
+        document.addEventListener('click', e => { if (!this.el.contains(e.target)) this._setOpen(false); });
+      }
+      populate(items) {
+        this._items = items.map(i => typeof i === 'string' ? { value: i, label: i } : i);
+        this._selected.clear(); this._query = ''; this._renderItems(); this._updateBtn();
+      }
+      getValues() { return [...this._selected]; }
+      setValues(vals) { this._selected = new Set(vals.map(String)); this._renderItems(); this._updateBtn(); }
+      reset() { this._query = ''; this.setValues([]); }
+      _build() {
+        this.el.innerHTML = `<button class="ms-btn" type="button"><span class="ms-lbl">${this.placeholder}</span><svg class="ms-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button><div class="ms-drop"></div>`;
+        this.btnEl  = this.el.querySelector('.ms-btn');
+        this.lblEl  = this.el.querySelector('.ms-lbl');
+        this.dropEl = this.el.querySelector('.ms-drop');
+        this.btnEl.addEventListener('click', e => { e.stopPropagation(); this._setOpen(!this._isOpen); });
+      }
+      _visibleItems() {
+        if (!this.searchable || !this._query) return this._items;
+        const q = this._query.toLowerCase();
+        return this._items.filter(i => i.label.toLowerCase().includes(q));
+      }
+      _renderItems() {
+        if (!this._items.length) { this.dropEl.innerHTML = `<div style="padding:10px 13px;font-size:.8rem;opacity:.5">Carregando...</div>`; return; }
+        const visible = this._visibleItems();
+        const searchHtml = this.searchable ? `<div class="ms-search-wrap"><input class="ms-search" type="text" placeholder="Pesquisar..." value="${this._query.replace(/"/g,'&quot;')}"></div>` : '';
+        const allSel = visible.length > 0 && visible.every(i => this._selected.has(String(i.value)));
+        this.dropEl.innerHTML = searchHtml +
+          `<label class="ms-item ms-all${allSel?' ms-checked':''}"><input type="checkbox" class="ms-all-cb"${allSel?' checked':''}><span>${allSel?'Limpar seleção':'Selecionar tudo'}</span></label><div class="ms-sep"></div>` +
+          visible.map(item => `<label class="ms-item${this._selected.has(String(item.value))?' ms-checked':''}"><input type="checkbox" value="${String(item.value).replace(/"/g,'&quot;')}"${this._selected.has(String(item.value))?' checked':''}><span>${item.label}</span></label>`).join('');
+        if (this.searchable) {
+          const inp = this.dropEl.querySelector('.ms-search');
+          inp.addEventListener('click', e => e.stopPropagation());
+          inp.addEventListener('input', e => { this._query = e.target.value; this._renderItems(); this.dropEl.querySelector('.ms-search').focus(); });
+          if (this._query) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+        }
+        this.dropEl.querySelector('.ms-all-cb').addEventListener('change', e => {
+          e.stopPropagation();
+          if (e.target.checked) visible.forEach(i => this._selected.add(String(i.value)));
+          else visible.forEach(i => this._selected.delete(String(i.value)));
+          this._renderItems(); this._updateBtn();
+          this.el.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+        this.dropEl.querySelectorAll('input[type="checkbox"]:not(.ms-all-cb)').forEach(cb => {
+          cb.addEventListener('change', e => {
+            e.stopPropagation();
+            if (cb.checked) this._selected.add(cb.value); else this._selected.delete(cb.value);
+            cb.closest('.ms-item').classList.toggle('ms-checked', cb.checked);
+            const iAll = visible.every(i => this._selected.has(String(i.value)));
+            const allCb = this.dropEl.querySelector('.ms-all-cb');
+            if (allCb) { allCb.checked = iAll; allCb.closest('.ms-item').classList.toggle('ms-checked', iAll); const sp = allCb.nextElementSibling; if (sp) sp.textContent = iAll ? 'Limpar seleção' : 'Selecionar tudo'; }
+            this._updateBtn();
+            this.el.dispatchEvent(new Event('change', { bubbles: true }));
+          });
+        });
+      }
+      _updateBtn() {
+        const n = this._selected.size;
+        if (n === 0) { this.lblEl.innerHTML = this.placeholder; return; }
+        const labels = [...this._selected].map(v => { const i = this._items.find(x => String(x.value) === v); return i ? i.label : v; });
+        this.lblEl.innerHTML = (n <= 2 ? labels.join(', ') : labels.slice(0,2).join(', ')) + (n > 2 ? ` <span class="ms-count">+${n-2}</span>` : '');
+      }
+      _setOpen(v) {
+        this._isOpen = v;
+        if (v) this._renderItems();
+        this.dropEl.classList.toggle('ms-drop--open', v);
+        this.el.classList.toggle('ms-open', v);
+      }
+    }
+
+    /* ── Constants ── */
+    const MES_PT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+    /* ── MultiSelect instances ── */
+    const msAno          = new MultiSelect('ms-ano',           'Todos');
+    const msMes          = new MultiSelect('ms-mes',           'Todos');
+    const msDia          = new MultiSelect('ms-dia',           'Todos');
+    const msSemana       = new MultiSelect('ms-semana',        'Todas');
+    const msPlanta       = new MultiSelect('ms-planta',        'Todas');
+    const msCliente      = new MultiSelect('ms-cliente',       'Todos', { searchable: true });
+    const msGrupoCliente = new MultiSelect('ms-grupo-cliente', 'Todos', { searchable: true });
+    const msResponsavel = new MultiSelect('ms-responsavel', 'Todos', { searchable: true });
+    const msPedido       = new MultiSelect('ms-pedido',        'Todos', { searchable: true });
+    const msRemessa      = new MultiSelect('ms-remessa',       'Todas', { searchable: true });
+    const msStatus       = new MultiSelect('ms-status',        'Todos');
+    msStatus.populate([
+      { value: 'no_prazo',       label: 'No Prazo' },
+      { value: 'atraso_ot',      label: 'Atraso (OT)' },
+      { value: 'incompleto_if',  label: 'Incompleto (IF)' },
+      { value: 'conforme',       label: 'Conforme' },
+    ]);
+
+    /* ── Date helpers ── */
+    function getMonday(d) {
+      const dt = new Date(d), day = dt.getDay();
+      dt.setDate(dt.getDate() + (day === 0 ? -6 : 1) - day);
+      dt.setHours(0,0,0,0); return dt;
+    }
+    function isoWeekNumber(d) {
+      const dt = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dn = dt.getUTCDay() || 7;
+      dt.setUTCDate(dt.getUTCDate() + 4 - dn);
+      const ys = new Date(Date.UTC(dt.getUTCFullYear(), 0, 1));
+      return Math.ceil((((dt - ys) / 86400000) + 1) / 7);
+    }
+    const pad2    = n => String(n).padStart(2,'0');
+    const isoDate = d => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+    const fmtDM   = d => `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}`;
+
+    function populateAnos(preselect) {
+      const cur = new Date().getFullYear();
+      const items = [];
+      for (let y = cur - 2; y <= cur + 1; y++) items.push({ value: String(y), label: String(y) });
+      msAno.populate(items);
+      msAno.setValues(preselect != null ? preselect : [String(cur)]);
+    }
+    function populateMeses(preselect) {
+      const cur = new Date().getMonth() + 1;
+      msMes.populate(MES_PT.map((nm, i) => ({ value: String(i + 1), label: nm })));
+      msMes.setValues(preselect != null ? preselect : [String(cur)]);
+    }
+    function populateDias() {
+      msDia.populate(Array.from({ length: 31 }, (_, i) => ({ value: String(i + 1), label: String(i + 1) })));
+    }
+    function populateSemanas() {
+      const selectedAnos  = msAno.getValues().map(Number).filter(Boolean);
+      const selectedMeses = msMes.getValues().map(Number).filter(Boolean);
+      const today = new Date();
+      let startDate, endDate;
+      if (selectedAnos.length && selectedMeses.length) {
+        let globalStart = null, globalEnd = null;
+        selectedAnos.forEach(y => { selectedMeses.forEach(m => {
+          const first = new Date(y, m - 1, 1), last = new Date(y, m, 0);
+          if (!globalStart || first < globalStart) globalStart = first;
+          if (!globalEnd   || last  > globalEnd)   globalEnd   = last;
+        }); });
+        startDate = globalStart; endDate = globalEnd;
+      } else if (selectedAnos.length) {
+        startDate = new Date(Math.min(...selectedAnos), 0, 1);
+        endDate   = new Date(Math.max(...selectedAnos), 11, 31);
+      } else if (selectedMeses.length) {
+        const y = today.getFullYear();
+        startDate = new Date(y, Math.min(...selectedMeses) - 1, 1);
+        endDate   = new Date(y, Math.max(...selectedMeses), 0);
+      } else {
+        const mon = getMonday(today);
+        startDate = new Date(mon); startDate.setDate(startDate.getDate() - 25 * 7);
+        endDate   = today;
+      }
+      const weeksMap = new Map();
+      let mon = getMonday(startDate);
+      while (mon <= endDate) {
+        const sun = new Date(mon); sun.setDate(sun.getDate() + 6);
+        const key = isoDate(mon);
+        if (!weeksMap.has(key)) weeksMap.set(key, { mon: new Date(mon), sun: new Date(sun) });
+        mon = new Date(mon); mon.setDate(mon.getDate() + 7);
+      }
+      const weeks = [...weeksMap.values()].sort((a, b) => b.mon - a.mon);
+      const prevSelected = new Set(msSemana.getValues());
+      msSemana.populate(weeks.map(({ mon, sun }) => ({
+        value: `${isoDate(mon)}|${isoDate(sun)}`,
+        label: `S${isoWeekNumber(mon)} · ${fmtDM(mon)}-${fmtDM(sun)}/${sun.getFullYear()}`
+      })));
+      const validPrev = weeks.map(({ mon, sun }) => `${isoDate(mon)}|${isoDate(sun)}`).filter(v => prevSelected.has(v));
+      if (validPrev.length) msSemana.setValues(validPrev);
+    }
+
+    /* ── Filters & params ── */
+    function getFilters() {
+      return {
+        semanas:        msSemana.getValues(),
+        anos:           msAno.getValues(),
+        meses:          msMes.getValues(),
+        dias:           msDia.getValues(),
+        plantas:        msPlanta.getValues(),
+        clientes:       msCliente.getValues(),
+        grupos_cliente: msGrupoCliente.getValues(),
+        responsaveis:   msResponsavel.getValues(),
+        pedidos:        msPedido.getValues(),
+        remessas:       msRemessa.getValues(),
+        status:         msStatus.getValues(),
+      };
+    }
+    function buildParams(f) {
+      const p = new URLSearchParams();
+      (f.semanas        || []).forEach(v => p.append('semana',        v));
+      (f.anos           || []).forEach(v => p.append('ano',           v));
+      (f.meses          || []).forEach(v => p.append('mes',           v));
+      (f.dias           || []).forEach(v => p.append('dia',           v));
+      (f.plantas        || []).forEach(v => p.append('planta',        v));
+      (f.clientes       || []).forEach(v => p.append('cliente',       v));
+      (f.grupos_cliente || []).forEach(v => p.append('grupo_cliente', v));
+      (f.responsaveis || []).forEach(v => p.append('responsavel', v));
+      (f.pedidos        || []).forEach(v => p.append('pedido',        v));
+      (f.remessas       || []).forEach(v => p.append('remessa',       v));
+      (f.status         || []).forEach(v => p.append('status',        v));
+      return p;
+    }
+
+    /* ── Load dropdowns ── */
+    async function loadPlantas() {
+      try { const r = await fetch(`${API}/api/otif2/plantas`); msPlanta.populate(await r.json()); } catch {}
+    }
+    async function loadGruposCliente() {
+      try { const r = await fetch(`${API}/api/otif2/grupos-cliente`); msGrupoCliente.populate(await r.json()); } catch {}
+    }
+
+    async function loadResponsaveis() {
+      try { const r = await fetch(`${API}/api/otif2/responsaveis`); msResponsavel.populate(await r.json()); } catch {}
+    }
+    async function loadClientes(grupos = []) {
+      try {
+        const p = new URLSearchParams();
+        grupos.forEach(v => p.append('grupo_cliente', v));
+        const r    = await fetch(`${API}/api/otif2/clientes?${p}`);
+        const data = await r.json();
+        const prev = msCliente.getValues();
+        msCliente.populate(data);
+        const valid = prev.filter(v => data.includes(v));
+        if (valid.length) msCliente.setValues(valid);
+      } catch {}
+    }
+    async function loadPedidos() {
+      try { const r = await fetch(`${API}/api/otif2/pedidos`); msPedido.populate(await r.json()); } catch {}
+    }
+    async function loadRemessas() {
+      try { const r = await fetch(`${API}/api/otif2/remessas`); msRemessa.populate(await r.json()); } catch {}
+    }
+
+    /* ── Change listeners ── */
+    function loadAll() { loadData(1); }
+
+    /* ── Load data ── */
+    let loadedRows = [];
+
+    async function loadData(page = 1) {
+      const f = getFilters();
+      lastFilters = f;
+      currentPage = page;
+      const p = buildParams(f);
+      p.set('page', page);
+      document.getElementById('detTbody').innerHTML = `<tr><td colspan="20" class="det-state">Carregando...</td></tr>`;
+      document.getElementById('det-sub').textContent = 'Carregando dados...';
+      document.getElementById('detPagination').style.display = 'none';
+      try {
+        const r    = await fetch(`${API}/api/otif2/detalhe?${p}`);
+        const data = await r.json();
+        if (data.error) throw new Error(data.error);
+        loadedRows = data.rows;
+        totalRows  = data.total;
+        sortCol = null; sortDir = 'asc';
+        const totalPages = Math.ceil(totalRows / PAGE_SIZE);
+        document.getElementById('det-sub').textContent = `Página ${page} de ${totalPages} · 500 linhas por página`;
+        document.getElementById('det-count').innerHTML = `<strong>${totalRows.toLocaleString('pt-BR')}</strong> registros`;
+        renderTable();
+        updatePagination(page, totalPages);
+      } catch (err) {
+        document.getElementById('detTbody').innerHTML = `<tr><td colspan="20" class="det-state" style="color:#DA2E39">Erro: ${err.message}</td></tr>`;
+      }
+    }
+
+    const DELAY_COLS = new Set(['TEMPO_ATRASO_FOB','TEMPO_ATRASO_CIF']);
+
+    function fmtFlag(v) {
+      if (v === '' || v === null || v === undefined) return `<span style="color:#475569">—</span>`;
+      const ok = v === '1' || v === 1;
+      const c  = ok ? '#22c55e' : '#DA2E39';
+      const lbl = ok ? '\u2713 Sim' : '\u2717 N\u00e3o';
+      return `<div style="position:relative;background:rgba(255,255,255,.06);border-radius:4px;height:22px;overflow:hidden;min-width:60px"><div style="position:absolute;left:0;top:0;height:100%;width:100%;background:${c};border-radius:4px;opacity:.22"></div><span style="position:relative;font-weight:700;font-size:.79rem;line-height:22px;display:block;text-align:center;color:${c}">${lbl}</span></div>`;
+    }
+
+    function fmtDelay(min) {
+      const m = Math.round(Number(min) || 0);
+      if (m <= 0) return `<span style="color:#475569">—</span>`;
+      const txt = m < 60 ? `${m} min` : (m % 60 > 0 ? `${Math.floor(m/60)}h ${m%60}min` : `${Math.floor(m/60)}h`);
+      return `<span style="color:#f59e0b;font-weight:700">${txt}</span>`;
+    }
+
+    let sortCol = null, sortDir = 'asc';
+
+    const SORT_ICON = `<span class="sort-icon"><svg class="arr-up"  width="8" height="5" viewBox="0 0 8 5"><path d="M4 0L8 5H0z" fill="currentColor"/></svg><svg class="arr-down" width="8" height="5" viewBox="0 0 8 5"><path d="M4 5L0 0h8z" fill="currentColor"/></svg></span>`;
+
+    function sortedRows() {
+      if (!sortCol) return loadedRows;
+      return [...loadedRows].sort((a, b) => {
+        const av = a[sortCol] ?? '', bv = b[sortCol] ?? '';
+        const an = Number(av), bn = Number(bv);
+        const cmp = (!isNaN(an) && !isNaN(bn)) ? (an - bn) : av.localeCompare(bv, 'pt-BR', { numeric: true });
+        return sortDir === 'asc' ? cmp : -cmp;
+      });
+    }
+
+    function renderTable() {
+      const cols  = getVisibleCols();
+      const thead = document.getElementById('detThead');
+      const tbody = document.getElementById('detTbody');
+
+      if (!loadedRows.length) {
+        thead.innerHTML = '<tr><th class="det-state">—</th></tr>';
+        tbody.innerHTML = `<tr><td class="det-state">Nenhum dado carregado.</td></tr>`;
+        return;
+      }
+
+      thead.innerHTML = '<tr>' + cols.map(k => {
+        const def = [...DIMS, ...MEDS].find(d => d.key === k);
+        const cls = k === sortCol ? ` class="sort-${sortDir}"` : '';
+        return `<th${cls} data-col="${k}">${def ? def.label : k}${SORT_ICON}</th>`;
+      }).join('') + '</tr>';
+
+      thead.querySelectorAll('th[data-col]').forEach(th => {
+        th.addEventListener('click', () => {
+          const k = th.dataset.col;
+          if (sortCol === k) { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
+          else { sortCol = k; sortDir = 'asc'; }
+          renderTable();
+        });
+      });
+
+      tbody.innerHTML = sortedRows().map(row => {
+        const cells = cols.map(k => {
+          const tp = (row['TIPO_FRETE'] || '').toUpperCase();
+          if (k === 'OTIF_CIF' && tp === 'FOB') return `<td style="white-space:nowrap"><span style="color:#475569">—</span></td>`;
+          if (k === 'OTIF_FOB' && tp === 'CIF') return `<td style="white-space:nowrap"><span style="color:#475569">—</span></td>`;
+          const v = row[k] ?? '';
+          if (FLAG_COLS.has(k))  return `<td style="white-space:nowrap">${fmtFlag(v)}</td>`;
+          if (DELAY_COLS.has(k)) return `<td style="white-space:nowrap">${fmtDelay(v)}</td>`;
+          return `<td>${v}</td>`;
+        }).join('');
+        return `<tr>${cells}</tr>`;
+      }).join('');
+    }
+
+    function updatePagination(page, totalPages) {
+      const pg = document.getElementById('detPagination');
+      if (totalPages <= 1) { pg.style.display = 'none'; return; }
+      pg.style.display = 'flex';
+      document.getElementById('pgInfo').textContent = `Página ${page} de ${totalPages}`;
+      document.getElementById('pgPrev').disabled = page <= 1;
+      document.getElementById('pgNext').disabled = page >= totalPages;
+    }
+
+    document.getElementById('pgPrev').addEventListener('click', () => loadData(currentPage - 1));
+    document.getElementById('pgNext').addEventListener('click', () => loadData(currentPage + 1));
+    /* ── CSV download ── */
+    document.getElementById('btnCsv').addEventListener('click', async () => {
+      const f = lastFilters || getFilters();
+      const p = buildParams(f);
+      p.set('download', '1');
+      try {
+        const r    = await fetch(`${API}/api/otif2/detalhe?${p}`);
+        const data = await r.json();
+        if (data.error) { alert('Erro: ' + data.error); return; }
+        const cols   = getVisibleCols();
+        const defs   = [...DIMS, ...MEDS];
+        const header = cols.map(k => { const d = defs.find(x => x.key === k); return d ? d.label : k; }).join(';');
+        const lines  = data.rows.map(row => cols.map(k => `"${(row[k]??'').toString().replace(/"/g,'""')}"`).join(';'));
+        const csv    = '﻿' + [header, ...lines].join('\n');
+        const blob   = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url    = URL.createObjectURL(blob);
+        const a      = document.createElement('a');
+        a.href = url; a.download = 'otif_detalhe.csv'; a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) { alert('Erro ao gerar CSV: ' + err.message); }
+    });
+
+    /* ── State persistence across navigation ── */
+    const _PAGE_KEY = 'otif-det-page-state';
+    const _isReload = (performance.getEntriesByType('navigation')[0]?.type === 'reload');
+    if (_isReload) sessionStorage.removeItem(_PAGE_KEY);
+
+    function _savePageState() {
+      const state = {
+        anos: msAno.getValues(),
+        meses: msMes.getValues(),
+        dias: msDia.getValues(),
+        semanas: msSemana.getValues(),
+        plantas: msPlanta.getValues(),
+        grupos: msGrupoCliente.getValues(),
+        clientes: msCliente.getValues(),
+        pedidos: msPedido.getValues(),
+        remessas: msRemessa.getValues(),
+      };
+      sessionStorage.setItem(_PAGE_KEY, JSON.stringify(state));
+    }
+    function _getSavedState() {
+      try { return JSON.parse(sessionStorage.getItem(_PAGE_KEY)); } catch { return null; }
+    }
+
+    /* ── Init ── */
+    /* ── Panel collapse/expand toggle ── */
+    document.getElementById('btnCollapseDetPanel').addEventListener('click', () => {
+      const panel = document.querySelector('.det-panel');
+      const collapsed = panel.classList.toggle('collapsed');
+      localStorage.setItem('otif-det-panel-collapsed', collapsed ? '1' : '0');
+    });
+
+    (function init() {
+      const saved = localStorage.getItem('fr-theme') || 'light';
+      applyTheme(saved === 'dark');
+
+      // Read URL params (from Prioridades de Ação navigation)
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramAnos = urlParams.getAll('ano');
+      const paramMeses = urlParams.getAll('mes');
+      const paramPlanta = urlParams.get('planta');
+      const paramGrupo = urlParams.get('grupo_cliente');
+      const hasUrlParams = paramAnos.length || paramMeses.length || paramPlanta || paramGrupo;
+
+      // If no URL params, try to restore saved state
+      const ss = !hasUrlParams ? _getSavedState() : null;
+
+      populateAnos(paramAnos.length ? paramAnos : (ss && ss.anos && ss.anos.length ? ss.anos : undefined));
+      populateMeses(paramMeses.length ? paramMeses : (ss && ss.meses && ss.meses.length ? ss.meses : undefined));
+      populateDias();
+      populateSemanas();
+      if (ss) {
+        if (ss.dias && ss.dias.length) msDia.setValues(ss.dias);
+        if (ss.semanas && ss.semanas.length) msSemana.setValues(ss.semanas);
+      }
+
+      Promise.all([loadPlantas(), loadClientes(), loadGruposCliente(), loadResponsaveis(), loadPedidos(), loadRemessas()]).then(() => {
+        // Apply URL filters after dropdowns are populated (URL params take priority)
+        if (paramPlanta) msPlanta.setValues([paramPlanta]);
+        else if (ss && ss.plantas && ss.plantas.length) msPlanta.setValues(ss.plantas);
+        if (paramGrupo) msGrupoCliente.setValues([paramGrupo]);
+        else if (ss && ss.grupos && ss.grupos.length) msGrupoCliente.setValues(ss.grupos);
+        if (!hasUrlParams && ss) {
+          if (ss.clientes && ss.clientes.length) msCliente.setValues(ss.clientes);
+          if (ss.pedidos && ss.pedidos.length) msPedido.setValues(ss.pedidos);
+          if (ss.remessas && ss.remessas.length) msRemessa.setValues(ss.remessas);
+        }
+        loadData(1); loadResumo();
+      });
+    })();
+  </script>
+</body>
+</html>

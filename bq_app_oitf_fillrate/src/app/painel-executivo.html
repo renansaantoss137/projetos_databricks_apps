@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Executivo | Bimbo Brasil</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/themes/dark.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+  <style>
+
+    body.fr-page { background: var(--fr-bg); color: var(--fr-txt); transition: background .25s, color .25s; }
+
+    .theme-toggle {
+      width:34px; height:34px; border-radius:50%;
+      border:1.5px solid rgba(255,255,255,0.22);
+      background:rgba(255,255,255,0.08);
+      cursor:pointer; font-size:15px;
+      display:flex; align-items:center; justify-content:center;
+      transition:background .2s; flex-shrink:0;
+    }
+    .theme-toggle:hover { background:rgba(255,255,255,0.16); }
+    [data-theme="light"] .theme-toggle { border-color:rgba(38,53,118,0.2); background:rgba(38,53,118,0.06); }
+
+    /* KPI card inner elements (same as OTIF page) */
+    .kpi-head { display:flex; justify-content:center; align-items:center; position:relative; padding:0; min-height:20px; }
+    .kpi-title { font-size:.6rem; text-transform:uppercase; letter-spacing:.07em; font-weight:800; color:#ffffff; line-height:1.2; text-align:center; }
+    .kpi-badge { width:22px; height:22px; border-radius:6px; background:rgba(255,255,255,.07); display:flex; align-items:center; justify-content:center; flex-shrink:0; position:absolute; right:0; top:0; }
+    .kpi-badge svg { width:12px; height:12px; }
+    .kpi-val-row { display:flex; align-items:baseline; justify-content:center; position:relative; }
+    .kpi-val-row .fr-kpi-val.big { flex-shrink:0; }
+    .kpi-val-row .kpi-delta-meta { display:flex; flex-direction:column; align-items:flex-start; gap:.1rem; position:absolute; right:.4rem; top:50%; transform:translateY(-50%); }
+    .kpi-meta-line { font-size:.44rem; text-transform:uppercase; letter-spacing:.05em; color:var(--fr-txt-soft); white-space:nowrap; }
+    .kpi-dual-vals { display:flex; gap:1.2rem; justify-content:center; align-items:flex-start; margin-bottom:0; }
+    .kpi-dual-item { display:flex; flex-direction:column; align-items:center; gap:1px; }
+    .kpi-dual-item-lbl { font-size:.44rem; text-transform:uppercase; letter-spacing:.06em; color:var(--fr-txt-soft); }
+    .kpi-dual-item .fr-kpi-val { font-size:.82rem; }
+    .kpi-foot { display:grid; grid-template-columns:1fr 1fr minmax(70px,auto); gap:0; margin-top:auto; padding-top:.15rem; border-top:1px solid rgba(255,255,255,.06); }
+    .kpi-metric { display:flex; flex-direction:column; gap:2px; }
+    .kpi-metric:nth-child(2) { border-left:1px solid rgba(255,255,255,.06); padding-left:.5rem; }
+    .kpi-metric.kpi-atraso { border-left:1px solid rgba(255,255,255,.06); padding-left:.5rem; text-align:right; }
+    .kpi-metric-lbl { font-size:.55rem; text-transform:uppercase; letter-spacing:.06em; color:var(--fr-txt-soft); white-space:nowrap; }
+    .kpi-metric-val { font-size:.78rem; font-weight:700; font-variant-numeric:tabular-nums; color:var(--fr-txt); }
+    .kpi-delta { display:flex; align-items:center; justify-content:center; gap:2px; font-size:.52rem; font-weight:700; }
+    .kpi-delta .delta-arrow { font-size:.5rem; line-height:1; }
+    .kpi-delta.above { color:#22c55e; }
+    .kpi-delta.below { color:#ef4444; }
+
+    /* Filter bar inline */
+    .ptb-filters { display:flex; align-items:flex-end; gap:8px; flex-wrap:wrap; }
+    .ptb-fg { display:flex; flex-direction:column; gap:2px; }
+    .ptb-fg label { font-size:.6rem; color:var(--fr-txt-soft); text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; }
+    .ptb-fg .ms-btn { background:var(--fr-input-bg) !important; border-color:rgba(100,116,139,0.3) !important; color:var(--fr-txt) !important; padding:.3rem .55rem !important; font-size:.79rem !important; min-width:90px; }
+    .ptb-fg .ms-drop { background:#232a38 !important; border-color:rgba(100,116,139,.3) !important; }
+    .ptb-fg .ms-item { color:#E8F4FD !important; }
+    .ms-search { width:calc(100% - 16px); margin:6px 8px 4px; padding:5px 8px; border-radius:5px; border:1px solid rgba(100,116,139,.35); background:rgba(255,255,255,.06); color:var(--fr-txt); font-size:.78rem; outline:none; }
+    .ms-search:focus { border-color:rgba(96,165,250,.6); }
+    [data-theme="light"] .ms-search { background:rgba(0,0,0,.04); border-color:rgba(0,0,0,.15); color:#1e293b; }
+
+    /* Period selector */
+    .period-sel { display:flex; align-items:center; gap:6px; overflow:visible; }
+    .period-sel label { font-size:.73rem; font-weight:600; color:var(--fr-txt-soft); margin-right:2px; }
+    /* ms-btn no period-sel usa as mesmas cores do select */
+    .period-sel .ms-btn {
+      background:var(--fr-input-bg); border-color:var(--fr-input-b); color:var(--fr-txt);
+      padding:.3rem .55rem; font-size:.79rem;
+    }
+    .period-sel .ms-drop { background:#232a38; border-color:var(--fr-input-b); }
+    .period-sel select {
+      background:var(--fr-input-bg); border:1px solid var(--fr-input-b);
+      color:var(--fr-txt); border-radius:7px; padding:.3rem .55rem;
+      font-size:.79rem; font-family:inherit; cursor:pointer;
+    }
+    .period-sel select option { background:var(--fr-opt-bg); color:var(--fr-txt); }
+    .period-sel input[type="text"],
+    .period-sel .flatpickr-alt-input {
+      background:var(--fr-input-bg) !important; border:1px solid var(--fr-input-b) !important;
+      color:var(--fr-txt) !important; border-radius:7px; padding:.3rem .55rem;
+      font-size:.79rem; font-family:inherit; width:96px; outline:none; cursor:pointer;
+    }
+    .period-sel select.ptb-select { width:175px; }
+
+    .fr-content { max-width:1600px; margin:0 auto; padding:1.5rem 1.75rem 4rem; }
+
+    /* ── KPI cards ── */
+    .fr-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:1.2rem; margin-bottom:1.5rem; }
+    .fr-kpi-card {
+      background: linear-gradient(#282f3f,#232a38) padding-box, var(--kpi-border-grad) border-box;
+      border:1.5px solid transparent; border-radius:12px;
+      padding:.5rem .9rem .4rem; position:relative; overflow:hidden;
+      box-shadow:0 2px 16px rgba(0,0,0,.4), 0 0 0 0 var(--kpi-glow);
+      transition:transform .2s,box-shadow .25s;
+      display:flex; flex-direction:column; gap:.1rem;
+      --kpi-border-grad: linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.04));
+      --kpi-glow: rgba(255,255,255,0);
+    }
+    .fr-kpi-card:hover { transform:translateY(-3px); box-shadow:0 6px 28px rgba(0,0,0,.5), 0 0 18px 2px var(--kpi-glow); }
+    .fr-kpi-card::after { display:none; }
+    [data-theme="light"] .fr-kpi-card { background: #ffffff padding-box, var(--kpi-border-grad) border-box; }
+    /* Card sempre tem fundo escuro — forçar texto claro independente do tema */
+    .fr-kpi-card { --fr-txt: #E8F4FD; --fr-txt-soft: rgba(168,204,223,0.72); }
+    /* Coloured neon accents (same as OTIF/fillrate) */
+    .k-green { --kpi-border-grad: linear-gradient(135deg,#059669,#34d399,#047857); --kpi-glow: rgba(16,185,129,.4); }
+    .k-blue  { --kpi-border-grad: linear-gradient(135deg,#1d4ed8,#60a5fa,#1e40af); --kpi-glow: rgba(59,130,246,.3); }
+    .k-amber { --kpi-border-grad: linear-gradient(135deg,#d97706,#fbbf24,#b45309); --kpi-glow: rgba(245,158,11,.4); }
+    .k-red   { --kpi-border-grad: linear-gradient(135deg,#dc2626,#f87171,#b91c1c); --kpi-glow: rgba(239,68,68,.35); }
+    #card-otif { --kpi-border-grad: linear-gradient(135deg,#059669,#34d399,#047857); --kpi-glow: rgba(16,185,129,.45); }
+
+    .fr-kpi-lbl { font-size:.6rem; text-transform:uppercase; letter-spacing:.07em; font-weight:800; color:#ffffff; margin-bottom:.1rem; text-align:center; }
+    .fr-kpi-val { font-size:1.3rem; font-weight:900; line-height:1; color:var(--fr-txt); font-variant-numeric:tabular-nums; text-align:center; margin-top:auto; margin-bottom:auto; }
+    .fr-kpi-val.big { font-size:1.4rem; }
+    .fr-kpi-sub { font-size:.5rem; color:var(--fr-txt-soft); opacity:.8; text-align:center; }
+
+    /* Delta vs mês anterior */
+    .exec-delta { margin-top:.5rem; font-size:.76rem; font-weight:700; display:flex; align-items:center; gap:3px; color:var(--fr-txt-soft); }
+    .exec-delta.up   { color:#22c55e; }
+    .exec-delta.down { color:#DA2E39; }
+
+    /* ── Executive layout: 3-row structure ── */
+    .exec-charts-row { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:1.2rem; margin-bottom:1.2rem; align-items:stretch; }
+    .exec-tables-row  { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:1.2rem; margin-bottom:1.2rem; align-items:stretch; }
+    /* Compact chart row: bounded card heights keep both graphs proportional */
+    .exec-charts-row > .fr-chart-card,
+    .exec-charts-row > .exec-pareto-card { max-height:420px; min-height:320px; }
+    .exec-charts-row .fr-chart-body,
+    .exec-charts-row .pareto-chart-wrap  { min-height:0; }
+
+    /* ── Chart / executive cards ── */
+    .fr-chart-card,
+    .exec-pareto-card,
+    .exec-priorities-card,
+    .exec-pareto-table-card,
+    .exec-readout-card {
+      background:var(--fr-surface); border:1px solid var(--fr-border); border-radius:14px;
+      padding:1.15rem 1.25rem 1.1rem; box-shadow:0 2px 14px var(--fr-shadow);
+      display:flex; flex-direction:column; min-height:0; height:100%;
+    }
+    .exec-readout-full { height:auto !important; margin-bottom:1.2rem; }
+    .fr-chart-ttl, .exec-card-title { font-size:.95rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--fr-txt); text-align:center; margin-bottom:.22rem; }
+    .fr-chart-sub, .exec-card-sub { font-size:.72rem; color:var(--fr-txt-soft); text-align:center; margin-bottom:.8rem; line-height:1.45; }
+    .fr-chart-body { position:relative; flex:1; min-height:280px; }
+    .fr-chart-body canvas { position:absolute; inset:0; }
+    .fr-no-data {
+      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+      font-size:.84rem; color:var(--fr-txt-soft); font-style:italic;
+    }
+
+    /* Legend pills */
+    .legend-pills { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:.7rem; }
+    .pill { display:inline-flex; align-items:center; gap:5px; font-size:.7rem; font-weight:600; color:var(--fr-txt-soft); }
+    .pill-line   { width:18px; height:3px; border-radius:2px; flex-shrink:0; }
+    .pill-area   { width:18px; height:10px; border-radius:3px; flex-shrink:0; opacity:.75; }
+    .pill-dashed { width:18px; height:0; border-top:2.5px dashed; flex-shrink:0; }
+
+    /* ── Risk ranking ── */
+    .exec-ranking {
+      background:var(--fr-surface); border:1px solid var(--fr-border); border-radius:14px;
+      padding:1.3rem 1.4rem; box-shadow:0 2px 14px var(--fr-shadow);
+      display:flex; flex-direction:column; min-height:0;
+    }
+    .exec-ranking-ttl { font-size:.9rem; font-weight:700; color:var(--fr-txt); margin-bottom:1rem; flex-shrink:0; }
+    #rankingList { overflow-y:auto; flex:1; max-height:340px; padding-right:2px; }
+    #rankingList::-webkit-scrollbar { width:4px; }
+    #rankingList::-webkit-scrollbar-track { background:transparent; }
+    #rankingList::-webkit-scrollbar-thumb { background:rgba(100,116,139,0.3); border-radius:2px; }
+
+    .risk-card {
+      border:1px solid var(--fr-border); border-radius:10px; padding:.85rem 1rem .8rem 1.2rem;
+      margin-bottom:.65rem; position:relative;
+    }
+    .risk-card:last-child { margin-bottom:0; }
+    .risk-card::before {
+      content:''; position:absolute; left:0; top:0; bottom:0;
+      width:4px; border-radius:10px 0 0 10px;
+    }
+    .risk-card.rc-red::before   { background:#DA2E39; }
+    .risk-card.rc-amber::before { background:#f59e0b; }
+    .risk-card.rc-green::before { background:#22c55e; }
+    .risk-rank    { font-size:.59rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--fr-txt-soft); margin-bottom:3px; }
+    .risk-empresa { font-size:1.05rem; font-weight:800; color:var(--fr-txt); margin-bottom:3px; }
+    .risk-otif    { font-size:1.6rem; font-weight:900; font-variant-numeric:tabular-nums; line-height:1; margin-bottom:5px; }
+    .risk-detail  { font-size:.69rem; color:var(--fr-txt-soft); line-height:1.5; }
+    .risk-detail strong { color:var(--fr-txt); }
+
+    /* ── Scorecard table ── */
+    .fr-table-card {
+      background:var(--fr-surface); border:1px solid var(--fr-border); border-radius:14px;
+      overflow:hidden; box-shadow:0 2px 14px var(--fr-shadow);
+    }
+    .fr-tc-hdr {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1.1rem 1.4rem; border-bottom:1px solid var(--fr-sep); flex-wrap:wrap; gap:.75rem;
+    }
+    .fr-tc-ttl { font-size:.95rem; font-weight:700; color:var(--fr-txt); }
+    .fr-tc-sub { font-size:.72rem; color:var(--fr-txt-soft); margin-top:2px; }
+
+    .fr-table { width:100%; border-collapse:collapse; }
+    .fr-table thead th {
+      background:var(--fr-th-bg); color:var(--fr-th-txt);
+      font-size:.67rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+      padding:.75rem 1rem; text-align:center; white-space:nowrap;
+    }
+    .fr-table thead th:first-child { text-align:left; min-width:110px; }
+    .fr-table tbody tr { border-bottom:1px solid var(--fr-sep); transition:background .15s; }
+    .fr-table tbody tr:nth-child(odd)  { background:var(--fr-tr-odd); }
+    .fr-table tbody tr:nth-child(even) { background:var(--fr-tr-even); }
+    .fr-table tbody tr:hover { background:var(--fr-tr-hover); }
+    .fr-table tbody td { padding:.75rem 1rem; font-size:.85rem; color:var(--fr-txt); text-align:center; white-space:nowrap; }
+    .fr-table tbody td:first-child { text-align:left; }
+    .fr-table tfoot td {
+      padding:.7rem 1rem; font-size:.84rem; font-weight:700; color:var(--fr-txt);
+      border-top:2px solid var(--fr-border); background:var(--fr-surface); text-align:center;
+    }
+    .fr-table tfoot td:first-child { text-align:left; }
+
+    .empresa-lbl { font-weight:700; color:#248DC1; }
+    .fr-state td { text-align:center; padding:2.5rem; color:var(--fr-txt-soft); font-size:.85rem; }
+
+    /* ── Sort indicators ── */
+    .fr-table thead th[data-sort] { cursor:pointer; }
+    .fr-table thead th[data-sort]:hover { background: #26407a; }
+    .fr-table thead th .si { font-style:normal; margin-left:4px; opacity:.35; font-size:.75em; }
+    .fr-table thead th.sort-asc  .si::before { content:'↑'; }
+    .fr-table thead th.sort-desc .si::before { content:'↓'; }
+    .fr-table thead th.sort-asc  .si, .fr-table thead th.sort-desc .si { opacity:1; color:#60c8ef; font-size:.85em; }
+    .fr-table thead th:not(.sort-asc):not(.sort-desc) .si::before { content:'↕'; }
+
+    /* Metric cell: colored dot + value */
+    .mc { display:inline-flex; align-items:center; gap:6px; font-weight:700; font-variant-numeric:tabular-nums; }
+    .mc-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+    .dot-g { background:#22c55e; }
+    .dot-a { background:#f59e0b; }
+    .dot-r { background:#DA2E39; }
+
+    /* Trend mini-bars in scorecard */
+    .score-bar-bg   { display:inline-block; width:55px; height:5px; background:var(--fr-border); border-radius:3px; overflow:hidden; vertical-align:middle; margin-left:4px; }
+    .score-bar-fill { display:block; height:100%; border-radius:3px; }
+
+    /* Toggle buttons (same style as fillrate "Gráfico / Tabela") */
+    .chart-dim-toggle { display:flex; border-radius:8px; overflow:hidden; border:1px solid rgba(100,116,139,0.3); }
+    .cdt-btn { background:transparent; border:none; color:var(--fr-txt-soft); font-size:.72rem; font-weight:600; padding:.35rem .75rem; cursor:pointer; transition:background .2s, color .2s; font-family:inherit; }
+    .cdt-btn.active { background:rgba(100,116,139,0.25); color:var(--fr-txt); }
+    .cdt-btn:hover:not(.active) { background:rgba(100,116,139,0.12); }
+
+    .action-priority-card { justify-content:space-between; }
+    .action-priority-scope { font-size:.52rem; color:var(--fr-txt-soft); text-transform:uppercase; letter-spacing:.06em; text-align:center; }
+    .action-priority-name { font-size:1rem; font-weight:800; color:var(--fr-txt); text-align:center; line-height:1.2; margin:.15rem 0; }
+    .action-priority-tags { display:flex; justify-content:center; gap:.35rem; flex-wrap:wrap; margin:.2rem 0 .35rem; }
+    .action-tag { font-size:.54rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:.18rem .42rem; border-radius:999px; border:1px solid rgba(255,255,255,.12); color:var(--fr-txt); background:rgba(255,255,255,.05); }
+    .action-priority-metrics { display:grid; grid-template-columns:1fr 1fr; gap:.55rem; margin-top:.4rem; }
+    .action-priority-metric { border-top:1px solid rgba(255,255,255,.08); padding-top:.35rem; text-align:center; }
+
+    #card-otif { justify-content:center; }
+    #card-otif .kpi-head { margin-bottom:.15rem; }
+    #card-otif .kpi-val-row {
+      display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
+      width:100%; min-height:56px; margin:.05rem 0 .15rem;
+    }
+    #card-otif .fr-kpi-val.big { grid-column:2; justify-self:center; text-align:center; }
+    #card-otif .kpi-delta-meta {
+      position:static; transform:none; grid-column:3; justify-self:start;
+      align-items:flex-start; text-align:left; gap:.08rem; padding-left:.45rem;
+    }
+    #card-otif #delta-otif-mom { margin:.05rem 0 .2rem; font-size:.58rem !important; }
+    #kpi-pedidos, #kpi-remessas { font-size:1.08rem !important; }
+    #card-otif .kpi-dual-vals {
+      width:100%; display:grid; grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:.7rem; align-items:start; justify-items:center; margin:.25rem 0 0;
+    }
+    #card-otif .kpi-dual-item { width:100%; align-items:center; justify-content:center; }
+    #card-otif .kpi-dual-item .fr-kpi-val { width:100%; text-align:center; }
+
+    /* Fill Rate card — 3-col grid: [1fr spacer] [auto main val] [1fr delta-meta]
+       The centre column is mathematically dead-centre regardless of delta width. */
+    .kpi-meta-line { font-size:.44rem; text-transform:uppercase; letter-spacing:.05em; color:var(--fr-txt-soft); white-space:nowrap; }
+    #card-fr .kpi-val-row {
+      display:grid; grid-template-columns:1fr auto 1fr;
+      align-items:center; width:100%; margin:.05rem 0 .1rem;
+    }
+    #card-fr .fr-kpi-val.big  { grid-column:2; justify-self:center; text-align:center; }
+    #card-fr .kpi-delta-meta  {
+      grid-column:3; justify-self:start;
+      display:flex; flex-direction:column; align-items:flex-start; gap:.08rem; padding-left:.35rem;
+    }
+    #card-fr #delta-fr-mom { font-size:.58rem; display:flex; justify-content:center; width:100%; }
+
+    .pareto-controls { display:flex; flex-wrap:wrap; gap:.55rem; align-items:center; margin:0 0 .75rem; }
+    .pareto-control { display:flex; gap:.4rem; align-items:center; flex-wrap:wrap; }
+    .pareto-note { margin:.55rem 0 .75rem; font-size:.68rem; color:var(--fr-txt-soft); line-height:1.45; }
+    .pareto-chart-wrap { position:relative; min-height:280px; flex:1; overflow:visible; }
+    .pareto-summary-table { width:100%; border-collapse:collapse; margin-top:.75rem; }
+    .pareto-summary-table th, .pareto-summary-table td { padding:.45rem .35rem; font-size:.72rem; color:var(--fr-txt); border-top:1px solid var(--fr-sep); text-align:right; }
+    .pareto-summary-table th:first-child, .pareto-summary-table td:first-child { text-align:left; }
+    .pareto-summary-table th { color:var(--fr-txt-soft); text-transform:uppercase; letter-spacing:.05em; font-size:.61rem; }
+    .pareto-empty, .priorities-empty { text-align:center; padding:1.2rem; color:var(--fr-txt-soft); font-style:italic; font-size:.82rem; }
+    .priorities-wrap { overflow:auto; flex:1; min-height:220px; }
+    .priorities-table { width:100%; border-collapse:collapse; }
+    .priorities-table th, .priorities-table td { padding:.45rem .35rem; border-top:1px solid var(--fr-sep); font-size:.72rem; color:var(--fr-txt); white-space:nowrap; }
+    .priorities-table th { color:var(--fr-txt-soft); text-transform:uppercase; letter-spacing:.05em; font-size:.58rem; position:sticky; top:0; background:var(--fr-surface); }
+    .priorities-table td:nth-child(2) { font-weight:800; color:#60c8ef; }
+    .priorities-table td:last-child { white-space:normal; min-width:120px; text-align:center; }
+    .priorities-table th:last-child { text-align:center; }
+    .priority-row:hover { background:rgba(96,200,239,.06); }
+    .drill-toggle { font-size:.7rem; color:var(--fr-txt-soft); width:1.2rem; text-align:center; transition:transform .2s; }
+    .priorities-table th:nth-child(8), .priorities-table td:nth-child(8) { text-align:center; }
+    .priorities-table th:nth-child(9), .priorities-table td:nth-child(9) { text-align:right; }
+    .priorities-table th:nth-child(10), .priorities-table td:nth-child(10) { text-align:right; }
+    .drill-down-row td { padding:0 !important; border-top:none !important; }
+    .drill-down-cell { background:rgba(0,0,0,.18); border-radius:0 0 .5rem .5rem; border:1px solid var(--fr-sep); border-top:none; }
+    .drill-content { display:flex; flex-direction:column; gap:1.2rem; padding:1.2rem 1.5rem; }
+    .drill-section { }
+    .drill-section-title { font-size:.68rem; text-transform:uppercase; letter-spacing:.07em; color:var(--fr-txt-soft); margin-bottom:.7rem; font-weight:700; border-bottom:1px solid var(--fr-sep); padding-bottom:.4rem; }
+    .drill-components { display:flex; gap:1.5rem; justify-content:center; align-items:stretch; flex-wrap:wrap; }
+    .drill-comp { text-align:center; padding:.9rem 1.5rem; border-radius:.6rem; background:rgba(255,255,255,.03); border:1px solid var(--fr-sep); min-width:140px; flex:1; max-width:220px; position:relative; }
+    .drill-comp-alert { border-color:rgba(255,85,85,.5); background:rgba(255,85,85,.08); box-shadow:0 0 12px rgba(255,85,85,.15); }
+    .drill-comp-ok { border-color:rgba(0,230,118,.4); background:rgba(0,230,118,.05); }
+    .drill-comp-label { font-size:.65rem; text-transform:uppercase; color:var(--fr-txt-soft); margin-bottom:.35rem; letter-spacing:.05em; font-weight:600; }
+    .drill-comp-value { font-size:1.8rem; font-weight:800; line-height:1.1; }
+    .drill-comp-detail { font-size:.62rem; color:var(--fr-txt-soft); margin-top:.3rem; }
+    .drill-comp-badge { position:absolute; top:.4rem; right:.5rem; font-size:.5rem; text-transform:uppercase; font-weight:700; padding:.15rem .4rem; border-radius:.2rem; }
+    .drill-comp-badge-alert { background:rgba(255,85,85,.2); color:#f55; }
+    .drill-comp-badge-ok { background:rgba(0,230,118,.15); color:#0f8; }
+    .drill-comp-verdict { text-align:center; font-size:.72rem; color:var(--fr-txt-soft); margin-top:.7rem; padding:.4rem .8rem; background:rgba(255,85,85,.06); border-radius:.3rem; display:inline-block; }
+    .drill-comp-verdict strong { color:#f55; font-weight:700; }
+    .drill-verdict-wrap { text-align:center; }
+    .drill-table { width:100%; border-collapse:collapse; margin-top:.2rem; }
+    .drill-table th, .drill-table td { padding:.5rem .6rem; font-size:.72rem; border-bottom:1px solid var(--fr-sep); color:var(--fr-txt); text-align:left; }
+    .drill-table th { color:var(--fr-txt-soft); text-transform:uppercase; font-size:.6rem; letter-spacing:.04em; font-weight:600; border-bottom:2px solid var(--fr-sep); }
+    .drill-table tr:last-child td { border-bottom:none; }
+    .drill-table td:first-child { font-weight:600; }
+    .drill-loading { text-align:center; padding:1.2rem; color:var(--fr-txt-soft); font-size:.78rem; font-style:italic; }
+    .drill-error { text-align:center; padding:1rem; color:var(--fr-red, #f55); font-size:.75rem; }
+    .exec-readout-card { justify-content:flex-start; }
+    .readout-list { margin:0; padding-left:1.1rem; color:var(--fr-txt); }
+    .readout-list li { margin:.4rem 0; line-height:1.6; }
+
+    @media (max-width:1100px) {
+      .fr-kpi-row { grid-template-columns:repeat(2,1fr); }
+      .exec-charts-row, .exec-tables-row { grid-template-columns:1fr; }
+      .fr-chart-body, .pareto-chart-wrap, .priorities-wrap { min-height:240px; }
+    }
+    @media (max-width:600px)  {
+      .fr-kpi-row { grid-template-columns:1fr; }
+      .fr-content { padding:1rem 1rem 3rem; }
+      .action-priority-metrics { grid-template-columns:1fr; }
+      #card-otif .kpi-val-row { grid-template-columns:1fr; row-gap:.2rem; }
+      #card-otif .fr-kpi-val.big, #card-otif .kpi-delta-meta { grid-column:auto; justify-self:center; text-align:center; align-items:center; }
+      #card-otif .kpi-dual-vals { grid-template-columns:1fr 1fr; gap:.45rem; }
+    }
+    /* Info tooltip icon */
+    .info-tip {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:16px; height:16px; border-radius:50%;
+      background:rgba(96,200,239,.12); color:rgba(96,200,239,.7);
+      cursor:help; vertical-align:middle; margin-left:4px;
+      transition:background .15s, color .15s;
+    }
+    .info-tip svg { width:13px; height:13px; }
+    .info-tip:hover { background:rgba(96,200,239,.25); color:#60c8ef; }
+    [data-theme="light"] .info-tip { background:rgba(37,99,235,.08); color:rgba(37,99,235,.55); }
+    [data-theme="light"] .info-tip:hover { background:rgba(37,99,235,.15); color:#2563eb; }
+  </style>
+</head>
+<body class="fr-page">
+
+  <!-- ══ NAVBAR ══ -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="painel-executivo.html" class="nav-brand">
+        <span style="font-size:1.4rem;font-weight:900;letter-spacing:.04em;text-transform:uppercase;margin-left:2rem;">Executivo</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="painel-executivo.html" class="active">Painel Executivo</a></li>
+        <li><a href="fillrate.html">Fill Rate</a></li>
+        <li><a href="gestao-pedidos.html">Fill Rate Detalhe</a></li>
+        <li><a href="otif.html">OTIF</a></li>
+        <li><a href="otif-detalhe.html">OTIF Detalhe</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="btnTheme" title="Alternar tema">☀️</button>
+        <img src="logo-bimbo-qsr.png" alt="Bimbo QSR" class="ptb-logo-bimbo">
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ PAGE TITLE BAR ══ -->
+  <div class="page-title-bar">
+    <div class="ptb-left"></div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <div class="ptb-filters">
+        <div class="ptb-fg" style="min-width:95px">
+          <label>Ano</label>
+          <div class="ms-wrap" id="ms-ano"></div>
+        </div>
+        <div class="ptb-fg" style="min-width:95px">
+          <label>Mês</label>
+          <div class="ms-wrap" id="ms-mes"></div>
+        </div>
+        <div class="ptb-fg" style="min-width:85px">
+          <label>Dia</label>
+          <div class="ms-wrap" id="ms-dia"></div>
+        </div>
+        <div class="ptb-fg" style="min-width:175px">
+          <label>Semana</label>
+          <div class="ms-wrap" id="ms-semana"></div>
+        </div>
+        <div class="ptb-fg" style="min-width:140px">
+          <label>Planta</label>
+          <div class="ms-wrap" id="ms-planta"></div>
+        </div>
+        <div class="ptb-fg" style="min-width:180px">
+          <label>Grupo Cliente</label>
+          <div class="ms-wrap" id="ms-grupo-cliente"></div>
+        </div>
+        <div class="ptb-fg" style="min-width:160px">
+          <label>Responsável</label>
+          <div class="ms-wrap" id="ms-responsavel"></div>
+        </div>
+        <button class="btn-ghost" id="btnClear" style="align-self:flex-end;padding:.32rem .7rem;font-size:.79rem">Limpar</button>
+      </div>
+    </div>
+    <!-- Hidden fields to keep JS references working -->
+    <input type="hidden" id="f-dt-ini"><input type="hidden" id="f-dt-fim"><select id="f-semana" style="display:none"></select>
+  </div>
+  <div class="gradient-line"></div>
+
+  <!-- ══ CONTENT ══ -->
+  <div class="fr-content">
+
+    <!-- KPI ROW -->
+    <div class="fr-kpi-row">
+
+      <!-- Fill Rate (mesmo layout da aba Fill Rate) -->
+      <div class="fr-kpi-card k-green" id="card-fr">
+        <div class="kpi-head">
+          <div class="fr-kpi-lbl">Fill Rate</div>
+          <div class="kpi-badge" style="background:rgba(16,185,129,.15)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+        </div>
+        <div class="kpi-val-row">
+          <div class="fr-kpi-val big" id="kpi-fr" style="color:#22c55e">—</div>
+          <div class="kpi-delta-meta">
+            <span class="kpi-delta" id="delta-fr-pp"></span>
+            <span class="kpi-meta-line">Meta ≥ 96%</span>
+          </div>
+        </div>
+        <div class="kpi-delta" id="delta-fr-mom"></div>
+        <div id="kpi-fr-vol" style="font-size:.52rem;color:var(--fr-txt-soft);text-align:center;margin-top:2px"></div>
+      </div>
+
+      <!-- OTIF Geral (mesmo layout da aba OTIF, com FOB/CIF no lugar de OT/IF) -->
+      <div class="fr-kpi-card" id="card-otif">
+        <div class="kpi-head">
+          <span class="kpi-title">OTIF Geral</span>
+          <div class="kpi-badge" style="background:rgba(16,185,129,.15)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+        <div class="kpi-val-row">
+          <div class="fr-kpi-val big" id="kpi-otif" style="color:#22c55e">—</div>
+          <div class="kpi-delta-meta">
+            <div class="kpi-delta" id="delta-otif-pp"></div>
+            <div class="kpi-meta-line">Meta ≥ 85%</div>
+          </div>
+        </div>
+        <div class="kpi-delta" id="delta-otif-mom" style="font-size:.58rem;justify-content:center;width:100%"></div>
+        <div class="kpi-dual-vals">
+          <div class="kpi-dual-item">
+            <span class="kpi-dual-item-lbl">FOB</span>
+            <div class="fr-kpi-val" id="kpi-otif-fob" style="color:#60a5fa">—</div>
+          </div>
+          <div class="kpi-dual-item">
+            <span class="kpi-dual-item-lbl">CIF</span>
+            <div class="fr-kpi-val" id="kpi-otif-cif" style="color:#60a5fa">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Volume Avaliado (FR + OTIF lado a lado) -->
+      <div class="fr-kpi-card k-blue">
+        <div class="fr-kpi-lbl">Volume Avaliado</div>
+        <div class="kpi-dual-vals" style="margin-top:auto;margin-bottom:auto">
+          <div class="kpi-dual-item">
+            <span class="kpi-dual-item-lbl">Pedidos (FR)</span>
+            <div class="fr-kpi-val" id="kpi-pedidos" style="color:#06b6d4">—</div>
+            <div id="kpi-qtde-pedida" style="font-size:.52rem;color:var(--fr-txt-soft);margin-top:1px;text-align:center">—</div>
+          </div>
+          <div class="kpi-dual-item">
+            <span class="kpi-dual-item-lbl">Remessas (OTIF)</span>
+            <div class="fr-kpi-val" id="kpi-remessas" style="color:#22c55e">—</div>
+          </div>
+        </div>
+        <div class="fr-kpi-sub" id="sub-volume">base FR · base OTIF</div>
+      </div>
+
+      <!-- Ação Prioritária -->
+      <div class="fr-kpi-card k-red action-priority-card" id="card-priority">
+        <div class="fr-kpi-lbl">Ação Prioritária</div>
+        <div class="action-priority-scope" id="priority-scope">Planta</div>
+        <div class="action-priority-name" id="priority-name">Carregando...</div>
+        <div class="action-priority-tags">
+          <span class="action-tag" id="priority-kpi">KPI</span>
+          <span class="action-tag" id="priority-action">Ação</span>
+        </div>
+        <div class="action-priority-metrics">
+          <div class="action-priority-metric">
+            <div class="kpi-metric-lbl">Valor Atual</div>
+            <div class="fr-kpi-val" id="priority-value" style="font-size:1.1rem">—</div>
+          </div>
+          <div class="action-priority-metric">
+            <div class="kpi-metric-lbl">Impacto no resultado</div>
+            <div class="fr-kpi-val" id="priority-impact" style="font-size:1.1rem">—</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ROW 1: Gráficos — mesma altura -->
+    <div class="exec-charts-row">
+
+      <div class="fr-chart-card">
+        <div class="fr-chart-ttl">Evolução Mensal — Fill Rate vs. OTIF</div>
+        <div class="fr-chart-sub">Últimos 12 meses</div>
+        <div class="legend-pills">
+          <span class="pill"><span class="pill-line" style="background:#06b6d4"></span>Fill Rate %</span>
+          <span class="pill"><span class="pill-line" style="background:#22c55e"></span>OTIF %</span>
+        </div>
+        <div class="fr-chart-body">
+          <canvas id="chartEvolucao"></canvas>
+          <div class="fr-no-data" id="nd-evolucao">Carregando...</div>
+        </div>
+      </div>
+
+      <div class="exec-pareto-card">
+        <div class="exec-card-title">Pareto de Perdas</div>
+        <div class="exec-card-sub" id="pareto-subtitle">Dimensões que mais impactam o gap frente à meta</div>
+        <div class="pareto-controls">
+          <div class="pareto-control">
+            <div class="chart-dim-toggle" id="paretoKpiToggle">
+              <button class="cdt-btn" data-kpi="fillrate">Fill Rate</button>
+              <button class="cdt-btn active" data-kpi="otif">OTIF</button>
+            </div>
+          </div>
+          <div class="pareto-control">
+            <div class="chart-dim-toggle" id="paretoDimToggle">
+              <button class="cdt-btn active" data-dimension="planta">Planta</button>
+              <button class="cdt-btn" data-dimension="grupo_cliente">Grupo Cliente</button>
+            </div>
+          </div>
+          <div class="pareto-control" id="paretoOtifViewToggle" style="display:flex">
+            <div class="chart-dim-toggle">
+              <button class="cdt-btn active" data-otif-view="geral">Geral</button>
+              <button class="cdt-btn" data-otif-view="cif">CIF</button>
+              <button class="cdt-btn" data-otif-view="fob">FOB</button>
+            </div>
+          </div>
+        </div>
+        <div class="legend-pills" style="margin:.15rem 0 .55rem">
+          <span class="pill"><span style="display:inline-block;width:13px;height:9px;background:rgba(218,46,57,0.9);border-radius:2px;flex-shrink:0"></span>Maior impacto</span>
+          <span class="pill"><span style="display:inline-block;width:13px;height:9px;background:rgba(245,158,11,0.85);border-radius:2px;flex-shrink:0"></span>Impacto alto</span>
+          <span class="pill"><span style="display:inline-block;width:13px;height:9px;background:rgba(96,165,250,0.85);border-radius:2px;flex-shrink:0"></span>Impacto menor</span>
+          <span class="pill"><span class="pill-line" style="background:#22c55e"></span>% Acumulado</span>
+        </div>
+        <div class="pareto-chart-wrap">
+          <canvas id="chartPareto"></canvas>
+          <div class="fr-no-data" id="nd-pareto">Carregando...</div>
+        </div>
+      </div>
+
+    </div><!-- /exec-charts-row -->
+
+    <!-- ROW 2: Prioridades de Ação (full width) -->
+    <div class="exec-priorities-card exec-readout-full">
+      <div class="exec-card-title">Prioridades de Ação</div>
+      <div class="exec-card-sub">Combinações planta × grupo cliente com maior perda estimada</div>
+      <div class="priorities-wrap" id="prioritiesWrap">
+        <div class="priorities-empty">Carregando...</div>
+      </div>
+    </div>
+
+    <!-- Hidden container for Pareto table (data still loaded for insights) -->
+    <div id="paretoTableWrap" style="display:none"></div>
+
+    <!-- Leitura Executiva (full width) -->
+    <div class="exec-priorities-card exec-readout-full" id="ai-insights">
+      <div class="exec-card-title" style="font-size:.8rem;margin-bottom:.2rem">Leitura Executiva</div>
+      <div class="exec-card-sub" style="margin-bottom:.55rem">Síntese objetiva dos principais desvios e focos de atuação</div>
+      <div id="insights-text" style="font-size:.78rem;color:var(--fr-txt);line-height:1.65">
+        <span style="color:var(--fr-txt-soft);font-style:italic">Consolidando leitura executiva...</span>
+      </div>
+    </div>
+
+  </div><!-- /fr-content -->
+
+  <script>
+    /* ── Constants ── */
+    const API  = '';
+    const META_FR = 96;
+    const META_OTIF = 85;
+    const MES_PT   = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const MES_FULL = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                      'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+    let chartEvolucao = null;
+
+    /* ── Helpers ── */
+    const brl = v => Number(v || 0).toLocaleString('pt-BR');
+
+    function calcFR(atd, ped, can) {
+      const d = Number(ped) - Number(can);
+      if (d <= 0) return 0;
+      return Math.min(100, Number(atd) / d * 100);
+    }
+    function calcPct(count, total) {
+      const t = Number(total);
+      if (!t) return 0;
+      return Math.min(100, Number(count) / t * 100);
+    }
+    function metaColor(p, meta = META_FR) { return p >= meta ? '#22c55e' : p >= 80 ? '#f59e0b' : '#DA2E39'; }
+    function metaAccent(p, meta = META_FR) { return p >= meta ? 'k-green' : p >= 80 ? 'k-amber' : 'k-red'; }
+    function dotCls(p, meta = META_FR) { return p >= meta ? 'dot-g' : p >= 80 ? 'dot-a' : 'dot-r'; }
+    function rcCls(p, meta = META_FR) { return p >= meta ? 'rc-green' : p >= 80 ? 'rc-amber' : 'rc-red'; }
+    function isDark() { return document.documentElement.getAttribute('data-theme') !== 'light'; }
+
+    function chartCols() {
+      return {
+        grid:   isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+        tick:   isDark() ? 'rgba(255,255,255,0.5)'  : 'rgba(0,0,0,0.55)',
+        legend: isDark() ? '#E8F4FD' : '#1e2433',
+        meta:   isDark() ? 'rgba(255,255,255,0.45)' : 'rgba(50,58,78,0.55)',
+      };
+    }
+
+    /* ── Theme ── */
+    function applyTheme(dark) {
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+      document.getElementById('btnTheme').textContent = dark ? '🌙' : '☀️';
+      localStorage.setItem('fr-theme', dark ? 'dark' : 'light');
+      const c = chartCols();
+      if (chartEvolucao) {
+        ['x','y'].forEach(ax => {
+          chartEvolucao.options.scales[ax].ticks.color = c.tick;
+          if (chartEvolucao.options.scales[ax].grid) chartEvolucao.options.scales[ax].grid.color = c.grid;
+        });
+        chartEvolucao.data.datasets.forEach(ds => { if (ds.borderDash && ds.borderDash.length) ds.borderColor = c.meta; });
+        chartEvolucao.update('none');
+      }
+      if (chartPareto) {
+        chartPareto.options.plugins.legend.labels.color = c.legend;
+        chartPareto.options.scales.x.ticks.color = c.tick;
+        chartPareto.options.scales.y.ticks.color = c.tick;
+        chartPareto.options.scales.y1.ticks.color = c.tick;
+        chartPareto.update('none');
+      }
+    }
+    document.getElementById('btnTheme').addEventListener('click', () => applyTheme(!isDark()));
+
+    /* ── MultiSelect component (meses) ── */
+    class MultiSelect {
+      constructor(wrapperId, placeholder = 'Meses', opts = {}) {
+        this.el = document.getElementById(wrapperId);
+        this.placeholder = placeholder;
+        this._searchable = opts.searchable !== false; // default true
+        this._selected = new Set();
+        this._items = [];
+        this._isOpen = false;
+        this._build();
+        document.addEventListener('click', e => { if (!this.el.contains(e.target)) this._setOpen(false); });
+      }
+      populate(items) {
+        this._items = items.map(i => typeof i === 'string' ? { value: i, label: i } : i);
+        this._selected.clear();
+        this._renderItems();
+        this._updateBtn();
+      }
+      getValues() { return [...this._selected]; }
+      setValues(vals) { this._selected = new Set(vals.map(String)); this._renderItems(); this._updateBtn(); }
+      reset() { this.setValues([]); }
+      _build() {
+        this.el.innerHTML = `<button class="ms-btn" type="button"><span class="ms-lbl">${this.placeholder}</span><svg class="ms-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button><div class="ms-drop"></div>`;
+        this.btnEl  = this.el.querySelector('.ms-btn');
+        this.lblEl  = this.el.querySelector('.ms-lbl');
+        this.dropEl = this.el.querySelector('.ms-drop');
+        this.btnEl.addEventListener('click', e => { e.stopPropagation(); this._setOpen(!this._isOpen); });
+      }
+      _renderItems() {
+        if (!this._items.length) { this.dropEl.innerHTML = `<div style="padding:10px 13px;font-size:.8rem;opacity:.5">Carregando...</div>`; return; }
+        const allSel = this._items.length > 0 && this._items.every(i => this._selected.has(String(i.value)));
+        const allHtml = `<label class="ms-item ms-all${allSel ? ' ms-checked' : ''}"><input type="checkbox" class="ms-all-cb"${allSel ? ' checked' : ''}><span>${allSel ? 'Limpar seleção' : 'Selecionar tudo'}</span></label><div class="ms-sep"></div>`;
+        this.dropEl.innerHTML = allHtml + this._items.map(item => `<label class="ms-item${this._selected.has(String(item.value)) ? ' ms-checked' : ''}"><input type="checkbox" value="${item.value}"${this._selected.has(String(item.value)) ? ' checked' : ''}><span>${item.label}</span></label>`).join('');
+        this.dropEl.querySelector('.ms-all-cb').addEventListener('change', e => {
+          e.stopPropagation();
+          if (e.target.checked) this._items.forEach(i => this._selected.add(String(i.value)));
+          else this._selected.clear();
+          this._renderItems(); this._updateBtn();
+          this.el.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+        this.dropEl.querySelectorAll('input[type="checkbox"]:not(.ms-all-cb)').forEach(cb => {
+          cb.addEventListener('change', e => {
+            e.stopPropagation();
+            if (cb.checked) this._selected.add(cb.value); else this._selected.delete(cb.value);
+            cb.closest('.ms-item').classList.toggle('ms-checked', cb.checked);
+            const iAll = this._items.every(i => this._selected.has(String(i.value)));
+            const allCb = this.dropEl.querySelector('.ms-all-cb');
+            if (allCb) { allCb.checked = iAll; allCb.closest('.ms-item').classList.toggle('ms-checked', iAll); const sp = allCb.nextElementSibling; if (sp) sp.textContent = iAll ? 'Limpar seleção' : 'Selecionar tudo'; }
+            this._updateBtn();
+            this.el.dispatchEvent(new Event('change', { bubbles: true }));
+          });
+        });
+      }
+      _updateBtn() {
+        const n = this._selected.size;
+        if (n === 0) { this.lblEl.innerHTML = this.placeholder; return; }
+        const labels = [...this._selected].map(v => { const i = this._items.find(x => String(x.value) === v); return i ? i.label : v; });
+        this.lblEl.innerHTML = (n <= 2 ? labels.join(', ') : labels.slice(0,2).join(', ')) + (n > 2 ? ` <span class="ms-count">+${n-2}</span>` : '');
+      }
+      _setOpen(v) {
+        this._isOpen = v;
+        if (v) this._renderItems();
+        this.dropEl.classList.toggle('ms-drop--open', v);
+        this.el.classList.toggle('ms-open', v);
+      }
+    }
+
+    const msMes           = new MultiSelect('ms-mes',           'Meses');
+    const msAno           = new MultiSelect('ms-ano',           'Ano', { searchable: false });
+    const msDia           = new MultiSelect('ms-dia',           'Todos');
+    const msSemana        = new MultiSelect('ms-semana',        'Todas');
+    const msPlanta        = new MultiSelect('ms-planta',        'Todas');
+    const msGrupoCliente  = new MultiSelect('ms-grupo-cliente', 'Todos');
+    const msResponsavel   = new MultiSelect('ms-responsavel',   'Todos');
+    let fpIni = null, fpFim = null;
+
+    function populateDias() {
+      msDia.populate(Array.from({length:31}, (_,i) => ({value:String(i+1), label:String(i+1)})));
+    }
+
+    /* ── Semana (segunda a domingo) ── */
+    function getMonday(d) {
+      const date = new Date(d);
+      const day  = date.getDay();
+      date.setDate(date.getDate() + (day === 0 ? -6 : 1) - day);
+      date.setHours(0,0,0,0);
+      return date;
+    }
+    function isoWeekNumber(d) {
+      const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dayNum = date.getUTCDay() || 7;
+      date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+      return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+    }
+    const pad2    = n => String(n).padStart(2, '0');
+    const isoDate = d => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+    const fmtDM   = d => `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}`;
+    function populateSemanas() {
+      const selectedAnos = msAno.getValues().map(Number).filter(Boolean);
+      const selectedMeses = msMes.getValues().map(Number).filter(Boolean);
+      const today = new Date();
+      let startDate, endDate;
+      if (selectedAnos.length && selectedMeses.length) {
+        let gS = null, gE = null;
+        selectedAnos.forEach(y => { selectedMeses.forEach(m => {
+          const f = new Date(y, m-1, 1), l = new Date(y, m, 0);
+          if (!gS || f < gS) gS = f; if (!gE || l > gE) gE = l;
+        }); });
+        startDate = gS; endDate = gE;
+      } else {
+        const mon = getMonday(today);
+        startDate = new Date(mon); startDate.setDate(startDate.getDate() - 25*7);
+        endDate = today;
+      }
+      const weeksMap = new Map();
+      let mon = getMonday(startDate);
+      while (mon <= endDate) {
+        const sun = new Date(mon); sun.setDate(sun.getDate()+6);
+        weeksMap.set(isoDate(mon), {mon:new Date(mon), sun:new Date(sun)});
+        mon = new Date(mon); mon.setDate(mon.getDate()+7);
+      }
+      const weeks = [...weeksMap.values()].sort((a,b) => b.mon - a.mon);
+      const prev = new Set(msSemana.getValues());
+      msSemana.populate(weeks.map(({mon,sun}) => ({
+        value: `${isoDate(mon)}|${isoDate(sun)}`,
+        label: `S${isoWeekNumber(mon)} \u00b7 ${fmtDM(mon)}-${fmtDM(sun)}/${sun.getFullYear()}`
+      })));
+      const valid = weeks.map(({mon,sun})=>`${isoDate(mon)}|${isoDate(sun)}`).filter(v=>prev.has(v));
+      if (valid.length) msSemana.setValues(valid);
+    }
+    function getDateFilter() {
+      // Semana filter replaces date range — extract dt_ini/dt_fim from selected semana
+      const semVals = msSemana.getValues();
+      if (semVals.length === 1) {
+        const [ini, fim] = semVals[0].split('|');
+        return { dt_ini: ini, dt_fim: fim };
+      }
+      return { dt_ini: '', dt_fim: '' };
+    }
+
+    /* ── Period selector ── */
+    function fillPeriodSelects() {
+      const yr = new Date().getFullYear();
+      const anos = [
+        { value: '2026', label: '2026' },
+        { value: '2025', label: '2025' },
+      ];
+      msAno.populate(anos);
+      msAno.setValues([String(yr)]);
+      msMes.populate([
+        { value:'1',  label:'Janeiro'   }, { value:'2',  label:'Fevereiro' },
+        { value:'3',  label:'Março'     }, { value:'4',  label:'Abril'     },
+        { value:'5',  label:'Maio'      }, { value:'6',  label:'Junho'     },
+        { value:'7',  label:'Julho'     }, { value:'8',  label:'Agosto'    },
+        { value:'9',  label:'Setembro'  }, { value:'10', label:'Outubro'   },
+        { value:'11', label:'Novembro'  }, { value:'12', label:'Dezembro'  },
+      ]);
+      msMes.setValues([String(new Date().getMonth() + 1)]);
+    }
+
+    function getPeriod() {
+      const meses = msMes.getValues().map(Number);
+      const anos  = msAno.getValues().map(Number);
+      return {
+        anos:  anos.length  ? anos  : [new Date().getFullYear()],
+        meses: meses.length ? meses : [new Date().getMonth() + 1],
+      };
+    }
+
+    function getPrev(ano, mes) {
+      return mes === 1 ? { ano: ano - 1, mes: 12 } : { ano, mes: mes - 1 };
+    }
+
+
+    /* ── API ── */
+    function getPlantas() { return msPlanta.getValues(); }
+    function getGruposCliente() { return msGrupoCliente.getValues(); }
+
+    function getResponsaveis() { return msResponsavel.getValues(); }
+    async function fetchResumo(anos, meses) {
+      const p = new URLSearchParams();
+      const { dt_ini, dt_fim } = getDateFilter();
+      if (dt_ini && dt_fim) {
+        p.set('dt_ini', dt_ini); p.set('dt_fim', dt_fim);
+      } else {
+        anos.forEach(a => p.append('ano', a));
+        meses.forEach(m => p.append('mes', m));
+      }
+      msDia.getValues().forEach(v => p.append('dia', v));
+      getPlantas().forEach(v => p.append('planta', v));
+      getGruposCliente().forEach(v => p.append('grupo_cliente', v));
+      getResponsaveis().forEach(v => p.append('responsavel', v));
+      const r = await fetch(`${API}/api/executivo/resumo?${p}`);
+      return await r.json();
+    }
+
+    let chartPareto = null;
+    const paretoState = { kpi: 'otif', dimension: 'planta', otifView: 'geral' };
+
+    function escapeHtml(v) {
+      return String(v ?? '').replace(/[&<>"']/g, s => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[s]));
+    }
+
+    function appendCommonFilters(p, anos, meses, includeRange = true) {
+      const { dt_ini, dt_fim } = getDateFilter();
+      if (includeRange && dt_ini && dt_fim) {
+        p.set('dt_ini', dt_ini);
+        p.set('dt_fim', dt_fim);
+      } else {
+        anos.forEach(a => p.append('ano', a));
+        meses.forEach(m => p.append('mes', m));
+      }
+      msDia.getValues().forEach(v => p.append('dia', v));
+      getPlantas().forEach(v => p.append('planta', v));
+      getGruposCliente().forEach(v => p.append('grupo_cliente', v));
+      return p;
+    }
+
+    /* ── KPIs Fill Rate ── */
+    function renderKPIs(curr, prev, meses) {
+      const atendida = Number(curr.QTDE_ATENDIDA);
+      const pedida = Number(curr.QTDE_PEDIDA);
+      const cancelada = Number(curr.QTDE_CANCELADA);
+      const frC = calcFR(atendida, pedida, cancelada);
+
+      const kpiFr = document.getElementById('kpi-fr');
+      kpiFr.textContent = frC.toFixed(1) + '%';
+      kpiFr.style.color = metaColor(frC);
+      document.getElementById('card-fr').className = 'fr-kpi-card ' + metaAccent(frC);
+
+      const deltaPP = frC - META_FR;
+      const ppEl = document.getElementById('delta-fr-pp');
+      ppEl.className = 'kpi-delta ' + (deltaPP >= 0 ? 'above' : 'below');
+      ppEl.innerHTML = `<span class="delta-arrow">${deltaPP >= 0 ? '▲' : '▼'}</span> ${deltaPP >= 0 ? '+' : ''}${deltaPP.toFixed(2)} pp`;
+
+      const momEl = document.getElementById('delta-fr-mom');
+      if (prev && Number(prev.QTDE_PEDIDA) > 0 && meses.length === 1) {
+        const frP = calcFR(Number(prev.QTDE_ATENDIDA), Number(prev.QTDE_PEDIDA), Number(prev.QTDE_CANCELADA));
+        const diff = frC - frP;
+        const prevInfo = getPrev(getPeriod().anos[0], meses[0]);
+        momEl.className = 'kpi-delta ' + (diff >= 0 ? 'above' : 'below');
+        momEl.innerHTML = `<span class="delta-arrow">${diff >= 0 ? '▲' : '▼'}</span> ${diff >= 0 ? '+' : ''}${diff.toFixed(2)} pp vs. ${MES_PT[prevInfo.mes - 1]}`;
+      } else {
+        momEl.innerHTML = '';
+        momEl.className = 'kpi-delta';
+      }
+
+      const _frVolEl = document.getElementById('kpi-fr-vol');
+      if (_frVolEl) _frVolEl.textContent = `Vol Faturado: ${brl(atendida)} \u00b7 Vol Vencidos: ${brl(pedida - cancelada)}`;
+
+      document.getElementById('kpi-pedidos').textContent = brl(curr.TOTAL_PEDIDOS);
+      const _qtdeLiq = Number(curr.QTDE_PEDIDA || 0) - Number(curr.QTDE_CANCELADA || 0);
+      const _qtdeEl  = document.getElementById('kpi-qtde-pedida');
+      if (_qtdeEl) _qtdeEl.textContent = `Qtde: ${brl(_qtdeLiq)} un.`;
+    }
+
+    function renderActionCard(data) {
+      const accent = Number(data?.impact_pp || 0) > 1 ? 'k-red' : Number(data?.impact_pp || 0) > 0.3 ? 'k-amber' : 'k-green';
+      document.getElementById('card-priority').className = `fr-kpi-card action-priority-card ${accent}`;
+      document.getElementById('priority-scope').textContent = data?.scope_label || (data?.selected_dimension === 'grupo_cliente' ? 'Grupo Cliente' : 'Planta');
+      document.getElementById('priority-name').textContent = data?.dimension_name || 'Sem ofensores relevantes';
+      document.getElementById('priority-kpi').textContent = data?.metric_label || 'Indicador';
+      document.getElementById('priority-action').textContent = data?.action_label || 'Monitorar operação';
+      document.getElementById('priority-value').textContent = `${Number(data?.kpi_value || 0).toFixed(1)}%`;
+      document.getElementById('priority-value').style.color = metaColor(Number(data?.kpi_value || 0));
+      document.getElementById('priority-impact').textContent = `${Number(data?.impact_pp || 0).toFixed(2)} pp`;
+    }
+
+    async function loadActionCard(anos, meses) {
+      const p = appendCommonFilters(new URLSearchParams(), anos, meses, true);
+      const r = await fetch(`${API}/api/executivo/diagnostico/acao-prioritaria?${p}`);
+      renderActionCard(await r.json());
+    }
+
+    async function loadPareto(anos, meses) {
+      const canvas = document.getElementById('chartPareto');
+      const ndEl = document.getElementById('nd-pareto');
+      const tableWrap = document.getElementById('paretoTableWrap');
+      const p = appendCommonFilters(new URLSearchParams(), anos, meses, true);
+      p.set('kpi', paretoState.kpi);
+      p.set('dimension', paretoState.dimension);
+      if (paretoState.kpi === 'otif') p.set('otif_view', paretoState.otifView);
+      const r = await fetch(`${API}/api/executivo/diagnostico/pareto?${p}`);
+      const data = await r.json();
+      if (chartPareto) { chartPareto.destroy(); chartPareto = null; }
+
+      if (!Array.isArray(data) || !data.length || data.error) {
+        ndEl.textContent = data?.error ? `Erro: ${data.error}` : 'Sem dados no período';
+        ndEl.style.display = 'flex';
+        canvas.style.display = 'none';
+        tableWrap.innerHTML = '';
+        return;
+      }
+
+      const topRows = data.slice(0, 10);
+
+      // All items above target — show informative message instead of invisible bars
+      const allAboveTarget = topRows.every(r => Number(r.impact_pp || 0) === 0);
+      if (allAboveTarget) {
+        const minVal = Math.min(...topRows.map(r => Number(r.kpi_value || 0)));
+        const kpiLabel = paretoState.kpi === 'fillrate' ? 'Fill Rate' : 'OTIF';
+        ndEl.innerHTML = `<div style="text-align:center;line-height:1.6">
+          <span style="font-size:1.1rem">✓</span><br>
+          <span style="font-weight:700;color:var(--fr-txt)">Todas as dimensões acima da meta de ${paretoState.kpi === 'fillrate' ? META_FR : META_OTIF}%</span><br>
+          <span style="font-size:.76rem">Menor ${kpiLabel}: ${minVal.toFixed(1)}% · Sem gap a reportar no Pareto</span>
+        </div>`;
+        ndEl.style.display = 'flex';
+        canvas.style.display = 'none';
+        tableWrap.innerHTML = '';
+        return;
+      }
+
+      ndEl.style.display = 'none';
+      canvas.style.display = 'block';
+      const c = chartCols();
+      const labels = topRows.map(r => String(r.dimension_name).replace(/^\d+-/, '').slice(0, 18));
+      const impactVals = topRows.map(r => Number(r.impact_pp || 0));
+      const cumulativeVals = topRows.map(r => Number(r.cumulative_loss_pct || 0));
+      // Index of the first point that reaches or crosses the 80% cumulative threshold
+      const threshold80Idx = cumulativeVals.findIndex(v => v >= 80);
+
+      chartPareto = new Chart(canvas, {
+        plugins: [
+          {
+            id: 'paretoBarLabels',
+            afterDatasetsDraw(chart) {
+              const ctx = chart.ctx;
+              const meta = chart.getDatasetMeta(0);
+              ctx.save();
+              ctx.font = '700 10px Inter, sans-serif';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'bottom';
+              meta.data.forEach((bar, idx) => {
+                const val = impactVals[idx];
+                if (val == null) return;
+                ctx.fillStyle = isDark() ? '#E8F4FD' : '#1e2433';
+                ctx.fillText(`${val.toFixed(2)} pp`, bar.x, bar.y - 6);
+              });
+              ctx.restore();
+            }
+          }
+        ],
+        data: {
+          labels,
+          datasets: [
+            {
+              type: 'bar',
+              label: 'Impacto no resultado (pp)',
+              data: impactVals,
+              backgroundColor: impactVals.map((v, i) => i === 0 ? 'rgba(218,46,57,0.9)' : v >= 1 ? 'rgba(245,158,11,0.85)' : 'rgba(96,165,250,0.85)'),
+              borderRadius: 8,
+              maxBarThickness: 34,
+              yAxisID: 'y',
+            },
+            {
+              type: 'line',
+              label: 'Cumulativo do gap (%)',
+              data: cumulativeVals,
+              borderColor: '#22c55e',
+              backgroundColor: '#22c55e',
+              // Threshold point (first ≥80%) is drawn red and larger
+              pointRadius: cumulativeVals.map((_, i) => i === threshold80Idx ? 6 : 3),
+              pointHoverRadius: cumulativeVals.map((_, i) => i === threshold80Idx ? 8 : 4),
+              pointBackgroundColor: cumulativeVals.map((_, i) => i === threshold80Idx ? '#ef4444' : '#22c55e'),
+              pointBorderColor:     cumulativeVals.map((_, i) => i === threshold80Idx ? '#ef4444' : '#22c55e'),
+              tension: 0.25,
+              clip: false,
+              yAxisID: 'y1',
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: { padding: { top: 36, right: 6 } },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                title: items => topRows[items[0].dataIndex]?.dimension_name || '',
+                afterBody: items => {
+                  const row = topRows[items[0].dataIndex];
+                  if (!row) return [];
+                  return [
+                    `Indicador: ${row.metric_label}`,
+                    row.otif_view ? `Visão OTIF: ${String(row.otif_view).toUpperCase()}` : null,
+                    `Valor atual: ${Number(row.kpi_value).toFixed(2)}%`,
+                    `Meta: ${Number(row.target).toFixed(2)}%`,
+                    `Gap vs meta: ${Number(row.gap_vs_target).toFixed(2)} pp`,
+                    `Denominador: ${brl(row.denominator)}`,
+                    `Numerador: ${brl(row.numerator)}`,
+                    `Impacto no resultado: ${Number(row.impact_pp).toFixed(2)} pp`,
+                    `Cumulativo: ${Number(row.cumulative_loss_pct).toFixed(2)}%`
+                  ].filter(Boolean);
+                }
+              }
+            }
+          },
+          scales: {
+            x: { ticks: { color: c.tick, font: { size: 10 } }, grid: { display: false }, border: { display: false } },
+            y: { position: 'left', ticks: { color: c.tick, callback: v => `${v}pp` }, grid: { display: false }, border: { display: false } },
+            y1: { position: 'right', min: 0, max: 112, ticks: { color: c.tick, callback: v => v <= 100 ? `${v}%` : '' }, grid: { display: false }, border: { display: false } },
+          }
+        }
+      });
+
+      tableWrap.innerHTML = `
+        <table class="pareto-summary-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Valor</th>
+              <th>Impacto</th>
+              <th>Cumulativo</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${topRows.slice(0, 5).map(row => `
+              <tr>
+                <td>${escapeHtml(String(row.dimension_name).replace(/^\d+-/, ''))}</td>
+                <td>${Number(row.kpi_value).toFixed(1)}%</td>
+                <td>${Number(row.impact_pp).toFixed(2)} pp</td>
+                <td>${Number(row.cumulative_loss_pct).toFixed(1)}%</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    async function loadPrioridades(anos, meses) {
+      const wrap = document.getElementById('prioritiesWrap');
+      const p = appendCommonFilters(new URLSearchParams(), anos, meses, true);
+      p.set('limit', '8');
+      const r = await fetch(`${API}/api/executivo/diagnostico/prioridades?${p}`);
+      const data = await r.json();
+      if (!Array.isArray(data) || !data.length || data.error) {
+        wrap.innerHTML = '<div class="priorities-empty">Sem prioridades críticas no período.</div>';
+        return;
+      }
+      wrap.innerHTML = `
+        <table class="priorities-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>#</th>
+              <th>Planta</th>
+              <th>Grupo Cliente</th>
+              <th>Indicador</th>
+              <th>Atual</th>
+              <th>Meta</th>
+              <th>Tendência <span class="info-tip" title="Compara o desempenho das últimas 4 semanas com as 4 semanas anteriores.&#10;&#10;Exemplo: ↓-31.5pp = o indicador caiu 31.5 pontos percentuais em relação ao período anterior.&#10;&#10;'—' = sem dados suficientes no período anterior para comparação."><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span></th>
+              <th>Perda</th>
+              <th>Impacto</th>
+              <th>Ação sugerida</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.map(row => {
+              const val = Number(row.valor_atual).toFixed(1);
+              const rowMeta = String(row.indicador || '').toLowerCase().includes('fill') ? META_FR : META_OTIF;
+              const gapColor = Number(row.valor_atual) < 80 ? '#f55' : Number(row.valor_atual) < rowMeta ? '#f5a623' : '#0f8';
+              const trendDelta = Number(row.trend_delta_pp || 0).toFixed(1);
+              const trendHtml = row.trend_direction === 'up' ? `<span style="color:#0f8">\u2191+${trendDelta}pp</span>`
+                : row.trend_direction === 'down' ? `<span style="color:#f55">\u2193${trendDelta}pp</span>`
+                : row.trend_direction === 'flat' ? `<span style="color:#999">\u2192 0pp</span>`
+                : `<span style="color:#999">—</span>`;
+              let perdaHtml = '';
+              const isFR = String(row.indicador || '').toLowerCase().includes('fill');
+              if (isFR) {
+                const vol = Number(row.vol_nao_atendido || row.vol_afetado || 0);
+                const monet = Number(row.perda_monetaria || 0);
+                const parts = [];
+                if (vol > 0) parts.push(`${vol.toLocaleString('pt-BR', {maximumFractionDigits:0})} un`);
+                if (monet > 0) parts.push(`R$ ${monet.toLocaleString('pt-BR', {maximumFractionDigits:0})}`);
+                perdaHtml = parts.join(' / ') || '';
+              } else {
+                if (row.vol_afetado != null && row.vol_afetado > 0) {
+                  perdaHtml = `${Number(row.vol_afetado).toLocaleString('pt-BR', {maximumFractionDigits:0})} un`;
+                }
+              }
+              return `
+              <tr class="priority-row" data-planta="${escapeHtml(row.planta)}" data-grupo="${escapeHtml(row.grupo_cliente)}" data-indicador="${escapeHtml(row.indicador)}" style="cursor:pointer">
+                <td class="drill-toggle">\u25B6</td>
+                <td>${row.prioridade}</td>
+                <td>${escapeHtml(row.planta)}</td>
+                <td>${escapeHtml(String(row.grupo_cliente).replace(/^\\d+-/, ''))}</td>
+                <td>${escapeHtml(row.indicador)}</td>
+                <td style="color:${gapColor}">${val}%</td>
+                <td style="color:var(--fr-txt-soft)">${rowMeta}%</td>
+                <td>${trendHtml}</td>
+                <td style="color:#f5a623;font-size:.78rem">${perdaHtml}</td>
+                <td>${Number(row.impact_pp).toFixed(1)} pp</td>
+                <td style="text-align:center">${escapeHtml(row.acao_sugerida)}</td>
+              </tr>
+              <tr class="drill-down-row" style="display:none">
+                <td colspan="11" class="drill-down-cell"><div class="drill-loading">Carregando...</div></td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>`;
+      // Attach click handlers
+      wrap.querySelectorAll('.priority-row').forEach(tr => {
+        tr.addEventListener('click', () => toggleDrillDown(tr, anos, meses));
+      });
+    }
+
+    async function toggleDrillDown(tr, anos, meses) {
+      const drillRow = tr.nextElementSibling;
+      const toggle = tr.querySelector('.drill-toggle');
+      if (drillRow.style.display !== 'none') {
+        drillRow.style.display = 'none';
+        toggle.textContent = '\u25B6';
+        return;
+      }
+      drillRow.style.display = '';
+      toggle.textContent = '\u25BC';
+      const cell = drillRow.querySelector('.drill-down-cell');
+      if (cell.dataset.loaded) return;
+
+      const planta = tr.dataset.planta;
+      const grupo = tr.dataset.grupo;
+      const indicador = tr.dataset.indicador;
+      const p = appendCommonFilters(new URLSearchParams(), anos, meses, true);
+      p.set('planta', planta);
+      p.set('grupo_cliente', grupo);
+      p.set('indicador', indicador);
+
+      try {
+        const r = await fetch(`${API}/api/executivo/diagnostico/drill-down?${p}`);
+        const d = await r.json();
+        if (d.error) { cell.innerHTML = `<div class="drill-error">${d.error}</div>`; return; }
+        cell.innerHTML = renderDrillDown(d, { planta, grupo, indicador, anos, meses });
+        cell.dataset.loaded = '1';
+        // Attach action button events
+        cell.querySelectorAll('.drill-nav-btn').forEach(btn => {
+          btn.addEventListener('click', e => {
+            e.stopPropagation();
+            const page = btn.dataset.page;
+            const qs = new URLSearchParams();
+            qs.set('planta', planta);
+            qs.set('grupo_cliente', grupo);
+            anos.forEach(a => qs.append('ano', a));
+            meses.forEach(m => qs.append('mes', m));
+            window.location.href = `${page}?${qs}`;
+          });
+        });
+        cell.querySelectorAll('.drill-export-btn').forEach(btn => {
+          btn.addEventListener('click', async e => {
+            e.stopPropagation();
+            btn.textContent = 'Exportando...';
+            btn.disabled = true;
+            try {
+              const ep = appendCommonFilters(new URLSearchParams(), anos, meses, true);
+              ep.set('planta', planta);
+              ep.set('grupo_cliente', grupo);
+              ep.set('indicador', indicador);
+              const resp = await fetch(`${API}/api/executivo/diagnostico/export?${ep}`);
+              if (!resp.ok) throw new Error('Erro na exportação');
+              const blob = await resp.blob();
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `prioridade_${planta}_${indicador}_${new Date().toISOString().slice(0,10)}.xlsx`;
+              a.click();
+              URL.revokeObjectURL(url);
+            } catch(err) { alert('Erro ao exportar: ' + err.message); }
+            finally { btn.textContent = '\u2B07 Exportar remessas'; btn.disabled = false; }
+          });
+        });
+      } catch(e) {
+        cell.innerHTML = `<div class="drill-error">Erro ao carregar drill-down</div>`;
+      }
+    }
+
+    function renderDrillDown(d, ctx) {
+      const isOtif = !!d.componentes || (ctx && ctx.indicador && ctx.indicador.toLowerCase().includes('otif'));
+      const detailPage = isOtif ? 'otif-detalhe.html' : 'gestao-pedidos.html';
+      const detailLabel = isOtif ? 'OTIF Detalhe' : 'Fill Rate Detalhe';
+      let html = '<div class="drill-content">';
+
+      // Componentes OT vs IF (só para OTIF)
+      if (d.componentes) {
+        const c = d.componentes;
+        const otColor = c.ot_pct >= META_OTIF ? '#0f8' : c.ot_pct >= 80 ? '#f5a623' : '#f55';
+        const ifColor = c.if_pct >= META_OTIF ? '#0f8' : c.if_pct >= 80 ? '#f5a623' : '#f55';
+        const otIsOfensor = c.principal_ofensor === 'On Time';
+        const ifIsOfensor = c.principal_ofensor === 'In Full';
+        html += `
+          <div class="drill-section">
+            <div class="drill-section-title">Onde está a perda?</div>
+            <div class="drill-components">
+              <div class="drill-comp ${otIsOfensor ? 'drill-comp-alert' : 'drill-comp-ok'}">
+                ${otIsOfensor ? '<span class="drill-comp-badge drill-comp-badge-alert">OFENSOR</span>' : '<span class="drill-comp-badge drill-comp-badge-ok">OK</span>'}
+                <div class="drill-comp-label">On Time</div>
+                <div class="drill-comp-value" style="color:${otColor}">${c.ot_pct}% <span style="color:var(--fr-txt-soft);font-size:.65rem">/ ${META_OTIF}%</span></div>
+                <div class="drill-comp-detail">${c.ot_falhas} de ${c.total_remessas} remessas atrasaram</div>
+              </div>
+              <div class="drill-comp ${ifIsOfensor ? 'drill-comp-alert' : 'drill-comp-ok'}">
+                ${ifIsOfensor ? '<span class="drill-comp-badge drill-comp-badge-alert">OFENSOR</span>' : '<span class="drill-comp-badge drill-comp-badge-ok">OK</span>'}
+                <div class="drill-comp-label">In Full</div>
+                <div class="drill-comp-value" style="color:${ifColor}">${c.if_pct}% <span style="color:var(--fr-txt-soft);font-size:.65rem">/ ${META_OTIF}%</span></div>
+                <div class="drill-comp-detail">${c.if_falhas} de ${c.total_remessas} remessas incompletas</div>
+              </div>
+            </div>
+            <div class="drill-verdict-wrap">
+              <div class="drill-comp-verdict">Maior concentração de falhas: <strong>${c.principal_ofensor}</strong></div>
+            </div>
+          </div>`;
+      }
+
+      // Fill Rate: resumo diagnóstico (bloco equivalente ao OT/IF do OTIF)
+      if (!d.componentes && d.por_canal && d.por_canal.length) {
+        const _totFalhas = d.por_canal.reduce((s, c) => s + (c.falhas || 0), 0);
+        const _totDen    = d.por_canal.reduce((s, c) => s + (c.denominador || 0), 0);
+        const _frPct     = _totDen > 0 ? Math.min(100, 100 * (_totDen - _totFalhas) / _totDen) : 0;
+        const _frColor   = _frPct >= META_FR ? '#0f8' : _frPct >= 85 ? '#f5a623' : '#f55';
+        const _frAlert   = _frPct < META_FR;
+        const _top       = d.por_canal[0];
+        html += `
+          <div class="drill-section">
+            <div class="drill-section-title">Onde está a perda?</div>
+            <div class="drill-components">
+              <div class="drill-comp ${_frAlert ? 'drill-comp-alert' : 'drill-comp-ok'}">
+                ${_frAlert ? '<span class="drill-comp-badge drill-comp-badge-alert">ABAIXO META</span>' : '<span class="drill-comp-badge drill-comp-badge-ok">OK</span>'}
+                <div class="drill-comp-label">Fill Rate</div>
+                <div class="drill-comp-value" style="color:${_frColor}">${_frPct.toFixed(1)}%</div>
+                <div class="drill-comp-detail">Meta ≥ ${META_FR}%</div>
+              </div>
+              <div class="drill-comp drill-comp-alert">
+                <span class="drill-comp-badge drill-comp-badge-alert">FALTOU</span>
+                <div class="drill-comp-label">Qtd. Não Atendida</div>
+                <div class="drill-comp-value" style="color:#f55;font-size:1.4rem">${_totFalhas.toLocaleString('pt-BR')}</div>
+                <div class="drill-comp-detail">unidades sem entrega</div>
+              </div>
+              <div class="drill-comp">
+                <div class="drill-comp-label">Total Elegível</div>
+                <div class="drill-comp-value" style="color:var(--fr-txt);font-size:1.4rem">${_totDen.toLocaleString('pt-BR')}</div>
+                <div class="drill-comp-detail">unidades pedidas</div>
+              </div>
+            </div>
+            <div class="drill-verdict-wrap">
+              <div class="drill-comp-verdict">Maior concentração de falhas: <strong>${_top ? escapeHtml(_top.nome) + ' (' + _top.valor_pct + '%)' : '—'}</strong></div>
+            </div>
+          </div>`;
+      }
+
+      // Tabela de detalhe (registros individuais)
+      if (d.remessas_detalhe && d.remessas_detalhe.length) {
+        const showing = d.remessas_detalhe.length;
+        let countInfo;
+        if (isOtif) {
+          const totalReg = d.total_registros || showing;
+          countInfo = `${showing} de ${totalReg.toLocaleString('pt-BR')} remessas com falha`;
+        } else {
+          const comFalta = d.total_com_falta || showing;
+          const totalVenc = d.total_registros || comFalta;
+          countInfo = `${comFalta.toLocaleString('pt-BR')} de ${totalVenc.toLocaleString('pt-BR')} pedidos vencidos com falta`;
+        }
+        html += `
+          <div class="drill-section">
+            <div class="drill-section-title">Detalhamento <span style="color:var(--fr-txt-soft);font-size:.72rem;font-weight:400">(${countInfo})</span></div>
+            <div style="overflow-x:auto;max-height:340px;overflow-y:auto;border-radius:6px;border:1px solid var(--fr-sep)">
+            <table class="drill-table" style="font-size:.72rem;white-space:nowrap">`;
+        if (isOtif) {
+          html += `
+              <thead><tr><th>Remessa</th><th>Pedido</th><th>Planta</th><th>Grupo Cliente</th><th>Dt. Grade</th><th>Dt. Agenda Entrega</th><th>Dt. Chegada</th><th>Tipo Frete</th><th>Transportadora</th><th style="text-align:center">Vol. Sol.</th><th style="text-align:center">Vol. Fat.</th><th style="text-align:center">Atraso</th><th>On Time</th><th>In Full</th><th>OTIF</th><th>Canal</th></tr></thead>
+              <tbody>
+                ${d.remessas_detalhe.map(r => {
+                  const otC = r.on_time ? '#0f8' : '#f55';
+                  const ifC = r.in_full ? '#0f8' : '#f55';
+                  const otifC = r.otif ? '#0f8' : '#f55';
+                  return `<tr>
+                    <td>${escapeHtml(r.remessa)}</td>
+                    <td>${escapeHtml(r.pedido)}</td>
+                    <td>${escapeHtml(r.planta)}</td>
+                    <td>${escapeHtml(r.grupo_cliente)}</td>
+                    <td>${r.dt_grade || '\u2014'}</td>
+                    <td>${r.dt_agenda || '\u2014'}</td>
+                    <td>${r.dt_chegada || '\u2014'}</td>
+                    <td>${escapeHtml(r.tipo_frete)}</td>
+                    <td>${escapeHtml(r.transportadora)}</td>
+                    <td style="text-align:center">${r.volume ? r.volume.toLocaleString('pt-BR') : '\u2014'}</td>
+                    <td style="text-align:center">${r.vol_faturado ? r.vol_faturado.toLocaleString('pt-BR') : '\u2014'}</td>
+                    <td style="text-align:center;color:#f5a623">${(() => { const m = r.atraso_min || 0; return m > 0 ? (m >= 60 ? Math.floor(m/60) + 'h ' + (m%60 > 0 ? m%60 + 'min' : '') : m + ' min') : '\u2014'; })()}</td>
+                    <td style="color:${otC};font-weight:700;text-align:center">${r.on_time}</td>
+                    <td style="color:${ifC};font-weight:700;text-align:center">${r.in_full}</td>
+                    <td style="color:${otifC};font-weight:700;text-align:center">${r.otif}</td>
+                    <td>${escapeHtml(r.canal)}</td>
+                  </tr>`;
+                }).join('')}
+              </tbody>`;
+        } else {
+          html += `
+              <thead><tr><th>Pedido</th><th>Dt. Planejada</th><th style="text-align:center">Vol. Ped.</th><th style="text-align:center">Vol. Fat.</th><th style="text-align:center;color:#f55">Gap Vol.</th><th style="text-align:right;color:#f5a623">Perda (R$)</th><th style="text-align:center">Canal</th><th>Status</th><th>Respons\u00e1vel</th></tr></thead>
+              <tbody>
+                ${d.remessas_detalhe.map(r => {
+                  const perdaFmt = r.perda_vlr ? 'R$ ' + Number(r.perda_vlr).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}) : '\u2014';
+                  return `<tr>
+                    <td>${escapeHtml(r.pedido)}</td>
+                    <td>${r.dt_planejada || '\u2014'}</td>
+                    <td style="text-align:center">${Number(r.vol_ped).toLocaleString('pt-BR')}</td>
+                    <td style="text-align:center">${Number(r.vol_fat).toLocaleString('pt-BR')}</td>
+                    <td style="text-align:center;color:#f55;font-weight:700">${Number(r.gap_vol).toLocaleString('pt-BR')}</td>
+                    <td style="text-align:right;color:#f5a623;font-weight:600">${perdaFmt}</td>
+                    <td style="text-align:center">${escapeHtml(r.canal)}</td>
+                    <td style="text-align:center">${escapeHtml(r.status)}</td>
+                    <td style="text-align:center">${escapeHtml(r.responsavel)}</td>
+                  </tr>`;
+                }).join('')}
+              </tbody>`;
+        }
+        html += `
+            </table>
+            </div>
+          </div>`;
+      }
+
+      // Action buttons
+      html += `
+        <div class="drill-section" style="display:flex;gap:.75rem;justify-content:flex-end;align-items:center;padding-top:.6rem;border-top:1px solid var(--fr-sep);margin-top:.4rem">
+          <button class="drill-nav-btn" data-page="${detailPage}" style="background:rgba(96,200,239,.12);border:1px solid rgba(96,200,239,.4);color:#60c8ef;font-size:.72rem;font-weight:700;padding:.45rem .9rem;border-radius:7px;cursor:pointer;font-family:inherit;transition:background .2s">↗ Ver ${detailLabel}</button>
+          <button class="drill-export-btn" style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.4);color:#22c55e;font-size:.72rem;font-weight:700;padding:.45rem .9rem;border-radius:7px;cursor:pointer;font-family:inherit;transition:background .2s">\u2B07 Exportar remessas</button>
+        </div>`;
+
+      html += '</div>';
+      return html;
+    }
+
+    /* ── Evolução Chart ── */
+    async function loadEvolucao() {
+      const canvas = document.getElementById('chartEvolucao');
+      const ndEl   = document.getElementById('nd-evolucao');
+      try {
+        /* Determina o mês final: filtro de data (se houver), senão max(anos/meses), ou hoje */
+        const { dt_fim: dtFimFiltro } = getDateFilter();
+        const { anos: pAnos, meses: pMeses } = getPeriod();
+        let endYr, endMo, dtFim;
+        if (dtFimFiltro) {
+          dtFim = dtFimFiltro;
+          const [fy, fm] = dtFimFiltro.split('-').map(Number);
+          endYr = fy; endMo = fm;
+        } else {
+          endYr   = Math.max(...pAnos);
+          endMo   = Math.max(...pMeses);
+          const lastDay = new Date(endYr, endMo, 0).getDate();
+          dtFim = `${endYr}-${String(endMo).padStart(2,'0')}-${String(lastDay).padStart(2,'0')}`;
+        }
+
+        const evP = new URLSearchParams({ dt_fim: dtFim });
+        getPlantas().forEach(v => evP.append('planta', v));
+        getGruposCliente().forEach(v => evP.append('grupo_cliente', v));
+
+        // Anos da janela de 12 meses — para buscar OTIF da base OTM
+        const otifAnos = new Set();
+        const wStart = new Date(endYr, endMo - 12, 1);
+        for (let d = new Date(wStart); d <= new Date(endYr, endMo - 1, 1); d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) {
+          otifAnos.add(d.getFullYear());
+        }
+        const otifP = new URLSearchParams();
+        otifAnos.forEach(y => otifP.append('ano', y));
+        getPlantas().forEach(v => otifP.append('planta', v));
+        getGruposCliente().forEach(v => otifP.append('grupo_cliente', v));
+
+        const [r, rOtif] = await Promise.all([
+          fetch(`${API}/api/executivo/evolucao?${evP}`),
+          fetch(`${API}/api/otif2/mensal?${otifP}`),
+        ]);
+        const data     = await r.json();
+        const dataOtif = await rOtif.json();
+        if (chartEvolucao) { chartEvolucao.destroy(); chartEvolucao = null; }
+
+        if (!Array.isArray(data) || !data.length || data.error) {
+          ndEl.textContent   = data.error ? 'Erro: ' + data.error : 'Sem dados.';
+          ndEl.style.display = 'flex'; canvas.style.display = 'none'; return;
+        }
+        ndEl.style.display = 'none'; canvas.style.display = 'block';
+
+        /* Gera exatamente 12 slots terminando em endYr/endMo */
+        const endDate   = new Date(endYr, endMo - 1, 1);
+        const startDate = new Date(endYr, endMo - 12, 1);
+        const slots = [];
+        for (let d = new Date(startDate); d <= endDate; d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) {
+          slots.push({ ANO: d.getFullYear(), MES: d.getMonth() + 1 });
+        }
+        const byKey = {};
+        data.forEach(d => { byKey[`${d.ANO}-${+d.MES}`] = d; });
+
+        // OTIF por slot — mesmo endpoint e fórmula do card, garante consistência
+        const otifResults = await Promise.all(slots.map(s => {
+          const p = new URLSearchParams({ ano: s.ANO, mes: s.MES });
+          getPlantas().forEach(v => p.append('planta', v));
+          getGruposCliente().forEach(v => p.append('grupo_cliente', v));
+          return fetch(`${API}/api/otif2/resumo?${p}`).then(res => res.json()).catch(() => null);
+        }));
+
+        const labels   = slots.map(s => `${MES_PT[s.MES - 1]}/${String(s.ANO).slice(2)}`);
+        const frVals   = slots.map(s => { const d = byKey[`${s.ANO}-${s.MES}`]; return d ? +calcFR(d.QTDE_ATENDIDA, d.QTDE_PEDIDA, d.QTDE_CANCELADA).toFixed(2) : null; });
+        const otifVals = slots.map((s, i) => {
+          const d = otifResults[i];
+          if (!d || d.error) return null;
+          const totalL = Number(d.TOTAL_LINHAS) || 0;
+          const otifOk = (Number(d.OTIF_FOB) || 0) + (Number(d.OTIF_CIF) || 0);
+          return totalL > 0 ? +calcPct(otifOk, totalL).toFixed(2) : null;
+        });
+
+        const frValid   = frVals.filter(v => v != null && v > 0);
+        const otifValid = otifVals.filter(v => v != null && v > 0);
+        const frMin  = frValid.length   ? Math.max(0, Math.floor(Math.min(...frValid)) - 1)   : 94;
+        const frMax  = 101;
+        const otifMin = otifValid.length ? Math.max(0, Math.floor(Math.min(...otifValid)) - 15) : 40;
+        const otifMax = otifValid.length ? Math.ceil(Math.max(...otifValid)) + 40 : 140;
+        const c       = chartCols();
+
+        chartEvolucao = new Chart(canvas, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [
+              {
+                label: 'Fill Rate %',
+                data:  frVals,
+                borderColor: '#06b6d4', borderWidth: 2.5,
+                backgroundColor: 'transparent',
+                fill: false,
+                pointRadius: 3, pointBackgroundColor: '#06b6d4',
+                tension: 0.3, order: 2,
+                yAxisID: 'y',
+              },
+              {
+                label: 'OTIF %',
+                data:  otifVals,
+                borderColor: '#22c55e', borderWidth: 2.5,
+                backgroundColor: 'transparent', fill: false,
+                pointRadius: 3, pointBackgroundColor: '#22c55e',
+                tension: 0.3, order: 3,
+                yAxisID: 'y1',
+              },
+            ]
+          },
+          plugins: [{
+            id: 'dataLabels',
+            afterDatasetsDraw(chart) {
+              const ctx = chart.ctx;
+              // Only label first two datasets (FR and OTIF), skip meta lines
+              [0, 1].forEach(i => {
+                const ds = chart.data.datasets[i];
+                const threshold = i === 0 ? META_FR : META_OTIF;
+                const meta = chart.getDatasetMeta(i);
+                if (meta.hidden) return;
+                ctx.save();
+                ctx.font = 'bold 9px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                // FR labels above, OTIF labels below
+                ctx.textBaseline = i === 0 ? 'bottom' : 'top';
+                meta.data.forEach((pt, j) => {
+                  const v = ds.data[j];
+                  if (v == null) return;
+                  ctx.fillStyle = v >= threshold ? '#22c55e' : v >= 80 ? '#f59e0b' : '#DA2E39';
+                  const yOff = i === 0 ? pt.y - 8 : pt.y + 10;
+                  ctx.fillText(v.toFixed(1) + '%', pt.x, yOff);
+                });
+                ctx.restore();
+              });
+            }
+          }],
+          options: {
+            responsive: true, maintainAspectRatio: false, animation: { duration: 500 },
+            layout: { padding: { top: 22, bottom: 8 } },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                filter: item => item.datasetIndex < 2,
+                callbacks: {
+                  label: ctx => {
+                    const n = ['Fill Rate', 'OTIF'][ctx.datasetIndex];
+                    return ctx.parsed.y != null ? ` ${n}: ${ctx.parsed.y.toFixed(1)}%` : '';
+                  }
+                }
+              }
+            },
+            scales: {
+              x: { grid: { display: false }, ticks: { color: c.tick, font: { size: 10 } } },
+              y: {
+                position: 'left',
+                min: frMin, max: frMax,
+                grid: { display: false },
+                ticks: { display: false },
+                title: { display: true, text: 'Fill Rate', color: 'rgba(6,182,212,0.7)', font: { size: 10, weight: '700' } },
+              },
+              y1: {
+                position: 'right',
+                min: otifMin, max: otifMax,
+                grid: { display: false },
+                ticks: { display: false },
+                title: { display: true, text: 'OTIF', color: 'rgba(34,197,94,0.7)', font: { size: 10, weight: '700' } },
+              }
+            }
+          }
+        });
+      } catch (err) {
+        ndEl.textContent = 'Erro: ' + err.message;
+        ndEl.style.display = 'flex'; canvas.style.display = 'none';
+      }
+    }
+
+    /* ── Fetch OTIF resumo (base OTIF separada) ── */
+    async function fetchOtifResumo(anos, meses) {
+      const p = new URLSearchParams();
+      const semVals = msSemana.getValues();
+      if (semVals.length > 0) {
+        semVals.forEach(v => p.append('semana', v)); // semana passada diretamente ao endpoint OTIF
+      } else {
+        anos.forEach(a => p.append('ano', a));
+        meses.forEach(m => p.append('mes', m));
+      }
+      msDia.getValues().forEach(v => p.append('dia', v));
+      getPlantas().forEach(v => p.append('planta', v));
+      getGruposCliente().forEach(v => p.append('grupo_cliente', v));
+      const r = await fetch(`${API}/api/otif2/resumo?${p}`);
+      return await r.json();
+    }
+
+    /* ── Load all ── */
+    async function loadAll() {
+      const { anos, meses } = getPeriod();
+      const { dt_ini, dt_fim } = getDateFilter();
+      const useRange = dt_ini && dt_fim;
+
+      // 1) Fill Rate KPIs (base FR)
+      try {
+        const curr = await fetchResumo(anos, meses);
+        let prv = null;
+        if (!useRange && anos.length === 1 && meses.length === 1) {
+          const prev = getPrev(anos[0], meses[0]);
+          prv = await fetchResumo([prev.ano], [prev.mes]);
+        }
+        if (!curr.error) renderKPIs(curr, prv, meses);
+        else console.error('Resumo API error:', curr.error);
+      } catch (e) { console.error('LoadAll KPI error:', e); }
+
+      // 2) OTIF Geral + FOB/CIF (base OTIF real)
+      try {
+        const otif = await fetchOtifResumo(anos, meses);
+        if (!otif.error) {
+          const fobL = Number(otif.FOB_LINHAS) || 0;
+          const cifL = Number(otif.CIF_LINHAS) || 0;
+          const totalL = Number(otif.TOTAL_LINHAS) || 0;
+          const otifFob = Number(otif.OTIF_FOB) || 0;
+          const otifCif = Number(otif.OTIF_CIF) || 0;
+          const fobPct = fobL > 0 ? calcPct(otifFob, fobL) : 0;
+          const cifPct = cifL > 0 ? calcPct(otifCif, cifL) : 0;
+          const geralPct = totalL > 0 ? calcPct(otifFob + otifCif, totalL) : 0;
+
+          // OTIF Geral valor + cor + accent
+          const kpiOt = document.getElementById('kpi-otif');
+          kpiOt.textContent = geralPct.toFixed(1) + '%';
+          kpiOt.style.color = metaColor(geralPct, META_OTIF);
+          document.getElementById('card-otif').className = 'fr-kpi-card ' + metaAccent(geralPct, META_OTIF);
+
+          // Delta pp vs meta
+          const ppDelta = geralPct - META_OTIF;
+          const ppEl = document.getElementById('delta-otif-pp');
+          ppEl.className = 'kpi-delta ' + (ppDelta >= 0 ? 'above' : 'below');
+          ppEl.innerHTML = `<span class="delta-arrow">${ppDelta >= 0 ? '\u25B2' : '\u25BC'}</span> ${ppDelta >= 0 ? '+' : ''}${ppDelta.toFixed(2)} pp`;
+
+          // Delta MoM para OTIF Geral
+          const momEl = document.getElementById('delta-otif-mom');
+          if (!useRange && anos.length === 1 && meses.length === 1) {
+            try {
+              const prev = getPrev(anos[0], meses[0]);
+              const otifPrev = await fetchOtifResumo([prev.ano], [prev.mes]);
+              if (!otifPrev.error) {
+                const prevTotL = Number(otifPrev.TOTAL_LINHAS) || 1;
+                const prevGeralPct = calcPct(Number(otifPrev.OTIF_FOB) + Number(otifPrev.OTIF_CIF), prevTotL);
+                const otD = geralPct - prevGeralPct;
+                momEl.className = 'kpi-delta ' + (otD >= 0 ? 'above' : 'below');
+                momEl.innerHTML = `<span class="delta-arrow">${otD >= 0 ? '\u25B2' : '\u25BC'}</span> ${otD >= 0 ? '+' : ''}${otD.toFixed(2)} pp vs. ${MES_PT[prev.mes - 1]}`;
+              }
+            } catch {}
+          }
+
+          // FOB / CIF valores percentuais
+          const elFob = document.getElementById('kpi-otif-fob');
+          const elCif = document.getElementById('kpi-otif-cif');
+          elFob.textContent = fobPct.toFixed(1) + '%';
+          elCif.textContent = cifPct.toFixed(1) + '%';
+
+
+
+          // Volume avaliado OTIF (remessas)
+          document.getElementById('kpi-remessas').textContent = brl(totalL);
+        }
+      } catch (e) { console.error('OTIF Resumo error:', e); }
+
+      loadActionCard(anos, meses).catch(e => console.error('Ação prioritária error:', e));
+      loadPareto(anos, meses).catch(e => console.error('Pareto error:', e));
+      loadPrioridades(anos, meses).catch(e => console.error('Prioridades error:', e));
+      loadEvolucao().catch(e => console.error('Evolução error:', e));
+      loadInsights(anos, meses).catch(e => console.error('Insights error:', e));
+    }
+
+    async function loadInsights(anos, meses) {
+      const el = document.getElementById('insights-text');
+      el.innerHTML = '<span style="color:var(--fr-txt-soft);font-style:italic">Consolidando leitura executiva...</span>';
+      const p = appendCommonFilters(new URLSearchParams(), anos, meses, true);
+      try {
+        const r = await fetch(`${API}/api/executivo/insights?${p}`);
+        const data = await r.json();
+        if (data.text) {
+          const items = data.text.split('\n').map(s => s.replace(/^•\s*/, '').trim()).filter(Boolean);
+          el.innerHTML = `<ul class="readout-list">${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+        } else {
+          el.innerHTML = '<span style="color:var(--fr-txt-soft);font-style:italic">Sem leitura executiva disponível.</span>';
+        }
+      } catch (e) {
+        el.innerHTML = '<span style="color:var(--fr-txt-soft);font-style:italic">Erro ao gerar leitura executiva.</span>';
+      }
+    }
+
+    /* ── State persistence across navigation ── */
+    const _PAGE_KEY = 'exec-page-state';
+    const _isReload = (performance.getEntriesByType('navigation')[0]?.type === 'reload');
+    if (_isReload) sessionStorage.removeItem(_PAGE_KEY);
+
+    function _savePageState() {
+      const state = {
+        anos: msAno.getValues(),
+        meses: msMes.getValues(),
+        dias: msDia.getValues(),
+        semanas: msSemana.getValues(),
+        plantas: msPlanta.getValues(),
+        grupos: msGrupoCliente.getValues(),
+        responsaveis: msResponsavel.getValues(),
+        pareto: { ...paretoState },
+      };
+      sessionStorage.setItem(_PAGE_KEY, JSON.stringify(state));
+    }
+    function _getSavedState() {
+      try { return JSON.parse(sessionStorage.getItem(_PAGE_KEY)); } catch { return null; }
+    }
+
+    (function init() {
+      const saved = localStorage.getItem('fr-theme') || 'light';
+      applyTheme(saved === 'dark');
+
+      fillPeriodSelects();
+      populateDias();
+      populateSemanas();
+
+      // Restore saved state if navigating back (not refresh)
+      const ss = _getSavedState();
+      if (ss) {
+        if (ss.anos && ss.anos.length) msAno.setValues(ss.anos);
+        if (ss.meses && ss.meses.length) msMes.setValues(ss.meses);
+        if (ss.dias && ss.dias.length) msDia.setValues(ss.dias);
+        if (ss.semanas && ss.semanas.length) msSemana.setValues(ss.semanas);
+        if (ss.pareto) {
+          Object.assign(paretoState, ss.pareto);
+          // Sync toggle buttons
+          document.querySelectorAll('#paretoKpiToggle .cdt-btn').forEach(b => b.classList.toggle('active', b.dataset.kpi === paretoState.kpi));
+          document.querySelectorAll('#paretoDimToggle .cdt-btn').forEach(b => b.classList.toggle('active', b.dataset.dimension === paretoState.dimension));
+          document.querySelectorAll('#paretoOtifViewToggle .cdt-btn').forEach(b => b.classList.toggle('active', b.dataset.otifView === paretoState.otifView));
+          document.getElementById('paretoOtifViewToggle').style.display = paretoState.kpi === 'otif' ? 'flex' : 'none';
+        }
+        populateSemanas();
+      }
+
+      const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+      const autoLoad = debounce(loadAll, 300);
+
+      document.getElementById('ms-ano').addEventListener('change', () => { populateSemanas(); _savePageState(); autoLoad(); });
+      document.getElementById('ms-mes').addEventListener('change', () => { populateSemanas(); _savePageState(); autoLoad(); });
+      document.getElementById('ms-dia').addEventListener('change', () => { _savePageState(); autoLoad(); });
+      document.getElementById('ms-semana').addEventListener('change', () => { _savePageState(); autoLoad(); });
+      document.getElementById('ms-planta').addEventListener('change', () => { _savePageState(); autoLoad(); });
+      document.getElementById('ms-grupo-cliente').addEventListener('change', () => { _savePageState(); autoLoad(); });
+      document.getElementById('ms-responsavel').addEventListener('change', () => { _savePageState(); autoLoad(); });
+
+      document.getElementById('btnClear').addEventListener('click', () => {
+        const cur = new Date();
+        msAno.setValues([String(cur.getFullYear())]);
+        msMes.setValues([String(cur.getMonth() + 1)]);
+        msDia.reset();
+        msSemana.reset();
+        msPlanta.reset();
+        msGrupoCliente.reset();
+      msResponsavel.reset();
+        populateSemanas();
+        loadAll();
+      });
+
+      fetch(`${API}/api/plantas`).then(r => r.json()).then(list => {
+        msPlanta.populate(list);
+        const ss = _getSavedState();
+        if (ss && ss.plantas && ss.plantas.length) msPlanta.setValues(ss.plantas);
+      }).catch(() => {});
+      fetch(`${API}/api/otif2/grupos-cliente`).then(r => r.json()).then(list => {
+        msGrupoCliente.populate(list.map(v => ({ value: v, label: v.replace(/^\d+-/, '') })));
+        const ss = _getSavedState();
+        if (ss && ss.grupos && ss.grupos.length) msGrupoCliente.setValues(ss.grupos);
+      }).catch(() => {});
+      fetch(`${API}/api/fillrate/responsaveis`).then(r => r.json()).then(list => {
+        msResponsavel.populate(list);
+        const ss = _getSavedState();
+        if (ss && ss.responsaveis && ss.responsaveis.length) msResponsavel.setValues(ss.responsaveis);
+      }).catch(() => {});
+
+      document.querySelectorAll('#paretoKpiToggle .cdt-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#paretoKpiToggle .cdt-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          paretoState.kpi = btn.dataset.kpi;
+          document.getElementById('paretoOtifViewToggle').style.display =
+            paretoState.kpi === 'otif' ? 'flex' : 'none';
+          const { anos, meses } = getPeriod();
+          loadPareto(anos, meses);
+        });
+      });
+
+      document.querySelectorAll('#paretoDimToggle .cdt-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#paretoDimToggle .cdt-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          paretoState.dimension = btn.dataset.dimension;
+          const { anos, meses } = getPeriod();
+          loadPareto(anos, meses);
+        });
+      });
+
+      document.querySelectorAll('#paretoOtifViewToggle .cdt-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#paretoOtifViewToggle .cdt-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          paretoState.otifView = btn.dataset.otifView;
+          const { anos, meses } = getPeriod();
+          loadPareto(anos, meses);
+        });
+      });
+
+      loadAll();
+    })();
+  </script>
+
+</body>
+</html>

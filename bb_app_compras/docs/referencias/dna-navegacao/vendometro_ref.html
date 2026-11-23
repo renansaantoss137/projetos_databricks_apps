@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendômetro (Budget & Forecast) | DNA de Vendas · Bimbo Brasil</title>
+  <link rel="stylesheet" href="styles.css?v=2.5.0">
+  <style>
+
+    /* SVG Failsafe Dimensioning */
+    svg { box-sizing: border-box; flex-shrink: 0; }
+    .dna-header svg, .dna-nav-tabs svg, .dna-nav-tab svg {
+      width: 16px !important; height: 16px !important; max-width: 16px !important; max-height: 16px !important;
+      display: inline-block !important; vertical-align: middle !important;
+    }
+    .dna-mobile-nav svg, .dna-mobile-nav-item svg {
+      width: 18px !important; height: 18px !important; max-width: 18px !important; max-height: 18px !important;
+      display: inline-block !important;
+    }
+    
+    body.vend-body {
+      background: var(--bg-glow), var(--bg-page);
+      color: var(--text-primary);
+      font-family: Inter, 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sp-header-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sp-qsr-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: var(--r-pill);
+      background: var(--primary-soft);
+      border: 1px solid var(--primary);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary-strong);
+    }
+    :root[data-theme="dark"] .sp-qsr-pill {
+      color: var(--link);
+      border-color: rgba(96, 165, 250, 0.4);
+    }
+
+    .sp-meta-desktop {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .sp-meta-mobile {
+      display: none;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    @media (max-width: 640px) {
+      .sp-meta-desktop { display: none; }
+      .sp-meta-mobile { display: block; }
+    }
+
+    /* Banner executivo com métrica Valor/Volume */
+    .sp-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-card);
+      padding: 1rem 1.25rem;
+      box-shadow: var(--shadow-card);
+    }
+    .sp-banner-headline {
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--text-primary);
+    }
+    .hl-neg { color: var(--danger); font-weight: 800; }
+    .hl-pos { color: var(--success); font-weight: 800; }
+
+    .sp-metric-pill {
+      display: inline-flex;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--r-control);
+      padding: 3px;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+    .sp-pill-btn {
+      padding: 0.35rem 0.85rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .sp-pill-btn.active {
+      background: var(--primary);
+      color: var(--text-on-accent);
+    }
+
+    /* KPIs Row */
+    .sp-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 1199px) {
+      .sp-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .sp-kpi-grid { grid-template-columns: 1fr; }
+    }
+    .sp-kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-card);
+      padding: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 120px;
+      box-shadow: var(--shadow-card);
+    }
+    .sp-kpi-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 0.35rem;
+    }
+    .sp-kpi-val {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+    .sp-kpi-footer {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .badge-neg { color: var(--danger) !important; font-weight: 700; }
+    .badge-pos { color: var(--success) !important; font-weight: 700; }
+
+    /* Barra de progresso de cobertura */
+    .sp-cov-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.7rem;
+      margin-top: 4px;
+    }
+    .sp-cov-label { min-width: 90px; color: var(--text-secondary); }
+    .sp-cov-bar-bg {
+      flex: 1;
+      height: 12px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .sp-cov-bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    .sp-cov-pct {
+      min-width: 44px;
+      text-align: right;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Gráficos e Cartões */
+    .sp-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-card);
+      padding: 1.25rem 1.25rem 1rem;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+    }
+    .sp-panel-hdr {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 0.65rem;
+    }
+    .sp-panel-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .sp-panel-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .sp-legend {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.65rem;
+      flex-wrap: wrap;
+    }
+    .sp-legend-item { display: flex; align-items: center; gap: 6px; }
+    .sp-leg-box { width: 12px; height: 12px; border-radius: 3px; }
+
+    /* Barras Mensais */
+    .sp-bar-chart {
+      display: flex;
+      align-items: flex-end;
+      height: 220px;
+      gap: 8px;
+      padding-top: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .sp-chart-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+      gap: 3px;
+    }
+    .sp-col-bars {
+      width: 100%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 3px;
+      flex: 1;
+      position: relative;
+    }
+    .bar-prior {
+      width: 40%;
+      background: var(--chart-compare);
+      opacity: 0.5;
+      border-radius: 2px 2px 0 0;
+    }
+    .bar-real {
+      width: 46%;
+      background: var(--chart-focus);
+      border-radius: 2px 2px 0 0;
+    }
+    .bar-real.in-progress {
+      background: repeating-linear-gradient(45deg, var(--chart-focus), var(--chart-focus) 4px, rgba(255,255,255,0.25) 4px, rgba(255,255,255,0.25) 8px);
+    }
+    .bar-future {
+      width: 46%;
+      background: var(--chart-context);
+      border-radius: 2px 2px 0 0;
+    }
+    .sp-col-val {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-align: center;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+    .sp-col-pct {
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+    .sp-col-subtag {
+      height: 14px;
+      font-size: 0.56rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+    .sp-col-lbl {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-align: center;
+      padding-top: 2px;
+      border-top: 2px solid transparent;
+    }
+    .sp-col-lbl.current {
+      color: var(--primary);
+      border-top-color: var(--primary);
+    }
+
+    /* Cards Direita (YTD e Trimestres) */
+    .sp-sec-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-card);
+      padding: 1.15rem;
+      box-shadow: var(--shadow-card);
+    }
+    .sp-sec-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .sp-sec-val {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.35rem;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Barras Horizontais de Trimestre */
+    .sp-tri-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 0.35rem;
+      font-size: 0.74rem;
+    }
+    .sp-tri-lbl { width: 50px; color: var(--text-secondary); font-weight: 600; }
+    .sp-tri-bar {
+      flex: 1;
+      height: 14px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .sp-tri-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 3px;
+    }
+    .sp-tri-fill.in-progress {
+      background: repeating-linear-gradient(45deg, var(--primary), var(--primary) 4px, rgba(255,255,255,0.2) 4px, rgba(255,255,255,0.2) 8px);
+    }
+    .sp-tri-val {
+      min-width: 110px;
+      text-align: right;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Barra de Canais */
+    .sp-channel-bar {
+      height: 18px;
+      border-radius: 4px;
+      display: flex;
+      overflow: hidden;
+      margin: 0.65rem 0 0.5rem;
+    }
+    .ch-qsr { background: var(--primary); }
+    .ch-distrib { background: var(--chart-compare); }
+    .sp-channel-legend {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sp-footer-note {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 0.85rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Loading */
+    .sp-loading {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(6, 10, 18, 0.45);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 9999;
+    }
+    .sp-loading.show { display: flex; }
+    .sp-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(37, 99, 235, 0.2);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="vend-body">
+  <div class="sp-app-layout">
+  <aside class="sp-sidebar">
+    <a href="/" class="sp-nav-item" title="Início">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Início</span>
+    </a>
+    <a href="vendometro.html" class="sp-nav-item active" title="Vendômetro">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      <span>Vendômetro</span>
+    </a>
+    <a href="relatorios.html" class="sp-nav-item" title="Report Dinâmico">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      <span>Report</span>
+    </a>
+  </aside>
+    <div class="sp-main">
+
+  <!-- CABEÇALHO UNIFICADO (R1, R2) -->
+  <header class="dna-header">
+    <div class="dna-brand">
+      <a href="/" style="display:flex; align-items:center; text-decoration:none;">
+        <img src="logo_bimbo.png" alt="Grupo Bimbo" class="dna-logo-img" width="32" height="32">
+      </a>
+      <div class="sp-header-info">
+        <span class="dna-brand-badge">SPACE</span>
+        <span class="sp-qsr-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a8 8 0 0 1 16 0H4z"/><rect x="4" y="15" width="16" height="4" rx="2"/><line x1="4" y1="13" x2="20" y2="13"/></svg>
+          Bimbo QSR · Pães para Lanche
+        </span>
+      </div>
+    </div>
+
+    
+
+    <!-- Metadados à direita no Desktop (R9) + Menu do Usuário (R1) -->
+    <div style="display:flex; align-items:center; gap:16px;">
+      <div class="sp-meta-desktop" id="txt-last-update">
+        Dados atualizados em <strong>21/10/26 às 14:30</strong> · Data & Analytics
+      </div>
+      <div class="app-menu-container" id="app-menu-container"></div>
+    </div>
+  </header>
+
+  <!-- NAVEGAÇÃO MOBILE INFERIOR (R2) -->
+  <nav class="dna-mobile-nav" aria-label="Navegação mobile">
+    <a href="/" class="dna-mobile-nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="vendometro.html" class="dna-mobile-nav-item active" aria-current="page">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      <span>Vendômetro</span>
+    </a>
+    <a href="relatorios.html" class="dna-mobile-nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      <span>Report</span>
+    </a>
+  </nav>
+
+  <!-- LAYOUT PRINCIPAL COM PAINEL RETRÁTIL À DIREITA (R3 / F1-F11) -->
+  <div class="layout" id="appLayout">
+
+    <!-- ÁREA DE CONTEÚDO (KPIs + GRÁFICOS EM 12 COLUNAS) -->
+    <main class="conteudo">
+      
+      <!-- Linha de chips de filtros aplicados + Botão Gaveta para Tablet/Mobile -->
+      <div class="fp-resumo" id="fpResumo" hidden>
+        <button class="btn btn-secundario" id="fpAbrirGaveta" type="button" aria-haspopup="dialog">Filtros</button>
+        <div class="fp-chips" id="fpChips" aria-label="Filtros aplicados"></div>
+        <button class="btn btn-fantasma" id="fpLimparTudo" type="button" hidden>Limpar tudo</button>
+      </div>
+
+      <!-- Metadados no celular (R9) -->
+      <div class="sp-meta-mobile" id="txt-last-update-mob">
+        Dados atualizados em 21/10/26 às 14:30 · Data & Analytics
+      </div>
+
+      <!-- BANNER DE INSIGHT + SELETOR VALOR/VOLUME -->
+      <section class="sp-banner">
+        <div class="sp-banner-headline" id="banner-text">
+          Outubro está <span class="hl-neg">18% abaixo do budget</span> até hoje. Com as open orders, o mês chega a <span class="hl-pos">80% do budget</span>.
+        </div>
+        <div class="sp-metric-pill" role="group" aria-label="Métrica">
+          <button class="sp-pill-btn active" id="btn-val" onclick="setMetric('Valor')" aria-pressed="true">Valor</button>
+          <button class="sp-pill-btn" id="btn-vol" onclick="setMetric('Volume')" aria-pressed="false">Volume</button>
+        </div>
+      </section>
+
+      <!-- CARDS DE KPIS -->
+      <section class="sp-kpi-grid">
+        <div class="sp-kpi-card">
+          <div class="sp-kpi-title">Invoiced Líquido - até 20/10</div>
+          <div class="sp-kpi-val" id="kpi-invoiced">R$ 38,31 Mi</div>
+          <div class="sp-kpi-footer">
+            <span class="badge-neg" id="kpi-invoiced-vs">▼ -18,4% vs budget até hoje</span>
+            <span id="kpi-invoiced-bgt-hoje">Budget até hoje: R$ 46,95 Mi</span>
+          </div>
+        </div>
+
+        <div class="sp-kpi-card">
+          <div class="sp-kpi-title">Open orders</div>
+          <div class="sp-kpi-val" id="kpi-open">R$ 22,61 Mi</div>
+          <div class="sp-kpi-footer">
+            <span>Pedidos a faturar no mês</span>
+          </div>
+        </div>
+
+        <div class="sp-kpi-card">
+          <div class="sp-kpi-title">Invoiced + open orders</div>
+          <div class="sp-kpi-val" id="kpi-inv-open">R$ 60,92 Mi</div>
+          <div class="sp-kpi-footer">
+            <span id="kpi-gap-bgt">Faltam R$ 14,89 Mi para o budget</span>
+            <span id="kpi-gap-fcst">e R$ 4,92 Mi para o forecast</span>
+          </div>
+        </div>
+
+        <div class="sp-kpi-card">
+          <div class="sp-kpi-title">Cobertura do mês inteiro</div>
+          <div style="display:flex; flex-direction:column; gap:6px; margin-top:4px;">
+            <div class="sp-cov-row">
+              <span class="sp-cov-label">Budget · <span id="lbl-bgt-full">R$ 75,81 Mi</span></span>
+              <div class="sp-cov-bar-bg"><div class="sp-cov-bar-fill" id="bar-bgt-fill" style="width: 80.4%;"></div></div>
+              <span class="sp-cov-pct" id="pct-bgt-full">80,4%</span>
+            </div>
+            <div class="sp-cov-row">
+              <span class="sp-cov-label">Forecast · <span id="lbl-fcst-full">R$ 65,84 Mi</span></span>
+              <div class="sp-cov-bar-bg"><div class="sp-cov-bar-fill" id="bar-fcst-fill" style="width: 92.5%; background: var(--chart-compare);"></div></div>
+              <span class="sp-cov-pct" id="pct-fcst-full">92,5%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sp-kpi-card">
+          <div class="sp-kpi-title">Ano anterior - fechado</div>
+          <div class="sp-kpi-val" id="kpi-py">R$ 62,35 Mi</div>
+          <div class="sp-kpi-footer">
+            <span>Mês completo de 2025</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- GRID DE 12 COLUNAS DO VENDÔMETRO (R4) -->
+      <section class="vend-grid-12">
+        
+        <!-- COLUNA ESQUERDA (8 COLUNAS) -->
+        <div class="vend-col-left">
+          
+          <!-- Card 1: Mensal vs Budget/Forecast -->
+          <div class="sp-panel card-mensal">
+            <div class="sp-panel-hdr">
+              <div>
+                <div class="sp-panel-title" id="chart-main-title">Invoiced por mês vs budget</div>
+                <div class="sp-panel-sub" id="chart-sub">Abaixo do budget desde abril; julho foi o pior mês fechado (-12,3%).</div>
+              </div>
+              <div class="sp-metric-pill">
+                <span style="font-size:0.7rem; color:var(--text-muted); align-self:center; margin-right:4px;">Comparar com:</span>
+                <button class="sp-pill-btn active" id="btn-cmp-bgt" onclick="toggleComparison('Budget')">Budget</button>
+                <button class="sp-pill-btn" id="btn-cmp-fcst" onclick="toggleComparison('Forecast')">Forecast</button>
+              </div>
+            </div>
+
+            <!-- Legenda Padronizada (R8: cada item tem a cor e o padrão da sua série!) -->
+            <div class="sp-legend">
+              <div class="sp-legend-item"><div class="sp-leg-box" style="background:var(--chart-focus);"></div> Invoiced Líquido</div>
+              <div class="sp-legend-item"><div class="sp-leg-box" style="background:repeating-linear-gradient(45deg,var(--chart-focus),var(--chart-focus) 2px,rgba(255,255,255,0.4) 2px,rgba(255,255,255,0.4) 4px);"></div> Mês em andamento</div>
+              <div class="sp-legend-item"><div class="sp-leg-box" id="leg-target-box" style="background:var(--chart-context);"></div> <span id="leg-target-txt">Budget do mês inteiro</span></div>
+              <div class="sp-legend-item"><div class="sp-leg-box" style="background:var(--chart-compare); opacity:0.5;"></div> Ano anterior (Histórico)</div>
+            </div>
+
+            <!-- Gráfico com altura otimizada terminando logo após os rótulos do eixo X (R4) -->
+            <div class="sp-bar-chart" id="bar-chart-container" role="img" aria-label="Gráfico de Invoiced por mês vs meta"></div>
+          </div>
+
+          <!-- Card 2: Invoiced + Open Orders por Canal (Logo abaixo do mensal com a mesma largura) -->
+          <div class="sp-sec-card card-canal">
+            <div class="sp-sec-title">Invoiced + open orders por canal · outubro</div>
+            <div class="sp-channel-bar">
+              <div class="ch-qsr" id="bar-qsr" style="width: 78.8%;"></div>
+              <div class="ch-distrib" id="bar-distrib" style="width: 21.2%;"></div>
+            </div>
+            <div class="sp-channel-legend">
+              <span id="lbl-qsr">■ QSR R$ 48,0 Mi · 78,8%</span>
+              <span id="lbl-distrib">■ Distribuidores R$ 12,9 Mi · 21,2%</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- COLUNA DIREITA (4 COLUNAS) -->
+        <div class="vend-col-right">
+
+          <!-- Card 3: Acumulado no Ano YTD -->
+          <div class="sp-sec-card card-ytd">
+            <div class="sp-sec-title">Acumulado no ano · até 20/10</div>
+            <div class="sp-sec-val" id="kpi-ytd">R$ 596,6 Mi</div>
+            <div style="display:flex; flex-direction:column; gap:4px; font-size:0.75rem;">
+              <span class="badge-neg" id="ytd-vs-bgt">▼ -3,8% vs budget até hoje (R$ 620,1 Mi)</span>
+              <span class="badge-pos" id="ytd-vs-py">▲ +3,9% vs ano anterior (R$ 574,2 Mi)</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Por Trimestre vs Budget (Cresce até a base alinhar perfeitamente com a coluna esquerda) -->
+          <div class="sp-sec-card card-trimestres">
+            <div>
+              <div class="sp-sec-title">Por trimestre vs budget</div>
+              <div style="font-size:0.68rem; color:var(--text-muted); margin-bottom:0.75rem;">4º tri em andamento, comparado ao budget até hoje</div>
+            </div>
+            <div id="trimestres-container">
+              <!-- Gerado dinamicamente via JS -->
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- NOTA DE RODAPÉ -->
+      <footer class="sp-footer-note">
+        Fonte: Catálogo Unity Catalog <code>cat_dnabb_dv.opebrapodis_lz.vendas_pedidos_ppto_bq_v2</code> · SQL Warehouse Photon BBRDNABRCLUS01.
+      </footer>
+    </main>
+
+    <!-- PAINEL LATERAL DE FILTROS RETRÁTIL À DIREITA (F1-F11) -->
+    <aside class="fp-lateral" id="fpLateral" aria-label="Filtros do Vendômetro">
+      <!-- Trilho recolhido (48px) -->
+      <button class="fp-trilho" id="fpExpandir" type="button" aria-expanded="false" aria-controls="fpAberto">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+        <span class="contador" id="fpTrilhoContador" hidden></span>
+        <span class="vertical" id="fpTrilhoTexto">FILTROS</span>
+      </button>
+
+      <!-- Painel aberto (320px) -->
+      <div class="fp-aberto" id="fpAberto">
+        <div class="fp-topo">
+          <h2>
+            <span id="fpTituloLateral">Filtros</span>
+            <span class="contador" id="fpLateralContador" hidden></span>
+          </h2>
+          <button class="btn-icone" id="fpRecolher" type="button" aria-expanded="true" aria-controls="fpAberto">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+          </button>
+        </div>
+        <div class="fp-corpo" id="fpCorpoLateral"></div>
+        <div class="fp-rodape">
+          <button class="btn btn-secundario" id="fpLimpar" type="button">Limpar</button>
+          <button class="btn btn-primario" id="fpAplicar" type="button" disabled>Aplicar</button>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+    </div><!-- /.sp-main -->
+  </div><!-- /.sp-app-layout -->
+
+  <!-- GAVETA DE FILTROS PARA TABLET E CELULAR (F10) -->
+  <dialog class="fp-gaveta" id="fpGaveta" aria-labelledby="fpTituloGaveta">
+    <div class="fp-topo">
+      <h2 id="fpTituloGaveta">Filtros</h2>
+      <button class="btn-icone" id="fpFecharGaveta" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="fp-corpo" id="fpCorpoGaveta"></div>
+    <div class="fp-rodape">
+      <button class="btn btn-secundario" id="fpGavetaLimpar" type="button">Limpar</button>
+      <button class="btn btn-primario" id="fpGavetaAplicar" type="button">Aplicar</button>
+    </div>
+  </dialog>
+
+  <!-- LOADING OVERLAY -->
+  <div class="sp-loading" id="sp-loading">
+    <div class="sp-spinner"></div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="app-menu.js?v=2.5.0"></script>
+  <script src="format-utils.js?v=2.5.0"></script>
+  <script src="filters-component.js?v=2.5.0"></script>
+
+  <script>
+    let currentMetric = 'Valor';
+    let comparisonMode = 'Budget';
+    let currentDashboardData = null;
+    let filtersPanel = null;
+    let currentMetadata = null;
+
+    function showLoading(show) {
+      const el = document.getElementById('sp-loading');
+      if (el) el.classList.toggle('show', show);
+    }
+
+    function setMetric(metric) {
+      if (currentMetric === metric) return;
+      currentMetric = metric;
+      document.getElementById('btn-val').classList.toggle('active', metric === 'Valor');
+      document.getElementById('btn-vol').classList.toggle('active', metric === 'Volume');
+      document.getElementById('btn-val').setAttribute('aria-pressed', String(metric === 'Valor'));
+      document.getElementById('btn-vol').setAttribute('aria-pressed', String(metric === 'Volume'));
+      if (filtersPanel) {
+        filtersPanel.aplicar();
+      }
+    }
+
+    function toggleComparison(mode) {
+      comparisonMode = mode;
+      document.getElementById('btn-cmp-bgt').classList.toggle('active', mode === 'Budget');
+      document.getElementById('btn-cmp-fcst').classList.toggle('active', mode === 'Forecast');
+      
+      document.getElementById('chart-main-title').textContent = `Invoiced por mês vs ${mode.toLowerCase()}`;
+      document.getElementById('leg-target-txt').textContent = `${mode} do mês inteiro`;
+      
+      // R8: Legenda com cor exata da série de comparação (Budget/Forecast)
+      document.getElementById('leg-target-box').style.background = 'var(--chart-context)';
+
+      if (currentDashboardData && currentDashboardData.mensal) {
+        renderMonthlyChart(currentDashboardData.mensal);
+      }
+    }
+
+    async function loadMetadata() {
+      try {
+        const res = await fetch('/api/metadata');
+        const data = await res.json();
+        currentMetadata = data;
+
+        if (data.last_update) {
+          const txt = `Dados atualizados em <strong>${data.last_update}</strong> · Data & Analytics`;
+          const dEl = document.getElementById('txt-last-update');
+          const mEl = document.getElementById('txt-last-update-mob');
+          if (dEl) dEl.innerHTML = txt;
+          if (mEl) mEl.innerHTML = txt;
+        }
+
+        const MESES_CONFIG = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'].map((t, i) => ({
+          v: String(i + 1),
+          t
+        }));
+
+        const definicoes = [
+          { id: 'grupo_cliente', rotulo: 'Grupo de clientes', tipo: 'multi', opcoes: data.grupos_clientes || [] },
+          { id: 'gerente', rotulo: 'Gerente', tipo: 'multi', opcoes: data.gerentes || [] },
+          { id: 'canal', rotulo: 'Canal', tipo: 'multi', opcoes: data.canais || [] },
+          { id: 'categoria', rotulo: 'Categoria', tipo: 'multi', opcoes: data.categorias || [] },
+          { id: 'mes', rotulo: 'Mês', tipo: 'unico', opcoes: MESES_CONFIG, padrao: String(data.mes_atual || 10) },
+          { id: 'ano', rotulo: 'Ano', tipo: 'unico', opcoes: data.anos || ['2026', '2025', '2024'], padrao: String(data.ano_atual || 2026) },
+          { id: 'cluster', rotulo: 'Cluster', tipo: 'multi', opcoes: data.clusters || [] },
+          { id: 'cluster_detalhe', rotulo: 'Cluster detalhado', tipo: 'multi', opcoes: data.clusters_detalhe || [] },
+          { id: 'tipo_produto', rotulo: 'Tipo de produto', tipo: 'multi', opcoes: data.tipos_produto || [] },
+          { id: 'filial', rotulo: 'Filial / fábrica', tipo: 'multi', opcoes: data.filiais || [] }
+        ];
+
+        filtersPanel = new DNAFiltersPanel({
+          filtros: definicoes,
+          onApply: (filtrosAtivos) => fetchVendometroData(filtrosAtivos)
+        });
+
+      } catch (err) {
+        console.error('Erro ao carregar metadados:', err);
+      }
+    }
+
+    async function fetchVendometroData(filtrosAtivos = {}) {
+      showLoading(true);
+      const payload = {
+        grupo_cliente: filtrosAtivos.grupo_cliente || 'Todos',
+        gerente: filtrosAtivos.gerente || 'Todos',
+        canal: filtrosAtivos.canal || 'Todos',
+        categoria: filtrosAtivos.categoria || 'Todos',
+        cluster: filtrosAtivos.cluster || 'Todos',
+        cluster_detalhe: filtrosAtivos.cluster_detalhe || 'Todos',
+        tipo_produto: filtrosAtivos.tipo_produto || 'Todos',
+        filial: filtrosAtivos.filial || 'Todos',
+        mes: Number(filtrosAtivos.mes || 10),
+        ano: Number(filtrosAtivos.ano || 2026),
+        metrica: currentMetric
+      };
+
+      try {
+        const res = await fetch('/api/vendometro', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        currentDashboardData = data;
+        renderDashboard(data);
+      } catch (err) {
+        console.error('Erro ao carregar vendômetro:', err);
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    function renderDashboard(data) {
+      if (!data) return;
+      const isVal = (currentMetric === 'Valor');
+      const isVol = !isVal;
+
+      if (data.insight_banner) {
+        document.getElementById('banner-text').textContent = data.insight_banner;
+      }
+
+      const k = data.kpis;
+      if (k) {
+        // R5: Formatação Intl com separador correto
+        document.getElementById('kpi-invoiced').textContent = DNAFormat.fmtCurrency(k.invoiced, true, isVol);
+        document.getElementById('kpi-invoiced-vs').textContent = `${k.vs_budget_pct < 0 ? '▼' : '▲'} ${DNAFormat.fmtPercent(k.vs_budget_pct, false)} vs budget até hoje`;
+        document.getElementById('kpi-invoiced-vs').className = `${k.vs_budget_pct < 0 ? 'badge-neg' : 'badge-pos'}`;
+        document.getElementById('kpi-invoiced-bgt-hoje').textContent = `Budget até hoje: ${DNAFormat.fmtCurrency(k.budget_ate_hoje, true, isVol)}`;
+
+        document.getElementById('kpi-open').textContent = DNAFormat.fmtCurrency(k.open_orders, true, isVol);
+        document.getElementById('kpi-inv-open').textContent = DNAFormat.fmtCurrency(k.invoiced_plus_open, true, isVol);
+        document.getElementById('kpi-gap-bgt').textContent = `Faltam ${DNAFormat.fmtCurrency(k.gap_budget, true, isVol)} para o budget`;
+        document.getElementById('kpi-gap-fcst').textContent = `e ${DNAFormat.fmtCurrency(k.gap_forecast, true, isVol)} para o forecast`;
+
+        document.getElementById('lbl-bgt-full').textContent = DNAFormat.fmtCurrency(k.budget_full, true, isVol);
+        document.getElementById('pct-bgt-full').textContent = DNAFormat.fmtPercent(k.cobertura_bgt_pct, false);
+        document.getElementById('bar-bgt-fill').style.width = `${Math.min(k.cobertura_bgt_pct, 100)}%`;
+
+        document.getElementById('lbl-fcst-full').textContent = DNAFormat.fmtCurrency(k.forecast_full, true, isVol);
+        document.getElementById('pct-fcst-full').textContent = DNAFormat.fmtPercent(k.cobertura_fcst_pct, false);
+        document.getElementById('bar-fcst-fill').style.width = `${Math.min(k.cobertura_fcst_pct, 100)}%`;
+
+        document.getElementById('kpi-py').textContent = DNAFormat.fmtCurrency(k.py_invoiced, true, isVol);
+
+        document.getElementById('kpi-ytd').textContent = DNAFormat.fmtCurrency(k.ytd_invoiced, true, isVol);
+        document.getElementById('ytd-vs-bgt').textContent = `${k.vs_budget_ytd_pct < 0 ? '▼' : '▲'} ${DNAFormat.fmtPercent(k.vs_budget_ytd_pct, false)} vs budget até hoje (${DNAFormat.fmtCurrency(k.budget_ytd, true, isVol)})`;
+        document.getElementById('ytd-vs-py').textContent = `${k.vs_py_ytd_pct >= 0 ? '▲ +' : '▼ -'}${DNAFormat.fmtPercent(k.vs_py_ytd_pct, false)} vs ano anterior (${DNAFormat.fmtCurrency(k.py_ytd, true, isVol)})`;
+      }
+
+      // Canais
+      if (data.canais) {
+        document.getElementById('bar-qsr').style.width = `${data.canais.qsr_pct}%`;
+        document.getElementById('bar-distrib').style.width = `${data.canais.distrib_pct}%`;
+        document.getElementById('lbl-qsr').textContent = `■ QSR ${DNAFormat.fmtCurrency(data.canais.qsr_val, true, isVol)} · ${DNAFormat.fmtPercent(data.canais.qsr_pct, false)}`;
+        document.getElementById('lbl-distrib').textContent = `■ Distribuidores ${DNAFormat.fmtCurrency(data.canais.distrib_val, true, isVol)} · ${DNAFormat.fmtPercent(data.canais.distrib_pct, false)}`;
+      }
+
+      // Trimestres
+      if (data.trimestres) {
+        const tContainer = document.getElementById('trimestres-container');
+        tContainer.innerHTML = '';
+        data.trimestres.forEach(t => {
+          const row = document.createElement('div');
+          row.className = 'sp-tri-row';
+          const fillClass = t.in_progress ? 'sp-tri-fill in-progress' : 'sp-tri-fill';
+          const pctClass = t.positive ? 'badge-pos' : 'badge-neg';
+          const maxVal = 220;
+          const barW = Math.min((t.valor / maxVal) * 100, 100);
+          row.innerHTML = `
+            <span class="sp-tri-lbl">${t.trim}</span>
+            <div class="sp-tri-bar"><div class="${fillClass}" style="width: ${barW}%;"></div></div>
+            <span class="sp-tri-val">${DNAFormat.fmtNumber(t.valor, 1)} Mi <span class="${pctClass}">${t.pct}</span></span>
+          `;
+          tContainer.appendChild(row);
+        });
+      }
+
+      // Gráfico Mensal
+      if (data.mensal) {
+        renderMonthlyChart(data.mensal);
+      }
+    }
+
+    function renderMonthlyChart(mensalData) {
+      const mContainer = document.getElementById('bar-chart-container');
+      mContainer.innerHTML = '';
+      const maxVal = 95.0;
+      const isBudget = (comparisonMode === 'Budget');
+
+      mensalData.forEach(m => {
+        const col = document.createElement('div');
+        col.className = 'sp-chart-col';
+        
+        let barsHtml = '';
+        const targetVal = isBudget ? m.budget : (m.forecast || m.budget * 0.96);
+        
+        if (m.is_future) {
+          const h = (targetVal / maxVal) * 165;
+          barsHtml = `<div class="bar-future" style="height:${h}px;" title="${comparisonMode}: ${DNAFormat.fmtNumber(targetVal, 1)} Mi"></div>`;
+        } else {
+          const hPrior = ((m.invoiced * 0.95) / maxVal) * 165;
+          const hReal = (m.invoiced / maxVal) * 165;
+          const realClass = m.is_current ? 'bar-real in-progress' : 'bar-real';
+          barsHtml = `
+            <div class="bar-prior" style="height:${hPrior}px;" title="Ano Anterior (Histórico)"></div>
+            <div class="${realClass}" style="height:${hReal}px;" title="Invoiced Líquido: ${DNAFormat.fmtNumber(m.invoiced, 1)} Mi"></div>
+          `;
+        }
+
+        let pctText = m.pct;
+        if (!m.is_future && !isBudget) {
+          const diffPct = ((m.invoiced / targetVal) - 1.0) * 100;
+          pctText = DNAFormat.fmtPercent(diffPct, true);
+        } else if (m.is_future) {
+          pctText = `${isBudget ? 'bgt' : 'fcst'} ${DNAFormat.fmtNumber(targetVal, 1)}`;
+        }
+
+        const pctClass = (pctText && pctText.includes('+')) ? 'badge-pos' : 'badge-neg';
+        const subtagContent = m.is_current ? 'até 20/10' : '';
+
+        col.innerHTML = `
+          <div class="sp-col-bars">${barsHtml}</div>
+          <div class="sp-col-val">${m.invoiced !== null ? DNAFormat.fmtNumber(m.invoiced, 1) : ''}</div>
+          <div class="sp-col-pct ${pctClass}">${pctText}</div>
+          <div class="sp-col-subtag">${subtagContent}</div>
+          <div class="sp-col-lbl ${m.is_current ? 'current' : ''}">${m.mes}</div>
+        `;
+        mContainer.appendChild(col);
+      });
+    }
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', async () => {
+      showLoading(true);
+      await loadMetadata();
+      await fetchVendometroData();
+      showLoading(false);
+    });
+
+    window.addEventListener('bimbo:langChange', () => {
+      if (currentDashboardData) renderDashboard(currentDashboardData);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Distribuidores · Bimbo QSR</title>
+  <meta name="theme-color" content="#0E1117">
+  <!-- Tema: segue o sistema; a escolha manual do menu só fica gravada quando difere do sistema -->
+  <script>(function(){var d=document.documentElement,K='v2-theme-override',m=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)');function sys(){return m&&m.matches?'dark':'light';}function ov(){try{var o=localStorage.getItem(K);return o==='dark'||o==='light'?o:null;}catch(e){return null;}}d.setAttribute('data-theme',ov()||sys());if(m&&m.addEventListener)m.addEventListener('change',function(){if(!ov())d.setAttribute('data-theme',sys());});})();</script>
+  <link rel="stylesheet" href="css/tokens.css?v=v2_1">
+  <link rel="stylesheet" href="css/v2.css?v=v2_18">
+  <link rel="stylesheet" href="css/home_v2.css?v=v2_8">
+</head>
+<body class="v2 home">
+<!-- SIM_BANNER -->
+
+  <header class="home-top">
+    <img class="home-dna" src="img/logo-dna.png?v=2" alt="Data & Analytics">
+    <span class="home-secure">
+      <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      Acesso com a sua conta corporativa
+    </span>
+  </header>
+
+  <main class="home-main" id="main">
+    <section class="home-copy">
+      <img class="home-logo" src="img/logo-bimbo-qsr.png" alt="Bimbo QSR">
+      <h1 class="home-title">Portal Distribuidores</h1>
+      <p class="home-lead">Acompanhe sell-in, sell-out, pedidos e estoque do seu negócio, com dados atualizados todos os dias.</p>
+      <div class="home-cta-row">
+        <a href="dashboard.html" class="home-cta">
+          Entrar no portal
+          <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </a>
+        <button type="button" class="home-secondary-btn" id="btn-conhecer" aria-expanded="false" aria-controls="apresentacao">
+          <span id="txt-conhecer">Conhecer a Solução</span>
+          <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+      </div>
+      <ul class="home-feats">
+        <li><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Metas e atingimento do mês</li>
+        <li><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Pedidos faturados e em carteira</li>
+        <li><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Dias de estoque por SKU</li>
+      </ul>
+    </section>
+
+    <!-- Ilustração: o fluxo que o portal acompanha (decorativa) -->
+    <figure class="home-route" aria-hidden="true">
+      <svg class="rt" viewBox="0 0 560 420" fill="none">
+        <!-- trechos -->
+        <path id="rt-sellin" class="rt-path" d="M96 290 C 96 200, 150 150, 222 150"/>
+        <path id="rt-out1" class="rt-path rt-out" d="M372 150 C 420 150, 430 72, 470 72"/>
+        <path id="rt-out2" class="rt-path rt-out" d="M372 150 C 430 150, 440 196, 478 196"/>
+        <path id="rt-out3" class="rt-path rt-out" d="M372 150 C 414 150, 418 318, 462 318"/>
+
+        <!-- rótulos dos trechos -->
+        <g class="rt-tag" transform="translate(70 196)"><rect width="62" height="24" rx="12"/><text x="31" y="16">Sell-in</text></g>
+        <g class="rt-tag rt-tag-out" transform="translate(384 246)"><rect width="70" height="24" rx="12"/><text x="35" y="16">Sell-out</text></g>
+
+        <!-- Bimbo QSR -->
+        <g class="rt-node" transform="translate(20 290)">
+          <rect width="160" height="72" rx="12"/>
+          <svg x="16" y="24" width="24" height="24" viewBox="0 0 24 24" class="rt-ic"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1M12 18h1M7 18h1"/></svg>
+          <text class="rt-t" x="52" y="32">Bimbo QSR</text>
+          <text class="rt-s" x="52" y="50">Fábrica</text>
+        </g>
+
+        <!-- Seu CD -->
+        <g class="rt-node rt-node-hub" transform="translate(222 114)">
+          <rect width="150" height="72" rx="12"><animate attributeName="stroke-width" values="1;1;2.5;1;1" keyTimes="0;0.41;0.45;0.52;1" dur="8s" repeatCount="indefinite"/></rect>
+          <svg x="16" y="24" width="24" height="24" viewBox="0 0 24 24" class="rt-ic"><path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z"/><path d="M6 18h12M6 14h12"/><rect x="6" y="10" width="12" height="12"/></svg>
+          <text class="rt-t" x="52" y="32">Seu CD</text>
+          <text class="rt-s" x="52" y="50">Estoque</text>
+        </g>
+
+        <!-- Restaurantes -->
+        <g class="rt-pin" transform="translate(470 72)"><circle r="22"/><svg x="-11" y="-11" width="22" height="22" viewBox="0 0 24 24" class="rt-ic"><path d="M3 9 4.5 4h15L21 9"/><path d="M3 9h18v1.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0Z"/><path d="M5 13v7h14v-7M10 20v-4h4v4"/></svg></g>
+        <g class="rt-pin" transform="translate(500 196)"><circle r="22"/><svg x="-11" y="-11" width="22" height="22" viewBox="0 0 24 24" class="rt-ic"><path d="M3 9 4.5 4h15L21 9"/><path d="M3 9h18v1.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0Z"/><path d="M5 13v7h14v-7M10 20v-4h4v4"/></svg></g>
+        <g class="rt-pin" transform="translate(484 318)"><circle r="22"/><svg x="-11" y="-11" width="22" height="22" viewBox="0 0 24 24" class="rt-ic"><path d="M3 9 4.5 4h15L21 9"/><path d="M3 9h18v1.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0Z"/><path d="M5 13v7h14v-7M10 20v-4h4v4"/></svg></g>
+        <text class="rt-t rt-t-sm" x="484" y="364" text-anchor="middle">Restaurantes</text>
+
+        <!-- Animação em um ciclo único (8s): sell-in Bimbo QSR → CD; ao chegar, o CD pulsa e três caminhões saem para os restaurantes.
+             Com "reduzir movimento" no sistema, fica só o caminhão parado. -->
+        <g class="rt-truck rt-truck-move">
+          <circle r="18"/>
+          <svg x="-10" y="-10" width="20" height="20" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+          <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.42;1" calcMode="spline" keySplines="0.45 0 0.25 1;0 0 1 1"><mpath href="#rt-sellin"/></animateMotion>
+          <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.04;0.4;0.45;1" dur="8s" repeatCount="indefinite"/>
+        </g>
+        <g class="rt-truck rt-truck-move rt-truck-sm">
+          <circle r="13"/>
+          <svg x="-7.5" y="-7.5" width="15" height="15" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+          <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.47;0.83;1" calcMode="spline" keySplines="0 0 1 1;0.4 0 0.2 1;0 0 1 1"><mpath href="#rt-out1"/></animateMotion>
+          <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.47;0.5;0.8;0.83;1" dur="8s" repeatCount="indefinite"/>
+        </g>
+        <g class="rt-truck rt-truck-move rt-truck-sm">
+          <circle r="13"/>
+          <svg x="-7.5" y="-7.5" width="15" height="15" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+          <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.5;0.86;1" calcMode="spline" keySplines="0 0 1 1;0.4 0 0.2 1;0 0 1 1"><mpath href="#rt-out2"/></animateMotion>
+          <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.5;0.53;0.83;0.86;1" dur="8s" repeatCount="indefinite"/>
+        </g>
+        <g class="rt-truck rt-truck-move rt-truck-sm">
+          <circle r="13"/>
+          <svg x="-7.5" y="-7.5" width="15" height="15" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+          <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.53;0.89;1" calcMode="spline" keySplines="0 0 1 1;0.4 0 0.2 1;0 0 1 1"><mpath href="#rt-out3"/></animateMotion>
+          <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.53;0.56;0.86;0.89;1" dur="8s" repeatCount="indefinite"/>
+        </g>
+        <g class="rt-truck rt-truck-still" transform="translate(128 178)">
+          <circle r="18"/>
+          <svg x="-10" y="-10" width="20" height="20" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+        </g>
+      </svg>
+    </figure>
+  </main>
+
+  <!-- ═══════════════════════ APRESENTAÇÃO ENXUTA PARA O DISTRIBUIDOR ═══════════════════════ -->
+  <section class="home-presentation" id="apresentacao" aria-label="Apresentação do Portal">
+    
+    <!-- Objetivo Direto -->
+    <div class="obj-strip">
+      <div class="obj-tag">Objetivo</div>
+      <p class="obj-highlight">
+        Um canal direto entre a <strong>Bimbo QSR</strong> e o <strong>seu negócio</strong> para acompanhar metas, pedidos e estoque com dados atualizados todos os dias.
+      </p>
+    </div>
+
+    <!-- 3 Funcionalidades Principais -->
+    <div class="quick-section">
+      <h2 class="quick-title">O que você acompanha no portal</h2>
+      <div class="quick-grid">
+        <div class="quick-card">
+          <div class="quick-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <h3>Metas e Vendas</h3>
+          <p>Acompanhe Sell-in e Sell-out vs meta do mês, com histórico e evolução em valor (R$) e volume físico.</p>
+        </div>
+
+        <div class="quick-card">
+          <div class="quick-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </div>
+          <h3>Pedidos em Carteira</h3>
+          <p>Consulte pedidos faturados e entregas programadas, sabendo exatamente o que já foi emitido.</p>
+        </div>
+
+        <div class="quick-card">
+          <div class="quick-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg>
+          </div>
+          <h3>Estoque &amp; Ruptura</h3>
+          <p>Veja dias de cobertura por SKU para evitar falta de produto e manter os clientes sempre abastecidos.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Benefícios e Guia em 3 Passos -->
+    <div class="two-col-summary">
+      <div class="summary-box">
+        <h3 class="box-title">Vantagens para sua operação</h3>
+        <ul class="clean-list">
+          <li><strong>Zero espera:</strong> Números oficiais sem depender de relatórios manuais.</li>
+          <li><strong>Previsibilidade:</strong> Antecipe reposições antes que o estoque zere.</li>
+          <li><strong>Transparência:</strong> Mesma base de dados que a equipe Bimbo acompanha.</li>
+        </ul>
+      </div>
+
+      <div class="summary-box">
+        <h3 class="box-title">Como usar em 3 passos</h3>
+        <ol class="clean-steps">
+          <li><span>1</span> Entre com sua conta corporativa autorizada.</li>
+          <li><span>2</span> Escolha o período (ano/mês) no painel de filtros à direita.</li>
+          <li><span>3</span> Consulte seus indicadores e planeje suas próximas compras.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Botão de Ação Direto -->
+    <div class="quick-cta-row">
+      <a href="dashboard.html" class="home-cta">Entrar no portal →</a>
+      <button type="button" class="home-secondary-btn" id="btn-recolher">
+        Recolher detalhes ▴
+      </button>
+    </div>
+
+  </section>
+
+  <footer class="home-foot">
+    <span>Grupo Bimbo · Bimbo QSR</span>
+    <span>Desenvolvido por Data &amp; Analytics</span>
+  </footer>
+
+<script>
+(function() {
+  var btnConhecer = document.getElementById('btn-conhecer');
+  var txtConhecer = document.getElementById('txt-conhecer');
+  var secApresentacao = document.getElementById('apresentacao');
+  var btnRecolher = document.getElementById('btn-recolher');
+
+  function toggleApresentacao(expand) {
+    if (!secApresentacao) return;
+    var isOpen = secApresentacao.classList.contains('is-open');
+    var shouldOpen = (typeof expand === 'boolean') ? expand : !isOpen;
+
+    if (shouldOpen) {
+      secApresentacao.classList.add('is-open');
+      if (btnConhecer) {
+        btnConhecer.classList.add('is-active');
+        btnConhecer.setAttribute('aria-expanded', 'true');
+      }
+      if (txtConhecer) txtConhecer.textContent = 'Recolher detalhes';
+      setTimeout(function() {
+        secApresentacao.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 120);
+    } else {
+      secApresentacao.classList.remove('is-open');
+      if (btnConhecer) {
+        btnConhecer.classList.remove('is-active');
+        btnConhecer.setAttribute('aria-expanded', 'false');
+      }
+      if (txtConhecer) txtConhecer.textContent = 'Conhecer a Solução';
+      var mainEl = document.getElementById('main');
+      if (mainEl) {
+        mainEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }
+
+  if (btnConhecer) {
+    btnConhecer.addEventListener('click', function(e) {
+      e.preventDefault();
+      toggleApresentacao();
+    });
+  }
+
+  if (btnRecolher) {
+    btnRecolher.addEventListener('click', function(e) {
+      e.preventDefault();
+      toggleApresentacao(false);
+    });
+  }
+
+  /* Suporte a links âncoras adicionais caso existam */
+  document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+    anchor.addEventListener('click', function(e) {
+      var href = this.getAttribute('href');
+      if (href === '#apresentacao') {
+        e.preventDefault();
+        toggleApresentacao(true);
+      } else {
+        var target = document.querySelector(href);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

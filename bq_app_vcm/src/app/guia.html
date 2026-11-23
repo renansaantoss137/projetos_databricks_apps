@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Guia do Usuário & Documentação | BQ VCM</title>
+  <link rel="stylesheet" href="styles.css?v=10">
+  <script src="nav-shell.js?v=1" defer></script>
+  <style>
+    /* Estilos específicos da Aba Guia conforme padrão oficial */
+    .guia-nav {
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--fr-border, rgba(100, 116, 139, 0.2));
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 1.5rem;
+      width: fit-content;
+    }
+    .guia-tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.55rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--fr-txt-soft, #7a9dba);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .guia-tab-btn:hover {
+      color: var(--fr-txt, #E8F4FD);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .guia-tab-btn.active {
+      background: #1d4ed8;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(29, 78, 216, 0.4);
+    }
+
+    .guia-tab-pane {
+      display: none;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .guia-tab-pane.active {
+      display: block;
+      animation: fadeIn 0.18s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .slide-deck-wrapper {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Banner Azul de Destaque */
+    .guia-alert-banner {
+      background: rgba(29, 78, 216, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 1.8rem;
+    }
+    .guia-alert-icon {
+      font-size: 1.8rem;
+      flex-shrink: 0;
+    }
+    .guia-alert-text {
+      font-size: 0.82rem;
+      color: var(--fr-txt, #E8F4FD);
+      line-height: 1.45;
+    }
+
+    /* Seções com Badge Numerado */
+    .guia-section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 1.6rem 0 1rem;
+    }
+    .guia-num-badge {
+      background: #1d4ed8;
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .guia-section-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--fr-txt, #E8F4FD);
+    }
+
+    /* Steps List */
+    .guia-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+    .guia-step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.78rem;
+      color: var(--fr-txt, #E8F4FD);
+    }
+    .step-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      font-size: 0.68rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Cards Grid */
+    .guia-grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .guia-card {
+      background: var(--fr-surface, #282f3f);
+      border: 1px solid var(--fr-border, rgba(100, 116, 139, 0.2));
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      position: relative;
+    }
+    .guia-card-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--da-txt-muted, #94a3b8);
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+    .guia-card h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--fr-txt, #E8F4FD);
+      margin-bottom: 0.35rem;
+    }
+    .guia-card p {
+      font-size: 0.75rem;
+      color: var(--fr-txt-soft, #7a9dba);
+      line-height: 1.45;
+    }
+
+    /* Slide Deck Presentation */
+    .slide-deck-wrapper {
+      background: var(--fr-surface, #282f3f);
+      border: 1px solid var(--fr-border, rgba(100, 116, 139, 0.2));
+      border-radius: 14px;
+      padding: 2rem;
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .slide-content {
+      flex: 1;
+    }
+    .slide-tag {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #60a5fa;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .slide-title {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--fr-txt, #E8F4FD);
+      margin-bottom: 1.2rem;
+      letter-spacing: -0.01em;
+    }
+    .slide-body {
+      font-size: 0.88rem;
+      color: var(--fr-txt, #E8F4FD);
+      line-height: 1.6;
+    }
+    .slide-body ul {
+      margin-top: 0.8rem;
+      padding-left: 1.2rem;
+    }
+    .slide-body li {
+      margin-bottom: 0.5rem;
+    }
+    .slide-deck-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--fr-border, rgba(100, 116, 139, 0.2));
+      margin-top: 1.5rem;
+    }
+    .slide-btn {
+      background: #1d4ed8;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.4rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    .slide-btn:hover:not(:disabled) {
+      background: #1e40af;
+    }
+    .slide-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .slide-indicator {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--fr-txt-soft, #7a9dba);
+    }
+
+    /* Tabela Técnica */
+    .tech-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-top: 1rem;
+    }
+    .tech-table th {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--fr-txt-soft, #7a9dba);
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--fr-border, rgba(100, 116, 139, 0.2));
+      font-weight: 700;
+    }
+    .tech-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(100, 116, 139, 0.1);
+      color: var(--fr-txt, #E8F4FD);
+    }
+    .tech-code {
+      font-family: 'Consolas', monospace;
+      font-size: 0.75rem;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #93c5fd;
+    }
+  </style>
+</head>
+<body class="fr-page has-vertical-shell">
+
+  <!-- ═══════════════════════ V2: Cabeçalho Alinhado ao Portal Distribuidores ═══════════════════════ -->
+  <header class="kpi-header v2-header">
+    <button type="button" class="nav-expand" id="nav-expand" aria-expanded="false" aria-controls="portal-sidebar" aria-label="Expandir menu" title="Expandir menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <div class="hdr-left">
+      <a class="brand" href="vcm.html" aria-label="BQ VCM">
+        <img src="img/logo_distribuidores.png" alt="" class="brand-mark" width="28" height="28">
+        <span class="brand-name">BQ VCM</span>
+      </a>
+      <span class="hdr-sep" aria-hidden="true"></span>
+      <span class="hdr-page-title" id="v2-header-tab-title">Guia &amp; Documentação Técnica</span>
+    </div>
+
+    <div class="hdr-right">
+      <div class="header-sync-pill" id="header-sync-pill" tabindex="0" role="status" title="Última atualização da base VCM">
+        <span class="sync-dot" aria-hidden="true"></span>
+        <span id="v2-sync-rel">Atualizado: 14/10/2026 às 17:06</span>
+      </div>
+      <img src="img/logo-bimbo-qsr.png" alt="Grupo Bimbo QSR" class="hdr-logo" height="28">
+      <div class="user-menu">
+        <button type="button" class="avatar-btn" id="v2-user-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="v2-user-menu" aria-label="Menu do usuário">
+          <span class="avatar" aria-hidden="true">
+            <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <svg class="ico chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="menu" id="v2-user-menu" role="menu" aria-label="Menu do usuário" hidden>
+          <div class="v2-menu-identity" style="padding: 10px 14px 8px; border-bottom: 1px solid var(--border, #E2E5EA);">
+            <div id="v2-menu-user-email" style="font-size: var(--fs-13, 0.8125rem); font-weight: 600; color: var(--text-strong); word-break: break-all;">Carregando...</div>
+            <div style="font-size: var(--fs-12, 0.75rem); color: var(--text-muted); margin-top: 2px;">Databricks SSO</div>
+          </div>
+          <button type="button" class="mi" id="v2-menu-access-gov" role="menuitem" style="display:none;">
+            <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span class="mi-t">Gestão de Acessos</span>
+          </button>
+          <div class="mi-sep" role="separator"></div>
+          <button type="button" class="mi" id="v2-theme-toggle" role="menuitemcheckbox" aria-checked="false">
+            <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <span class="mi-t">Tema escuro</span>
+            <span class="da-switch" id="v2-theme-switch"><span class="da-switch-thumb"></span></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════ LAYOUT PRINCIPAL (SIDEBAR RAIL + WORKSPACE) ═══════════════════════ -->
+  <div class="portal-layout" id="portal-layout">
+    <aside class="sp-sidebar" id="portal-sidebar" aria-label="Navegação Lateral">
+      <a href="vcm.html#inicio" class="sp-nav-item tab" title="Início">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Início</span>
+        <span class="nav-long">Início</span>
+      </a>
+      <a href="vcm.html#vcm" class="sp-nav-item tab" title="VCM por Cliente">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        <span>VCM</span>
+        <span class="nav-long">VCM por Cliente</span>
+      </a>
+      <a href="cadastros.html" class="sp-nav-item tab" title="Base VCM">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>
+        <span>Base VCM</span>
+        <span class="nav-long">Base VCM</span>
+      </a>
+      <a href="guia.html" class="sp-nav-item active tab" title="Guia Técnico &amp; Docs" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span>Guia</span>
+        <span class="nav-long">Guia do Usuário</span>
+      </a>
+    </aside>
+
+    <div class="portal-workspace" id="portal-workspace">
+      <!-- CONTEÚDO PRINCIPAL -->
+      <div class="fr-content">
+
+    <!-- SUB-BARRA DE NAVEGAÇÃO DA GUIA -->
+    <div class="guia-nav">
+      <button class="guia-tab-btn active" onclick="trocarSubTab('tab-consulta', this)">
+        <span>📖</span> Consulta Rápida
+      </button>
+      <button class="guia-tab-btn" onclick="trocarSubTab('tab-apresentacao', this)">
+        <span>🖥️</span> Apresentação
+      </button>
+      <button class="guia-tab-btn" onclick="trocarSubTab('tab-tecnica', this)">
+        <span>⚙️</span> Documentação Técnica
+      </button>
+    </div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <!-- SUB-TAB 1: CONSULTA RÁPIDA                   -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <div id="tab-consulta" class="guia-tab-pane active">
+      
+      <!-- Banner Informativo -->
+      <div class="guia-alert-banner">
+        <div class="guia-alert-icon">📘</div>
+        <div class="guia-alert-text">
+          <strong>Portal de Acompanhamento BQ VCM</strong><br>
+          Consolidação de análises de VCM (Valor de Contribuição Marginal) por Cliente, comparação de Realizado (CY) vs Budget (BGT) e Prior Year (PY), detalhamento percentual sobre a Receita Líquida e acompanhamento da rentabilidade comercial.
+        </div>
+      </div>
+
+      <!-- Seção 1: Como Acessar -->
+      <div class="guia-section-header">
+        <div class="guia-num-badge">1</div>
+        <h3 class="guia-section-title">Como Acessar e Navegar</h3>
+      </div>
+      <div class="guia-steps">
+        <div class="guia-step-item">
+          <div class="step-circle">1</div>
+          <div>Abra seu navegador preferencial (Google Chrome ou Microsoft Edge corporativo).</div>
+        </div>
+        <div class="guia-step-item">
+          <div class="step-circle">2</div>
+          <div>Acesse o Databricks App oficial pelo link corporativo ou pelo portal de apps do workspace Databricks.</div>
+        </div>
+        <div class="guia-step-item">
+          <div class="step-circle">3</div>
+          <div>Faça login transparente usando sua conta corporativa Microsoft <strong>(@grupobimbo.com)</strong>.</div>
+        </div>
+        <div class="guia-step-item">
+          <div class="step-circle">4</div>
+          <div>Na aba <strong>VCM</strong>, utilize os filtros de Ano, Mês, Canal, Diretoria, etc., para refinar sua análise por cliente.</div>
+        </div>
+      </div>
+
+      <hr style="border:0; border-top:1px solid var(--fr-border, rgba(100,116,139,.15)); margin:1.8rem 0;">
+
+      <!-- Seção 2: Os Fundamentos do VCM -->
+      <div class="guia-section-header">
+        <div class="guia-num-badge">2</div>
+        <h3 class="guia-section-title">O que é o VCM & Regras de Negócio</h3>
+      </div>
+      <div class="guia-grid-cards">
+        <div class="guia-card">
+          <span class="guia-card-badge">FÓRMULA MATEMÁTICA</span>
+          <h4>O que é o VCM?</h4>
+          <p><strong>VCM = RECEITA LIQ - (INGREDIENTE + EMBALAGEM + MOD + VARIAÇÃO DE PREÇO)</strong>.<br>Representa a margem direta gerada pelas vendas após a dedução de insumos, embalagem, mão de obra direta e flutuações de preços.</p>
+        </div>
+        <div class="guia-card">
+          <span class="guia-card-badge">ANÁLISE COMPARATIVA</span>
+          <h4>ACT x BGT e ACT x PY</h4>
+          <p>Compara o realizado corrente (<strong>ACT</strong>) com a meta acordada (<strong>BGT</strong>) e o mesmo período do ano anterior (<strong>PY</strong>). Variações positivas indicam ganho de rentabilidade marginal.</p>
+        </div>
+        <div class="guia-card">
+          <span class="guia-card-badge">RENTABILIDADE %</span>
+          <h4>Percentual sobre Receita Líquida</h4>
+          <p>As colunas <strong>ACT%</strong>, <strong>BGT%</strong> e <strong>PY%</strong> calculam: <code>(VCM / Receita Líquida) * 100</code>, permitindo comparar a eficiência e rentabilidade relativa entre clientes de volumes distintos.</p>
+        </div>
+        <div class="guia-card">
+          <span class="guia-card-badge">VISÃO POR CLIENTE</span>
+          <h4>Coluna CLIENT (Nome Cliente)</h4>
+          <p>Agrega os dados com base na coluna <strong>NOME CLIENTE</strong> da base oficial, permitindo identificar com precisão quais parceiros comerciais entregam maior contribuição e onde estão as oportunidades de precificação.</p>
+        </div>
+      </div>
+
+      <hr style="border:0; border-top:1px solid var(--fr-border, rgba(100,116,139,.15)); margin:1.8rem 0;">
+
+      <!-- Seção 3: Gestão da Base & Governança -->
+      <div class="guia-section-header">
+        <div class="guia-num-badge">3</div>
+        <h3 class="guia-section-title">Gestão da Base VCM & Governança</h3>
+      </div>
+      <div class="guia-grid-cards">
+        <div class="guia-card">
+          <span class="guia-card-badge">PLANILHA EXCEL</span>
+          <h4>Download e Atualização</h4>
+          <p>Pela aba <strong>Base VCM</strong>, você pode baixar a planilha atualizada <code>Base - VCM.xlsx</code>, realizar manutenções no Excel com suas fórmulas e reenviar o arquivo via upload para gravação direta no Databricks.</p>
+        </div>
+        <div class="guia-card">
+          <span class="guia-card-badge">UNITY CATALOG</span>
+          <h4>Volume e Backups Automáticos</h4>
+          <p>A persistência é realizada no Volume oficial do Unity Catalog <code>/Volumes/cat_dnabb_dv/grobbbqb_sz/dev_bq_vcm/</code>, garantindo rastreabilidade completa, segurança corporativa e sincronização imediata do cache analítico.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <!-- SUB-TAB 2: APRESENTAÇÃO EXECUTIVA (SLIDES)   -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <div id="tab-apresentacao" class="guia-tab-pane">
+      <div class="slide-deck-wrapper">
+        <div class="slide-content">
+          <span class="slide-tag" id="slideNumber">SLIDE 01 DE 04</span>
+          <h2 class="slide-title" id="slideTitle">Visão Geral do BQ VCM</h2>
+          <div class="slide-body" id="slideBody">
+            Carregando apresentação...
+          </div>
+        </div>
+        <div class="slide-deck-controls">
+          <button class="slide-btn" id="btnSlidePrev" onclick="mudarSlide(-1)">
+            ← Anterior
+          </button>
+          <span class="slide-indicator" id="slideIndicator">1 / 4</span>
+          <button class="slide-btn" id="btnSlideNext" onclick="mudarSlide(1)">
+            Próximo →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <!-- SUB-TAB 3: DOCUMENTAÇÃO TÉCNICA              -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <div id="tab-tecnica" class="guia-tab-pane">
+
+      <!-- 1. VISÃO GERAL -->
+      <div class="tech-section" id="tech-sec-1">
+        <h2><span class="sec-num">1</span> Visão Geral da Solução BQ VCM</h2>
+        <p>O <strong>Portal BQ VCM</strong> é a aplicação executiva corporativa do Grupo Bimbo Brasil desenvolvida para mensurar, monitorar e auditar com precisão matemática o <strong>Valor de Contribuição Marginal (VCM)</strong> por cliente, diretoria, canal de vendas e portfólio de produtos. A solução combina a governança centralizada do <em>Databricks Lakehouse (Unity Catalog)</em> com uma camada de apresentação de altíssima performance para a tomada de decisão comercial e financeira.</p>
+
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th style="width: 25%;">Dimensão / Atributo</th>
+              <th style="width: 75%;">Especificação Corporativa</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Objetivo de Negócio</strong></td>
+              <td>Proporcionar visibilidade transparente sobre a margem de contribuição operacional real das vendas após absorver custos variáveis industriais diretos (ingredientes, embalagens, mão de obra fabril) e oscilações de preço, comparando o <strong>Realizado (ACT)</strong> contra o <strong>Orçado (BGT)</strong> e o <strong>Ano Anterior (PY)</strong>.</td>
+            </tr>
+            <tr>
+              <td><strong>Público-Alvo</strong></td>
+              <td>Diretorias Comerciais, Gerências Nacionais e Regionais de Vendas, Supervisores, Coordenadores, Controladoria Industrial, FP&A Corporativo e Equipe de Precificação (Pricing).</td>
+            </tr>
+            <tr>
+              <td><strong>Granularidade Analítica</strong></td>
+              <td>Transacional agregado por <code>ANO</code>, <code>MES</code>, <code>CHANNEL</code>, <code>DIRETOR</code>, <code>GESTOR</code>, <code>SUPERVISOR</code>, <code>COORDENADOR</code>, <code>CATEGORIA</code>, <code>LINHA</code>, <code>MARCA</code>, <code>FAMILIAPRODUTO</code>, <code>PLANTA</code> e <code>NOME CLIENTE</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>Periodicidade de Carga</strong></td>
+              <td>Atualização mensal consolidada pelo time de Controladoria/FP&A com possibilidade de cargas ad-hoc e correções intermediárias com substituição atômica e versionamento automático no Lakehouse.</td>
+            </tr>
+            <tr>
+              <td><strong>Repositório de Dados</strong></td>
+              <td>Volume Oficial do Databricks Unity Catalog: <code>/Volumes/cat_dnabb_dv/grobbbqb_sz/dev_bq_vcm/</code> contendo a planilha ativa <code>Base - VCM.xlsx</code>, modelo <code>modelo_vcm.xlsx</code> e backups históricos.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 2. ARQUITETURA LAKEHOUSE -->
+      <div class="tech-section" id="tech-sec-2">
+        <h2><span class="sec-num">2</span> Arquitetura da Solução Databricks Lakehouse</h2>
+        <p>A arquitetura foi concebida para aliar máxima velocidade de resposta na interface web com conformidade integral aos padrões corporativos de governança de dados do Grupo Bimbo.</p>
+
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th style="width: 22%;">Componente</th>
+              <th style="width: 28%;">Tecnologia / Caminho</th>
+              <th style="width: 50%;">Papel na Arquitetura</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Frontend SPA</strong></td>
+              <td>HTML5, Vanilla CSS3, JavaScript ES6+</td>
+              <td>Interface reativa client-side sem frameworks pesados, garantindo carregamento instantâneo, persistência de preferências de tema e renderização em menos de 50ms.</td>
+            </tr>
+            <tr>
+              <td><strong>Client-Side Parser</strong></td>
+              <td>SheetJS (<code>xlsx.full.min.js</code>)</td>
+              <td>Mecanismo no navegador que realiza o parsing imediato de arquivos Excel (.xlsx), conferindo cabeçalhos das 25 colunas obrigatórias e gerando preview antes de trafegar dados pela rede.</td>
+            </tr>
+            <tr>
+              <td><strong>Backend Microservice</strong></td>
+              <td>Python 3.11+ / Flask / Waitress WSGI</td>
+              <td>Servidor de aplicação Databricks Apps executando em cluster gerenciado com escalonamento automático, roteamento de endpoints REST e exportação XLSX de alta fidelidade visual (openpyxl).</td>
+            </tr>
+            <tr>
+              <td><strong>In-Memory Cache</strong></td>
+              <td>Pandas DataFrame (<code>df_global</code>)</td>
+              <td>Cache thread-safe residente em memória RAM que indexa toda a base ativa, viabilizando operações instantâneas de filtro em cascata, agregações multidimensionais e busca fuzzy por cliente.</td>
+            </tr>
+            <tr>
+              <td><strong>Volume Lakehouse</strong></td>
+              <td><code>cat_dnabb_dv.grobbbqb_sz.dev_bq_vcm</code></td>
+              <td>Volume corporativo no Unity Catalog que armazena a base oficial <code>Base - VCM.xlsx</code>, a matriz template <code>modelo_vcm.xlsx</code> e backups versionados a cada salvamento.</td>
+            </tr>
+            <tr>
+              <td><strong>Segurança & Identidade</strong></td>
+              <td>Databricks App Proxy / RBAC</td>
+              <td>Identificação de usuários via cabeçalho corporativo <code>X-Forwarded-Preferred-Username</code> vinculado ao Azure Active Directory / Entra ID (@grupobimbo.com) e permissões por <code>cadastros_access.json</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="tech-diagram">┌─────────────────────────────────────────────────────────────────────────────────────────────┐
+│                    FLUXO DE INGESTÃO, PERSISTÊNCIA E CONSUMO LAKEHOUSE                      │
+└─────────────────────────────────────────────────────────────────────────────────────────────┘
+
+  [ Planilha Excel do Usuário ]
+               │
+               │ (1) Drag & Drop na Aba Base VCM (cadastros.html)
+               ▼
+  [ SheetJS Engine no Navegador ] ──── (2.a) Se colunas divergentes ────► Rejeição Instantânea
+               │
+               │ (2.b) Validação das 25 Colunas e Tipagem OK
+               ▼
+  [ Grid de Pré-visualização ] (Exibe primeiras 50 linhas e contadores)
+               │
+               │ (3) Usuário clica em "Salvar Base no Databricks"
+               ▼
+  [ Endpoint POST /api/cadastros/salvar ] ────► Verifica Autenticação & RBAC (cadastros_access.json)
+               │
+               ├──► [ Passo A ] Cria Backup Versionado: Base_VCM_backup_YYYYMMDD_HHMMSS.xlsx
+               ├──► [ Passo B ] Substituição Atômica no Volume: Base - VCM.xlsx
+               └──► [ Passo C ] Invalidação & Recarga em Memória: df_global = pd.read_excel(...)
+                                         │
+                                         ▼
+  [ Painel Analítico vcm.html ] ◄── [ In-Memory Cache ] ◄── Respostas REST em < 50ms</div>
+      </div>
+
+      <!-- 3. MODELO DE DADOS -->
+      <div class="tech-section" id="tech-sec-3">
+        <h2><span class="sec-num">3</span> Modelo de Dados & Dicionário das 25 Colunas Oficiais</h2>
+        <p>A base transacional do BQ VCM adota uma modelagem desnormalizada analítica estruturada rigorosamente sobre <strong>25 colunas oficiais padronizadas</strong>. Todas as colunas são de presença estrita para validação na carga.</p>
+
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th style="width: 5%;">#</th>
+              <th style="width: 18%;">Coluna Oficial</th>
+              <th style="width: 12%;">Tipo</th>
+              <th style="width: 15%;">Classificação</th>
+              <th style="width: 35%;">Descrição Corporativa & Regra de Negócio</th>
+              <th style="width: 15%;">Exemplo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>01</strong></td>
+              <td><code>ANO</code></td>
+              <td><code>INTEGER</code></td>
+              <td><span class="metric-tag tag-filter">Temporal</span></td>
+              <td>Ano de referência contábil das vendas e custos. Alimenta o seletor principal de Ano no cabeçalho.</td>
+              <td><code>2024, 2025, 2026</code></td>
+            </tr>
+            <tr>
+              <td><strong>02</strong></td>
+              <td><code>MES</code></td>
+              <td><code>INTEGER</code></td>
+              <td><span class="metric-tag tag-filter">Temporal</span></td>
+              <td>Mês de competência (1 a 12). Inicializa nativamente filtrando o mês anterior fechado para evitar dados incompletos.</td>
+              <td><code>1, 8, 9, 12</code></td>
+            </tr>
+            <tr>
+              <td><strong>03</strong></td>
+              <td><code>CENARIO</code></td>
+              <td><code>VARCHAR(10)</code></td>
+              <td><span class="metric-tag tag-kpi">Cenário</span></td>
+              <td>Cenário orçamentário: <code>ACT</code> (Realizado), <code>BGT</code> (Budget/Orçado) e <code>PY</code> (Prior Year/Ano Anterior). Separa as métricas nos KPIs e tabelas.</td>
+              <td><code>ACT, BGT, PY</code></td>
+            </tr>
+            <tr>
+              <td><strong>04</strong></td>
+              <td><code>NOME CLIENTE</code></td>
+              <td><code>VARCHAR(255)</code></td>
+              <td><span class="metric-tag tag-table">Comercial</span></td>
+              <td>Razão social ou nome fantasia consolidado do parceiro comercial. É a chave primária de agregação da tabela analítica (coluna <code>CLIENT</code>).</td>
+              <td><code>ATACADAO S.A.</code></td>
+            </tr>
+            <tr>
+              <td><strong>05</strong></td>
+              <td><code>ID CLIENTE</code></td>
+              <td><code>VARCHAR(50)</code></td>
+              <td><span class="metric-tag tag-table">Cadastro</span></td>
+              <td>Código identificador único corporativo do cliente atribuído no ERP Oracle / SAP.</td>
+              <td><code>1004523, 2098411</code></td>
+            </tr>
+            <tr>
+              <td><strong>06</strong></td>
+              <td><code>GESTOR</code></td>
+              <td><code>VARCHAR(150)</code></td>
+              <td><span class="metric-tag tag-filter">Hierarquia</span></td>
+              <td>Nome do Gerente / Gestor de Vendas responsável pelo gerenciamento da conta comercial. Filtro avançado.</td>
+              <td><code>MARCOS SILVA</code></td>
+            </tr>
+            <tr>
+              <td><strong>07</strong></td>
+              <td><code>DIRETOR</code></td>
+              <td><code>VARCHAR(150)</code></td>
+              <td><span class="metric-tag tag-filter">Hierarquia</span></td>
+              <td>Nome do Diretor Comercial responsável pela diretoria de canal ou regional de vendas. Filtro avançado.</td>
+              <td><code>RICARDO ALBUQUERQUE</code></td>
+            </tr>
+            <tr>
+              <td><strong>08</strong></td>
+              <td><code>SUPERVISOR</code></td>
+              <td><code>VARCHAR(150)</code></td>
+              <td><span class="metric-tag tag-filter">Hierarquia</span></td>
+              <td>Nome do Supervisor de Vendas regional que acompanha as operações de campo. Filtro avançado.</td>
+              <td><code>CARLOS EDUARDO</code></td>
+            </tr>
+            <tr>
+              <td><strong>09</strong></td>
+              <td><code>COORDENADOR</code></td>
+              <td><code>VARCHAR(150)</code></td>
+              <td><span class="metric-tag tag-filter">Hierarquia</span></td>
+              <td>Nome do Coordenador de Vendas responsável pelo suporte tático e atendimento. Filtro avançado.</td>
+              <td><code>JULIANA LIMA</code></td>
+            </tr>
+            <tr>
+              <td><strong>10</strong></td>
+              <td><code>TP PRODUTO</code></td>
+              <td><code>VARCHAR(80)</code></td>
+              <td><span class="metric-tag tag-table">Produto</span></td>
+              <td>Classificação macro do tipo de produto fabricado e comercializado.</td>
+              <td><code>PAO DE FORMA, BOLOS</code></td>
+            </tr>
+            <tr>
+              <td><strong>11</strong></td>
+              <td><code>PLANTA</code></td>
+              <td><code>VARCHAR(100)</code></td>
+              <td><span class="metric-tag tag-filter">Operação</span></td>
+              <td>Unidade fabril do Grupo Bimbo onde os itens faturados foram produzidos. Filtro avançado.</td>
+              <td><code>MOGI, BRASILIA, RIO</code></td>
+            </tr>
+            <tr>
+              <td><strong>12</strong></td>
+              <td><code>MARCA</code></td>
+              <td><code>VARCHAR(100)</code></td>
+              <td><span class="metric-tag tag-filter">Produto</span></td>
+              <td>Marca comercial Bimbo reconhecida no ponto de venda. Filtro avançado.</td>
+              <td><code>PULLMAN, PLUS VITA, RAP10</code></td>
+            </tr>
+            <tr>
+              <td><strong>13</strong></td>
+              <td><code>FAMILIAPRODUTO</code></td>
+              <td><code>VARCHAR(150)</code></td>
+              <td><span class="metric-tag tag-filter">Produto</span></td>
+              <td>Macro-agrupamento mercadológico das famílias de produtos. Filtro avançado.</td>
+              <td><code>PAES ESPECIAIS, BOLOS</code></td>
+            </tr>
+            <tr>
+              <td><strong>14</strong></td>
+              <td><code>FAMILIAPRODUTODETALHE</code></td>
+              <td><code>VARCHAR(150)</code></td>
+              <td><span class="metric-tag tag-table">Produto</span></td>
+              <td>Subdivisão analítica com características detalhadas da linha de produto.</td>
+              <td><code>INTEGRAL 100%, MINI BOLO</code></td>
+            </tr>
+            <tr>
+              <td><strong>15</strong></td>
+              <td><code>CATEGORIA</code></td>
+              <td><code>VARCHAR(150)</code></td>
+              <td><span class="metric-tag tag-filter">Produto</span></td>
+              <td>Categoria de sortimento padronizada no catálogo comercial Bimbo. Filtro avançado.</td>
+              <td><code>ARTESANO, BISNAGUINHA</code></td>
+            </tr>
+            <tr>
+              <td><strong>16</strong></td>
+              <td><code>BPC CATEGORY</code></td>
+              <td><code>VARCHAR(150)</code></td>
+              <td><span class="metric-tag tag-table">Corporativo</span></td>
+              <td>Bimbo Pricing Category - Agrupamento global utilizado pela área de Precificação Corporativa.</td>
+              <td><code>PREMIUM BREADS</code></td>
+            </tr>
+            <tr>
+              <td><strong>17</strong></td>
+              <td><code>LINHA</code></td>
+              <td><code>VARCHAR(100)</code></td>
+              <td><span class="metric-tag tag-filter">Operação</span></td>
+              <td>Linha industrial de manufatura / embalagem fabril onde ocorreu o processamento. Filtro avançado.</td>
+              <td><code>LINHA 01 - AUTOMATICA</code></td>
+            </tr>
+            <tr>
+              <td><strong>18</strong></td>
+              <td><code>CHANNEL</code></td>
+              <td><code>VARCHAR(100)</code></td>
+              <td><span class="metric-tag tag-filter">Comercial</span></td>
+              <td>Canal de vendas e distribuição de atendimento ao parceiro. Filtro de primeiro nível no cabeçalho.</td>
+              <td><code>AS CHAVE, AS REGIONAL, FS</code></td>
+            </tr>
+            <tr>
+              <td><strong>19</strong></td>
+              <td><code>DESCRICAO</code></td>
+              <td><code>VARCHAR(255)</code></td>
+              <td><span class="metric-tag tag-table">Item</span></td>
+              <td>Descrição completa e oficial do SKU acabado conforme cadastro central de materiais.</td>
+              <td><code>PAO ARTESANO 500G</code></td>
+            </tr>
+            <tr>
+              <td><strong>20</strong></td>
+              <td><code>ITEM</code></td>
+              <td><code>VARCHAR(50)</code></td>
+              <td><span class="metric-tag tag-table">Item</span></td>
+              <td>Código numérico interno único do SKU / material acabado no ERP corporativo.</td>
+              <td><code>00010045, 00028714</code></td>
+            </tr>
+            <tr>
+              <td><strong>21</strong></td>
+              <td><code>RECEITA LIQ</code></td>
+              <td><code>DECIMAL(18,2)</code></td>
+              <td><span class="metric-tag tag-kpi">Financeiro</span></td>
+              <td>Faturamento bruto deduzido de cancelamentos, devoluções e tributos faturados (ICMS, PIS, COFINS). Denominador do cálculo do VCM%.</td>
+              <td><code>1458920.50</code></td>
+            </tr>
+            <tr>
+              <td><strong>22</strong></td>
+              <td><code>INGREDIENTE</code></td>
+              <td><code>DECIMAL(18,2)</code></td>
+              <td><span class="metric-tag tag-kpi">Custo Direto</span></td>
+              <td>Custo total contábil das matérias-primas e ingredientes alimentícios (farinha, fermento, óleos) consumidos no volume vendido.</td>
+              <td><code>485300.20</code></td>
+            </tr>
+            <tr>
+              <td><strong>23</strong></td>
+              <td><code>EMBALAGEM</code></td>
+              <td><code>DECIMAL(18,2)</code></td>
+              <td><span class="metric-tag tag-kpi">Custo Direto</span></td>
+              <td>Custo contábil dos insumos de embalagem primária, secundária e transporte (filmes, sacos, clips, papelão).</td>
+              <td><code>124800.75</code></td>
+            </tr>
+            <tr>
+              <td><strong>24</strong></td>
+              <td><code>MOD</code></td>
+              <td><code>DECIMAL(18,2)</code></td>
+              <td><span class="metric-tag tag-kpi">Custo Fabril</span></td>
+              <td>Mão de Obra Direta fabril alocada à manufatura industrial direta dos volumes vendidos.</td>
+              <td><code>98400.00</code></td>
+            </tr>
+            <tr>
+              <td><strong>25</strong></td>
+              <td><code>VARIACAO DE PRECO</code></td>
+              <td><code>DECIMAL(18,2)</code></td>
+              <td><span class="metric-tag tag-kpi">Variação/PPV</span></td>
+              <td>Desvios de custo decorrentes de oscilações cambiais alocadas e variações de preços de insumos de compras (Purchase Price Variance).</td>
+              <td><code>15200.40</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 4. REGRAS DE NEGÓCIO CORPORATIVAS -->
+      <div class="tech-section" id="tech-sec-4">
+        <h2><span class="sec-num">4</span> Regras de Negócio Corporativas & Fórmulas Fundamentais</h2>
+        <p>Abaixo estão descritas as regras de cálculo, fórmulas matemáticas canônicas e tratamentos de exceção aplicados pelo motor de processamento do BQ VCM.</p>
+
+        <h3>4.1 Equação Canônica do VCM (Valor de Contribuição Marginal)</h3>
+        <p>O VCM mede o resultado operacional líquido das vendas gerado para absorver despesas fixas corporativas e gerar lucro líquido:</p>
+        <div class="metric-formula-box" style="font-size:0.82rem; padding:8px 12px; margin-bottom:0.75rem;">
+          VCM = SUM(RECEITA LIQ) - SUM(INGREDIENTE + EMBALAGEM + MOD + VARIACAO DE PRECO)
+        </div>
+        <p>Diferente da margem bruta contábil tradicional, o VCM do Grupo Bimbo expurga variações conjunturais de insumos (PPV) e custos diretos industriais, entregando a rentabilidade pura da operação.</p>
+
+        <h3>4.2 Margem de Retorno Relativo (% sobre Receita Líquida)</h3>
+        <p>Mede a eficiência de contribuição de cada real faturado líquido. Aplicado tanto aos KPIs agregados quanto a cada cliente individual na tabela analítica:</p>
+        <div class="metric-formula-box" style="font-size:0.82rem; padding:8px 12px; margin-bottom:0.75rem;">
+          VCM% = (SUM(VCM) / SUM(RECEITA LIQ)) * 100
+        </div>
+        <p><strong>Tratamento de Exceções:</strong> Caso <code>SUM(RECEITA LIQ) == 0</code> ou seja nulo, o sistema retorna estritamente <code>0.00%</code>, prevenindo erros de divisão por zero (<code>ZeroDivisionError</code> / <code>NaN</code>).</p>
+
+        <h3>4.3 Variações Absolutas e Relativas (Deltas vs BGT e vs PY)</h3>
+        <p>As variações comparam a performance do Realizado (ACT) contra as referências de planejamento e histórico:</p>
+        <ul>
+          <li><strong>Variação vs Budget (Var BGT):</strong>
+            <br>• Em R$: <span class="tech-code">Var BGT R$ = VCM_ACT - VCM_BGT</span>
+            <br>• Em %: <span class="tech-code">Var BGT % = ((VCM_ACT / VCM_BGT) - 1) * 100</span> (se <code>VCM_BGT &lt;= 0</code>, calcula <code>((VCM_ACT - VCM_BGT) / |VCM_BGT|) * 100</code>).
+          </li>
+          <li><strong>Variação vs Ano Anterior (Var PY):</strong>
+            <br>• Em R$: <span class="tech-code">Var PY R$ = VCM_ACT - VCM_PY</span>
+            <br>• Em %: <span class="tech-code">Var PY % = ((VCM_ACT / VCM_PY) - 1) * 100</span> (se <code>VCM_PY &lt;= 0</code>, calcula <code>((VCM_ACT - VCM_PY) / |VCM_PY|) * 100</code>).
+          </li>
+        </ul>
+
+        <h3>4.4 Semântica Visual dos Badges de Variação</h3>
+        <table class="tech-table" style="max-width:700px;">
+          <thead>
+            <tr>
+              <th>Variação</th>
+              <th>Cor do Badge</th>
+              <th>Significado para o Negócio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Var &gt; 0%</code> (Positiva)</td>
+              <td><span style="color:#10b981; font-weight:700;">Verde (#10b981)</span></td>
+              <td>Ganho de rentabilidade marginal ou superação da meta de contribuição orçada.</td>
+            </tr>
+            <tr>
+              <td><code>Var &lt; 0%</code> (Negativa)</td>
+              <td><span style="color:#ef4444; font-weight:700;">Vermelho (#ef4444)</span></td>
+              <td>Compressão de margem, custo excedente ou faturamento abaixo do orçado/ano anterior.</td>
+            </tr>
+            <tr>
+              <td><code>Var == 0%</code> (Neutra)</td>
+              <td><span style="color:#94a3b8; font-weight:700;">Cinza Neutro</span></td>
+              <td>Desempenho rigorosamente em linha com a meta ou ausência de histórico comparativo.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>4.5 Totalização Ponderada da Tabela (Sem Distorção de Médias Simples)</h3>
+        <p>A linha de <strong>Total Geral</strong> no rodapé da tabela analítica recalcula as porcentagens consolidando o numerador e denominador totais da seleção ativa:</p>
+        <div class="metric-formula-box" style="font-size:0.82rem; padding:8px 12px; margin-bottom:0.75rem;">
+          Total ACT% = (Total VCM_ACT / Total Receita_ACT) * 100
+        </div>
+        <p>Essa abordagem corporativa rigorosa elimina distorções matemáticas graves causadas por médias aritméticas simples entre clientes de faturamentos desiguais.</p>
+
+        <h3>4.6 Inicialização no Mês Anterior Nativo</h3>
+        <p>Para refletir a rotina contábil corporativa, ao abrir o portal, o filtro de mês é selecionado automaticamente com o <strong>mês anterior</strong> ao calendário vigente (ex: se estamos em Outubro, inicia automaticamente em Setembro; se Janeiro, seleciona Dezembro do ano anterior). Isso garante que o usuário visualize imediatamente o último período contábil fechado pela Controladoria sem necessitar de ajustes manuais.</p>
+      </div>
+
+      <!-- 5. MANUAL DE MÉTRICAS, FÓRMULAS E SEGMENTAÇÕES POR ABA -->
+      <div class="tech-section" id="sec-manual-formulas">
+        <h2><span class="sec-num">5</span> Manual de Métricas, Fórmulas e Segmentações por Aba</h2>
+        <p>Este manual técnico fornece o detalhamento exaustivo de <strong>cada indicador, seletor, tabela analítica e botão de ação</strong> dos dois módulos operacionais da aplicação: a <strong>Aba VCM (vcm.html)</strong> e a <strong>Aba Base VCM (cadastros.html)</strong>. Para cada elemento, estão documentadas a fórmula de cálculo, a coluna de origem, as âncoras de período e as regras de negócio aplicadas.</p>
+
+        <!-- ALERTA DE ÂNCORAS TEMPORAIS E FILTROS -->
+        <div class="tech-alert" style="background: rgba(59, 130, 246, .08); border-color: rgba(59, 130, 246, .3);">
+          <span style="font-size: 1.2rem; line-height: 1;">ℹ️</span>
+          <div>
+            <strong style="color: #60a5fa;">Como a Segmentação de Dados Opera no Sistema:</strong><br>
+            Os filtros do cabeçalho superior atuam em cascata e com alta performance sobre o cache de dados:
+            <ul style="margin: .4rem 0 .2rem; padding-left: 1.2rem;">
+              <li><strong>Âncora de Ano</strong>: segmenta os registros onde <span class="badge-date-anchor">ANO == ano_selecionado</span>.</li>
+              <li><strong>Âncora de Mês</strong>: segmenta os registros onde <span class="badge-date-anchor">MES IN (meses_selecionados)</span>. Inicializa nativamente com o mês fechado anterior.</li>
+              <li><strong>Âncora de Cenário</strong>: separa as linhas por <span class="badge-date-anchor badge-date-oc">CENARIO == 'ACT'</span>, <span class="badge-date-anchor badge-date-oc">CENARIO == 'BGT'</span> e <span class="badge-date-anchor badge-date-oc">CENARIO == 'PY'</span> para alimentar KPIs e colunas lado a lado.</li>
+              <li><strong>Filtros em Cascata</strong>: ao selecionar um <code>CHANNEL</code> ou <code>DIRETOR</code>, as opções disponíveis nos seletores subordinados são recalculadas instantaneamente.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- QUICK NAV PILLS -->
+        <div class="metric-quick-nav">
+          <span style="font-size: .75rem; font-weight: 800; color: var(--fr-txt); display: flex; align-items: center; margin-right: .4rem;">Navegação Rápida:</span>
+          <a href="#mod-vcm" class="metric-nav-pill">01. Aba VCM por Cliente (vcm.html)</a>
+          <a href="#mod-base-vcm" class="metric-nav-pill">02. Aba Base VCM & Upload (cadastros.html)</a>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- MÓDULO 01: ABA VCM (vcm.html)                            -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <div class="metric-module-card" id="mod-vcm">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num" style="background:#2563eb; width:22px; height:22px; font-size:.65rem;">01</span>
+              Módulo 01 — Painel Analítico de VCM por Cliente (<code>vcm.html</code>)
+            </h3>
+            <span class="metric-module-badge" style="background:#2563eb;">Tabela Base: Base - VCM.xlsx</span>
+          </div>
+          <div class="metric-module-body">
+            <p>Painel executivo com a visão consolidada do Valor de Contribuição Marginal por cliente, comparação direta entre Realizado (ACT), Meta Orçada (BGT) e Ano Anterior (PY), acompanhamento de percentuais de margem sobre a receita e exportação formatada para Excel.</p>
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 18%;">Visual / Card</th>
+                  <th style="width: 27%;">Métrica & Fórmula de Cálculo</th>
+                  <th style="width: 17%;">Tabelas & Colunas</th>
+                  <th style="width: 16%;">Âncora de Data</th>
+                  <th style="width: 22%;">Regras de Negócio & Filtros</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-filter">Filtro Global</span><br>
+                    <strong>Seletor de Ano</strong> (<code>#anoSelect</code>)
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">DISTINCT(ANO) DESC</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Preenche opções únicas de ano presentes na base em ordem decrescente.
+                    </div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[<code>ANO</code>]</td>
+                  <td><span class="badge-date-anchor">ANO</span></td>
+                  <td>A seleção de ano redefine os meses disponíveis e recalcula imediatamente todos os KPIs e a tabela de clientes.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-filter">Filtro Global</span><br>
+                    <strong>Seletor de Mês</strong> (<code>#mesSelect</code>)
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">MES IN (selecionados)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      <strong>Regra Nativa:</strong> inicializa no mês anterior ao mês do sistema (ex: Setembro em Outubro).
+                    </div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[<code>MES</code>]</td>
+                  <td><span class="badge-date-anchor">MES</span></td>
+                  <td>Suporta multi-seleção de meses. Permite análises YTD ou períodos acumulados sob demanda.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-filter">Filtro Hierárquico</span><br>
+                    <strong>Filtro de Canal</strong> (<code>#canalSelect</code>)
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">CHANNEL IN (selecionados)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Valores distintos da coluna <code>CHANNEL</code> vinculados aos anos/meses ativos.
+                    </div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[<code>CHANNEL</code>]</td>
+                  <td><span class="badge-date-anchor">ANO, MES</span></td>
+                  <td>Filtro de canal comercial (ex: AS CHAVE, AS REGIONAL, TRADICIONAL). Filtra dinamicamente as contas subordinadas.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-filter">Filtro Hierárquico</span><br>
+                    <strong>Filtro de Cliente</strong> (<code>#clienteSelect</code>)
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">NOME CLIENTE IN (selecionados)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Lista de clientes comerciais correspondente aos canais e períodos selecionados.
+                    </div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[<code>NOME CLIENTE</code>]</td>
+                  <td><span class="badge-date-anchor">ANO, MES</span></td>
+                  <td>Permite isolar um ou mais clientes corporativos específicos para análise direcionada de margem.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-filter">Filtros Avançados</span><br>
+                    <strong>Painel Multidimensional</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">DIRETOR, GESTOR, SUPERVISOR, COORDENADOR, CATEGORIA, LINHA, MARCA, FAMILIA, PLANTA</div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[9 Colunas Dimensionais]</td>
+                  <td><span class="badge-date-anchor">ANO, MES</span></td>
+                  <td>Gaveta expansível contendo filtros refinados para investigação profunda por estrutura comercial e linha de produto.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-action">Ações de Interface</span><br>
+                    <strong>Limpar Filtros & Atualizar</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">resetFilters() / carregarDados()</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Restaura parâmetros padrão (mês anterior) e força re-execução dos endpoints REST.
+                    </div>
+                  </td>
+                  <td>N/A (Client-Side)</td>
+                  <td>N/A</td>
+                  <td>Desfaz seleções temporárias e reativa os dados no estado limpo homologado.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card</span><br>
+                    <strong>VCM Realizado (ACT)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">SUM(RECEITA LIQ - (INGREDIENTE + EMBALAGEM + MOD + VARIACAO DE PRECO)) WHERE CENARIO = 'ACT'</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Exibe o valor monetário formatado em <code>R$ #.##0</code>.
+                    </div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[<code>RECEITA LIQ</code>, <code>INGREDIENTE</code>, <code>EMBALAGEM</code>, <code>MOD</code>, <code>VARIACAO DE PRECO</code>, <code>CENARIO</code>]</td>
+                  <td><span class="badge-date-anchor">ANO, MES</span></td>
+                  <td>Valor de contribuição marginal líquido efetivamente realizado no período selecionado. Possui tooltip executiva com a fórmula.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Rodapé</span><br>
+                    <strong>Margem ACT %</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">(VCM_ACT / SUM(RECEITA LIQ WHERE CENARIO = 'ACT')) * 100</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Formato percentual: <code>##0,0%</code>.
+                    </div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[<code>RECEITA LIQ</code>, Componentes VCM]</td>
+                  <td><span class="badge-date-anchor">ANO, MES</span></td>
+                  <td>Percentual da receita que sobra como contribuição marginal. Se Receita Líquida for zero, exibe <code>0,0%</code>.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card</span><br>
+                    <strong>VCM Orçamento (BGT)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">SUM(RECEITA LIQ - (INGREDIENTE + EMBALAGEM + MOD + VARIACAO DE PRECO)) WHERE CENARIO = 'BGT'</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Exibe o valor orçado em <code>R$ #.##0</code>.
+                    </div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[Componentes VCM, <code>CENARIO</code>]</td>
+                  <td><span class="badge-date-anchor">ANO, MES</span></td>
+                  <td>Meta estipulada no processo de Budget corporativo aprovado para os períodos correspondentes.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Badge</span><br>
+                    <strong>Variação vs Budget (Var BGT)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">Delta R$ = VCM_ACT - VCM_BGT<br>Delta % = ((VCM_ACT / VCM_BGT) - 1) * 100</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Badge dinâmico com cor verde (positivo) ou vermelha (negativo).
+                    </div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[Componentes VCM, <code>CENARIO</code>]</td>
+                  <td><span class="badge-date-anchor">ANO, MES</span></td>
+                  <td>Mede a aderência à meta. Superação do orçamento gera variação positiva verde.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Rodapé</span><br>
+                    <strong>Margem BGT %</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">(VCM_BGT / SUM(RECEITA LIQ WHERE CENARIO = 'BGT')) * 100</div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[<code>RECEITA LIQ</code>, Componentes VCM]</td>
+                  <td><span class="badge-date-anchor">ANO, MES</span></td>
+                  <td>Retorno percentual planejado para a receita orçada.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card</span><br>
+                    <strong>VCM Ano Anterior (PY)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">SUM(RECEITA LIQ - (INGREDIENTE + EMBALAGEM + MOD + VARIACAO DE PRECO)) WHERE CENARIO = 'PY'</div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[Componentes VCM, <code>CENARIO</code>]</td>
+                  <td><span class="badge-date-anchor">ANO, MES</span></td>
+                  <td>Margem obtida no mesmo período do ano anterior (Prior Year).</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Badge</span><br>
+                    <strong>Variação vs Ano Anterior (Var PY)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">Delta R$ = VCM_ACT - VCM_PY<br>Delta % = ((VCM_ACT / VCM_PY) - 1) * 100</div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[Componentes VCM, <code>CENARIO</code>]</td>
+                  <td><span class="badge-date-anchor">ANO, MES</span></td>
+                  <td>Crescimento anual de margem (YoY). Evidencia ganhos ou perdas estruturais de rentabilidade frente ao histórico.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Rodapé</span><br>
+                    <strong>Margem PY %</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">(VCM_PY / SUM(RECEITA LIQ WHERE CENARIO = 'PY')) * 100</div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[<code>RECEITA LIQ</code>, Componentes VCM]</td>
+                  <td><span class="badge-date-anchor">ANO, MES</span></td>
+                  <td>Retorno percentual sobre a receita realizada no ano anterior.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-table">Tabela Analítica</span><br>
+                    <strong>Busca Instantânea</strong> (<code>#searchClientInput</code>)
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">CLIENT.toLowerCase().includes(term)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Filtro local ultra-rápido via DOM em tempo real conforme digitação.
+                    </div>
+                  </td>
+                  <td>Client-Side DOM</td>
+                  <td>N/A</td>
+                  <td>Filtra os clientes visíveis sem disparar requisições adicionais ao backend. Atualiza instantaneamente a linha de total com os registros visíveis.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-table">Tabela Analítica</span><br>
+                    <strong>Coluna CLIENT (Nome do Cliente)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">GROUP BY NOME CLIENTE</div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[<code>NOME CLIENTE</code>]</td>
+                  <td><span class="badge-date-anchor">ANO, MES</span></td>
+                  <td>Eixo vertical de agrupamento de todas as vendas e custos da tabela de clientes.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-table">Tabela Analítica</span><br>
+                    <strong>Colunas de Valores R$ (ACT VCM, BGT VCM, PY)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">SUM(VCM) por Cliente e Cenário</div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[Componentes VCM, <code>CENARIO</code>]</td>
+                  <td><span class="badge-date-anchor">ANO, MES</span></td>
+                  <td>Exibição alinhada à direita com máscara <code>R$ #.##0</code>. Valores negativos destacados com formatação clara.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-table">Tabela Analítica</span><br>
+                    <strong>Colunas de Variação (Var BGT, Var PY)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">Var = ((ACT / REF) - 1) * 100</div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[Componentes VCM]</td>
+                  <td><span class="badge-date-anchor">ANO, MES</span></td>
+                  <td>Pills estilizadas em verde/vermelho com símbolo percentual e tooltip ao passar o mouse.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-table">Tabela Analítica</span><br>
+                    <strong>Colunas Percentuais (ACT%, BGT%, PY%)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">(VCM_CLIENTE / RECEITA_CLIENTE) * 100</div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>[<code>RECEITA LIQ</code>, Componentes VCM]</td>
+                  <td><span class="badge-date-anchor">ANO, MES</span></td>
+                  <td>Permite identificar parceiros de alta receita mas com margem percentual comprimida vs parceiros menores com alta taxa de retorno.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-table">Tabela Analítica</span><br>
+                    <strong>Linha de Total Geral (Rodapé)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">Total ACT% = (Total VCM_ACT / Total Receita_ACT) * 100</div>
+                  </td>
+                  <td>Todos os registros visíveis</td>
+                  <td><span class="badge-date-anchor">ANO, MES</span></td>
+                  <td>Linha fixada que soma todos os valores monetários e recalcula a taxa ponderada real do conjunto selecionado.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-action">Ação de Exportação</span><br>
+                    <strong>Exportar Excel XLS</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">GET /api/exportar_excel?ano=...&amp;mes=...</div>
+                  </td>
+                  <td><code>Base - VCM.xlsx</code><br>Python openpyxl</td>
+                  <td><span class="badge-date-anchor">Filtros Ativos</span></td>
+                  <td>Gera download de planilha formatada corporativa (.xlsx) contendo cabeçalhos oficiais Bimbo, linhas zebradas, totais e fórmulas ativas.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">Experiência do Usuário</span><br>
+                    <strong>Tooltips Executivas Clean</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">data-tip-title="..." &amp; data-tip-formula="..."</div>
+                  </td>
+                  <td>Client-Side UI</td>
+                  <td>N/A</td>
+                  <td>Apresenta caixas explicativas sutis ao passar o mouse sobre os números e badges, detalhando os componentes matemáticos de cada métrica.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- MÓDULO 02: ABA BASE VCM (cadastros.html)                 -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <div class="metric-module-card" id="mod-base-vcm">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num" style="background:#7c3aed; width:22px; height:22px; font-size:.65rem;">02</span>
+              Módulo 02 — Gestão da Base VCM & Ingestão Lakehouse (<code>cadastros.html</code>)
+            </h3>
+            <span class="metric-module-badge" style="background:#7c3aed;">Volume Lakehouse: Gestão & Dual-Write</span>
+          </div>
+          <div class="metric-module-body">
+            <p>Módulo de governança e atualização contínua da base de dados do BQ VCM. Permite aos usuários autorizados realizar downloads da base ativa e templates, efetuar validações estruturais client-side via SheetJS, pré-visualizar amostras e salvar atualizações com geração automática de backups no Unity Catalog.</p>
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 18%;">Componente / Ação</th>
+                  <th style="width: 27%;">Métrica & Mecanismo Técnico</th>
+                  <th style="width: 18%;">Tabelas & Caminhos</th>
+                  <th style="width: 15%;">Âncora / Frequência</th>
+                  <th style="width: 22%;">Regras de Negócio & Segurança</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">Card de Sanidade</span><br>
+                    <strong>Total de Registros Ativos</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">COUNT(linhas) em Base - VCM.xlsx</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Total de linhas carregadas na memória ativa.
+                    </div>
+                  </td>
+                  <td>Volume UC<br><code>Base - VCM.xlsx</code></td>
+                  <td>Carga Inicial</td>
+                  <td>Indica o volume total de registros transacionais disponíveis para consulta no painel analítico.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">Card de Sanidade</span><br>
+                    <strong>Clientes Únicos</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">COUNT(DISTINCT NOME CLIENTE)</div>
+                  </td>
+                  <td>Volume UC<br>[<code>NOME CLIENTE</code>]</td>
+                  <td>Carga Inicial</td>
+                  <td>Mede a cobertura de parceiros comerciais contemplados na base vigente.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">Card de Sanidade</span><br>
+                    <strong>Categorias / SKUs Mapeados</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">COUNT(DISTINCT CATEGORIA) &amp; ITEM</div>
+                  </td>
+                  <td>Volume UC<br>[<code>CATEGORIA</code>, <code>ITEM</code>]</td>
+                  <td>Carga Inicial</td>
+                  <td>Assegura a completude do sortimento mercadológico cadastrado.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">Card de Sanidade</span><br>
+                    <strong>Timestamp da Última Carga</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">file_stat.st_mtime / ISO Datetime</div>
+                  </td>
+                  <td>Volume UC<br>Metadados do Arquivo</td>
+                  <td>Tempo Real</td>
+                  <td>Exibe a data e hora exatas da última modificação ou upload aprovado no Volume do Lakehouse.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-action">Botão de Download</span><br>
+                    <strong>Baixar Base Ativa</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">GET /api/cadastros/download</div>
+                  </td>
+                  <td><code>/Volumes/.../Base - VCM.xlsx</code></td>
+                  <td>Sob Demanda</td>
+                  <td>Disponibiliza a cópia íntegra do arquivo oficial atual para manutenção, auditoria ou análises complementares na máquina do usuário.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-action">Botão de Download</span><br>
+                    <strong>Baixar Modelo Template</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">GET /api/cadastros/download-modelo</div>
+                  </td>
+                  <td><code>/Volumes/.../modelo_vcm.xlsx</code></td>
+                  <td>Sob Demanda</td>
+                  <td>Entrega uma planilha Excel padronizada em branco contendo as 25 colunas oficiais e formatações homologadas para preenchimento de novas cargas.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-action">Upload Interativo</span><br>
+                    <strong>Área Drag &amp; Drop de Arquivo</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">FileReader API + DragEvent</div>
+                  </td>
+                  <td>Navegador Client-Side</td>
+                  <td>Sob Demanda</td>
+                  <td>Área intuitiva que aceita arrastar e soltar arquivos <code>.xlsx</code> ou selecionar através de caixa de diálogo local.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-table">Validador Estrutural</span><br>
+                    <strong>Validação SheetJS Client-Side</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">XLSX.read(data, {type: 'array'})<br>Conferência Estrita das 25 Colunas</div>
+                  </td>
+                  <td>Navegador Client-Side (SheetJS)</td>
+                  <td>Instantâneo no Upload</td>
+                  <td>Bloqueia o upload imediatamente se alguma das 25 colunas oficiais estiver ausente, renomeada ou em formato ilegível, alertando o usuário antes de enviar ao servidor.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-table">Tabela de Preview</span><br>
+                    <strong>Grid das 50 Primeiras Linhas</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">data.slice(0, 50) + Paginação</div>
+                  </td>
+                  <td>Navegador Client-Side</td>
+                  <td>Pós-Validação</td>
+                  <td>Renderiza uma pré-visualização das 50 primeiras linhas da planilha com contagem total de registros para validação visual pelo operador.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-action">Pipeline de Gravação</span><br>
+                    <strong>Botão "Salvar no Databricks"</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">POST /api/cadastros/salvar</div>
+                  </td>
+                  <td>Flask API + Unity Catalog</td>
+                  <td>Disparo do Usuário</td>
+                  <td>Submete os dados homologados ao servidor. Requer permissão explícita no <code>cadastros_access.json</code>.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-action">Rotina de Segurança</span><br>
+                    <strong>Geração de Backup Versionado</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">shutil.copyfile(orig, f"Base_VCM_backup_{timestamp}.xlsx")</div>
+                  </td>
+                  <td><code>/Volumes/.../Base_VCM_backup_*.xlsx</code></td>
+                  <td>Automático a cada Carga</td>
+                  <td>Antes de aplicar qualquer alteração, o backend cria uma cópia congelada com carimbo temporal no Volume Lakehouse, garantindo rastreabilidade e rollback imediato.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-action">Rotina de Persistência</span><br>
+                    <strong>Substituição Atômica no Volume</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">Atomic Write / Replace em Base - VCM.xlsx</div>
+                  </td>
+                  <td><code>/Volumes/.../Base - VCM.xlsx</code></td>
+                  <td>Transacional</td>
+                  <td>Sobrescreve o arquivo oficial no Unity Catalog de forma atômica para evitar corrupção em acessos concorrentes.</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-action">Rotina de Sincronismo</span><br>
+                    <strong>Recarga Instantânea do Cache Global</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">global df_global; df_global = pd.read_excel(...)</div>
+                  </td>
+                  <td>Memória RAM do Databricks App</td>
+                  <td>Pós-Gravação</td>
+                  <td>Invalida o cache antigo e recarrega a nova base na memória em menos de 2 segundos, disponibilizando as novas métricas imediatamente na aba VCM.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 6. GOVERNANÇA E SEGURANÇA -->
+      <div class="tech-section" id="tech-sec-6">
+        <h2><span class="sec-num">6</span> Governança, Segurança e Permissões (RBAC)</h2>
+        <p>A solução BQ VCM implementa uma política de controle de acesso baseada em funções (Role-Based Access Control - RBAC) em conformidade com as diretrizes globais de segurança da informação do Grupo Bimbo.</p>
+
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th style="width: 20%;">Componente / Módulo</th>
+              <th style="width: 25%;">Nível de Acesso Homologado</th>
+              <th style="width: 25%;">Mecanismo de Validação</th>
+              <th style="width: 30%;">Política de Segurança & Restrição</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Painel Analítico (<code>vcm.html</code>)</strong></td>
+              <td>Usuários Comerciais e Financeiros</td>
+              <td>Databricks App Proxy (SSO Azure AD)</td>
+              <td>Acesso de leitura para qualquer usuário autenticado com conta corporativa <code>@grupobimbo.com</code>. Permite filtrar e exportar dados.</td>
+            </tr>
+            <tr>
+              <td><strong>Guia & Manuais (<code>guia.html</code>)</strong></td>
+              <td>Todos os Colaboradores Bimbo</td>
+              <td>Acesso Público Corporativo</td>
+              <td>Consulta livre a documentações técnicas, manuais operacionais e slides institucionais.</td>
+            </tr>
+            <tr>
+              <td><strong>Download de Bases (<code>cadastros.html</code>)</strong></td>
+              <td>Usuários com Permissão no RBAC</td>
+              <td>Header <code>X-Forwarded-Preferred-Username</code></td>
+              <td>Permite exportar a íntegra da planilha Excel <code>Base - VCM.xlsx</code> ativa no Lakehouse.</td>
+            </tr>
+            <tr>
+              <td><strong>Upload & Gravação (<code>/api/cadastros/salvar</code>)</strong></td>
+              <td>Administradores e Controladoria Master</td>
+              <td>Lista Estrita em <code>cadastros_access.json</code></td>
+              <td>Bloqueio de escrita para usuários não autorizados com resposta HTTP 403 Forbidden. Registro de e-mail e carimbo temporal no log.</td>
+            </tr>
+            <tr>
+              <td><strong>Auditoria e Rastreabilidade</strong></td>
+              <td>Logs do Sistema Databricks Apps</td>
+              <td>Syslog / stdout Estruturado</td>
+              <td>Gravação indelével de data, hora, IP, e-mail do operador, nome do arquivo e contadores de registros a cada atualização.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 7. RUNBOOK OPERACIONAL -->
+      <div class="tech-section" id="tech-sec-7">
+        <h2><span class="sec-num">7</span> Runbook Operacional e Troubleshooting</h2>
+        <p>Guia de procedimentos táticos para suporte e resolução ágil dos principais incidentes operacionais da aplicação BQ VCM:</p>
+
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th style="width: 25%;">Incidente / Sintoma</th>
+              <th style="width: 25%;">Causa Raiz Mais Provável</th>
+              <th style="width: 50%;">Procedimento de Resolução Passo a Passo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Erro no Upload: "Colunas ausentes ou incorretas"</strong></td>
+              <td>O arquivo Excel enviado não possui exatamente as 25 colunas oficiais ou há espaços extras/acentuação errada nos nomes dos cabeçalhos.</td>
+              <td>1. Acesse a aba <strong>Base VCM</strong> e clique em <strong>"Baixar Modelo"</strong>.<br>2. Copie os dados da planilha de trabalho e cole como valores no modelo oficial.<br>3. Mantenha os nomes das 25 colunas da primeira linha inalterados.<br>4. Reenvie o arquivo no portal.</td>
+            </tr>
+            <tr>
+              <td><strong>Divergência de VCM vs Relatório de Controladoria</strong></td>
+              <td>A base ativa no Lakehouse foi processada sem o fechamento final das variações de preço (PPV) ou há filtros avançados ativos na tela.</td>
+              <td>1. Verifique se há seleções residuais nos filtros de Canal, Diretoria ou Categorias.<br>2. Clique em <strong>"Limpar Filtros"</strong>.<br>3. Confirme na tabela analítica se o somatório da coluna <code>VARIACAO DE PRECO</code> e <code>RECEITA LIQ</code> bate com o relatório contábil da competência.<br>4. Caso necessário, gere uma nova versão no Excel e atualize pela aba Base VCM.</td>
+            </tr>
+            <tr>
+              <td><strong>Novo Mês Fechado não aparece no filtro</strong></td>
+              <td>A planilha ativa no Volume ainda não foi atualizada com a nova competência contábil mensal.</td>
+              <td>1. Consolide os dados do novo mês na planilha de trabalho.<br>2. Verifique se a coluna <code>MES</code> contém o número correspondente (1 a 12).<br>3. Faça o upload na aba <strong>Base VCM</strong> e clique em <strong>"Salvar no Databricks"</strong>.<br>4. O cache será recarregado e o novo mês aparecerá imediatamente no seletor.</td>
+            </tr>
+            <tr>
+              <td><strong>Acesso Negado ao Tentar Salvar Base (HTTP 403)</strong></td>
+              <td>O e-mail do usuário não está listado no arquivo de controle de acesso <code>cadastros_access.json</code>.</td>
+              <td>1. Identifique o e-mail corporativo exibido no crachá superior (ex: <code>usuario@grupobimbo.com</code>).<br>2. Solicite ao administrador da aplicação a inclusão do e-mail no array de administradores do arquivo <code>cadastros_access.json</code>.<br>3. Faça logout e login novamente para validar a nova permissão.</td>
+            </tr>
+            <tr>
+              <td><strong>Necessidade de Rollback (Reversão de Base Incorreta)</strong></td>
+              <td>Foi feito upload acidental de uma planilha com dados incompletos ou fórmulas corrompidas.</td>
+              <td>1. Acesse o Volume do Unity Catalog no Databricks: <code>/Volumes/cat_dnabb_dv/grobbbqb_sz/dev_bq_vcm/</code>.<br>2. Localize o arquivo de backup imediatamente anterior (<code>Base_VCM_backup_YYYYMMDD_HHMMSS.xlsx</code>).<br>3. Baixe esse arquivo de backup e faça o upload através da interface em <strong>Base VCM</strong> para restaurar a versão íntegra com novo carimbo.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      inicializarTema();
+      await loadUserInfo();
+      renderizarSlide();
+    });
+
+    async function loadUserInfo() {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.email) {
+            const badge = document.getElementById("operatorEmailText");
+            if (badge) {
+              badge.innerText = `${data.email} ${data.is_admin ? "(Admin)" : ""}`;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("Credenciais do usuário:", e);
+      }
+    }
+
+    // Navegação entre as 3 sub-abas da Guia
+    function trocarSubTab(tabId, btn) {
+      document.querySelectorAll(".guia-tab-pane").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".guia-tab-btn").forEach(b => b.classList.remove("active"));
+
+      document.getElementById(tabId).classList.add("active");
+      btn.classList.add("active");
+    }
+
+    // Engine dos Slides de Apresentação
+    const slidesData = [
+      {
+        num: "SLIDE 01 DE 04 • VISÃO GERAL",
+        title: "BQ VCM: Rentabilidade por Cliente",
+        html: `
+          <p>O <strong>BQ VCM</strong> é a aplicação executiva do Grupo Bimbo desenvolvida para proporcionar transparência total sobre a margem de contribuição de cada cliente e produto.</p>
+          <ul>
+            <li><strong>Visibilidade Estratégica:</strong> Monitoramento preciso de ACT (Realizado), BGT (Orçado) e PY (Ano Anterior).</li>
+            <li><strong>Rentabilidade Percentual:</strong> Comparação da taxa de retorno (VCM %) sobre a Receita Líquida entre os parceiros de negócios.</li>
+            <li><strong>Filtros Multidimensionais:</strong> Análise ágil por Diretoria, Canal, Categoria, Linha de Produção, Marca e Planta.</li>
+          </ul>
+        `
+      },
+      {
+        num: "SLIDE 02 DE 04 • COMPOSIÇÃO DO VCM",
+        title: "A Fórmula e os Elementos do VCM",
+        html: `
+          <p>O <strong>VCM</strong> reflete o resultado operacional líquido das vendas após absorver todos os custos variáveis industriais diretos:</p>
+          <ul>
+            <li><strong>(+) Receita Líquida:</strong> Faturamento líquido de devoluções e impostos.</li>
+            <li><strong>(-) Ingredientes:</strong> Custo da matéria-prima utilizada nos produtos fabricados.</li>
+            <li><strong>(-) Embalagens:</strong> Custo de filmes, caixas e materiais de embalagem.</li>
+            <li><strong>(-) MOD (Mão de Obra Direta):</strong> Custos fabris alocados diretamente à produção.</li>
+            <li><strong>(-) Variação de Preço:</strong> Impactos de oscilações conjunturais e tabelas de preços.</li>
+          </ul>
+        `
+      },
+      {
+        num: "SLIDE 03 DE 04 • GESTÃO DA BASE DE DADOS",
+        title: "Atualização Descomplicada no Excel",
+        html: `
+          <p>O fluxo de trabalho foi desenhado para maximizar a produtividade da equipe comercial e de controladoria:</p>
+          <ul>
+            <li><strong>Download Direto:</strong> Baixe a planilha atualizada na íntegra através da aba <strong>Base VCM</strong>.</li>
+            <li><strong>Edição Confortável:</strong> Faça simulações e atualizações diretamente no Excel de trabalho habitual.</li>
+            <li><strong>Upload & Validação Instantânea:</strong> Arraste o arquivo para a central de gestão para salvar automaticamente no Volume do Databricks Unity Catalog.</li>
+          </ul>
+        `
+      },
+      {
+        num: "SLIDE 04 DE 04 • TECNOLOGIA & DATABRICKS APPS",
+        title: "Arquitetura Moderna Lakehouse",
+        html: `
+          <p>Desenvolvido sob os mais rígidos padrões de engenharia de software e governança:</p>
+          <ul>
+            <li><strong>Unity Catalog Volumes:</strong> Segurança nativa, sem chaves ou credenciais expostas no código.</li>
+            <li><strong>Cache em Memória:</strong> Tempos de resposta em milissegundos para consultas analíticas.</li>
+            <li><strong>Interface Responsiva & Temas:</strong> Suporte completo a Modo Claro e Modo Escuro com contraste aprimorado.</li>
+          </ul>
+        `
+      }
+    ];
+
+    let slideAtual = 0;
+
+    function renderizarSlide() {
+      const s = slidesData[slideAtual];
+      document.getElementById("slideNumber").textContent = s.num;
+      document.getElementById("slideTitle").textContent = s.title;
+      document.getElementById("slideBody").innerHTML = s.html;
+      document.getElementById("slideIndicator").textContent = `${slideAtual + 1} / ${slidesData.length}`;
+
+      document.getElementById("btnSlidePrev").disabled = (slideAtual === 0);
+      document.getElementById("btnSlideNext").disabled = (slideAtual === slidesData.length - 1);
+    }
+
+    function mudarSlide(delta) {
+      slideAtual = Math.max(0, Math.min(slidesData.length - 1, slideAtual + delta));
+      renderizarSlide();
+    }
+
+    document.addEventListener("keydown", (e) => {
+      const abaApresentacao = document.getElementById("tab-apresentacao");
+      if (abaApresentacao && abaApresentacao.classList.contains("active")) {
+        if (e.key === "ArrowRight") mudarSlide(1);
+        if (e.key === "ArrowLeft") mudarSlide(-1);
+      }
+    });
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const atual = html.getAttribute("data-theme") || "dark";
+      const novo = atual === "dark" ? "light" : "dark";
+      html.setAttribute("data-theme", novo);
+      localStorage.setItem("theme_preference", novo);
+      localStorage.setItem("portal_theme", novo);
+    }
+
+    function inicializarTema() {
+      const salvo = localStorage.getItem("theme_preference") || localStorage.getItem("portal_theme") || "dark";
+      document.documentElement.setAttribute("data-theme", salvo);
+    }
+  </script>
+    </div><!-- #portal-workspace -->
+  </div><!-- #portal-layout -->
+
+  <div class="v2-scrim" id="v2-scrim" hidden></div>
+  <nav class="mobile-bottom-nav" aria-label="Navegação rápida mobile">
+    <a href="vcm.html" class="mobile-bottom-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      <span>VCM</span>
+    </a>
+    <a href="cadastros.html" class="mobile-bottom-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>
+      <span>Base VCM</span>
+    </a>
+    <a href="guia.html" class="mobile-bottom-link active" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <span>Guia</span>
+    </a>
+  </nav>
+</body>
+</html>

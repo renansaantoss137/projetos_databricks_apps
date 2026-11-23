@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Report Dinâmico | DNA de Vendas · Bimbo Brasil</title>
+  <link rel="stylesheet" href="styles.css?v=3.5.3">
+  <style>
+    /* SVG Failsafe Dimensioning */
+    svg { box-sizing: border-box; flex-shrink: 0; }
+    .dna-header svg, .dna-nav-tabs svg, .dna-nav-tab svg {
+      width: 16px !important; height: 16px !important; max-width: 16px !important; max-height: 16px !important;
+      display: inline-block !important; vertical-align: middle !important;
+    }
+    .dna-mobile-nav svg, .dna-mobile-nav-item svg {
+      width: 18px !important; height: 18px !important; max-width: 18px !important; max-height: 18px !important;
+      display: inline-block !important;
+    }
+    
+    body.rep-body {
+      background: var(--bg-glow), var(--bg-page);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      font-family: Inter, 'Segoe UI', system-ui, sans-serif;
+    }
+
+    .sp-header-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sp-qsr-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: var(--r-pill);
+      background: var(--primary-soft);
+      border: 1px solid var(--primary);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary-strong);
+    }
+    :root[data-theme="dark"] .sp-qsr-pill {
+      color: var(--link);
+      border-color: rgba(96, 165, 250, 0.4);
+    }
+
+    .sp-meta-desktop {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .sp-meta-mobile {
+      display: none;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    @media (max-width: 640px) {
+      .sp-meta-desktop { display: none; }
+      .sp-meta-mobile { display: block; }
+    }
+
+    /* Barra de Ações do Relatório */
+    .rep-action-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 0.25rem 0;
+    }
+    .rep-action-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .rep-action-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Layout Principal: Painel Lateral de Colunas à Esquerda + Tabela Analítica */
+    .det-layout {
+      display: flex;
+      gap: 14px;
+      align-items: stretch;
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+    }
+
+    /* Painel Lateral de Seleção de Colunas & Métricas */
+    .det-panel {
+      width: 224px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-self: stretch;
+      transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .det-panel.collapsed {
+      width: 38px;
+      min-width: 38px;
+    }
+    .det-panel.collapsed .det-panel-body,
+    .det-panel.collapsed .det-panel-title-txt,
+    .det-panel.collapsed .det-panel-hdr > svg:first-child {
+      display: none !important;
+    }
+    .det-panel.collapsed .det-panel-hdr {
+      justify-content: center;
+      padding: 0.75rem 0.35rem;
+      border-bottom: none;
+    }
+    .det-panel.collapsed .det-panel-collapse-btn {
+      transform: rotate(180deg);
+      margin-left: 0;
+    }
+    .det-panel-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-card, 12px);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      height: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+    .det-panel-hdr {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.75rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .det-panel-hdr svg { flex-shrink: 0; }
+    .det-panel-collapse-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: auto;
+      border-radius: 6px;
+      transition: transform 0.2s ease, color 0.15s ease, background 0.15s ease;
+    }
+    .det-panel-collapse-btn:hover {
+      color: var(--text-primary);
+      background: var(--surface-hover);
+    }
+    .det-panel-body {
+      padding: 0.65rem 0.75rem;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: calc(100dvh - var(--topo, 64px) - 160px);
+    }
+    .det-search {
+      width: 100%;
+      box-sizing: border-box;
+      background: var(--surface-alt);
+      border: 1px solid var(--border-input);
+      border-radius: var(--r-control, 8px);
+      color: var(--text-primary);
+      font-size: 12px;
+      padding: 6px 10px;
+      margin-bottom: 6px;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+    .det-search:focus {
+      border-color: var(--primary);
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 1px;
+    }
+    .det-search::placeholder {
+      color: var(--text-muted);
+    }
+    .det-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-top: 6px;
+      margin-bottom: 4px;
+      padding-left: 2px;
+    }
+    .det-check-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text-secondary);
+      transition: background 0.12s ease, color 0.12s ease;
+      user-select: none;
+    }
+    .det-check-item:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+    .det-check-item.active {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    .det-check-item input[type="checkbox"] {
+      accent-color: var(--primary);
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    /* Área de Conteúdo da Tabela */
+    .det-content {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    @media (max-width: 860px) {
+      .det-layout { flex-direction: column; }
+      .det-panel { width: 100%; }
+      .det-panel.collapsed { width: 100%; min-width: 0; }
+      .det-panel.collapsed .det-panel-body { display: none !important; }
+      .det-panel.collapsed .det-panel-title-txt { display: inline !important; }
+      .det-panel.collapsed .det-panel-hdr { justify-content: space-between; padding: 0.75rem 0.85rem; }
+      .det-panel.collapsed .det-panel-collapse-btn { transform: rotate(90deg); }
+      .det-panel:not(.collapsed) .det-panel-collapse-btn { transform: rotate(-90deg); }
+    }
+
+    /* Container da Tabela Analítica (100% de largura) */
+    .table-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-card, 12px);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+      position: relative;
+    }
+    .table-scroll {
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: calc(100dvh - var(--topo, 64px) - 160px);
+      position: relative;
+    }
+    .rep-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 13px;
+      table-layout: auto;
+    }
+    .rep-table thead th {
+      background: #f8fafc;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      white-space: nowrap;
+      user-select: none;
+    }
+    :root[data-theme="dark"] .rep-table thead th {
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .rep-table tbody td.val-currency {
+      color: #15803d;
+      font-weight: 600;
+    }
+    :root[data-theme="dark"] .rep-table tbody td.val-currency {
+      color: #34d399;
+    }
+    .rep-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .rep-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+    }
+    .rep-card-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .rep-card-head-r {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .rep-count-pill {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #1d4ed8;
+      font-variant-numeric: tabular-nums;
+    }
+    :root[data-theme="dark"] .rep-count-pill {
+      color: #8FA8F0;
+    }
+    .rep-table thead th:hover {
+      background: var(--surface-alt);
+      color: var(--text-primary);
+    }
+    .rep-table thead th.th-filtered {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    .th-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .th-sort-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      flex: 1;
+      min-width: 0;
+    }
+    .sort-icon {
+      font-size: 11px;
+      color: var(--text-muted);
+      opacity: 0.45;
+      transition: opacity 0.12s;
+    }
+    .rep-table thead th:hover .sort-icon,
+    .sort-icon.active {
+      opacity: 1;
+    }
+    .sort-icon.active {
+      color: var(--primary);
+      font-weight: 900;
+    }
+    .th-col-filter-btn {
+      display: inline-grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      border: 0;
+      border-radius: 5px;
+      background: transparent;
+      color: var(--text-muted);
+      opacity: 0.45;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+      transition: opacity 0.12s, background-color 0.12s, color 0.12s;
+    }
+    .rep-table thead th:hover .th-col-filter-btn,
+    .th-col-filter-btn.active {
+      opacity: 1;
+    }
+    .th-col-filter-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+    .th-col-filter-btn.active {
+      color: var(--primary);
+      background: rgba(12, 33, 103, 0.08);
+    }
+    :root[data-theme="dark"] .sort-icon.active,
+    :root[data-theme="dark"] .th-col-filter-btn.active {
+      color: var(--link);
+    }
+    .rep-table tbody tr {
+      transition: background 0.1s ease;
+    }
+    .rep-table tbody tr:hover {
+      background: var(--surface-alt);
+    }
+    .rep-table tbody td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text-primary);
+      font-size: 13px;
+    }
+    .rep-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Botão discreto ícone-only para exportar */
+    .btn-icon-export {
+      display: inline-grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .btn-icon-export:hover {
+      background: var(--surface-hover);
+      border-color: var(--border);
+      color: var(--text-primary);
+    }
+
+    /* Popover de Filtro por Coluna */
+    .col-filter-popover {
+      position: fixed;
+      z-index: 1200;
+      width: 248px;
+      background: var(--surface-overlay, var(--surface));
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 12.5px;
+      color: var(--text-primary);
+    }
+    .col-filter-popover[hidden] { display: none; }
+    .cfp-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .cfp-list {
+      max-height: 185px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .cfp-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12.5px;
+    }
+    .cfp-item:hover { background: var(--surface-hover); }
+    .cfp-item input { accent-color: var(--primary); margin: 0; }
+    .cfp-range-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .cfp-field label {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+    .cfp-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px 8px;
+      border-radius: 7px;
+      border: 1px solid var(--border-input, var(--border));
+      background: var(--surface-alt);
+      color: var(--text-primary);
+      font-size: 12.5px;
+      outline: none;
+    }
+    .cfp-input:focus { border-color: var(--primary); }
+    .cfp-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-top: 6px;
+      border-top: 1px solid var(--border);
+    }
+    .cfp-btn-clear {
+      border: 0;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 5px 8px;
+      border-radius: 6px;
+    }
+    .cfp-btn-clear:hover { background: var(--surface-hover); color: var(--text-primary); }
+    .cfp-btn-apply {
+      border: 0;
+      background: var(--primary);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 6px 12px;
+      border-radius: 7px;
+    }
+    .rep-table tbody td.num-cell {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum";
+    }
+
+    /* Rodapé da Tabela e Paginação */
+    .table-footer {
+      padding: 10px 16px;
+      background: var(--surface-alt);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .pag-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Top Progress Bar Não-Bloqueante */
+    .rep-loading {
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: var(--primary);
+      display: none;
+      z-index: 99;
+      pointer-events: none;
+      opacity: 0.85;
+    }
+    .rep-loading.show { display: block; }
+  </style>
+</head>
+<body class="rep-body">
+  <div class="sp-app-layout">
+    <!-- TRILHO LATERAL VERTICAL ESQUERDA (MANTIDO) -->
+    <aside class="sp-sidebar" id="spSidebar">
+      <button type="button" class="sp-sidebar-toggle-btn" id="btnToggleSidebar" aria-label="Expandir ou recolher menu" title="Expandir/recolher menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <a href="/" class="sp-nav-item" title="Início">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Início</span>
+      </a>
+      <a href="vendometro.html?v=3.3.0" class="sp-nav-item" title="Vendômetro">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        <span>Vendômetro</span>
+      </a>
+      <a href="previsoes.html?v=3.3.0" class="sp-nav-item" title="Previsões de Invoiced">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        <span>Previsões</span>
+      </a>
+      <a href="relatorios.html?v=3.3.0" class="sp-nav-item active" title="Report Dinâmico">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        <span>Report</span>
+      </a>
+    </aside>
+
+    <div class="sp-main">
+      <!-- CABEÇALHO UNIFICADO D&A -->
+      <header class="dna-header">
+        <div class="dna-brand">
+          <a href="/" style="display:flex; align-items:center; text-decoration:none;">
+            <img src="logo_bimbo.png" alt="Grupo Bimbo" class="dna-logo-img" width="32" height="32">
+          </a>
+          <div class="sp-header-info">
+            <span class="dna-brand-badge">SPACE</span>
+            <span class="sp-qsr-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a8 8 0 0 1 16 0H4z"/><rect x="4" y="15" width="16" height="4" rx="2"/><line x1="4" y1="13" x2="20" y2="13"/></svg>
+              Bimbo QSR
+            </span>
+          </div>
+        </div>
+
+        <!-- Metadados à direita no Desktop + Menu do Usuário Databricks -->
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div class="sp-sync-badge" id="txt-last-update" tabindex="0" role="note" aria-label="Status de atualização dos dados">
+            <span class="sp-sync-dot" aria-hidden="true"></span>
+            <span class="sp-sync-text">Atualizado há 18 h</span>
+            <div class="sp-sync-tooltip" role="tooltip">
+              <div class="sp-sync-tip-title">Última sincronização</div>
+              <div>Data: <strong class="sp-sync-tip-date" id="txt-sync-date">15/11/2026 às 15:35</strong></div>
+              <div class="sp-sync-tip-sub">Última sincronização do banco de dados via Databricks Workflow (Horário de Brasília)</div>
+            </div>
+          </div>
+          <div class="app-menu-container" id="app-menu-container"></div>
+        </div>
+      </header>
+
+      <!-- NAVEGAÇÃO MOBILE INFERIOR -->
+      <nav class="dna-mobile-nav" aria-label="Navegação mobile">
+        <a href="/" class="dna-mobile-nav-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+          <span>Home</span>
+        </a>
+        <a href="vendometro.html?v=3.3.0" class="dna-mobile-nav-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          <span>Vendômetro</span>
+        </a>
+        <a href="previsoes.html?v=3.3.0" class="dna-mobile-nav-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+          <span>Previsões</span>
+        </a>
+        <a href="relatorios.html?v=3.3.0" class="dna-mobile-nav-item active" aria-current="page">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          <span>Report</span>
+        </a>
+      </nav>
+
+      <!-- LAYOUT PRINCIPAL COM PAINEL RETRÁTIL À DIREITA -->
+      <div class="layout" id="appLayout">
+        <!-- ÁREA DE CONTEÚDO PRINCIPAL -->
+        <main class="conteudo">
+          <!-- Barra Superior de Filtros Ativos (Resumo Compacto e Botão de Abertura do Painel) -->
+          <div class="active-filters-bar" id="active-filters-bar" aria-label="Filtros ativos">
+            <div class="afb-left">
+              <div class="qf-group" id="fpQuickFilters"></div>
+              <div class="afb-chips" id="afb-chips-container"></div>
+            </div>
+            <div class="afb-right">
+              <div class="fp-bookmarks-wrap" id="fpBookmarksWrap"></div>
+              <span class="afb-sep" aria-hidden="true" style="width:1px; height:18px; background:var(--border); margin:0 4px; display:inline-block;"></span>
+              <button type="button" class="afb-reset-btn" id="afb-reset" hidden title="Voltar aos filtros padrão" aria-label="Limpar todos os filtros">
+                <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                  <path d="M3 3v5h5"/>
+                </svg>
+                <span>Limpar filtros</span>
+              </button>
+              <button type="button" class="btn btn-secondary afb-drawer-btn" id="open-filter-drawer-btn" aria-label="Abrir painel de filtros retrátil à direita">
+                <svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 20a1 1 0 0 0 .55.89l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .52-1.34L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.74 1.67l7.22 7.99A2 2 0 0 1 10 14z"/></svg>
+                <span>Filtros</span>
+                <span class="afb-count" id="afb-count-badge" style="display:none;">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Metadados no celular -->
+          <div class="sp-meta-mobile" id="txt-last-update-mob">
+            Dados atualizados em 21/10/26 às 14:30 · Data & Analytics
+          </div>
+
+          <!-- LAYOUT PRINCIPAL: PAINEL DE CAMPOS À ESQUERDA + TABELA ANALÍTICA À DIREITA -->
+          <div class="det-layout">
+            <!-- PAINEL LATERAL ESQUERDO: SELEÇÃO DE COLUNAS & MÉTRICAS (RECOLHÍVEL) -->
+            <aside class="det-panel" id="colPanel">
+              <div class="det-panel-section">
+                <div class="det-panel-hdr">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                  <span class="det-panel-title-txt">Colunas & Métricas</span>
+                  <button class="det-panel-collapse-btn" id="btnCollapsePanel" onclick="toggleColPanel()" title="Minimizar painel de colunas">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="15 18 9 12 15 6"/></svg>
+                  </button>
+                </div>
+                <div class="det-panel-body">
+                  <input class="det-search" id="searchCols" type="search" placeholder="Pesquisar campos..." oninput="filterFieldsList(this.value)" aria-label="Pesquisar campos">
+                  
+                  <div class="det-section-label">Dimensões</div>
+                  <div id="dim-list-container"></div>
+
+                  <div class="det-section-label" style="margin-top: .75rem;">Medidas</div>
+                  <div id="meas-list-container"></div>
+                </div>
+              </div>
+            </aside>
+
+            <!-- ÁREA DA TABELA ANALÍTICA -->
+            <div class="det-content">
+              <div class="table-container">
+                <div class="rep-card-head">
+                  <div>
+                    <div class="rep-card-title">DADOS RELATÓRIO</div>
+                    <div class="rep-card-sub" id="table-page-sub">Página 1 de 1 · 100 linhas por página</div>
+                  </div>
+                  <div class="rep-card-head-r">
+                    <span class="rep-count-pill" id="table-record-info">Carregando...</span>
+                    <button class="btn-icon-export" id="btnExportXlsx" onclick="exportToExcel()" type="button" title="Exportar para Excel (XLSX)" aria-label="Exportar para Excel (XLSX)">
+                      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="table-scroll" id="table-scroll-container">
+                  <table class="rep-table" id="report-table">
+                    <thead id="table-thead"></thead>
+                    <tbody id="table-tbody"></tbody>
+                  </table>
+                </div>
+
+                <!-- RODAPÉ DA TABELA E PAGINAÇÃO -->
+                <div class="table-footer" style="justify-content:center; background:var(--surface);">
+                  <div class="pag-controls" style="gap:14px;">
+                    <button class="btn btn-secundario" style="height:32px; padding:0 12px;" id="btn-prev" onclick="changePage(-1)" disabled>&larr; Anterior</button>
+                    <span>Página <strong id="lbl-page">1</strong> de <strong id="lbl-total-pages">1</strong></span>
+                    <button class="btn btn-secundario" style="height:32px; padding:0 12px;" id="btn-next" onclick="changePage(1)">Próxima &rarr;</button>
+                  </div>
+                </div>
+
+                <!-- LOADING PROGRESS BAR -->
+                <div class="rep-loading" id="rep-loading-spinner"></div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <!-- PAINEL RETRÁTIL DE FILTROS À DIREITA (Padrão Portal Distribuidores) -->
+        <aside class="portal-filter-drawer" id="portal-filter-drawer" aria-label="Painel de filtros retrátil à direita">
+          <div class="pfd-header">
+            <div class="pfd-title-group">
+              <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20a1 1 0 0 0 .55.89l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .52-1.34L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.74 1.67l7.22 7.99A2 2 0 0 1 10 14z"/></svg>
+              <span class="pfd-title">Filtros &amp; Parâmetros</span>
+            </div>
+            <button type="button" class="pfd-close-btn" id="close-filter-drawer-btn" aria-label="Fechar painel de filtros (Esc)" title="Fechar / Minimizar painel">
+              <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+          <div class="pfd-body drawer-body" id="pfd-body"></div>
+          <div class="pfd-footer drawer-foot">
+            <button type="button" class="btn btn-secondary" id="pfd-clear-btn">Limpar</button>
+            <button type="button" class="btn btn-primary" id="pfd-apply-btn" style="flex:1;">Aplicar Filtros</button>
+            <button type="button" class="btn btn-secondary" id="pfd-close-footer-btn">Fechar</button>
+          </div>
+        </aside>
+        <div class="v2-scrim" id="v2-scrim" hidden></div>
+      </div><!-- /.layout -->
+
+    </div><!-- /.sp-main -->
+  </div><!-- /.sp-app-layout -->
+
+  <!-- SCRIPTS -->
+  <script src="app-menu.js?v=3.2.0"></script>
+  <script src="view-scale.js?v=1.0.3"></script>
+  <script src="format-utils.js?v=3.2.0"></script>
+  <script src="filters-component.js?v=3.5.2"></script>
+
+  <script>
+    const availableDimensions = [
+      { id: "Ano", label: "Ano", checked: true, type: "number", width: 80 },
+      { id: "Canal", label: "Canal", checked: true, type: "text", width: 110 },
+      { id: "Canal Fin", label: "Canal Fin", checked: false, type: "text", width: 120 },
+      { id: "Categoria Bq", label: "Categoria Bq", checked: true, type: "text", width: 120 },
+      { id: "Categoria Fin", label: "Categoria Fin", checked: true, type: "text", width: 110 },
+      { id: "Categoria Mkt", label: "Categoria Mkt", checked: false, type: "text", width: 120 },
+      { id: "Cluster", label: "Cluster", checked: false, type: "text", width: 110 },
+      { id: "Cluster Detalhe", label: "Cluster Detalhe", checked: false, type: "text", width: 130 },
+      { id: "Filial", label: "Filial", checked: false, type: "text", width: 130 },
+      { id: "Grupo_Cliente", label: "Grupo Cliente", checked: true, type: "text", width: 150 },
+      { id: "Produto Desc", label: "Produto Desc", checked: true, type: "text", width: 220 },
+      { id: "Cnpj Bimbo", label: "Cnpj Bimbo", checked: false, type: "text", width: 130 },
+      { id: "Cnpj Cliente", label: "Cnpj Cliente", checked: false, type: "text", width: 130 }
+    ];
+
+    const availableMeasures = [
+      { id: "R$ Invoiced", label: "R$ Invoiced", checked: true, type: "currency", width: 130 },
+      { id: "R$ Open Orders", label: "R$ Open Orders", checked: true, type: "currency", width: 130 },
+      { id: "R$ Budget", label: "R$ Budget", checked: false, type: "currency", width: 120 },
+      { id: "R$ Forecast", label: "R$ Forecast", checked: false, type: "currency", width: 120 },
+      { id: "Qt Invoiced", label: "Qt Invoiced", checked: false, type: "number", width: 110 },
+      { id: "Qt Open Orders", label: "Qt Open Orders", checked: false, type: "number", width: 110 }
+    ];
+
+    let currentPage = 1;
+    const pageSize = 50;
+    let currentSort = { column: null, direction: 'asc' };
+    let activeColumnFilters = {};
+    let filtersPanel = null;
+    let currentActiveFilters = {};
+    let lastFetchedData = [];
+
+    function showLoading(show) {
+      const el = document.getElementById('rep-loading-spinner');
+      if (el) el.classList.toggle('show', show);
+      if (show && typeof window.showFilterUpdatingIndicator === 'function') {
+        window.showFilterUpdatingIndicator('Atualizando relatório…');
+      } else if (!show && typeof window.hideFilterUpdatingIndicator === 'function') {
+        window.hideFilterUpdatingIndicator();
+      }
+    }
+
+    function toggleColPanel() {
+      const panel = document.getElementById('colPanel');
+      if (!panel) return;
+      const isCollapsed = panel.classList.toggle('collapsed');
+      try {
+        localStorage.setItem('dna_report_col_panel_collapsed', isCollapsed ? '1' : '0');
+      } catch (e) {}
+    }
+
+    function initDimensionSelectors() {
+      const dimContainer = document.getElementById('dim-list-container');
+      const measContainer = document.getElementById('meas-list-container');
+      if (!dimContainer || !measContainer) return;
+      dimContainer.innerHTML = '';
+      measContainer.innerHTML = '';
+
+      availableDimensions.forEach(d => {
+        const item = document.createElement('label');
+        item.className = `det-check-item ${d.checked ? 'active' : ''}`;
+        item.innerHTML = `<input type="checkbox" id="chk-dim-${d.id}" ${d.checked ? 'checked' : ''}><span>${d.label}</span>`;
+        const chk = item.querySelector('input');
+        chk.addEventListener('change', (e) => {
+          d.checked = e.target.checked;
+          item.classList.toggle('active', d.checked);
+          currentPage = 1;
+          fetchTableData();
+        });
+        dimContainer.appendChild(item);
+      });
+
+      availableMeasures.forEach(m => {
+        const item = document.createElement('label');
+        item.className = `det-check-item ${m.checked ? 'active' : ''}`;
+        item.innerHTML = `<input type="checkbox" id="chk-meas-${m.id}" ${m.checked ? 'checked' : ''}><span>${m.label}</span>`;
+        const chk = item.querySelector('input');
+        chk.addEventListener('change', (e) => {
+          m.checked = e.target.checked;
+          item.classList.toggle('active', m.checked);
+          currentPage = 1;
+          fetchTableData();
+        });
+        measContainer.appendChild(item);
+      });
+    }
+
+    function filterFieldsList(query) {
+      const q = query.toLowerCase().trim();
+      document.querySelectorAll('.det-check-item').forEach(item => {
+        const txt = item.textContent.toLowerCase();
+        item.style.display = txt.includes(q) ? 'flex' : 'none';
+      });
+    }
+
+    async function loadMetadata() {
+      try {
+        const data = window.DNACache ? await window.DNACache.getMetadata() : await (await fetch('/api/metadata')).json();
+
+        if (data.last_update) {
+          const syncDateEl = document.getElementById('txt-sync-date');
+          if (syncDateEl) syncDateEl.textContent = data.last_update;
+          const mEl = document.getElementById('txt-last-update-mob');
+          if (mEl) mEl.innerHTML = `Atualizado em <strong>${data.last_update}</strong>`;
+        }
+
+        const MESES_CONFIG = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'].map((t, i) => ({
+          v: String(i + 1),
+          t
+        }));
+
+        const nowDt = new Date();
+        const defAno = String(data.ano_atual || nowDt.getFullYear());
+        const defMes = String(data.mes_atual || (nowDt.getMonth() + 1));
+
+        // Exatamente os mesmos 10 filtros na mesma ordem e configuração do Vendômetro
+        const definicoes = [
+          { id: 'ano', rotulo: 'Ano', tipo: 'unico', opcoes: data.anos || [defAno, '2025', '2024'], padrao: defAno },
+          { id: 'mes', rotulo: 'Mês', tipo: 'multi', opcoes: MESES_CONFIG, padrao: [defMes] },
+          { id: 'grupo_cliente', rotulo: 'Grupo de clientes', tipo: 'multi', opcoes: data.grupos_clientes || [] },
+          { id: 'gerente', rotulo: 'Gerente', tipo: 'multi', opcoes: data.gerentes || [] },
+          { id: 'canal', rotulo: 'Canal', tipo: 'multi', opcoes: data.canais || [] },
+          { id: 'categoria', rotulo: 'Categoria', tipo: 'multi', opcoes: data.categorias || [] },
+          { id: 'cluster', rotulo: 'Cluster', tipo: 'multi', opcoes: data.clusters || [] },
+          { id: 'cluster_detalhe', rotulo: 'Cluster detalhado', tipo: 'multi', opcoes: data.clusters_detalhe || [] },
+          { id: 'tipo_produto', rotulo: 'Tipo de produto', tipo: 'multi', opcoes: data.tipos_produto || [] },
+          { id: 'filial', rotulo: 'Filial / fábrica', tipo: 'multi', opcoes: data.filiais || [] }
+        ];
+
+        filtersPanel = new DNAFiltersPanel({
+          filtros: definicoes,
+          onApply: (filtrosAtivos) => {
+            currentActiveFilters = filtrosAtivos;
+            currentPage = 1;
+            fetchTableData();
+          }
+        });
+      } catch (err) {
+        console.error('Erro ao carregar metadados:', err);
+      }
+    }
+
+    async function fetchTableData() {
+      showLoading(true);
+
+      const activeDims = availableDimensions.filter(d => d.checked).map(d => d.id);
+      const activeMeas = availableMeasures.filter(m => m.checked).map(m => m.id);
+
+      const payload = {
+        dimensions: activeDims.length > 0 ? activeDims : ["Ano", "Canal"],
+        measures: activeMeas.length > 0 ? activeMeas : ["R$ Invoiced"],
+        filters: currentActiveFilters,
+        column_filters: activeColumnFilters,
+        sort_column: currentSort.column,
+        sort_direction: currentSort.direction,
+        page: currentPage,
+        page_size: pageSize
+      };
+
+      try {
+        const result = window.DNACache
+          ? await window.DNACache.postJson('/api/report/data', payload)
+          : await (await fetch('/api/report/data', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            })).json();
+        lastFetchedData = result.data || [];
+        renderTable(result, payload);
+      } catch (err) {
+        console.error('Erro ao buscar dados do relatório:', err);
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    let lastResultMeta = null;
+    let columnFilters = {}; // { colId: { type: 'text', selected: Set } | { type: 'num', min: number|null, max: number|null, onlyPositive: bool } }
+
+    function isNumericCol(col) {
+      return col.type === 'currency' || col.type === 'number' || col.id.includes('R$') || col.id.includes('Qt') || col.id === 'Ano';
+    }
+
+    function applyColumnFilters(rows, activeCols) {
+      const entries = Object.entries(columnFilters);
+      if (!entries.length) return rows;
+      return rows.filter(row => {
+        for (const [colId, f] of entries) {
+          const val = row[colId];
+          if (f.type === 'num') {
+            const n = (val === null || val === undefined || val === '') ? 0 : Number(val);
+            if (f.onlyPositive && !(n > 0)) return false;
+            if (f.min !== null && !isNaN(f.min) && n < f.min) return false;
+            if (f.max !== null && !isNaN(f.max) && n > f.max) return false;
+          } else if (f.type === 'text' && f.selected) {
+            const strVal = (val === null || val === undefined || val === '') ? '—' : String(val);
+            if (!f.selected.has(strVal)) return false;
+          }
+        }
+        return true;
+      });
+    }
+
+    function ensureColFilterPopover() {
+      let pop = document.getElementById('colFilterPopover');
+      if (!pop) {
+        pop = document.createElement('div');
+        pop.id = 'colFilterPopover';
+        pop.className = 'col-filter-popover';
+        pop.hidden = true;
+        document.body.appendChild(pop);
+        document.addEventListener('click', (e) => {
+          if (!pop.hidden && !pop.contains(e.target) && !e.target.closest('.th-col-filter-btn')) {
+            pop.hidden = true;
+          }
+        });
+      }
+      return pop;
+    }
+
+    function openColFilterPopover(col, btnEl) {
+      const pop = ensureColFilterPopover();
+      const isNum = isNumericCol(col);
+      const existing = columnFilters[col.id];
+
+      if (isNum) {
+        const minVal = existing?.min ?? '';
+        const maxVal = existing?.max ?? '';
+        const onlyPos = Boolean(existing?.onlyPositive);
+        pop.innerHTML = `
+          <div class="cfp-hdr"><span>Filtrar · ${col.label}</span></div>
+          <div class="cfp-range-grid">
+            <div class="cfp-field">
+              <label for="cfpMin">Mínimo</label>
+              <input type="number" step="any" id="cfpMin" class="cfp-input" placeholder="Ex: 0" value="${minVal}">
+            </div>
+            <div class="cfp-field">
+              <label for="cfpMax">Máximo</label>
+              <input type="number" step="any" id="cfpMax" class="cfp-input" placeholder="Sem limite" value="${maxVal}">
+            </div>
+          </div>
+          <label class="cfp-item" style="padding:2px 0;">
+            <input type="checkbox" id="cfpOnlyPos" ${onlyPos ? 'checked' : ''}>
+            <span>Somente valores maiores que zero</span>
+          </label>
+          <div class="cfp-actions">
+            <button type="button" class="cfp-btn-clear" id="cfpClear">Limpar</button>
+            <button type="button" class="cfp-btn-apply" id="cfpApply">Aplicar</button>
+          </div>
+        `;
+        pop.querySelector('#cfpClear').addEventListener('click', () => {
+          delete columnFilters[col.id];
+          pop.hidden = true;
+          renderTable(lastResultMeta || { data: lastFetchedData, total_rows: lastFetchedData.length, page: currentPage }, currentActiveFilters);
+        });
+        pop.querySelector('#cfpApply').addEventListener('click', () => {
+          const minRaw = pop.querySelector('#cfpMin').value.trim();
+          const maxRaw = pop.querySelector('#cfpMax').value.trim();
+          const pos = pop.querySelector('#cfpOnlyPos').checked;
+          if (!minRaw && !maxRaw && !pos) {
+            delete columnFilters[col.id];
+          } else {
+            columnFilters[col.id] = {
+              type: 'num',
+              min: minRaw !== '' ? Number(minRaw) : null,
+              max: maxRaw !== '' ? Number(maxRaw) : null,
+              onlyPositive: pos
+            };
+          }
+          pop.hidden = true;
+          renderTable(lastResultMeta || { data: lastFetchedData, total_rows: lastFetchedData.length, page: currentPage }, currentActiveFilters);
+        });
+      } else {
+        const distinct = Array.from(new Set((lastFetchedData || []).map(r => {
+          const v = r[col.id];
+          return (v === null || v === undefined || v === '') ? '—' : String(v);
+        }))).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+        const selSet = existing?.selected ? new Set(existing.selected) : new Set(distinct);
+        pop.innerHTML = `
+          <div class="cfp-hdr"><span>Filtrar · ${col.label}</span></div>
+          <input type="search" id="cfpSearch" class="cfp-input" placeholder="Buscar na coluna..." autocomplete="off">
+          <div class="cfp-list" id="cfpList">
+            ${distinct.map(val => `
+              <label class="cfp-item" data-val="${val.replace(/"/g, '&quot;')}">
+                <input type="checkbox" value="${val.replace(/"/g, '&quot;')}" ${selSet.has(val) ? 'checked' : ''}>
+                <span>${val}</span>
+              </label>
+            `).join('')}
+          </div>
+          <div class="cfp-actions">
+            <button type="button" class="cfp-btn-clear" id="cfpClear">Limpar</button>
+            <button type="button" class="cfp-btn-apply" id="cfpApply">Aplicar</button>
+          </div>
+        `;
+        pop.querySelector('#cfpSearch').addEventListener('input', (e) => {
+          const q = e.target.value.trim().toLowerCase();
+          pop.querySelectorAll('#cfpList .cfp-item').forEach(lbl => {
+            lbl.style.display = lbl.textContent.toLowerCase().includes(q) ? 'flex' : 'none';
+          });
+        });
+        pop.querySelector('#cfpClear').addEventListener('click', () => {
+          delete columnFilters[col.id];
+          pop.hidden = true;
+          renderTable(lastResultMeta || { data: lastFetchedData, total_rows: lastFetchedData.length, page: currentPage }, currentActiveFilters);
+        });
+        pop.querySelector('#cfpApply').addEventListener('click', () => {
+          const checked = Array.from(pop.querySelectorAll('#cfpList input:checked')).map(cb => cb.value);
+          if (checked.length === distinct.length) {
+            delete columnFilters[col.id];
+          } else {
+            columnFilters[col.id] = { type: 'text', selected: new Set(checked) };
+          }
+          pop.hidden = true;
+          renderTable(lastResultMeta || { data: lastFetchedData, total_rows: lastFetchedData.length, page: currentPage }, currentActiveFilters);
+        });
+      }
+
+      const rect = btnEl.getBoundingClientRect();
+      pop.style.visibility = 'hidden';
+      pop.hidden = false;
+      let left = rect.right - pop.offsetWidth;
+      if (left < 8) left = rect.left;
+      left = Math.max(8, Math.min(left, window.innerWidth - pop.offsetWidth - 8));
+      let top = rect.bottom + 6;
+      if (top + pop.offsetHeight > window.innerHeight - 8) top = Math.max(8, rect.top - pop.offsetHeight - 6);
+      pop.style.left = `${Math.round(left)}px`;
+      pop.style.top = `${Math.round(top)}px`;
+      pop.style.visibility = 'visible';
+    }
+
+    function renderTable(result, payload) {
+      lastResultMeta = result;
+      const thead = document.getElementById('table-thead');
+      const tbody = document.getElementById('table-tbody');
+      thead.innerHTML = '';
+      tbody.innerHTML = '';
+
+      const allActiveCols = [
+        ...availableDimensions.filter(d => d.checked),
+        ...availableMeasures.filter(m => m.checked)
+      ];
+
+      // Cabeçalho da tabela (limpo + ordenação + filtro por coluna adaptado ao tipo)
+      const trHead = document.createElement('tr');
+      allActiveCols.forEach(col => {
+        const th = document.createElement('th');
+        th.style.width = `${col.width || 120}px`;
+        const hasColFilter = Boolean(columnFilters[col.id]);
+        if (hasColFilter) th.classList.add('th-filtered');
+
+        const isSorted = (currentSort.column === col.id);
+        const sortIcon = isSorted ? (currentSort.direction === 'asc' ? '▲' : '▼') : '⇅';
+
+        th.innerHTML = `
+          <div class="th-content">
+            <span class="th-sort-trigger" title="Ordenar por ${col.label}">
+              <span class="th-title">${col.label}</span>
+              <span class="sort-icon ${isSorted ? 'active' : ''}">${sortIcon}</span>
+            </span>
+            <button type="button" class="th-col-filter-btn ${hasColFilter ? 'active' : ''}" title="Filtrar ${col.label}" aria-label="Filtrar coluna ${col.label}">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            </button>
+          </div>
+        `;
+        th.querySelector('.th-sort-trigger').addEventListener('click', () => sortBy(col.id));
+        th.querySelector('.th-col-filter-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          openColFilterPopover(col, e.currentTarget);
+        });
+        trHead.appendChild(th);
+      });
+      thead.appendChild(trHead);
+
+      // Linhas de dados filtradas por coluna
+      const rawData = result.data || [];
+      const data = applyColumnFilters(rawData, allActiveCols);
+      if (data.length === 0) {
+        const emptyTr = document.createElement('tr');
+        emptyTr.innerHTML = `<td colspan="${allActiveCols.length}" style="text-align:center; padding: 3rem; color: var(--text-muted);">Nenhum registro encontrado para os filtros selecionados.</td>`;
+        tbody.appendChild(emptyTr);
+      } else {
+        data.forEach(row => {
+          const tr = document.createElement('tr');
+          allActiveCols.forEach(col => {
+            const td = document.createElement('td');
+            const rawVal = row[col.id];
+
+            if (rawVal === null || rawVal === undefined || rawVal === '') {
+              td.textContent = '—';
+              if (col.type === 'number' || col.type === 'currency') td.className = 'num-cell tabular-nums';
+            } else if (col.type === 'currency' || col.id.includes('R$')) {
+              td.className = 'num-cell tabular-nums val-currency';
+              const num = Number(rawVal);
+              td.textContent = isNaN(num) ? rawVal : DNAFormat.fmtCurrency(num, false);
+            } else if (col.type === 'number' || (!isNaN(Number(rawVal)) && (col.id.includes('Qt') || col.id === 'Ano'))) {
+              td.className = 'num-cell tabular-nums';
+              const num = Number(rawVal);
+              td.textContent = col.id === 'Ano' ? String(num) : DNAFormat.fmtInteger(num);
+            } else {
+              td.textContent = String(rawVal);
+            }
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+      }
+
+      // Rodapé e cabeçalho da tabela com paginação
+      const total = result.total_rows || rawData.length;
+      const totalPages = Math.max(1, Math.ceil(total / pageSize));
+      const curPg = result.page || 1;
+      const colFiltInfo = Object.keys(columnFilters).length > 0 ? ` (${data.length} na página)` : '';
+      document.getElementById('table-record-info').textContent = `${DNAFormat.fmtInteger(total)} registros${colFiltInfo}`;
+      const subEl = document.getElementById('table-page-sub');
+      if (subEl) subEl.textContent = `Página ${curPg} de ${totalPages} · ${pageSize} linhas por página`;
+      document.getElementById('lbl-page').textContent = curPg;
+      const totPgEl = document.getElementById('lbl-total-pages');
+      if (totPgEl) totPgEl.textContent = totalPages;
+      document.getElementById('btn-prev').disabled = (curPg <= 1);
+      document.getElementById('btn-next').disabled = (rawData.length < pageSize);
+    }
+
+    function sortBy(colId) {
+      if (currentSort.column === colId) {
+        currentSort.direction = (currentSort.direction === 'asc') ? 'desc' : 'asc';
+      } else {
+        currentSort.column = colId;
+        currentSort.direction = 'asc';
+      }
+      fetchTableData();
+    }
+
+    function changePage(delta) {
+      currentPage = Math.max(1, currentPage + delta);
+      fetchTableData();
+    }
+
+    // Exportação em XLSX via endpoint oficial do backend
+    async function exportToExcel() {
+      const activeCols = [
+        ...availableDimensions.filter(d => d.checked),
+        ...availableMeasures.filter(m => m.checked)
+      ];
+
+      if (lastFetchedData.length === 0) {
+        alert('Não há dados carregados para exportar.');
+        return;
+      }
+
+      showLoading(true);
+      const rows = lastFetchedData.map(r => activeCols.map(c => r[c.id]));
+
+      const payload = {
+        filename: "DNA_Vendas_Report_Dinamico",
+        sheet: "Report",
+        columns: activeCols.map(c => ({
+          id: c.id,
+          label: c.label,
+          type: (c.type === 'currency' || c.id.includes('R$')) ? 'currency' : (c.type === 'number' ? 'number' : 'text')
+        })),
+        rows: rows
+      };
+
+      try {
+        const res = await fetch('/api/report/export_xlsx', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const blob = await res.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `DNA_Vendas_Report_${new Date().toISOString().slice(0, 10)}.xlsx`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        } else {
+          alert('Erro ao gerar planilha XLSX.');
+        }
+      } catch (err) {
+        console.error('Erro na exportação XLSX:', err);
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        if (localStorage.getItem('dna_report_col_panel_collapsed') === '1') {
+          const panel = document.getElementById('colPanel');
+          if (panel) panel.classList.add('collapsed');
+        }
+      } catch (e) {}
+
+      initDimensionSelectors();
+      await loadMetadata();
+      if (filtersPanel) {
+        currentActiveFilters = filtersPanel.getPayload();
+      }
+      await fetchTableData();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão de Acessos · Portal Distribuidores</title>
+  <!-- Tema: segue o sistema; a escolha manual do menu só fica gravada quando difere do sistema -->
+  <script>(function(){var d=document.documentElement,K='v2-theme-override',m=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)');function sys(){return m&&m.matches?'dark':'light';}function ov(){try{var o=localStorage.getItem(K);return o==='dark'||o==='light'?o:null;}catch(e){return null;}}d.setAttribute('data-theme',ov()||sys());if(m&&m.addEventListener)m.addEventListener('change',function(){if(!ov()){d.setAttribute('data-theme',sys());document.dispatchEvent(new Event('v2-themechange'));}});})();</script>
+  <link rel="stylesheet" href="css/tokens.css?v=v2_1">
+  <link rel="stylesheet" href="css/v2.css?v=v2_54">
+  <style>
+    .ga-top { position: sticky; top: 0; z-index: var(--z-header); display: flex; align-items: center; gap: var(--sp-3); height: var(--header-h); padding: 0 clamp(var(--sp-4), 2.5vw, var(--sp-8)); background: color-mix(in srgb, var(--surface-card) 92%, transparent); backdrop-filter: saturate(1.4) blur(10px); -webkit-backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--border); }
+    .ga-top .brand-name { font-size: var(--fs-16); font-weight: var(--fw-semibold); color: var(--text-strong); }
+    .ga-top .spacer { flex: 1; }
+    .ga-main { max-width: 1200px; margin: 0 auto; padding: var(--sp-6) clamp(var(--sp-4), 2.5vw, var(--sp-8)) var(--sp-12); }
+    .ga-intro { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--sp-4); flex-wrap: wrap; margin-bottom: var(--sp-5); }
+    .ga-intro h1 { font-size: var(--fs-24); font-weight: var(--fw-semibold); color: var(--text-strong); letter-spacing: -0.01em; line-height: var(--lh-tight); }
+    .ga-intro p { margin-top: var(--sp-1); color: var(--text-muted); font-size: var(--fs-14); }
+    .ga-tabs { display: inline-flex; gap: 2px; padding: 3px; margin-bottom: var(--sp-4); background: var(--surface-sunken); border: 1px solid var(--border); border-radius: var(--radius-input); }
+    .ga-tab { min-height: 34px; padding: 0 var(--sp-4); border: 0; border-radius: 6px; background: transparent; color: var(--text-muted); font: var(--fw-medium) var(--fs-14) var(--font-sans); cursor: pointer; transition: background-color var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out); }
+    .ga-tab:hover { color: var(--text-strong); }
+    .ga-tab.active { background: var(--surface-card); color: var(--text-strong); box-shadow: var(--shadow-1), 0 0 0 1px var(--border); }
+    .ga-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-card); box-shadow: var(--shadow-1); padding: var(--sp-5); }
+    .ga-readonly { display: none; margin-bottom: var(--sp-4); padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-input); background: var(--info-bg); color: var(--info); font-size: var(--fs-13); }
+    .ga-ctx-banner { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-4); flex-wrap: wrap; margin-bottom: var(--sp-5); padding: var(--sp-3) var(--sp-4); border: 1px solid var(--border); border-left: 3px solid var(--action); border-radius: var(--radius-input); background: var(--surface-sunken); font-size: var(--fs-13); color: var(--text); line-height: 1.5; }
+    .ga-ctx-banner b { color: var(--text-strong); font-weight: var(--fw-semibold); }
+    .ga-ctx-banner .ga-ctx-switch { flex-shrink: 0; align-self: center; font-size: var(--fs-13); }
+    .ga-form { display: grid; grid-template-columns: minmax(220px, 2fr) 150px minmax(160px, 2fr) auto; gap: var(--sp-3); align-items: end; }
+    .ga-form-dist { grid-template-columns: minmax(0, 1fr); align-items: stretch; }
+    .ga-form-dist .ga-dist-email { max-width: 420px; }
+    .ga-dist-actions { justify-self: end; }
+    .ga-picker { border: 1px solid var(--border); border-radius: 8px; background: var(--surface-card); overflow: hidden; }
+    .ga-picker-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); padding: var(--sp-2); border-bottom: 1px solid var(--border); }
+    .ga-picker-head input { flex: 1 1 220px; min-width: 0; }
+    .ga-link { flex-shrink: 0; padding: 2px 0; border: 0; background: none; color: var(--text-link); font: inherit; font-size: var(--fs-13); font-weight: var(--fw-medium); cursor: pointer; }
+    .ga-link:hover { text-decoration: underline; text-underline-offset: 2px; }
+    .ga-link:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: 4px; }
+    .ga-picker-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px var(--sp-3); max-height: 260px; overflow-y: auto; padding: var(--sp-2); }
+    .ga-form .ga-pick-item { display: flex; align-items: center; gap: var(--sp-2); min-width: 0; margin: 0; padding: var(--sp-1) var(--sp-2); border-radius: 6px; font-size: var(--fs-14); font-weight: 400; color: var(--text-strong); cursor: pointer; }
+    .ga-form .ga-pick-item:hover { background: var(--action-subtle); }
+    .ga-form .ga-pick-item input { flex-shrink: 0; width: 16px; height: 16px; padding: 0; box-shadow: none; }
+    .ga-pick-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ga-pick-item small { flex-shrink: 0; color: var(--text-muted); font-size: var(--fs-12); }
+    .ga-form .ga-pick-item.is-granted { color: var(--text-muted); cursor: default; }
+    .ga-form .ga-pick-item.is-granted:hover { background: none; }
+    .ga-pick-empty { grid-column: 1 / -1; padding: var(--sp-3); font-size: var(--fs-13); color: var(--text-muted); text-align: center; }
+    .amb-modal-body ul { max-height: 240px; overflow-y: auto; }
+    .ga-form label, .amb-modal-body label { display: block; margin-bottom: var(--sp-1); font-size: var(--fs-13); font-weight: var(--fw-medium); color: var(--text-muted); }
+    .amb-modal-body label { margin-top: var(--sp-3); }
+    .ga-form input, .ga-form select, .ga-filter input, .amb-modal-body input, .amb-modal-body select { width: 100%; height: 40px; padding: 0 var(--sp-3); border: 1px solid var(--border); border-radius: var(--radius-input); background: var(--surface-card); color: var(--text-strong); font: var(--fw-regular) var(--fs-14) var(--font-sans); transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out); }
+    .ga-form input:hover, .ga-form select:hover, .ga-filter input:hover { border-color: var(--border-strong); }
+    .ga-form input:focus, .ga-form select:focus, .ga-filter input:focus, .amb-modal-body input:focus, .amb-modal-body select:focus { outline: none; border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--action-subtle); }
+    .ga-form input::placeholder, .ga-filter input::placeholder { color: var(--text-subtle); }
+    .ga-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 var(--sp-4); border: 1px solid transparent; border-radius: var(--radius-input); font: var(--fw-medium) var(--fs-14) var(--font-sans); cursor: pointer; white-space: nowrap; transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out); }
+    .ga-btn:active { transform: scale(0.98); }
+    .ga-btn-primary { background: var(--action); color: var(--text-on-primary); }
+    .ga-btn-primary:hover { background: var(--action-hover); }
+    .ga-btn-sm { min-height: 30px; padding: 0 var(--sp-3); font-size: var(--fs-13); }
+    .ga-btn-outline { background: var(--surface-card); color: var(--text-strong); border-color: var(--border); }
+    .ga-btn-outline:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+    .ga-btn-danger { background: var(--surface-card); color: var(--danger); border-color: color-mix(in srgb, var(--danger) 35%, transparent); }
+    .ga-btn-danger:hover { background: var(--danger-bg); }
+    .ga-btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+    .ga-hint { margin-top: var(--sp-2); font-size: var(--fs-13); color: var(--text-muted); max-width: 80ch; }
+    .ga-toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); flex-wrap: wrap; margin: var(--sp-6) 0 var(--sp-3); }
+    .ga-toolbar.first { margin-top: 0; }
+    .ga-toolbar h2 { font-size: var(--fs-16); font-weight: var(--fw-semibold); color: var(--text-strong); white-space: nowrap; }
+    .ga-tools { display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+    .ga-tools .qf-select .select-trigger { height: 36px; }
+    .ga-tools .ga-btn-sm { min-height: 36px; }
+    #ga-uso-ano { width: 120px; }
+    #ga-uso-mes { width: 138px; }
+    #ga-uso-dia { width: 118px; }
+    #ga-uso-perfil { width: 184px; }
+    .ga-table th.num, .ga-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .ga-table th .th-sort { min-height: 28px; color: inherit; font: inherit; font-weight: inherit; gap: 6px; }
+    .ga-table th.num .th-sort { margin-left: auto; }
+    .ga-uso-cal { margin-bottom: var(--sp-4); padding: 0 0 var(--sp-4); border: 0; border-bottom: 1px solid var(--border); border-radius: 0; background: transparent; }
+    .ga-cal-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); flex-wrap: wrap; margin-bottom: var(--sp-2); font-size: var(--fs-13); }
+    .ga-cal-summary { color: var(--text); font-variant-numeric: tabular-nums; }
+    .ga-cal-summary b { color: var(--text-strong); font-weight: var(--fw-semibold); }
+    .ga-cal-wd { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-bottom: 4px; }
+    .ga-cal-wd span { text-align: center; font-size: 11px; font-weight: var(--fw-medium); color: var(--text-subtle); padding: 2px 0; }
+    .ga-cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+    .ga-cal-pad { min-height: 44px; }
+    .ga-cal-day { position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; min-height: 46px; padding: 5px 7px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface-card); color: var(--text-subtle); font: var(--fw-regular) var(--fs-12) var(--font-sans); font-variant-numeric: tabular-nums; cursor: pointer; text-align: left; transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out); }
+    .ga-cal-day:hover { border-color: var(--border-strong); color: var(--text-strong); }
+    .ga-cal-day:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .ga-cal-day .cd-n { font-size: var(--fs-12); font-weight: var(--fw-medium); line-height: 1; }
+    .ga-cal-day .cd-v { font-size: 11px; font-weight: var(--fw-semibold); color: var(--text-muted); white-space: nowrap; }
+    .ga-cal-day.is-hit { background: color-mix(in srgb, var(--action-subtle) 55%, var(--surface-card)); border-color: color-mix(in srgb, var(--action) 26%, var(--border)); color: var(--text-strong); }
+    .ga-cal-day.is-hit .cd-n { font-weight: var(--fw-semibold); }
+    .ga-cal-day.is-hit .cd-v { color: var(--action-subtle-text); }
+    .ga-cal-day.is-high { background: var(--action-subtle); border-color: color-mix(in srgb, var(--action) 45%, var(--border)); color: var(--text-strong); }
+    .ga-cal-day.is-high .cd-v { color: var(--action); }
+    .ga-cal-day[aria-pressed="true"] { border: 1.5px solid var(--action); box-shadow: 0 0 0 2px var(--action-subtle); color: var(--text-strong); }
+    .ga-cal-day.is-today:not([aria-pressed="true"]) { border-color: var(--text-strong); }
+    .ga-cal-note { font-size: var(--fs-12); color: var(--text-muted); margin-bottom: var(--sp-3); }
+    @media (max-width: 680px) {
+      .ga-uso-cal { padding: 0 0 var(--sp-3); }
+      .ga-cal-day { min-height: 44px; padding: 4px 5px; }
+      .ga-cal-day .cd-v-full { display: none; }
+      .ga-cal-day .cd-v-short { display: inline; }
+    }
+    @media (min-width: 681px) {
+      .ga-cal-day .cd-v-short { display: none; }
+    }
+    .ga-check { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-13); color: var(--text-muted); cursor: pointer; white-space: nowrap; }
+    .ga-check input { width: 16px; height: 16px; margin: 0; accent-color: var(--action); }
+    .ga-filter { width: 260px; flex: 0 1 260px; }
+    .ga-filter input { height: 36px; }
+    .ga-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-input); }
+    .ga-pager { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); flex-wrap: wrap; margin-top: var(--sp-2-5); padding: var(--sp-1) var(--sp-1); font-size: var(--fs-13); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+    .ga-pager[hidden] { display: none; }
+    .ga-pager-info b { color: var(--text-strong); font-weight: var(--fw-medium); }
+    .ga-pager-nav { display: inline-flex; align-items: center; gap: 4px; }
+    .ga-page-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; height: 32px; padding: 0 var(--sp-2-5); border: 1px solid var(--border); border-radius: 6px; background: var(--surface-card); color: var(--text-strong); font: var(--fw-medium) var(--fs-13) var(--font-sans); font-variant-numeric: tabular-nums; cursor: pointer; transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out); }
+    .ga-page-btn:hover:not(:disabled):not(.active) { background: var(--surface-hover); border-color: var(--border-strong); }
+    .ga-page-btn.active { background: var(--action); border-color: var(--action); color: var(--text-on-primary); cursor: default; }
+    .ga-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .ga-page-dots { padding: 0 4px; color: var(--text-subtle); }
+    table.ga-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: var(--fs-14); }
+    .ga-table th { position: sticky; top: 0; text-align: left; padding: var(--sp-2) var(--sp-3); background: var(--surface-sunken); border-bottom: 1px solid var(--border); font-size: var(--fs-12); font-weight: var(--fw-medium); color: var(--text-muted); white-space: nowrap; }
+    .ga-table td { padding: var(--sp-3); border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+    .ga-table tbody tr:last-child td { border-bottom: 0; }
+    .ga-table tbody tr:hover td { background: var(--surface-hover); }
+    .ga-table td b { color: var(--text-strong); font-weight: var(--fw-medium); }
+    .ga-table tr.inactive td, .ga-table tr.inactive td b { color: var(--text-subtle); }
+    .ga-actions { display: flex; gap: var(--sp-2); flex-wrap: nowrap; align-items: center; }
+    .ga-you { margin-left: var(--sp-2); padding: 1px var(--sp-2); border-radius: var(--radius-full); background: var(--action-subtle); color: var(--action-subtle-text); font-size: var(--fs-12); font-weight: var(--fw-medium); white-space: nowrap; }
+    .ga-pill { display: inline-flex; align-items: center; gap: 6px; height: auto; padding: 0; border-radius: 0; font-size: var(--fs-12); font-weight: var(--fw-semibold); white-space: nowrap; flex-shrink: 0; background: transparent; }
+    .ga-pill-on { color: var(--success); }
+    .ga-pill-on::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+    .ga-pill-off { color: var(--text-muted); font-weight: var(--fw-medium); }
+    .ga-table .amb-badge,
+    .ga-table .amb-badge-master,
+    .ga-table .amb-badge-admin,
+    .ga-table .amb-badge-visualizador {
+      display: inline-flex; align-items: center; gap: 6px;
+      height: auto; padding: 0; border-radius: 0; box-shadow: none; background: transparent !important;
+      font-size: var(--fs-12); font-weight: var(--fw-semibold); letter-spacing: 0.01em;
+    }
+    .ga-table .amb-badge-master { color: var(--text-strong); }
+    .ga-table .amb-badge-admin { color: var(--action-subtle-text); font-weight: var(--fw-medium); }
+    .ga-table .amb-badge-visualizador { color: var(--text-muted); font-weight: var(--fw-regular); }
+    .ga-muted { color: var(--text-subtle); font-size: var(--fs-13); }
+    .ga-mono { font-family: var(--font-mono); font-size: var(--fs-13); white-space: nowrap; }
+    .ga-empty { padding: var(--sp-6) !important; text-align: center; color: var(--text-muted) !important; }
+    .ga-act { font-weight: var(--fw-medium); }
+    .ga-act-REVOKE, .ga-act-DEMOTE, .ga-act-DIST_REVOKE, .ga-act-PORTAL_DIST_DISABLE { color: var(--danger); }
+    .ga-act-GRANT, .ga-act-REACTIVATE, .ga-act-PROMOTE, .ga-act-DIST_GRANT, .ga-act-DIST_REACTIVATE, .ga-act-PORTAL_DIST_ENABLE { color: var(--success); }
+    .ga-act-SIMULATE_START, .ga-act-SIMULATE_END, .ga-act-DIST_CHANGE, .ga-act-PORTAL_DIST_NOTES { color: var(--warning); }
+    .ga-uso-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--sp-3); margin-bottom: var(--sp-5); }
+    .ga-uso-kpi { padding: var(--sp-3) var(--sp-4); border: 1px solid var(--border); border-radius: var(--radius-input); background: var(--surface-sunken); display: flex; flex-direction: column; gap: 2px; }
+    .ga-uso-kpi-lbl { font-size: var(--fs-12); font-weight: var(--fw-medium); color: var(--text-muted); }
+    .ga-uso-kpi-val { font-size: var(--fs-24); font-weight: var(--fw-semibold); color: var(--text-strong); font-variant-numeric: tabular-nums; line-height: 1.2; }
+    .ga-uso-kpi-sub { font-size: var(--fs-12); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+    .ga-bar-wrap { display: flex; align-items: center; gap: var(--sp-2); min-width: 150px; }
+    .ga-bar-track { flex: 1; height: 8px; border-radius: var(--radius-full); background: var(--surface-sunken); overflow: hidden; }
+    .ga-bar-fill { height: 100%; border-radius: var(--radius-full); background: var(--action); }
+    .ga-idle-chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); padding: var(--sp-3); border: 1px solid var(--border); border-radius: var(--radius-input); background: var(--surface-sunken); }
+    .ga-select-sm { height: 36px; padding: 0 var(--sp-3); border: 1px solid var(--border); border-radius: var(--radius-input); background: var(--surface-card); color: var(--text-strong); font: var(--fw-regular) var(--fs-13) var(--font-sans); }
+    .ga-warn { display: inline-flex; margin-top: var(--sp-1); padding: 1px var(--sp-2); border-radius: var(--radius-full); background: var(--warning-bg); color: var(--warning); font-size: var(--fs-12); font-weight: var(--fw-medium); }
+    .ga-toast { position: fixed; right: var(--sp-5); bottom: var(--sp-5); z-index: var(--z-toast); display: none; max-width: 440px; padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-input); font-size: var(--fs-14); font-weight: var(--fw-medium); box-shadow: var(--shadow-3); border: 1px solid transparent; }
+    .ga-toast.ok { background: var(--success-bg); color: var(--success); border-color: color-mix(in srgb, var(--success) 30%, transparent); }
+    .ga-toast.err { background: var(--danger-bg); color: var(--danger); border-color: color-mix(in srgb, var(--danger) 30%, transparent); }
+    .ga-toast.loading { background: var(--surface-overlay); color: var(--text-strong); border-color: var(--border); display: flex; align-items: center; gap: var(--sp-2-5); }
+    .amb-modal-ok.danger { background: var(--danger); }
+    .amb-modal-actions button:disabled { opacity: 0.65; cursor: not-allowed; }
+    .amb-modal-ok:disabled { cursor: wait; }
+    .amb-modal-status { display: none; margin-top: var(--sp-3); padding: var(--sp-2-5) var(--sp-3); border-radius: var(--radius-input); background: var(--action-subtle); color: var(--action-subtle-text); font-size: var(--fs-13); align-items: center; gap: var(--sp-2-5); font-weight: var(--fw-medium); }
+    @keyframes amb-spin { to { transform: rotate(360deg); } }
+    .amb-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: amb-spin 0.75s linear infinite; vertical-align: middle; flex-shrink: 0; }
+    .amb-badge-admin { color: var(--action-subtle-text); background: var(--action-subtle); }
+    .amb-badge-visualizador { color: var(--text-muted); background: var(--surface-sunken); }
+    .ga-suggest-wrap { position: relative; }
+    .ga-suggest { display: none; position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: var(--z-popover); max-height: 300px; overflow-y: auto; padding: var(--sp-1); background: var(--surface-overlay); border: 1px solid var(--border); border-radius: var(--radius-input); box-shadow: var(--shadow-3); overscroll-behavior: contain; }
+    .ga-suggest-item { display: flex; flex-direction: column; gap: 1px; padding: var(--sp-2) var(--sp-3); border-radius: 6px; cursor: pointer; }
+    .ga-suggest-item b { font-size: var(--fs-14); font-weight: var(--fw-medium); color: var(--text-strong); }
+    .ga-suggest-item span { font-size: var(--fs-12); color: var(--text-muted); }
+    .ga-suggest-item:hover, .ga-suggest-item.active { background: var(--action-subtle); }
+    .ga-suggest-note { padding: var(--sp-2) var(--sp-3); font-size: var(--fs-13); color: var(--text-muted); }
+    .ga-form-dist .ga-chips { grid-column: 1 / -1; display: none; flex-wrap: wrap; gap: var(--sp-2); }
+    .ga-form-dist .ga-chips.has-items { display: flex; }
+    .ga-chip { display: inline-flex; align-items: center; gap: var(--sp-2); max-width: 100%; height: 30px; padding: 0 var(--sp-1) 0 var(--sp-3); border: 1px solid var(--border); border-radius: var(--radius-full); background: var(--surface-sunken); color: var(--text-strong); font-size: var(--fs-13); }
+    .ga-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ga-chip small { color: var(--text-muted); font-family: var(--font-mono); font-size: var(--fs-12); white-space: nowrap; }
+    .ga-chip button { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 24px; height: 24px; border: 0; border-radius: 50%; background: transparent; color: var(--text-muted); cursor: pointer; }
+    .ga-chip button:hover { background: var(--surface-hover); color: var(--danger); }
+    .ga-chip button:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .ga-count { margin-left: var(--sp-2); padding: 1px var(--sp-2); border-radius: var(--radius-full); background: var(--surface-sunken); color: var(--text-muted); font-size: var(--fs-12); font-weight: var(--fw-medium); white-space: nowrap; }
+    .ga-chip { height: auto; min-height: 30px; flex-wrap: wrap; padding-block: 4px; }
+    .ga-chip small { white-space: normal; overflow-wrap: anywhere; }
+    .ga-action-cnpj { display: block; font-size: var(--fs-12); margin-top: var(--sp-1); }
+    #ga-dist-body .ga-actions { flex-wrap: nowrap; }
+    #ga-dist-body td:nth-child(3) { min-width: 220px; }
+    .ga-table th.ga-sel, .ga-table td.ga-sel { width: 40px; padding-right: 0; }
+    .ga-sel input { display: block; width: 16px; height: 16px; margin: 0; accent-color: var(--action); cursor: pointer; }
+    .ga-sel input:disabled { cursor: not-allowed; }
+    .ga-sel input:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: 3px; }
+    .ga-table tbody tr.is-selected td { background: var(--action-subtle); }
+    .ga-revoke-bar { position: sticky; bottom: var(--sp-3); z-index: var(--z-sticky); display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); flex-wrap: wrap; margin-top: var(--sp-3); padding: var(--sp-2) var(--sp-3) var(--sp-2) var(--sp-4); border: 1px solid var(--border); border-radius: var(--radius-input); background: var(--surface-card); box-shadow: var(--shadow-2); }
+    .ga-revoke-bar[hidden] { display: none; }
+    .ga-revoke-count { font-size: var(--fs-14); font-weight: var(--fw-medium); color: var(--text-strong); font-variant-numeric: tabular-nums; }
+    .ga-revoke-actions { display: flex; align-items: center; gap: var(--sp-4); }
+    .amb-modal-body ul.ga-revoke-list { display: grid; gap: var(--sp-2); margin: 0 0 var(--sp-3); padding: 0; list-style: none; }
+    .ga-revoke-list li { font-size: var(--fs-14); }
+    .ga-revoke-list b { display: block; font-weight: var(--fw-medium); color: var(--text-strong); overflow-wrap: anywhere; }
+    .ga-revoke-list span { font-size: var(--fs-13); color: var(--text-muted); }
+    .amb-modal-body p.ga-revoke-warn { padding: var(--sp-2) var(--sp-3); border-radius: 6px; background: var(--danger-bg); color: var(--danger); overflow-wrap: anywhere; }
+    .ga-add-dist { display: inline-flex; align-items: center; gap: 4px; margin-top: var(--sp-1); padding: 2px 0; border: 0; background: none; color: var(--text-link); font: var(--fw-medium) var(--fs-12) var(--font-sans); cursor: pointer; }
+    .ga-add-dist:hover { text-decoration: underline; text-underline-offset: 2px; }
+    .ga-add-dist:focus-visible { outline: none; box-shadow: var(--focus-ring); border-radius: 4px; }
+    .ga-table tr.ga-cont td.ga-email-cell b { color: var(--text-subtle); font-weight: var(--fw-regular); }
+    .ga-bulk { margin-top: var(--sp-5); border: 1px solid var(--border); border-radius: var(--radius-input); background: var(--surface-card); }
+    .ga-bulk > summary { display: flex; align-items: baseline; gap: var(--sp-3); flex-wrap: wrap; padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-input); cursor: pointer; list-style: none; }
+    .ga-bulk > summary::-webkit-details-marker { display: none; }
+    .ga-bulk > summary::before { content: ''; align-self: center; width: 7px; height: 7px; border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted); transform: rotate(-45deg); transition: transform var(--dur-fast) var(--ease-out); }
+    .ga-bulk[open] > summary::before { transform: rotate(45deg); }
+    .ga-bulk > summary:hover { background: var(--surface-hover); }
+    .ga-bulk > summary:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+    .ga-bulk-title { font-size: var(--fs-14); font-weight: var(--fw-semibold); color: var(--text-strong); }
+    .ga-bulk-sub { font-size: var(--fs-13); color: var(--text-muted); }
+    .ga-bulk-body { padding: var(--sp-1) var(--sp-4) var(--sp-4); border-top: 1px solid var(--border); }
+    .ga-bulk-steps { margin: var(--sp-3) 0; padding-left: 1.2em; color: var(--text); font-size: var(--fs-13); line-height: var(--lh-body); }
+    .ga-bulk-steps b { color: var(--text-strong); font-weight: var(--fw-medium); }
+    #ga-bulk-text { display: block; width: 100%; min-height: 140px; padding: var(--sp-3); border: 1px solid var(--border); border-radius: var(--radius-input); background: var(--surface-sunken); color: var(--text-strong); font: var(--fw-regular) var(--fs-13)/1.6 var(--font-mono); resize: vertical; tab-size: 28; }
+    #ga-bulk-text:focus { outline: none; border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--action-subtle); background: var(--surface-card); }
+    #ga-bulk-text::placeholder { color: var(--text-subtle); }
+    .ga-bulk-tools { display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-top: var(--sp-3); }
+    .ga-file { position: relative; overflow: hidden; }
+    .ga-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .ga-file:focus-within { box-shadow: var(--focus-ring); }
+    .ga-bulk-result { margin-top: var(--sp-4); }
+    .ga-bulk-summary { display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-bottom: var(--sp-3); }
+    .ga-sum { display: inline-flex; align-items: center; gap: var(--sp-1); height: 26px; padding: 0 var(--sp-3); border-radius: var(--radius-full); font-size: var(--fs-13); font-weight: var(--fw-medium); background: var(--surface-sunken); color: var(--text-muted); }
+    .ga-sum b { font-variant-numeric: tabular-nums; }
+    .ga-sum-new { background: var(--success-bg); color: var(--success); }
+    .ga-sum-reactivate { background: var(--info-bg); color: var(--info); }
+    .ga-sum-error { background: var(--danger-bg); color: var(--danger); }
+    .ga-bulk-table { max-height: 360px; overflow: auto; }
+    .ga-st { font-size: var(--fs-13); font-weight: var(--fw-medium); white-space: nowrap; }
+    .ga-st-new { color: var(--success); }
+    .ga-st-reactivate { color: var(--info); }
+    .ga-st-exists { color: var(--text-muted); }
+    .ga-st-error { color: var(--danger); }
+    .ga-st-why { display: block; font-weight: var(--fw-regular); white-space: normal; }
+    .ga-bulk-commit { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); flex-wrap: wrap; margin-top: var(--sp-3); }
+    @media (max-width: 820px) {
+      .ga-form, .ga-form-dist { grid-template-columns: 1fr; }
+      .ga-form .ga-btn { width: 100%; }
+      .ga-tabs { display: flex; width: 100%; }
+      .ga-tab { flex: 1; padding: 0 var(--sp-2); }
+      .ga-card { padding: var(--sp-4); }
+      .ga-filter { width: 100%; }
+      .ga-form-dist .ga-chips { order: 1; }
+      .ga-form-dist .ga-dist-actions { order: 2; }
+      .ga-bulk-tools .ga-btn, .ga-bulk-commit .ga-tools, .ga-bulk-commit .ga-tools .ga-btn { flex: 1 1 auto; }
+    }
+  </style>
+</head>
+<body class="v2">
+
+  <div id="admin-mode-bar" role="status">
+    <div class="amb-left">
+      <span class="amb-badge" id="ga-role-badge">…</span>
+      <span class="amb-title">MODO ADMINISTRADOR</span><span class="amb-sep">·</span>
+      <span class="amb-view" id="ga-amb-view">Gestão de Acessos</span>
+    </div>
+  </div>
+
+  <header class="ga-top">
+    <span class="brand-name">Portal Distribuidores</span>
+    <span class="spacer"></span>
+    <a class="btn btn-secondary btn-sm" href="/dashboard.html">
+      <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+      <span>Voltar ao portal</span>
+    </a>
+  </header>
+
+  <main class="ga-main" id="main">
+    <div class="ga-intro">
+      <div>
+        <h1 id="ga-page-title">Gestão de Acessos</h1>
+        <p id="ga-page-sub">Administradores, acessos de usuários de distribuidores e distribuidores liberados no portal.</p>
+      </div>
+    </div>
+
+    <div class="ga-tabs" id="ga-tabs" role="tablist" aria-label="Seções">
+      <button type="button" class="ga-tab active" data-panel="admins" role="tab">Administradores</button>
+      <button type="button" class="ga-tab" data-panel="distribuidores" role="tab">Usuários de Distribuidores</button>
+      <button type="button" class="ga-tab" data-panel="portal-dists" role="tab">Distribuidores no portal</button>
+    </div>
+
+    <div class="ga-card">
+      <div class="ga-readonly" id="ga-readonly">Seu perfil é ADMIN: você pode conceder e revogar acessos ADMIN e de distribuidores. Acessos MASTER (conceder, promover, rebaixar ou revogar) só podem ser alterados por um MASTER.</div>
+
+      <!-- Painel: Administradores -->
+      <section id="panel-admins">
+        <form class="ga-form" id="ga-add-form" style="display:none;" autocomplete="off">
+          <div>
+            <label for="ga-email">E-mail</label>
+            <input type="email" id="ga-email" placeholder="nome.sobrenome@grupobimbo.com" required>
+          </div>
+          <div>
+            <label for="ga-role">Papel</label>
+            <select id="ga-role">
+              <option value="ADMIN">ADMIN</option>
+              <option value="VISUALIZADOR">VISUALIZADOR</option>
+              <option value="MASTER" id="ga-role-master-opt">MASTER</option>
+            </select>
+          </div>
+          <div>
+            <label for="ga-notes">Observação (opcional)</label>
+            <input type="text" id="ga-notes" maxlength="500" placeholder="Ex.: time comercial">
+          </div>
+          <div><button type="submit" class="ga-btn ga-btn-primary">Adicionar</button></div>
+        </form>
+        <p class="ga-hint" id="ga-add-hint" style="display:none;">Somente e-mails @grupobimbo.com. VISUALIZADOR só vê os dados de todos os distribuidores; ADMIN vê todos os distribuidores e concede acessos ADMIN e de distribuidores; MASTER também gerencia os MASTER.</p>
+
+        <div class="ga-toolbar">
+          <h2 id="ga-admins-title">Administradores</h2>
+        </div>
+        <div class="ga-table-wrap">
+          <table class="ga-table">
+            <thead>
+              <tr><th scope="col">E-mail</th><th scope="col">Papel</th><th scope="col">Observação</th><th scope="col" style="width:230px">Ações</th></tr>
+            </thead>
+            <tbody id="ga-admins-body"><tr><td colspan="4" class="ga-empty">Carregando…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Painel: Distribuidores -->
+      <section id="panel-distribuidores" style="display:none;">
+        <div class="ga-ctx-banner">
+          <div>
+            <b>Vínculo de pessoas (E-mail ↔ Distribuidor):</b> use esta aba para liberar qual <b>e-mail de usuário</b> pode acessar os dados de um distribuidor.<br>
+            <span class="ga-muted">Para ativar ou retirar uma empresa distribuidora inteira do portal (lista de Sell-out validado), use a aba ao lado.</span>
+          </div>
+          <button type="button" class="ga-link ga-ctx-switch" data-goto-panel="portal-dists">Ir para Distribuidores no portal →</button>
+        </div>
+        <form class="ga-form ga-form-dist" id="ga-dist-form" autocomplete="off">
+          <div class="ga-dist-email">
+            <label for="ga-dist-email">E-mail do usuário</label>
+            <input type="email" id="ga-dist-email" placeholder="usuario@distribuidor.com.br" required>
+          </div>
+          <div class="ga-dist-pick">
+            <label for="ga-dist-search">Distribuidores</label>
+            <div class="ga-picker">
+              <div class="ga-picker-head">
+                <input type="search" id="ga-dist-search" placeholder="Buscar por nome, ID ou CNPJ" aria-controls="ga-dist-list">
+                <button type="button" class="ga-link" id="ga-dist-all">Marcar todos</button>
+                <button type="button" class="ga-link" id="ga-dist-none">Limpar</button>
+              </div>
+              <div class="ga-picker-list" id="ga-dist-list" role="group" aria-label="Distribuidores"><p class="ga-pick-empty">Carregando…</p></div>
+            </div>
+          </div>
+          <div class="ga-chips" id="ga-dist-chips" aria-live="polite"></div>
+          <div class="ga-dist-actions"><button type="submit" class="ga-btn ga-btn-primary" id="ga-dist-submit">Conceder acesso</button></div>
+        </form>
+        <datalist id="ga-dist-options"></datalist>
+        <p class="ga-hint">Cada acesso é concedido pelo ID do distribuidor, incluindo registros com CNPJ novo ou não informado. Vínculos legados permanecem até serem identificados. O e-mail também precisa ter permissão de uso no app (CAN USE) para conseguir entrar.</p>
+
+        <div class="ga-toolbar">
+          <h2 id="ga-dist-title">Acessos de distribuidores</h2>
+          <div class="ga-tools">
+            <div class="ga-filter"><input type="search" id="ga-dist-filter" placeholder="Filtrar por e-mail, nome ou CNPJ" aria-label="Filtrar acessos de distribuidores"></div>
+          </div>
+        </div>
+        <div class="ga-table-wrap">
+          <table class="ga-table">
+            <thead>
+              <tr><th scope="col" class="ga-sel"><input type="checkbox" id="ga-dist-sel-all" aria-label="Selecionar todos os vínculos listados" disabled></th><th scope="col">E-mail</th><th scope="col">Distribuidor</th><th scope="col">CNPJ</th><th scope="col" style="width:120px">Ações</th></tr>
+            </thead>
+            <tbody id="ga-dist-body"><tr><td colspan="5" class="ga-empty">Carregando…</td></tr></tbody>
+          </table>
+        </div>
+        <div class="ga-revoke-bar" id="ga-revoke-bar" role="status" hidden>
+          <span class="ga-revoke-count" id="ga-revoke-count"></span>
+          <div class="ga-revoke-actions">
+            <button type="button" class="ga-link" id="ga-revoke-clear">Limpar seleção</button>
+            <button type="button" class="ga-btn ga-btn-danger" id="ga-revoke-submit">Revogar</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Painel: Distribuidores no portal (Sell-out validado) -->
+      <section id="panel-portal-dists" style="display:none;">
+        <div class="ga-ctx-banner">
+          <div>
+            <b>Empresas ativas no portal (Sell-out validado):</b> use esta aba para controlar <b>quais distribuidores (ID_DISTRIBUIDOR)</b> aparecem no seletor do portal e entram na visão consolidada ("Todos").<br>
+            <span class="ga-muted">Para vincular o e-mail de uma pessoa a um distribuidor já ativo, use a aba <b>Usuários de Distribuidores</b>.</span>
+          </div>
+          <button type="button" class="ga-link ga-ctx-switch" data-goto-panel="distribuidores">← Ir para Usuários de Distribuidores</button>
+        </div>
+        <form class="ga-form ga-form-dist" id="ga-pd-form" autocomplete="off">
+          <div class="ga-dist-pick">
+            <label for="ga-pd-search">Liberar distribuidor no portal (disponíveis no Unity Catalog)</label>
+            <div class="ga-picker">
+              <div class="ga-picker-head">
+                <input type="search" id="ga-pd-search" placeholder="Buscar distribuidor na UC por nome, ID ou CNPJ" aria-controls="ga-pd-cand-list">
+                <button type="button" class="ga-link" id="ga-pd-all">Marcar todos</button>
+                <button type="button" class="ga-link" id="ga-pd-none">Limpar</button>
+              </div>
+              <div class="ga-picker-list" id="ga-pd-cand-list" role="group" aria-label="Distribuidores disponíveis para liberar"><p class="ga-pick-empty">Carregando…</p></div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:minmax(160px,220px) minmax(220px,1fr) auto;gap:var(--sp-3);align-items:end;">
+            <div>
+              <label for="ga-pd-manual-id">Ou informar ID manual</label>
+              <input type="text" id="ga-pd-manual-id" inputmode="numeric" placeholder="Ex.: 148">
+            </div>
+            <div>
+              <label for="ga-pd-notes">Observação (opcional)</label>
+              <input type="text" id="ga-pd-notes" maxlength="500" placeholder="Ex.: Sell-out validado">
+            </div>
+            <div>
+              <button type="submit" class="ga-btn ga-btn-primary" id="ga-pd-submit">Liberar no portal</button>
+            </div>
+          </div>
+        </form>
+        <p class="ga-hint">A relação com as tabelas do Unity Catalog é feita pelo <b>ID_DISTRIBUIDOR</b> (o CNPJ é apenas informativo). Somente os distribuidores ativos abaixo aparecem no seletor do portal, entram na visão consolidada ("Todos") e têm acesso liberado para seus usuários.</p>
+
+        <div class="ga-toolbar">
+          <h2 id="ga-pd-title">Distribuidores no portal</h2>
+          <div class="ga-tools">
+            <div class="ga-filter"><input type="search" id="ga-pd-filter" placeholder="Filtrar por nome, ID ou CNPJ" aria-label="Filtrar distribuidores do portal"></div>
+            <button type="button" class="ga-btn ga-btn-outline ga-btn-sm" id="ga-pd-export">Exportar CSV</button>
+          </div>
+        </div>
+        <div class="ga-table-wrap">
+          <table class="ga-table">
+            <thead>
+              <tr>
+                <th scope="col" style="width:72px">ID</th>
+                <th scope="col">Distribuidor (nome no portal)</th>
+                <th scope="col">CNPJ informativo</th>
+                <th scope="col">Observação</th>
+                <th scope="col" style="width:200px">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="ga-pd-body"><tr><td colspan="5" class="ga-empty">Carregando…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Painel: Uso do portal -->
+      <section id="panel-uso" style="display:none;">
+        <div class="ga-toolbar first">
+          <h2 id="ga-uso-users-title">Acessos no portal</h2>
+          <div class="ga-tools">
+            <div class="ga-filter"><input type="search" id="ga-uso-filter" placeholder="Filtrar por e-mail ou distribuidor" aria-label="Filtrar acessos"></div>
+            <div class="custom-select qf-select" id="ga-uso-ano"><div class="select-trigger"><span class="qf-k">Ano</span><input type="text" class="search-input" id="ga-uso-ano-input" placeholder="Todos" autocomplete="off" aria-label="Ano" /><span class="arrow" aria-hidden="true"></span></div><div class="options-container"></div></div>
+            <div class="custom-select qf-select" id="ga-uso-mes"><div class="select-trigger"><span class="qf-k">Mês</span><input type="text" class="search-input" id="ga-uso-mes-input" placeholder="Todos" autocomplete="off" aria-label="Mês" /><span class="arrow" aria-hidden="true"></span></div><div class="options-container"></div></div>
+            <div class="custom-select qf-select" id="ga-uso-dia"><div class="select-trigger"><span class="qf-k">Dia</span><input type="text" class="search-input" id="ga-uso-dia-input" placeholder="Todos" autocomplete="off" aria-label="Dia" /><span class="arrow" aria-hidden="true"></span></div><div class="options-container"></div></div>
+            <div class="custom-select qf-select" id="ga-uso-perfil"><div class="select-trigger"><span class="qf-k">Perfil</span><input type="text" class="search-input" id="ga-uso-perfil-input" placeholder="Todos" autocomplete="off" aria-label="Perfil" /><span class="arrow" aria-hidden="true"></span></div><div class="options-container"></div></div>
+            <button type="button" class="ga-btn ga-btn-outline ga-btn-sm" id="ga-uso-export">Exportar CSV</button>
+            <button type="button" class="ga-btn ga-btn-outline ga-btn-sm" id="ga-uso-refresh">Atualizar</button>
+          </div>
+        </div>
+
+        <div class="ga-uso-cal" id="ga-uso-cal-wrap" hidden>
+          <div class="ga-cal-head">
+            <span class="ga-cal-summary" id="ga-uso-cal-summary"></span>
+            <button type="button" class="ga-link" id="ga-uso-cal-clear" hidden>Limpar filtro de dia</button>
+          </div>
+          <div class="ga-cal-wd" aria-hidden="true">
+            <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+          </div>
+          <div class="ga-cal-grid" id="ga-uso-cal-grid" role="group" aria-label="Calendário de acessos do mês"></div>
+        </div>
+        <p class="ga-cal-note" id="ga-uso-cal-note" hidden>Selecione apenas 1 ano e 1 mês para visualizar o calendário diário.</p>
+
+        <div class="ga-table-wrap">
+          <table class="ga-table">
+            <thead id="ga-uso-thead">
+              <tr>
+                <th scope="col" style="width:118px" data-uso-sort="data" aria-sort="descending"><button type="button" class="th-sort">Data <span class="sort-ic" aria-hidden="true"></span></button></th>
+                <th scope="col" data-uso-sort="email" aria-sort="none"><button type="button" class="th-sort">Usuário <span class="sort-ic" aria-hidden="true"></span></button></th>
+                <th scope="col">Perfil</th>
+                <th scope="col">Distribuidor(es)</th>
+                <th scope="col" data-uso-sort="ultimo" aria-sort="none"><button type="button" class="th-sort">Último acesso (Brasília) <span class="sort-ic" aria-hidden="true"></span></button></th>
+                <th scope="col" class="num" style="width:118px" data-uso-sort="acessos" aria-sort="none"><button type="button" class="th-sort">Acessos <span class="sort-ic" aria-hidden="true"></span></button></th>
+              </tr>
+            </thead>
+            <tbody id="ga-uso-users-body"><tr><td colspan="6" class="ga-empty">Carregando…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div class="ga-toast" id="ga-toast" role="alert"></div>
+
+  <script src="js/gestao_acesso.js?v=v2_25"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+command: ["python", "app.py"]
+
+env:
+  - name: PORT
+    value: "8000"
+  - name: CATALOG
+    value: "cat_dnabb_dv"
+  - name: SCHEMA
+    value: "grobbbqb_sz"
+  - name: TABLE
+    value: "tbl_bq_landing"

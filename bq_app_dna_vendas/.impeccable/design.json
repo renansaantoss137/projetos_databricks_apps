@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-27T09:19:00.000Z",
+  "title": "Design System: DNA de Vendas Bimbo QSR",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Bimbo Electric Royal",
+        "canonical": "#2563EB",
+        "tonalRamp": ["#0B1B3D", "#122B60", "#1D4ED8", "#2563EB", "#3B82F6", "#60A5FA", "#93C5FD", "#E3ECFD"]
+      },
+      "brand-red": {
+        "role": "accent",
+        "displayName": "Bimbo Heritage Red",
+        "canonical": "#C02830",
+        "tonalRamp": ["#3D0B0F", "#601217", "#8C1D24", "#C02830", "#DC3545", "#E57373", "#FFCDD2", "#FFEBEE"]
+      },
+      "neutral-bg": {
+        "role": "neutral",
+        "displayName": "Corporate Canvas Light",
+        "canonical": "#F0F4F8",
+        "tonalRamp": ["#060A12", "#141B29", "#1E2432", "#465468", "#7D8CA1", "#CBD5E1", "#E2E8F0", "#F0F4F8"]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Elevated Surface",
+        "canonical": "#FFFFFF",
+        "tonalRamp": ["#141B29", "#171C28", "#1E2432", "#465468", "#94A2B8", "#DCE3EC", "#F6F9FC", "#FFFFFF"]
+      },
+      "success": {
+        "role": "status",
+        "displayName": "Performance Positive",
+        "canonical": "#15803D",
+        "tonalRamp": ["#052E16", "#0E4D25", "#15803D", "#16A34A", "#22C55E", "#4ADE80", "#86EFAC", "#DCFCE7"]
+      },
+      "warning": {
+        "role": "status",
+        "displayName": "Performance Warning",
+        "canonical": "#B45309",
+        "tonalRamp": ["#451A03", "#78350F", "#B45309", "#D97706", "#F59E0B", "#FBBF24", "#FDE68A", "#FEF3C7"]
+      },
+      "danger": {
+        "role": "status",
+        "displayName": "Performance Off-Track",
+        "canonical": "#B91C1C",
+        "tonalRamp": ["#450A0A", "#7F1D1D", "#B91C1C", "#DC2626", "#EF4444", "#F87171", "#FCA5A5", "#FEE2E2"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Títulos hero da capa institucional." },
+      "headline": { "displayName": "Headline", "purpose": "Títulos de tela e totalizadores de grande formato." },
+      "title": { "displayName": "Title", "purpose": "Títulos de cards de KPI e seções analíticas." },
+      "body": { "displayName": "Body", "purpose": "Células de tabelas, opções de filtros e textos informativos." },
+      "label": { "displayName": "Label", "purpose": "Eyebrows, tags de status e badges operacionais." }
+    },
+    "shadows": [
+      { "name": "card", "value": "0 1px 2px rgba(15,23,42,.04), 0 4px 16px rgba(15,23,42,.06)", "purpose": "Elevação em repouso de cards de KPI e banners." },
+      { "name": "menu", "value": "0 12px 32px rgba(15,23,42,.18)", "purpose": "Elevação de overlays, modais e gavetas suspensas de filtro." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Transições padrão de estado e movimento de painéis." },
+      { "name": "dur-fast", "value": "0.15s", "purpose": "Hover em botões e alternância de abas." }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "640px" },
+      { "name": "tablet", "value": "900px" },
+      { "name": "desktop", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Botão de ação primária para aplicar filtros e confirmar operações.",
+      "html": "<button class=\"ds-btn-primary\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 6 9 17 4 12\"></polyline></svg> Aplicar Filtros</button>",
+      "css": ".ds-btn-primary { height: 40px; padding: 0 16px; border-radius: 8px; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid transparent; background: #2563EB; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s ease; outline: none; } .ds-btn-primary:hover { background: #1D4ED8; } .ds-btn-primary:focus-visible { box-shadow: 0 0 0 3px rgba(37,99,235,0.35); } .ds-btn-primary svg { width: 16px; height: 16px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Botão neutro para limpar, cancelar ou ações secundárias.",
+      "html": "<button class=\"ds-btn-secondary\">Limpar Seleção</button>",
+      "css": ".ds-btn-secondary { height: 40px; padding: 0 16px; border-radius: 8px; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid #7D8CA1; background: #FFFFFF; color: #1E2432; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s ease; outline: none; } .ds-btn-secondary:hover { background: #EEF3FA; border-color: #2563EB; color: #2563EB; } .ds-btn-secondary:focus-visible { box-shadow: 0 0 0 3px rgba(37,99,235,0.25); }"
+    },
+    {
+      "name": "Segmented Metric Toggle",
+      "kind": "chip",
+      "refersTo": "pill-toggle",
+      "description": "Seletor segmentado de métrica operacional (Valor R$ vs Volume kg).",
+      "html": "<div class=\"ds-metric-pill\"><button class=\"ds-pill-btn ds-active\">Valor (R$)</button><button class=\"ds-pill-btn\">Volume (kg)</button></div>",
+      "css": ".ds-metric-pill { display: inline-flex; background: #F6F9FC; border: 1px solid #DCE3EC; border-radius: 8px; padding: 3px; gap: 2px; } .ds-pill-btn { padding: 6px 14px; font-family: Inter, sans-serif; font-size: 12px; font-weight: 600; border: none; background: transparent; color: #5A6B82; border-radius: 6px; cursor: pointer; transition: all 0.15s ease; } .ds-pill-btn:hover { color: #1E2432; } .ds-pill-btn.ds-active { background: #2563EB; color: #FFFFFF; }"
+    },
+    {
+      "name": "Vendômetro KPI Card",
+      "kind": "card",
+      "refersTo": "kpi-card",
+      "description": "Card de métrica analítica executiva diária (Invoiced, Budget, Gap).",
+      "html": "<div class=\"ds-kpi-card\"><div class=\"ds-kpi-header\"><span class=\"ds-kpi-title\">INVOICED (SELL-IN)</span><span class=\"ds-kpi-badge\">+4.2%</span></div><div class=\"ds-kpi-value\">R$ 1.842.300</div><div class=\"ds-kpi-footer\"><span>Meta: R$ 1.768.000</span><span class=\"ds-kpi-status-pos\">104.2%</span></div></div>",
+      "css": ".ds-kpi-card { background: #FFFFFF; border: 1px solid #DCE3EC; border-radius: 14px; padding: 18px; box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 4px 16px rgba(15,23,42,.06); font-family: Inter, sans-serif; display: flex; flex-direction: column; justify-content: space-between; min-width: 200px; gap: 8px; } .ds-kpi-header { display: flex; align-items: center; justify-content: space-between; } .ds-kpi-title { font-size: 11px; font-weight: 700; color: #5A6B82; letter-spacing: 0.04em; text-transform: uppercase; } .ds-kpi-badge { font-size: 11px; font-weight: 700; color: #15803D; background: #DCFCE7; padding: 2px 6px; border-radius: 999px; } .ds-kpi-value { font-size: 1.5rem; font-weight: 700; color: #1E2432; font-variant-numeric: tabular-nums; } .ds-kpi-footer { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #465468; font-variant-numeric: tabular-nums; } .ds-kpi-status-pos { color: #15803D; font-weight: 700; }"
+    },
+    {
+      "name": "Filter Search Input",
+      "kind": "input",
+      "refersTo": "filter-input",
+      "description": "Campo de busca rápida em listas de seleção (Regionais, Clientes, SKUs).",
+      "html": "<div class=\"ds-search-wrap\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"></circle><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"></line></svg><input type=\"text\" class=\"ds-search-input\" placeholder=\"Buscar distribuidor...\"></div>",
+      "css": ".ds-search-wrap { position: relative; display: flex; align-items: center; width: 100%; max-width: 280px; } .ds-search-wrap svg { position: absolute; left: 10px; width: 16px; height: 16px; color: #5A6B82; pointer-events: none; } .ds-search-input { width: 100%; height: 36px; padding: 0 10px 0 34px; border: 1px solid #7D8CA1; border-radius: 8px; background: #F6F9FC; color: #1E2432; font-family: Inter, sans-serif; font-size: 13px; outline: none; transition: border-color 0.15s ease; } .ds-search-input:focus { border-color: #2563EB; background: #FFFFFF; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }"
+    },
+    {
+      "name": "Navigation Tab",
+      "kind": "nav",
+      "refersTo": "nav-tab",
+      "description": "Aba de navegação superior entre Vendômetro, Relatórios e Guia.",
+      "html": "<div style=\"display: flex; gap: 6px;\"><a class=\"ds-nav-tab ds-nav-active\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><line x1=\"18\" y1=\"20\" x2=\"18\" y2=\"10\"></line><line x1=\"12\" y1=\"20\" x2=\"12\" y2=\"4\"></line><line x1=\"6\" y1=\"20\" x2=\"6\" y2=\"14\"></line></svg> Vendômetro</a><a class=\"ds-nav-tab\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"></rect><path d=\"M3 9h18\"></path><path d=\"M9 21V9\"></path></svg> Relatórios</a></div>",
+      "css": ".ds-nav-tab { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; color: #465468; text-decoration: none; cursor: pointer; transition: all 0.15s ease; } .ds-nav-tab:hover { background: #EEF3FA; color: #1E2432; } .ds-nav-tab.ds-nav-active { background: #E3ECFD; color: #1D4ED8; } .ds-nav-tab svg { width: 16px; height: 16px; stroke: currentColor; }"
+    },
+    {
+      "name": "Brand Status Pill",
+      "kind": "chip",
+      "refersTo": "brand-pill",
+      "description": "Tag de canal ou selo de governança analítica Bimbo QSR.",
+      "html": "<span class=\"ds-brand-pill\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><circle cx=\"12\" cy=\"12\" r=\"6\"></circle></svg> BIMBO QSR BRASIL</span>",
+      "css": ".ds-brand-pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; background: #E3ECFD; border: 1px solid #2563EB; font-family: Inter, sans-serif; font-size: 11px; font-weight: 700; color: #1D4ED8; letter-spacing: 0.04em; text-transform: uppercase; } .ds-brand-pill svg { width: 8px; height: 8px; color: #2563EB; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Torre de Controle Operacional",
+    "overview": "O DNA de Vendas é concebido como a cabine de comando e controle analítico diário para equipes comerciais, gerências e distribuidores Bimbo QSR. A estética abandona artifícios puramente decorativos em favor de rigor cirúrgico, alta densidade informacional e tempos de leitura inferiores a 5 segundos para tomada de decisão em campo e na diretoria.\n\nO ambiente opera nativamente em dois modos complementares: um tema Escuro profundo (Deep Slate / Navy #060A12) otimizado para longas sessões de análise e foco visual nas métricas luminosas, e um tema Claro corporativo (#F0F4F8) com alto contraste de texto e separação tonal nítida. Em ambos os modos, a hierarquia é estritamente orientada aos dados: o faturamento realizado, os pedidos em carteira e a cobertura de metas (Budget & Forecast) dominam o primeiro plano visual.",
+    "keyCharacteristics": [
+      "Rigor Operacional & Alta Densidade: Máximo aproveitamento do viewport sem sensação de aperto ou poluição.",
+      "Camadas Tonais Sutis: Separação hierárquica baseada em matizes de superfície e bordas de 1px, sem dependência de sombras pesadas.",
+      "Acento Funcional Exclusivo: O azul elétrico e os alertas de semáforo são ativados unicamente para conduzir a leitura e a ação analítica.",
+      "Resiliência Multi-dispositivo: Transição transparente entre desktop widescreen corporativo (painel fixo 320px) e smartphones (drawer inferior e bottom-nav de 56px)."
+    ],
+    "rules": [
+      {
+        "name": "The Purpose-Driven Blue Rule",
+        "body": "O azul primário e acentos coloridos são reservados estritamente para elementos interativos, seleções ativas e indicadores de foco analítico, nunca para preenchimentos ornamentais ou fundos estáticos.",
+        "section": "colors"
+      },
+      {
+        "name": "The Semantic Status Rule",
+        "body": "Cores de semáforo (verde, amarelo e vermelho) só podem ser empregadas quando houver relação direta com meta ou status de pedido (Faturado, Carteira, Cancelado). Nenhum elemento decorativo neutro pode usar essas cores.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Numbers Rule",
+        "body": "Todo e qualquer valor monetário (R$), quantitativo de caixas/toneladas (kg) ou percentual de cobertura (%) deve renderizar com dígitos tabulares para garantir alinhamento vertical perfeito em tabelas e cards.",
+        "section": "typography"
+      },
+      {
+        "name": "The Label Case Rule",
+        "body": "Rótulos de categorização e metadados auxiliares utilizam tipografia caixa-alta compacta (11px) com tracking expandido (0.04em) para rápida diferenciação em relação ao conteúdo numérico.",
+        "section": "typography"
+      },
+      {
+        "name": "The Grounded Elevation Rule",
+        "body": "Superfícies analíticas permanecem contidas e estáveis ao repouso. Sombras pronunciadas são restritas a elementos temporários flutuantes (menus e drawers).",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do manter a altura dos controles clicáveis em no mínimo 44px em ambientes touch/mobile.",
+      "Do aplicar tabular-nums em todas as colunas de tabelas e valores numéricos de KPIs.",
+      "Do preservar a proporcionalidade estrita dos logotipos SVG (máximo 16px na barra de abas e 32px no cabeçalho).",
+      "Do utilizar as variáveis de cores semânticas (--success, --warning, --danger) exclusivamente para status e metas de negócio.",
+      "Do suportar nativamente ambos os temas (data-theme=\"dark\" e data-theme=\"light\"), respeitando a transição de contraste."
+    ],
+    "donts": [
+      "Don't aplicar gradientes multicoloridos ou fundos vibrantes por trás de números analíticos de faturamento ou budget.",
+      "Don't inventar cores de acento avulsas fora dos tokens corporativos Bimbo QSR.",
+      "Don't quebrar o alinhamento da grade de 12 colunas com margens assimétricas ou posicionamentos arbitrários.",
+      "Don't remover a delimitação sutil de borda (1px) dos cards e blocos de conteúdo.",
+      "Don't exibir sombras pesadas, difusas ou coloridas em elementos no estado de repouso."
+    ]
+  }
+}

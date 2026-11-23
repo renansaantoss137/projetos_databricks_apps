@@ -1,0 +1,12 @@
+{
+  "_comentario": "Gerenciamento de permissões do módulo de Cadastros e Apoio da Base Landing",
+  "admins": [
+    "renan.ferreira@grupobimbo.com",
+    "DNA - GB Brasil Leaders"
+  ],
+  "authorized_users": [
+    "sucena.luque@grupobimbo.com",
+    "claudia.urbina@grupobimbo.com",
+    "talita.rosa@grupobimbo.com"
+  ]
+}

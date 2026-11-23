@@ -1,0 +1,2540 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – Portal Distribuidores</title>
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#F6F7F9" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0E1117" media="(prefers-color-scheme: dark)">
+  <script>(function(){var p=location.pathname;if(p==='/'||/\/index\.html$/.test(p)||location.hash==='#inicio')document.documentElement.setAttribute('data-start','inicio');})();</script>
+  <!-- Tema: segue o sistema; a escolha manual do menu só fica gravada quando difere do sistema -->
+  <script>(function(){var d=document.documentElement,K='v2-theme-override',m=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)');function sys(){return m&&m.matches?'dark':'light';}function ov(){try{var o=localStorage.getItem(K);return o==='dark'||o==='light'?o:null;}catch(e){return null;}}d.setAttribute('data-theme',ov()||sys());if(m&&m.addEventListener)m.addEventListener('change',function(){if(!ov()){d.setAttribute('data-theme',sys());document.dispatchEvent(new Event('v2-themechange'));}});})();</script>
+  <link rel="stylesheet" href="css/tokens.css?v=v2_1">
+  <link rel="stylesheet" href="css/guia.css?v=20261021_v1">
+  <link rel="stylesheet" href="css/v2.css?v=v2_69_board">
+  <link rel="stylesheet" href="css/home_v2.css?v=v2_9">
+  <link rel="stylesheet" href="css/modulos_novos.css?v=20261117_v1">
+  <script src="js/v2_fit.js?v=v2_3"></script>
+</head>
+<body class="v2 v2-loading">
+<a class="skip-link" href="#main">Pular para o conteúdo</a>
+<!-- SIM_BANNER -->
+<div class="kpi-wrapper">
+<template class="v2-legacy" aria-hidden="true">
+
+  <!-- ── Fundo escuro azul-marinho profundo do cabeçalho ── -->
+  <div class="header-bg-dark"></div>
+
+  <!-- ── Ondas em Degradê Azul-Escuro Puro (Sem Linhas Claras) ── -->
+  <svg class="bg-waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 260" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <!-- Gradiente 1: Azul-Marinho Profundo Base -->
+      <linearGradient id="darkWaveGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%"   stop-color="#010512"/>
+        <stop offset="40%"  stop-color="#030C24"/>
+        <stop offset="80%"  stop-color="#06163D"/>
+        <stop offset="100%" stop-color="#010512"/>
+      </linearGradient>
+      <!-- Gradiente 2: Camada de Profundidade em Degradê -->
+      <linearGradient id="darkWaveGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%"   stop-color="#02081A" stop-opacity="0.9"/>
+        <stop offset="50%"  stop-color="#081F54" stop-opacity="0.75"/>
+        <stop offset="100%" stop-color="#02081A" stop-opacity="0.9"/>
+      </linearGradient>
+      <!-- Gradiente 3: Crista Suave em Azul Noturno -->
+      <linearGradient id="darkWaveGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%"   stop-color="#0C2D6D" stop-opacity="0.35"/>
+        <stop offset="50%"  stop-color="#153E8A" stop-opacity="0.45"/>
+        <stop offset="100%" stop-color="#0C2D6D" stop-opacity="0.35"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Camada 3: Crista difusa exterior da onda -->
+    <path fill="url(#darkWaveGrad3)" d="M0,0 L1440,0 L1440,135 C1220,165 1000,130 720,185 C440,130 220,165 0,135 Z"/>
+
+    <!-- Camada 2: Onda de profundidade intermediária -->
+    <path fill="url(#darkWaveGrad2)" d="M0,0 L1440,0 L1440,120 C1220,148 1000,118 720,168 C440,118 220,148 0,120 Z"/>
+
+    <!-- Camada 1: Onda principal sólida escura com curva suave no centro -->
+    <path fill="url(#darkWaveGrad1)" d="M0,0 L1440,0 L1440,110 C1220,135 1000,108 720,152 C440,108 220,135 0,110 Z"/>
+  </svg>
+
+  <!-- ── Fundo Suave com Ondas Topográficas & Pontilhado Windows ── -->
+  <svg class="bg-geometric" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <!-- Padrão Pontilhado estilo Windows / Tech Dot Matrix -->
+      <pattern id="windowsDotPattern" width="28" height="28" patternUnits="userSpaceOnUse">
+        <circle cx="14" cy="14" r="1.1" fill="#0A2558" opacity="0.055"/>
+      </pattern>
+    </defs>
+    <!-- Matriz de Pontos em todo o Background -->
+    <rect width="100%" height="100%" fill="url(#windowsDotPattern)"/>
+  </svg>
+
+  <!-- ── Cabeçalho Organizado com Título e Saudação Encaixados na Curva do Centro ── -->
+  <header class="kpi-header">
+    <div class="header-left">
+      <div class="portal-brand-badge">
+        <img src="img/logo_distribuidores.png" alt="Portal Distribuidores" class="dist-icon"/>
+        <span class="dist-title">Portal Distribuidores</span>
+      </div>
+      <div class="user-greeting" id="user-greeting">
+        <svg class="greeting-icon" viewBox="0 0 20 20" fill="none" width="14" height="14"><circle cx="10" cy="6" r="4" stroke="#00C2E0" stroke-width="1.8" fill="rgba(0,194,224,0.2)"/><path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#00C2E0" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span class="greeting-text">Olá, <strong id="greeting-name">BUY FOOD SERVICE DISTRIBUIDORA DE ALIMENTOS LTDA</strong></span>
+      </div>
+    </div>
+    <div class="header-center">
+      <div class="tabs">
+        <button class="tab active" data-tab="kpis">DNA de Vendas</button>
+        <button class="tab" data-tab="grade">Pedidos de Compra</button>
+        <!-- ADMIN_ONLY_START -->
+        <button class="tab" data-tab="guia" id="tab-btn-guia" style="display: none;">Guia do Usuário</button>
+        <!-- ADMIN_ONLY_END -->
+      </div>
+    </div>
+    <div class="header-right">
+      <!-- Indicador Discreto de Sincronização do Portal via Databricks Workflow -->
+      <div class="header-sync-pill" id="header-sync-pill" title="Última sincronização do banco de dados via Databricks Workflow (Horário de Brasília)">
+        <span class="sync-pulse-dot"></span>
+        <span class="sync-text">Atualizado: <strong id="header-sync-timestamp">15/10/2026 às 15:54</strong></span>
+      </div>
+      <div class="brand-divider"></div>
+
+      <img src="img/logo-bimbo-qsr.png" alt="Grupo Bimbo QSR" class="header-logo logo-bimbo-bq"/>
+      <div class="brand-divider"></div>
+      <a href="/logout" onclick="sessionStorage.removeItem('logged_user'); fetch('/logout', {credentials:'include'}).finally(() => { window.location.href='home.html'; }); return false;" class="btn-logout" aria-label="Encerrar sessão">
+        Sair
+      </a>
+    </div>
+  </header>
+
+  <!-- ── Conteúdo principal ── -->
+  <main class="kpi-main">
+
+    <!-- Barra de Filtros Flutuante com Regra de Exibição Integrada -->
+    <div class="portal-bar">
+      <div class="portal-bar-main-row">
+        <div class="filter-group-container">
+          
+          <!-- Filtro 1: CATEGORIA -->
+          <div class="filter-group filter-wrapper">
+            <span class="group-label">CATEGORIA</span>
+            <div class="custom-select" id="select-categoria">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-categoria" placeholder="Todos" autocomplete="off" aria-label="Filtrar por categoria de produto" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+          <!-- Filtro 2: PRODUTO -->
+          <div class="filter-group filter-wrapper">
+            <span class="group-label">PRODUTO</span>
+            <div class="custom-select" id="select-produto">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-produto" placeholder="Todos" autocomplete="off" aria-label="Filtrar por produto" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+          <!-- Filtro 3: SKU -->
+          <div class="filter-group filter-wrapper">
+            <span class="group-label">SKU</span>
+            <div class="custom-select" id="select-sku">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-sku" placeholder="Todos" autocomplete="off" aria-label="Filtrar por SKU" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+          <!-- Filtro 4: PEDIDO -->
+          <div class="filter-group filter-wrapper">
+            <span class="group-label">Nº PEDIDO</span>
+            <div class="custom-select" id="select-pedido">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-pedido" placeholder="Todos" autocomplete="off" aria-label="Filtrar por número do pedido" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+          <!-- Divisor Vertical Sutil -->
+          <div class="filter-divider" aria-hidden="true"></div>
+
+          <!-- Filtro 5: DIA -->
+          <div class="filter-group filter-wrapper">
+            <span class="group-label">DIA</span>
+            <div class="custom-select" id="select-dia">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-dia" placeholder="Todos" autocomplete="off" aria-label="Filtrar por dia" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+          <!-- Filtro 6: SEMANA -->
+          <div class="filter-group filter-wrapper">
+            <span class="group-label">SEMANA</span>
+            <div class="custom-select" id="select-semana">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-semana" placeholder="Todos" autocomplete="off" aria-label="Filtrar por semana" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+          <!-- Filtro 7: MÊS -->
+          <div class="filter-group filter-wrapper">
+            <span class="group-label">MÊS</span>
+            <div class="custom-select" id="select-mes">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-mes" placeholder="Todos" autocomplete="off" aria-label="Filtrar por mês" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+          <!-- Filtro 8: ANO -->
+          <div class="filter-group filter-wrapper">
+            <span class="group-label">ANO</span>
+            <div class="custom-select" id="select-ano">
+              <div class="select-trigger">
+                <input type="text" class="search-input" id="filter-ano" placeholder="Todos" autocomplete="off" aria-label="Filtrar por ano" />
+                <span class="arrow"></span>
+              </div>
+              <div class="options-container"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Divisor Vertical -->
+        <div class="filter-divider" aria-hidden="true"></div>
+
+        <!-- Toggle Valor / Volume com Toggle no Meio -->
+        <div class="visualization-controls">
+          <div class="toggle-group">
+            <span class="toggle-label active-label" id="lbl-valor">Valor</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggleValVol" aria-label="Alternar entre exibição de valor e volume" />
+              <span class="toggle-track"></span>
+            </label>
+            <span class="toggle-label" id="lbl-volume">Volume</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Regras de Negócio Integrada no Rodapé da Barra de Filtros -->
+      <div class="portal-bar-rule-strip" id="unitInfoPill">
+        <div class="unit-info-badge">
+          <svg class="unit-info-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" style="width: 14px; height: 14px; min-width: 14px; max-width: 14px; display: inline-block;">
+            <circle cx="8" cy="8" r="7" stroke="#0284C7" stroke-width="1.6" fill="#E0F2FE"/>
+            <path d="M8 7.5v3.5M8 5h.01" stroke="#0284C7" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <span>Regras de Negócio:</span>
+        </div>
+        <div class="unit-info-text">
+          <span class="unit-info-item"><strong>Sell-In e Sell-Out:</strong> Pães em dúzias (DZ) e Especialidades em unidades (Und)</span>
+        </div>
+      </div>
+
+    </div>
+
+
+
+    <!-- ── Tab: KPIs ── -->
+    <div class="tab-panel active" id="tab-kpis" style="display:flex;">
+
+    <!-- Grade de KPIs -->
+    <div class="kpi-grid">
+
+      <!-- ── SELL-IN METAS ── -->
+      <div class="card card-sellin">
+        <div class="card-tag">SELL-IN METAS</div>
+        <div class="card-kpi-val">R$ 3.6M <span class="kpi-target">/ R$ 7.7M</span></div>
+        <div class="gauge-wrap">
+          <svg class="gauge-svg" width="118" height="118" viewBox="0 0 120 120">
+            <defs>
+              <linearGradient id="grad-sellin" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#0C2167"></stop>
+                <stop offset="60%" stop-color="#1e4ea8"></stop>
+                <stop offset="100%" stop-color="#53BFE2"></stop>
+              </linearGradient>
+            </defs>
+            <circle class="gauge-track" cx="60" cy="60" r="46"></circle>
+            <circle class="gauge-arc" cx="60" cy="60" r="46" stroke="url(#grad-sellin)" data-pct="0.47" style="stroke-dasharray: 289.027; stroke-dashoffset: 153.184;"></circle>
+            <text class="gauge-pct-txt" x="60" y="56" text-anchor="middle" fill="#051336">47%</text>
+            <text class="gauge-sub-txt" x="60" y="71" text-anchor="middle" fill="#64748B">ATINGIDO</text>
+          </svg>
+        </div>
+        <div class="kpi-diff-box" id="sellin-diff-info" style="color: rgb(239, 68, 68);"><span style="font-size: 15px; font-weight: 800; line-height: 1;">↓</span> <span>Diferença:</span> <span style="font-weight: 850;">-R$ 4.1M</span></div>
+      </div>
+
+      <!-- ── SELL-OUT METAS ── -->
+      <div class="card card-sellout">
+        <div class="card-tag">SELL-OUT METAS</div>
+        <div class="card-kpi-val">R$ 7.5M <span class="kpi-target">/ R$ 11.1M</span></div>
+        <div class="gauge-wrap">
+          <svg class="gauge-svg" width="118" height="118" viewBox="0 0 120 120">
+            <defs>
+              <linearGradient id="grad-sellout" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#0C2167"></stop>
+                <stop offset="60%" stop-color="#1e4ea8"></stop>
+                <stop offset="100%" stop-color="#62F9EF"></stop>
+              </linearGradient>
+            </defs>
+            <circle class="gauge-track" cx="60" cy="60" r="46"></circle>
+            <circle class="gauge-arc" cx="60" cy="60" r="46" stroke="url(#grad-sellout)" data-pct="0.68" style="stroke-dasharray: 289.027; stroke-dashoffset: 92.4885;"></circle>
+            <text class="gauge-pct-txt" x="60" y="56" text-anchor="middle" fill="#051336">68%</text>
+            <text class="gauge-sub-txt" x="60" y="71" text-anchor="middle" fill="#64748B">ATINGIDO</text>
+          </svg>
+        </div>
+        <div class="kpi-diff-box" id="sellout-diff-info" style="color: rgb(239, 68, 68);"><span style="font-size: 15px; font-weight: 800; line-height: 1;">↓</span> <span>Diferença:</span> <span style="font-weight: 850;">-R$ 3.6M</span></div>
+      </div>
+
+      <!-- ── STATUS DA CARTEIRA (Trio de Cards Individuais: Faturado, Aberto, Total) ── -->
+      <div class="orders-pipeline-group">
+        <!-- Card 1: Faturado (Invoiced) -->
+        <div class="card card-pipeline card-pipeline-invoiced">
+          <div class="card-pipeline-header">
+            <span class="pipeline-pill-title">FATURADO</span>
+          </div>
+          <div class="card-pipeline-body">
+            <div class="pipeline-main-val" id="kpi-invoiced-val">R$ 0</div>
+          </div>
+          <div class="card-pipeline-footer">
+            <span class="pipeline-status-dot dot-invoiced"></span>
+            <span class="pipeline-subtext">Pedidos atendidos (líquido)</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Carteira em Aberto (Open Order) -->
+        <div class="card card-pipeline card-pipeline-open">
+          <div class="card-pipeline-header">
+            <span class="pipeline-pill-title">CARTEIRA EM ABERTO</span>
+          </div>
+          <div class="card-pipeline-body">
+            <div class="pipeline-main-val" id="kpi-open-val">--</div>
+          </div>
+          <div class="card-pipeline-footer">
+            <span class="pipeline-status-dot dot-open"></span>
+            <span class="pipeline-subtext">Pedidos pendentes (líquido)</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Faturado + Carteira (Invoiced + Open Order) -->
+        <div class="card card-pipeline card-pipeline-total">
+          <div class="card-pipeline-header">
+            <span class="pipeline-pill-title">FATURADO + CARTEIRA</span>
+          </div>
+          <div class="card-pipeline-body">
+            <div class="pipeline-main-val" id="kpi-total-order-val">R$ 0</div>
+          </div>
+          <div class="card-pipeline-footer">
+            <span class="pipeline-status-dot dot-total"></span>
+            <span class="pipeline-subtext" id="kpi-total-order-desc">Total consolidado (líquido)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── LINHA 2 (ESQUERDA): CHART Realizado vs Meta (Sell-in / Sell-out com Seletor) ── -->
+      <div class="card card-chart">
+        <div class="chart-header has-toggle">
+          <div class="chart-header-left">
+            <div class="chart-title-row">
+              <span class="card-tag">REALIZADO</span>
+              <span class="chart-sep">-</span>
+              <span class="chart-title-text" id="chart-title-text">Sell-in vs Meta</span>
+              <div class="chart-kpi-pill" title="Desvio Realizado vs Meta Acumulado no Período">
+                <span class="pill-label">Acumulado vs Meta:</span>
+                <span class="badge-up" id="chart-diff-badge">↑ +0%</span>
+              </div>
+            </div>
+            <div class="chart-legend" id="chart-legend">
+              <span class="leg-item"><span class="leg-dot" id="chart-leg-dot-realized" style="background:#0A2558"></span> <span id="chart-leg-lbl-realized">Sell-in</span></span>
+              <span class="leg-item" style="margin-left:12px"><span class="leg-dot" id="chart-leg-dot-meta" style="background:#38BDF8"></span> <span id="chart-leg-lbl-meta">Meta</span></span>
+              <span class="leg-item leg-perf-group" style="margin-left:14px" title="Atingimento da Meta: Verde ≥100% | Vermelho <100% | Cinza 0%">
+                <span class="leg-perf-pill perf-positive">≥100%</span>
+                <span class="leg-perf-pill perf-negative">&lt;100%</span>
+                <span class="leg-perf-text">% Ating.</span>
+              </span>
+            </div>
+          </div>
+          <div class="chart-toggle-group">
+            <span class="toggle-label active-label" id="lbl-chart-sellin">Sell-in</span>
+            <label class="toggle-switch" title="Alternar entre Sell-in e Sell-out">
+              <input type="checkbox" id="toggleChartMode" aria-label="Alternar gráfico entre Sell-in e Sell-out" />
+              <span class="toggle-track"></span>
+            </label>
+            <span class="toggle-label" id="lbl-chart-sellout">Sell-out</span>
+          </div>
+        </div>
+        <div class="bar-chart-area" id="barChart"></div>
+      </div>
+
+      <!-- ── DIAS DE ESTOQUE (Resumo Conciso de Item e Dias) ── -->
+      <div class="card card-estoque">
+        <div class="drill-card-header">
+          <div>
+            <div class="card-tag">ESTOQUE POR SKU</div>
+            <div class="drill-card-title">Dias de Estoque</div>
+          </div>
+          <div class="drill-total-wrap">
+            <div class="drill-total" id="total-skus-count">-- <span>dias</span></div>
+            <button class="btn-expand-card" onclick="openEstoqueModal('all')" title="Ampliar Visão Completa de Estoque">
+              <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Ampliar</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="estoque-resumo-wrap">
+          <table class="estoque-resumo-table">
+            <thead>
+              <tr>
+                <th style="text-align: left;">Item (Produto / SKU)</th>
+                <th style="text-align: right; width: 110px;">Dias de Estoque</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-estoque-resumo">
+              <!-- Preenchido dinamicamente pelo JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── LINHA 3: GRÁFICO HISTÓRICO DE POSITIVAÇÃO & TRACKING DE ENVIO ── -->
+      <!-- Card Positivação (Lado Esquerdo: 50% / 6 Colunas) -->
+      <div class="card card-chart card-positiv-chart">
+        <div class="chart-header has-action">
+          <div class="chart-header-left">
+            <div class="chart-title-row">
+              <span class="card-tag">POSITIVAÇÃO</span>
+              <span class="chart-sep">-</span>
+              <span class="chart-title-text" id="positiv-chart-title">Clientes Positivados, Meta &amp; Ticket Médio</span>
+              <div class="chart-kpi-pill" title="Desvio Realizado vs Meta Acumulado no Ano (YTD)">
+                <span class="pill-label">Acumulado vs Meta:</span>
+                <span class="badge-up" id="positiv-chart-badge">↑ +0%</span>
+              </div>
+            </div>
+            <div class="chart-legend" id="positiv-chart-legend">
+              <span class="leg-item"><span class="leg-dot" style="background:#0A2558"></span> Positivados (Realizado)</span>
+              <span class="leg-item" style="margin-left:14px"><span class="leg-dot" style="background:#38BDF8"></span> Meta (Qtd Clientes)</span>
+              <span class="leg-item" style="margin-left:14px"><span style="display:inline-block; width:16px; height:2px; background:#64748B; border-radius:1px; vertical-align:middle; margin-right:5px;"></span> Ticket Médio</span>
+            </div>
+          </div>
+          <button class="btn-expand-card btn-positiv-action" onclick="openPositivacaoModal('all')" title="Ver Lista Completa de Clientes Positivados">
+            <svg viewBox="0 0 16 16" fill="none" width="13" height="13"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Ver Clientes</span>
+          </button>
+        </div>
+        <div class="bar-chart-area" id="positivChart"></div>
+      </div>
+
+      <!-- Card Tracking de Envio (Lado Direito: 50% / 6 Colunas) -->
+      <div class="card card-tracking-ribbon" id="card-tracking-ribbon">
+        <div class="tracking-ribbon-header">
+          <div class="tracking-header-left">
+            <div class="tracking-tag-row">
+              <span class="card-tag">TRACKING DE ENVIO & SELL-OUT</span>
+              <span class="tracking-month-pill" id="tracking-month-pill">--</span>
+            </div>
+            <div class="tracking-main-title">Frequência Diária de Vendas & Envio</div>
+          </div>
+          <div class="tracking-header-metrics">
+            <div class="tracking-kpi-chip" title="Dias com pelo menos uma venda de sell-out realizada vs total de dias úteis transcorridos">
+              <span class="chip-status-dot dot-active"></span>
+              <span class="chip-label">Dias com Venda:</span>
+              <span class="chip-value" id="tracking-active-days">--</span>
+            </div>
+            <div class="tracking-kpi-chip" title="Percentual de regularidade de envio nos dias úteis transcorridos">
+              <span class="chip-status-dot dot-regularity"></span>
+              <span class="chip-label">Regularidade:</span>
+              <span class="chip-value" id="tracking-regularity-pct">--%</span>
+            </div>
+            <div class="tracking-kpi-chip chip-neutral" title="Média de faturamento diário nos dias com sell-out ativo">
+              <span class="chip-label">Média / Dia Ativo:</span>
+              <span class="chip-value" id="tracking-avg-daily">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grade Dinâmica de Dias do Mês (Dias Atuais para Trás) -->
+        <div class="tracking-ribbon-container">
+          <div class="tracking-days-track" id="tracking-days-track">
+            <!-- Pílulas de cada dia geradas dinamicamente via JS -->
+            <div class="tracking-loading-state">Carregando tracking diário...</div>
+          </div>
+        </div>
+
+        <div class="tracking-ribbon-footer">
+          <div class="tracking-legend">
+            <span class="leg-item"><span class="leg-badge leg-active">●</span> Venda Ativa</span>
+            <span class="leg-item"><span class="leg-badge leg-inactive">✕</span> Sem Venda</span>
+            <span class="leg-item"><span class="leg-badge leg-weekend-empty"></span> Fim de Semana</span>
+          </div>
+          <div class="tracking-hint">
+            <svg viewBox="0 0 16 16" fill="none" width="13" height="13" style="vertical-align: -2px; margin-right: 4px;"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M8 7v4M8 5h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Passe o mouse sobre o dia para detalhes
+          </div>
+        </div>
+      </div>
+
+    </div><!-- .kpi-grid -->
+
+    </div><!-- #tab-kpis -->
+</template>
+
+  <!-- ═══════════════════════ V2: cabeçalho ═══════════════════════ -->
+  <header class="kpi-header v2-header">
+    <button type="button" class="nav-expand" id="nav-expand" aria-expanded="false" aria-controls="portal-sidebar" aria-label="Expandir menu" title="Expandir menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <div class="hdr-left">
+      <a class="brand" href="/dashboard.html" aria-label="Portal Distribuidores, início">
+        <img src="img/logo_distribuidores.png" alt="" class="brand-mark" width="28" height="28">
+        <span class="brand-name">Portal Distribuidores</span>
+      </a>
+      <span class="hdr-sep" aria-hidden="true"></span>
+      <span class="hdr-page-title" id="v2-header-tab-title">DNA de Vendas</span>
+      <div class="hdr-hello" id="hdr-hello" hidden>Olá, <strong id="hdr-hello-name"></strong></div>
+    </div>
+
+    <div class="hdr-right">
+      <div class="header-sync-pill" id="header-sync-pill" tabindex="0" role="status">
+        <span class="sync-dot" aria-hidden="true"></span>
+        <span id="v2-sync-rel">Atualizando…</span>
+        <span class="sr-only">Última atualização: <span id="header-sync-timestamp">--</span></span>
+      </div>
+      <button type="button" class="cmd-btn" id="v2-cmd" hidden aria-label="Buscar distribuidor (Ctrl K)">
+        <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <span class="cmd-t">Buscar distribuidor</span><kbd>Ctrl K</kbd>
+      </button>
+      <img src="img/logo-bimbo-qsr.png" alt="Grupo Bimbo QSR" class="hdr-logo" height="28">
+      <div class="user-menu">
+        <button type="button" class="avatar-btn" id="v2-user-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="v2-user-menu" aria-label="Menu do usuário">
+          <span class="avatar" aria-hidden="true"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+          <svg class="ico chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="menu" id="v2-user-menu" role="menu" aria-label="Menu do usuário" hidden>
+          <!-- GOVERNANCE_ONLY_START -->
+          <a class="mi v2-admin-only" role="menuitem" href="/gestao_acesso.html" hidden>
+            <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span class="mi-t">Gestão de Acessos</span>
+          </a>
+          <a class="mi v2-admin-only" role="menuitem" href="/uso-portal" hidden>
+            <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            <span class="mi-t">Uso do Portal</span>
+          </a>
+          <!-- GOVERNANCE_ONLY_END -->
+          <a class="mi v2-admin-only" role="menuitem" href="/guia.html" hidden>
+            <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+            <span class="mi-t">Guia do Usuário &amp; Docs</span>
+          </a>
+          <button type="button" class="mi v2-admin-only" id="v2-menu-sim" role="menuitem" hidden>
+            <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></svg>
+            <span class="mi-body"><span class="mi-t">Ver como distribuidor</span><span class="mi-sub">Escolha um distribuidor primeiro</span></span>
+          </button>
+          <div class="mi-sep v2-admin-only" role="separator" hidden></div>
+          <button type="button" class="mi" id="v2-theme-toggle" role="menuitemcheckbox" aria-checked="false">
+            <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <span class="mi-t">Tema escuro</span>
+            <span class="switch" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navegação inferior (celular) -->
+  <nav class="bottom-nav" id="v2-bottom-nav" aria-label="Seções do portal">
+    <button type="button" data-tab="inicio">
+      <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Início</span>
+    </button>
+    <!-- ADMIN_ONLY_START -->
+    <button type="button" data-tab="executivo" class="v2-admin-only v2-exec-tab" hidden aria-label="Visão Executiva">
+      <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      <span>Executivo</span>
+    </button>
+    <!-- ADMIN_ONLY_END -->
+    <button type="button" data-tab="kpis" class="active" aria-current="page" aria-label="DNA de Vendas">
+      <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>
+      <span>DNA de Vendas</span>
+    </button>
+    <button type="button" data-tab="grade">
+      <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5M8 3H3v5M3 16v5h5M21 16v5h-5"/><path d="M7 12h10M7 8h10M7 16h6"/></svg>
+      <span>Pedidos</span>
+    </button>
+    <button type="button" data-tab="forecast" aria-label="Forecast e Planejamento">
+      <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+      <span>Forecast</span>
+    </button>
+    <button type="button" data-tab="produtos" aria-label="Produtos e Fichas Técnicas">
+      <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 7 10-5 10 5-10 5z"/><path d="M12 22V12"/><path d="m17 14.5 5-2.5V17l-5 2.5z"/><path d="M7 14.5 2 12V17l5 2.5z"/></svg>
+      <span>Produtos</span>
+    </button>
+    <button type="button" data-tab="trade" aria-label="Trade Marketing e Campanhas">
+      <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+      <span>Trade</span>
+    </button>
+    <button type="button" data-tab="help" aria-label="Suporte aos Distribuidores">
+      <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+      <span>Suporte</span>
+    </button>
+  </nav>
+
+  <!-- ═══════════════════════ LAYOUT PRINCIPAL (SIDEBAR + WORKSPACE) ═══════════════════════ -->
+  <div class="portal-layout" id="portal-layout">
+    
+    <!-- LEFT SIDEBAR (Estilo idêntico ao DNA de Vendas) -->
+    <aside class="sp-sidebar" id="portal-sidebar" aria-label="Navegação Lateral">
+      <div class="nav-group-label nav-group-main">Acompanhamento</div>
+      <button type="button" class="sp-nav-item tab" data-tab="inicio" title="Início">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Início</span>
+        <span class="nav-long">Início</span>
+      </button>
+      <!-- ADMIN_ONLY_START -->
+      <button type="button" class="sp-nav-item tab v2-admin-only v2-exec-tab" data-tab="executivo" hidden title="Visão Executiva (Admin)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        <span>Executivo</span>
+        <span class="nav-long">Visão Executiva</span>
+      </button>
+      <!-- ADMIN_ONLY_END -->
+      <button type="button" class="sp-nav-item active tab" data-tab="kpis" title="DNA de Vendas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        <span>DNA de vendas</span>
+        <span class="nav-long">DNA de Vendas</span>
+      </button>
+      <button type="button" class="sp-nav-item tab" data-tab="grade" title="Pedidos de Compra">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        <span>Pedidos</span>
+        <span class="nav-long">Pedidos de Compra</span>
+      </button>
+      <button type="button" class="sp-nav-item tab" data-tab="forecast" title="Forecast &amp; Planejamento">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        <span>Forecast</span>
+        <span class="nav-long">Forecast &amp; Planejamento</span>
+      </button>
+      <div class="nav-group-label">Operação &amp; Trade</div>
+      <button type="button" class="sp-nav-item tab" data-tab="produtos" title="Produtos &amp; Fichas Técnicas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 10-5 10 5-10 5z"/><path d="M12 22V12"/><path d="m17 14.5 5-2.5V17l-5 2.5z"/><path d="M7 14.5 2 12V17l5 2.5z"/></svg>
+        <span>Produtos</span>
+        <span class="nav-long">Produtos &amp; Fichas</span>
+      </button>
+      <button type="button" class="sp-nav-item tab" data-tab="trade" title="Trade Marketing &amp; Campanhas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+        <span>Trade</span>
+        <span class="nav-long">Trade &amp; Campanhas</span>
+      </button>
+      <button type="button" class="sp-nav-item tab" data-tab="help" title="Suporte &amp; Chamados BQ">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        <span>Suporte</span>
+        <span class="nav-long">Suporte &amp; Chamados</span>
+      </button>
+    </aside>
+
+    <!-- Área de Conteúdo / Workspace -->
+    <div class="portal-workspace" id="portal-workspace">
+
+      <!-- Barra Superior de Filtros Ativos (Resumo Compacto e Botão de Abertura do Painel) -->
+      <div class="active-filters-bar" id="active-filters-bar" aria-label="Filtros ativos">
+        <div class="afb-left">
+          <div class="qf-group">
+            <div class="user-greeting" id="user-greeting">
+              <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2M10 6h4M10 10h4M10 14h4M10 18h4"/></svg>
+              <span class="greeting-text"><strong id="greeting-name">Carregando…</strong></span>
+            </div>
+            <!-- ADMIN_ONLY_START -->
+            <div class="custom-select qf-select" id="qf-dist" hidden><div class="select-trigger"><span class="qf-k">Distribuidor</span><input type="text" class="search-input" id="qf-dist-input" placeholder="Todos" autocomplete="off" aria-label="Distribuidor" /><span class="arrow" aria-hidden="true"></span></div><div class="options-container"></div></div>
+            <!-- ADMIN_ONLY_END -->
+            <div class="custom-select qf-select" id="qf-ano"><div class="select-trigger"><span class="qf-k">Ano</span><input type="text" class="search-input" id="qf-ano-input" placeholder="Todos" autocomplete="off" aria-label="Ano" /><span class="arrow" aria-hidden="true"></span></div><div class="options-container"></div></div>
+            <div class="custom-select qf-select" id="qf-mes"><div class="select-trigger"><span class="qf-k">Mês</span><input type="text" class="search-input" id="qf-mes-input" placeholder="Todos" autocomplete="off" aria-label="Mês" /><span class="arrow" aria-hidden="true"></span></div><div class="options-container"></div></div>
+          </div>
+          <div class="afb-chips" id="afb-chips-container">
+            <span class="afb-chip" id="afb-chip-periodo"><strong id="afb-val-periodo">Período: Carregando…</strong><button type="button" class="afb-chip-x" data-clear="periodo" aria-label="Voltar ao período atual" title="Voltar ao período atual" hidden><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></span>
+            <span class="afb-chip" id="afb-chip-mode"><strong id="afb-val-mode">Exibição: Valor (R$)</strong></span>
+            <span class="afb-chip" id="afb-chip-extra" style="display:none;"></span>
+          </div>
+          <div class="afb-rules" tabindex="0" role="note" aria-label="Regras de negócio: sell-in e sell-out com pães em dúzias e especialidades em unidades" data-tip="&lt;div class=&quot;tip-h&quot;&gt;Regras de negócio&lt;/div&gt;&lt;div class=&quot;tip-f&quot;&gt;Sell-in e sell-out: pães em dúzias (DZ) e especialidades em unidades (Und).&lt;/div&gt;">
+            <svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            <span class="afb-rules-full">Pães em DZ · Especialidades em Und</span>
+            <span class="afb-rules-short">Unidades</span>
+          </div>
+        </div>
+        <div class="afb-right">
+          <button type="button" class="afb-reset" id="afb-reset" hidden title="Voltar ao ano e mês atuais, sem outros filtros">
+            <svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            <span>Limpar filtros</span>
+          </button>
+          <button type="button" class="btn btn-secondary afb-drawer-btn" id="open-filter-drawer-btn" aria-label="Abrir painel de filtros retrátil à direita">
+            <svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 20a1 1 0 0 0 .55.89l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .52-1.34L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.74 1.67l7.22 7.99A2 2 0 0 1 10 14z"/></svg>
+            <span>Filtros</span>
+            <span class="afb-count" id="afb-count-badge" style="display:none;">0</span>
+          </button>
+        </div>
+      </div>
+
+      <main class="kpi-main" id="main" tabindex="-1">
+
+        <div class="v2-error" id="v2-error" role="alert" hidden>
+          <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg>
+          <span>Não foi possível carregar os indicadores. Verifique a conexão e tente de novo.</span>
+          <button type="button" class="btn btn-secondary btn-sm" id="v2-retry">Tentar novamente</button>
+        </div>
+
+        <div class="v2-chips" id="v2-chips" aria-live="polite" hidden></div>
+
+        <!-- ═══════════ Tab: Início ═══════════ -->
+        <div class="tab-panel" id="tab-inicio" role="tabpanel" aria-label="Início" style="display:none;">
+          <section class="home-main inicio-hero" aria-labelledby="inicio-title">
+            <div class="home-copy">
+              <h1 class="home-title" id="inicio-title">Portal Distribuidores</h1>
+              <p class="home-lead">Acompanhe sell-in, sell-out, pedidos e estoque do seu negócio, com dados atualizados todos os dias.</p>
+            </div>
+            <figure class="home-route" aria-hidden="true">
+              <svg class="rt" viewBox="0 0 560 420" fill="none">
+                <!-- trechos -->
+                <path id="rt-sellin" class="rt-path" d="M96 290 C 96 200, 150 150, 222 150"/>
+                <path id="rt-out1" class="rt-path rt-out" d="M372 150 C 420 150, 430 72, 470 72"/>
+                <path id="rt-out2" class="rt-path rt-out" d="M372 150 C 430 150, 440 196, 478 196"/>
+                <path id="rt-out3" class="rt-path rt-out" d="M372 150 C 414 150, 418 318, 462 318"/>
+
+                <!-- rótulos dos trechos -->
+                <g class="rt-tag" transform="translate(70 196)"><rect width="62" height="24" rx="12"/><text x="31" y="16">Sell-in</text></g>
+                <g class="rt-tag rt-tag-out" transform="translate(384 246)"><rect width="70" height="24" rx="12"/><text x="35" y="16">Sell-out</text></g>
+
+                <!-- Bimbo QSR -->
+                <g class="rt-node" transform="translate(20 290)">
+                  <rect width="160" height="72" rx="12"/>
+                  <svg x="16" y="24" width="24" height="24" viewBox="0 0 24 24" class="rt-ic"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1M12 18h1M7 18h1"/></svg>
+                  <text class="rt-t" x="52" y="32">Bimbo QSR</text>
+                  <text class="rt-s" x="52" y="50">Fábrica</text>
+                </g>
+
+                <!-- Seu CD -->
+                <g class="rt-node rt-node-hub" transform="translate(222 114)">
+                  <rect width="150" height="72" rx="12"><animate attributeName="stroke-width" values="1;1;2.5;1;1" keyTimes="0;0.41;0.45;0.52;1" dur="8s" repeatCount="indefinite"/></rect>
+                  <svg x="16" y="24" width="24" height="24" viewBox="0 0 24 24" class="rt-ic"><path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z"/><path d="M6 18h12M6 14h12"/><rect x="6" y="10" width="12" height="12"/></svg>
+                  <text class="rt-t" x="52" y="32">Seu CD</text>
+                  <text class="rt-s" x="52" y="50">Estoque</text>
+                </g>
+
+                <!-- Restaurantes -->
+                <g class="rt-pin" transform="translate(470 72)"><circle r="22"/><svg x="-11" y="-11" width="22" height="22" viewBox="0 0 24 24" class="rt-ic"><path d="M3 9 4.5 4h15L21 9"/><path d="M3 9h18v1.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0Z"/><path d="M5 13v7h14v-7M10 20v-4h4v4"/></svg></g>
+                <g class="rt-pin" transform="translate(500 196)"><circle r="22"/><svg x="-11" y="-11" width="22" height="22" viewBox="0 0 24 24" class="rt-ic"><path d="M3 9 4.5 4h15L21 9"/><path d="M3 9h18v1.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0Z"/><path d="M5 13v7h14v-7M10 20v-4h4v4"/></svg></g>
+                <g class="rt-pin" transform="translate(484 318)"><circle r="22"/><svg x="-11" y="-11" width="22" height="22" viewBox="0 0 24 24" class="rt-ic"><path d="M3 9 4.5 4h15L21 9"/><path d="M3 9h18v1.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0Z"/><path d="M5 13v7h14v-7M10 20v-4h4v4"/></svg></g>
+                <text class="rt-t rt-t-sm" x="484" y="364" text-anchor="middle">Restaurantes</text>
+
+                <!-- Animação em um ciclo único (8s): sell-in Bimbo QSR → CD; ao chegar, o CD pulsa e três caminhões saem para os restaurantes.
+                     Com "reduzir movimento" no sistema, fica só o caminhão parado. -->
+                <g class="rt-truck rt-truck-move">
+                  <circle r="18"/>
+                  <svg x="-10" y="-10" width="20" height="20" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+                  <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.42;1" calcMode="spline" keySplines="0.45 0 0.25 1;0 0 1 1"><mpath href="#rt-sellin"/></animateMotion>
+                  <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.04;0.4;0.45;1" dur="8s" repeatCount="indefinite"/>
+                </g>
+                <g class="rt-truck rt-truck-move rt-truck-sm">
+                  <circle r="13"/>
+                  <svg x="-7.5" y="-7.5" width="15" height="15" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+                  <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.47;0.83;1" calcMode="spline" keySplines="0 0 1 1;0.4 0 0.2 1;0 0 1 1"><mpath href="#rt-out1"/></animateMotion>
+                  <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.47;0.5;0.8;0.83;1" dur="8s" repeatCount="indefinite"/>
+                </g>
+                <g class="rt-truck rt-truck-move rt-truck-sm">
+                  <circle r="13"/>
+                  <svg x="-7.5" y="-7.5" width="15" height="15" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+                  <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.5;0.86;1" calcMode="spline" keySplines="0 0 1 1;0.4 0 0.2 1;0 0 1 1"><mpath href="#rt-out2"/></animateMotion>
+                  <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.5;0.53;0.83;0.86;1" dur="8s" repeatCount="indefinite"/>
+                </g>
+                <g class="rt-truck rt-truck-move rt-truck-sm">
+                  <circle r="13"/>
+                  <svg x="-7.5" y="-7.5" width="15" height="15" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+                  <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.53;0.89;1" calcMode="spline" keySplines="0 0 1 1;0.4 0 0.2 1;0 0 1 1"><mpath href="#rt-out3"/></animateMotion>
+                  <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.53;0.56;0.86;0.89;1" dur="8s" repeatCount="indefinite"/>
+                </g>
+                <g class="rt-truck rt-truck-still" transform="translate(128 178)">
+                  <circle r="18"/>
+                  <svg x="-10" y="-10" width="20" height="20" viewBox="0 0 24 24" class="rt-ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+                </g>
+              </svg>
+            </figure>
+          </section>
+          <section class="home-presentation is-open" id="apresentacao" aria-label="Apresentação do Portal">
+    
+            <!-- Objetivo Direto -->
+            <div class="obj-strip">
+              <div class="obj-tag">Objetivo</div>
+              <p class="obj-highlight">
+                Um canal direto entre a <strong>Bimbo QSR</strong> e o <strong>seu negócio</strong> para acompanhar metas, pedidos e estoque com dados atualizados todos os dias.
+              </p>
+            </div>
+
+            <!-- 3 Funcionalidades Principais -->
+            <div class="quick-section">
+              <h2 class="quick-title">O que você acompanha no portal</h2>
+              <div class="quick-grid">
+                <div class="quick-card">
+                  <div class="quick-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  </div>
+                  <h3>Metas e Vendas</h3>
+                  <p>Acompanhe Sell-in e Sell-out vs meta do mês, com histórico e evolução em valor (R$) e volume físico.</p>
+                </div>
+
+                <div class="quick-card">
+                  <div class="quick-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                  </div>
+                  <h3>Pedidos em Carteira</h3>
+                  <p>Consulte pedidos faturados e entregas programadas, sabendo exatamente o que já foi emitido.</p>
+                </div>
+
+                <div class="quick-card">
+                  <div class="quick-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg>
+                  </div>
+                  <h3>Estoque &amp; Ruptura</h3>
+                  <p>Veja dias de cobertura por SKU para evitar falta de produto e manter os clientes sempre abastecidos.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Benefícios e Guia em 3 Passos -->
+            <div class="two-col-summary">
+              <div class="summary-box">
+                <h3 class="box-title">Vantagens para sua operação</h3>
+                <ul class="clean-list">
+                  <li><strong>Zero espera:</strong> Números oficiais sem depender de relatórios manuais.</li>
+                  <li><strong>Previsibilidade:</strong> Antecipe reposições antes que o estoque zere.</li>
+                  <li><strong>Transparência:</strong> Mesma base de dados que a equipe Bimbo acompanha.</li>
+                </ul>
+              </div>
+
+              <div class="summary-box">
+                <h3 class="box-title">Como usar em 3 passos</h3>
+                <ol class="clean-steps">
+                  <li><span>1</span> Entre com sua conta corporativa autorizada.</li>
+                  <li><span>2</span> Escolha o período (ano/mês) no painel de filtros à direita.</li>
+                  <li><span>3</span> Consulte seus indicadores e planeje suas próximas compras.</li>
+                </ol>
+              </div>
+            </div>
+
+          </section>
+        </div>
+
+        <!-- ═══════════ Tab: DNA de Vendas ═══════════ -->
+        <div class="tab-panel active" id="tab-kpis" role="tabpanel" aria-label="DNA de Vendas" style="display:flex;">
+
+
+          <div class="kpi-grid">
+
+      <section class="kpi-row" aria-label="Indicadores principais">
+        <article class="card kpi-card kpi-hero card-sellout">
+          <h2 class="kpi-label"><svg class="kl-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>Sell-out</h2>
+          <div class="card-kpi-val kpi-value"><span class="sk sk-val"></span></div>
+          <div class="kpi-target-line">&nbsp;</div>
+          <div class="kpi-diff-box delta" id="sellout-diff-info"></div>
+          <div class="kpi-progress" role="progressbar" aria-label="Atingimento da meta de sell-out" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="kpi-progress-fill"></span><span class="kpi-pace-mark" hidden></span><span class="kpi-pace-lbl" hidden></span></div>
+          <div class="kpi-foot"><span class="gauge-pct-txt"></span></div>
+          <div class="kpi-pace" tabindex="0" hidden></div>
+        </article>
+        <article class="card kpi-card kpi-hero card-sellin">
+          <h2 class="kpi-label"><svg class="kl-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>Sell-in</h2>
+          <div class="card-kpi-val kpi-value"><span class="sk sk-val"></span></div>
+          <div class="kpi-target-line">&nbsp;</div>
+          <div class="kpi-diff-box delta" id="sellin-diff-info"></div>
+          <div class="kpi-progress" role="progressbar" aria-label="Atingimento da meta de sell-in" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="kpi-progress-fill"></span><span class="kpi-pace-mark" hidden></span><span class="kpi-pace-lbl" hidden></span></div>
+          <div class="kpi-foot"><span class="gauge-pct-txt"></span></div>
+          <div class="kpi-pace" tabindex="0" hidden></div>
+        </article>
+        <!-- Indicadores de apoio: um único card compacto (hierarquia: os dois cards de meta são os principais) -->
+        <article class="card kpi-card kpi-orders" aria-labelledby="ord-title">
+          <div class="ord-head">
+            <h2 class="kpi-label" id="ord-title">Pedidos do período</h2>
+            <span class="ord-unit">valores líquidos</span>
+          </div>
+          <dl class="ord-list">
+            <div class="ord-row">
+              <dt><span class="ord-k"><span class="ord-sw ord-sw-inv" aria-hidden="true"></span>Faturado</span><small>Pedidos atendidos</small></dt>
+              <dd class="ord-val" id="kpi-invoiced-val"><span class="sk sk-val"></span></dd>
+            </div>
+            <div class="ord-row">
+              <dt><span class="ord-k"><span class="ord-sw ord-sw-open" aria-hidden="true"></span>Carteira em aberto</span><small>Pedidos pendentes</small></dt>
+              <dd class="ord-val" id="kpi-open-val"><span class="sk sk-val"></span></dd>
+            </div>
+            <div class="ord-row ord-total">
+              <dt><span class="ord-k">Faturado + carteira</span></dt>
+              <dd class="ord-val" id="kpi-total-order-val"><span class="sk sk-val"></span></dd>
+            </div>
+          </dl>
+          <div class="stack" id="kpi-stack" role="img" aria-label="Composição faturado e carteira" hidden><span class="seg seg-inv" id="kpi-stack-inv"></span><span class="seg seg-open" id="kpi-stack-open"></span></div>
+          <div class="kpi-target-line stack-legend" id="kpi-total-order-desc">Total consolidado (líquido)</div>
+        </article>
+      </section>
+
+      <section class="card card-chart card-realizado" aria-labelledby="chart-title-text">
+        <header class="card-head">
+          <div class="card-head-l">
+            <p class="eyebrow">Realizado</p>
+            <h2 class="card-title" id="chart-title-text">Sell-in vs meta</h2>
+          </div>
+          <div class="card-head-r">
+            <div class="chart-kpi-pill" tabindex="0"><span class="pill-label">Acumulado vs meta</span><span class="badge-neutral" id="chart-diff-badge">—</span></div>
+            <div class="segmented chart-toggle-group" role="radiogroup" aria-label="Métrica do gráfico">
+              <button type="button" class="toggle-label active-label" id="lbl-chart-sellin" role="radio" aria-checked="true">Sell-in</button>
+              <button type="button" class="toggle-label" id="lbl-chart-sellout" role="radio" aria-checked="false" tabindex="-1">Sell-out</button>
+              <input type="checkbox" id="toggleChartMode" class="sr-only" tabindex="-1" aria-hidden="true" />
+            </div>
+          </div>
+        </header>
+        <div class="chart-legend" id="chart-legend">
+          <span class="leg-item"><span class="lg-bar" aria-hidden="true"></span><span id="chart-leg-lbl-realized">Sell-in realizado</span></span>
+          <span class="leg-item"><span class="lg-target" aria-hidden="true"></span>Meta</span>
+          <span class="leg-item leg-att"><span class="att-dot att-good" aria-hidden="true"></span>≥100% <span class="att-dot att-warn" aria-hidden="true"></span>90–99% <span class="att-dot att-bad" aria-hidden="true"></span>&lt;90% <span class="muted">de atingimento</span></span>
+        </div>
+        <div class="bar-chart-area" id="barChart" aria-busy="true"><div class="sk sk-chart"></div></div>
+      </section>
+
+      <section class="card card-estoque" aria-labelledby="est-title">
+        <header class="card-head">
+          <div class="card-head-l">
+            <p class="eyebrow">Estoque por SKU</p>
+            <h2 class="card-title" id="est-title">Dias de estoque</h2>
+          </div>
+          <div class="card-head-r">
+            <div class="drill-total" id="total-skus-count">-- <span>dias</span></div>
+            <button type="button" class="btn btn-secondary btn-sm btn-expand-card" onclick="openEstoqueModal('all')">
+              <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+              <span>Ampliar</span>
+            </button>
+          </div>
+        </header>
+        <div class="est-tools">
+          <label class="search">
+            <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="search" id="v2-est-search" placeholder="Buscar produto ou SKU" aria-label="Buscar produto ou SKU" autocomplete="off">
+          </label>
+          <span class="muted est-hint">Média ponderada pelo consumo</span>
+        </div>
+        <p class="v2-note" id="v2-est-note" hidden>Todos os SKUs retornaram 0 dia, mas a média do cabeçalho é maior que zero. Pode ser ausência de dado de giro, e não ruptura.</p>
+        <div class="estoque-resumo-wrap">
+          <table class="estoque-resumo-table">
+            <caption class="sr-only">Dias de estoque por produto</caption>
+            <thead>
+              <tr>
+                <th scope="col" data-sort="nome" aria-sort="none"><button type="button" class="th-sort">Produto <svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></button></th>
+                <th scope="col" data-sort="dias" aria-sort="ascending" class="num"><button type="button" class="th-sort">Dias <svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></svg></button></th>
+              </tr>
+            </thead>
+            <tbody id="tbody-estoque-resumo">
+              <tr class="sk-row"><td><span class="sk sk-line"></span></td><td><span class="sk sk-pill"></span></td></tr>
+              <tr class="sk-row"><td><span class="sk sk-line"></span></td><td><span class="sk sk-pill"></span></td></tr>
+              <tr class="sk-row"><td><span class="sk sk-line"></span></td><td><span class="sk sk-pill"></span></td></tr>
+              <tr class="sk-row"><td><span class="sk sk-line"></span></td><td><span class="sk sk-pill"></span></td></tr>
+            </tbody>
+          </table>
+          <div class="v2-empty sm" id="v2-est-empty" hidden><p>Nenhum item encontrado para a busca.</p></div>
+        </div>
+      </section>
+
+      <section class="card card-chart card-positiv-chart" aria-labelledby="positiv-chart-title">
+        <header class="card-head">
+          <div class="card-head-l">
+            <p class="eyebrow">Positivação</p>
+            <h2 class="card-title" id="positiv-chart-title">Clientes positivados vs meta</h2>
+          </div>
+          <div class="card-head-r">
+            <div class="chart-kpi-pill" tabindex="0"><span class="pill-label">Acumulado no ano</span><span class="badge-neutral" id="positiv-chart-badge">—</span></div>
+            <button type="button" class="btn btn-secondary btn-sm btn-reactivate-action" id="btn-positiv-reactivate" onclick="openPositivacaoModal('reactivate')" hidden data-tip="Clientes ativos nos últimos 90 dias com R$ 0 neste mês, ordenados por maior potencial perdido.">
+              <span>Reativar (<strong id="positiv-reactivate-cnt">0</strong>)</span>
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm btn-positiv-action" onclick="openPositivacaoModal('all')">
+              <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span>Ver clientes</span>
+            </button>
+          </div>
+        </header>
+        <div class="chart-legend" id="positiv-chart-legend">
+          <span class="leg-item"><span class="lg-bar" aria-hidden="true"></span>Positivados</span>
+          <span class="leg-item"><span class="lg-target" aria-hidden="true"></span>Meta (clientes)</span>
+          <span class="leg-item"><span class="lg-line" aria-hidden="true"></span>Ticket médio</span>
+        </div>
+        <div class="bar-chart-area" id="positivChart" aria-busy="true"><div class="sk sk-chart"></div></div>
+      </section>
+
+      <section class="card card-tracking-ribbon" id="card-tracking-ribbon" aria-labelledby="trk-title">
+        <header class="card-head">
+          <div class="card-head-l">
+            <p class="eyebrow">Tracking de envio &amp; sell-out</p>
+            <h2 class="card-title" id="trk-title">Frequência diária de vendas</h2>
+          </div>
+          <div class="card-head-r">
+            <span class="tracking-month-pill" id="tracking-month-pill">--</span>
+          </div>
+        </header>
+        <div class="stat-row">
+          <div class="stat tracking-kpi-chip"><span class="stat-k">Dias com venda</span><span class="stat-v" id="tracking-active-days">--</span></div>
+          <div class="stat tracking-kpi-chip"><span class="stat-k">Regularidade</span><span class="stat-v" id="tracking-regularity-pct">--</span></div>
+          <div class="stat tracking-kpi-chip"><span class="stat-k">Média / dia ativo</span><span class="stat-v" id="tracking-avg-daily">--</span></div>
+        </div>
+        <div class="tracking-days-track cal" id="tracking-days-track"><div class="sk sk-cal"></div></div>
+        <div class="cal-legend">
+          <span class="leg-item"><span class="cal-sw state-active" aria-hidden="true"><svg class="ico" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Venda ativa</span>
+          <span class="leg-item"><span class="cal-sw state-inactive" aria-hidden="true"><svg class="ico" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>Sem venda</span>
+          <span class="leg-item"><span class="cal-sw state-weekend" aria-hidden="true"></span>Fim de semana</span>
+          <span class="leg-item"><span class="cal-sw is-today-sw" aria-hidden="true"></span>Hoje</span>
+          <span class="muted cal-hint">Toque ou passe o mouse no dia para ver detalhes</span>
+        </div>
+      </section>
+
+      <!-- Linha 4 (abaixo da dobra): Qualidade da Receita — Mix de Linhas & Preço Médio R$/DZ -->
+      <section class="card card-mix-quality" id="card-mix-quality" aria-labelledby="mix-insight-title">
+        <header class="card-head">
+          <div class="card-head-l">
+            <h2 class="card-title" id="mix-insight-title">Qualidade da receita — Mix &amp; Preço Médio</h2>
+          </div>
+          <div class="card-head-r">
+            <div class="chart-kpi-pill" id="mix-price-pill" tabindex="0" data-tip="Preço médio realizado no Sell-out (Receita R$ ÷ Volume em Dúzias). Mostra se o faturamento está sendo sustentado por mix de maior valor agregado ou apenas volume.">
+              <span class="pill-label">Preço médio</span>
+              <strong id="mix-avg-price-val">--</strong>
+              <span class="badge-neutral" id="mix-avg-price-badge">—</span>
+            </div>
+          </div>
+        </header>
+        <div class="mix-bars-wrap" id="mix-bars-wrap">
+          <div class="sk sk-line"></div>
+          <div class="sk sk-line" style="margin-top:8px;"></div>
+        </div>
+      </section>
+
+    </div><!-- .kpi-grid -->
+    </div><!-- #tab-kpis -->
+
+    <!-- ── Tab: Pedidos de Compra (Grade Logística) ── -->
+    <div class="tab-panel" id="tab-grade" style="display:none;">
+      <div class="card grade-card">
+
+        <!-- Barra de Ações & Título da Grade -->
+        <div class="grade-header-bar">
+          <div>
+            <p class="eyebrow">Acompanhamento logístico</p>
+            <h2 class="card-title grade-main-title">Pedidos de compra</h2>
+          </div>
+          <a href="https://bimbo.mercanet.com.br/PRD/Login/Login.aspx?ReturnUrl=%2fPRD%2fDefault.aspx" 
+             target="_blank" 
+             rel="noopener noreferrer" 
+             class="btn-mercanet"
+             title="Ir para o portal Mercanet para emitir um novo pedido de compra">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="15" height="15">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            <span>Realizar novo pedido</span>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12" style="opacity: 0.55;">
+              <path d="M5 11l6-6M6 5h5v5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="grade-table-wrap">
+          <table class="grade-table">
+            <thead>
+              <tr>
+                <th style="width: 46px; text-align: center;" title="Expandir itens do pedido"></th>
+                <th scope="col" data-sort="pedido" aria-sort="none"><button type="button" class="th-sort">Nº do pedido<span class="sort-ic" aria-hidden="true"></span></button></th>
+                <th scope="col" data-sort="emissao" aria-sort="none"><button type="button" class="th-sort">Data do pedido<span class="sort-ic" aria-hidden="true"></span></button></th>
+                <th scope="col" data-sort="previsao" aria-sort="none"><button type="button" class="th-sort">Entrega solicitada<span class="sort-ic" aria-hidden="true"></span></button></th>
+                <th scope="col" data-sort="entrega" aria-sort="none"><button type="button" class="th-sort">Entrega real<span class="sort-ic" aria-hidden="true"></span></button></th>
+                <th scope="col" data-sort="status" aria-sort="none"><button type="button" class="th-sort">Status<span class="sort-ic" aria-hidden="true"></span></button></th>
+                <th scope="col" class="num" data-sort="valor" aria-sort="none"><button type="button" class="th-sort">Valor líquido<span class="sort-ic" aria-hidden="true"></span></button></th>
+              </tr>
+            </thead>
+            <tbody id="tbody-grade-logistica">
+              <!-- Preenchido dinamicamente pelo JS / Databricks -->
+            </tbody>
+          </table>
+        </div><!-- .grade-table-wrap -->
+
+        <div class="grade-footer">
+          <span class="grade-count" id="grade-count-txt">Mostrando 0 de 0 registros</span>
+          <div class="grade-pagination" id="grade-pagination-wrap">
+            <!-- Preenchido dinamicamente com os botões de página -->
+          </div>
+        </div>
+
+      </div><!-- .grade-card -->
+    </div><!-- #tab-grade -->
+
+    <!-- ═══════════ Tab: Produtos na Ponta (US 116253) ═══════════ -->
+    <div class="tab-panel" id="tab-produtos" role="tabpanel" aria-label="Produtos & Fichas Técnicas" style="display:none; flex-direction:column; gap:1.25rem;">
+      <section class="card" style="padding: 1.25rem;">
+        <div class="produtos-toolbar">
+          <div>
+            <h2 style="font-size: 1.25rem; font-weight: 750; color: var(--text-strong); margin: 0 0 4px;">Gestão de Produtos na Ponta</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Catálogo oficial de pães Bimbo QSR: packshots em alta definição, especificações técnicas e materiais de merchandising.</p>
+          </div>
+          <div class="search-box" style="width: 260px;">
+            <input type="text" class="search-input" id="produtos-search-input" placeholder="Buscar por SKU, nome ou linha…" />
+          </div>
+        </div>
+
+        <div class="produtos-filters-bar">
+          <button type="button" class="prod-filter-btn active" data-prod-fam="">Todos os Produtos</button>
+          <button type="button" class="prod-filter-btn" data-prod-fam="Brioche & Gourmet">Brioche &amp; Gourmet</button>
+          <button type="button" class="prod-filter-btn" data-prod-fam="Clássico">Linha Clássica</button>
+          <button type="button" class="prod-filter-btn" data-prod-fam="Gourmet Especial">Gourmet Especial (Australiano)</button>
+          <span style="flex:1;"></span>
+          <span id="produtos-count" style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Carregando produtos…</span>
+        </div>
+      </section>
+
+      <div class="produtos-grid" id="produtos-grid">
+        <div class="v2-empty" style="grid-column: 1/-1;"><p>Carregando catálogo de produtos…</p></div>
+      </div>
+    </div>
+
+    <!-- ═══════════ Tab: Trade Marketing & Campanhas (US 116251 & 116252) ═══════════ -->
+    <div class="tab-panel" id="tab-trade" role="tabpanel" aria-label="Trade Marketing & Campanhas" style="display:none; flex-direction:column; gap:1.25rem;">
+      <section class="card" style="padding: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 1.25rem; font-weight: 750; color: var(--text-strong); margin: 0 0 4px;">Trade Marketing &amp; Gestão de Campanhas</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Apuração automatizada de metas comerciais e capacitação contínua para promotores e vendedores na ponta.</p>
+          </div>
+          <div class="segmented" role="tablist">
+            <button type="button" class="toggle-label active-label active" id="btn-trade-campanhas" onclick="window.switchTradeSubTab('campanhas')">1. Campanhas Vigentes</button>
+            <button type="button" class="toggle-label" id="btn-trade-treinamentos" onclick="window.switchTradeSubTab('treinamentos')">2. Academia Trade (Capacitação)</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sub-Aba 1: Campanhas Vigentes -->
+      <div id="campanhas-container">
+        <div class="v2-empty"><p>Carregando campanhas ativas…</p></div>
+      </div>
+
+      <!-- Sub-Aba 2: Academia Trade -->
+      <div id="treinamentos-container" style="display: none;">
+        <div class="v2-empty"><p>Carregando trilhas de capacitação…</p></div>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-forecast" role="tabpanel" aria-label="Previsão de Fechamento e Reposição" style="display:none;">
+      <h1 class="sr-only" id="fc-main-title">Previsão de Fechamento &amp; Reposição</h1>
+      <div class="fc-workspace" id="fc-workspace">
+
+        <!-- Barra Compacta de Controle Superior da Aba Forecast -->
+        <header class="card fc-toolbar" aria-label="Controles de previsão">
+          <div class="fc-toolbar-main">
+            <div class="fc-meta-strip">
+              <span class="fc-model-note" id="fc-model-note" tabindex="0"></span>
+              <span class="fc-meta-pill" id="fc-cutoff-pill">Dados realizados até: --</span>
+            </div>
+            <div class="fc-controls">
+              <div class="segmented fc-lens-switch" role="radiogroup" aria-label="Foco da previsão">
+                <button type="button" class="toggle-label active-label" id="fc-btn-sellout" data-lens="sellout" role="radio" aria-checked="true">
+                  <svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                  <span>Sell-out</span>
+                </button>
+                <button type="button" class="toggle-label" id="fc-btn-sellin" data-lens="sellin" role="radio" aria-checked="false" tabindex="-1">
+                  <svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+                  <span>Sell-in</span>
+                </button>
+              </div>
+              <div class="segmented fc-horizon-switch" role="radiogroup" aria-label="Horizonte da projeção">
+                <button type="button" class="toggle-label active-label" id="fc-horizon-1" data-horizon="1" role="radio" aria-checked="true" data-tip="Projeta o fechamento do mês selecionado dia a dia.">1 mês</button>
+                <button type="button" class="toggle-label" id="fc-horizon-2" data-horizon="2" role="radio" aria-checked="false" tabindex="-1" data-tip="Estende a previsão estatística para os próximos 2 meses.">2 meses</button>
+                <button type="button" class="toggle-label" id="fc-horizon-3" data-horizon="3" role="radio" aria-checked="false" tabindex="-1" data-tip="Estende a previsão estatística para os próximos 3 meses (trimestre).">3 meses</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="fc-alert-banner" id="fc-alert-banner" role="status" hidden>
+            <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg>
+            <span id="fc-alert-text"></span>
+          </div>
+        </header>
+
+        <!-- 4 Cards de Decisão Executiva do Distribuidor -->
+        <section class="fc-kpi-grid" aria-label="Indicadores de previsão do mês">
+          <!-- Card 1: Projeção de Fechamento -->
+          <article class="card fc-kpi-card fc-kpi-primary">
+            <div class="fc-card-top">
+              <h2 class="fc-card-title" id="fc-c1-title">Projeção de fechamento</h2>
+              <span class="badge-neutral" id="fc-c1-badge">--</span>
+            </div>
+            <div class="fc-card-val" id="fc-c1-val"><span class="sk sk-val"></span></div>
+            <div class="fc-tunnel-box" id="fc-c1-tunnel">
+              <span class="fc-tunnel-k">Faixa esperada (IC):</span>
+              <strong class="fc-tunnel-v" id="fc-c1-range">-- a --</strong>
+            </div>
+            <div class="kpi-progress fc-progress" id="fc-c1-progress" role="progressbar" aria-label="Projeção de atingimento da meta" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <span class="kpi-progress-fill" id="fc-c1-prog-fill"></span>
+            </div>
+            <div class="fc-card-foot" id="fc-c1-foot">Calculando tendência do mês…</div>
+          </article>
+
+          <!-- Card 2: Realizado até agora vs Meta Oficial -->
+          <article class="card fc-kpi-card">
+            <div class="fc-card-top">
+              <h2 class="fc-card-title" id="fc-c2-title">Realizado &amp; meta do mês</h2>
+              <span class="fc-sub-tag" id="fc-c2-tag">Acumulado</span>
+            </div>
+            <div class="fc-card-val" id="fc-c2-val"><span class="sk sk-val"></span></div>
+            <dl class="fc-mini-dl">
+              <div class="fc-mini-row">
+                <dt id="fc-c2-meta-k">Meta oficial do mês</dt>
+                <dd id="fc-c2-meta-v">--</dd>
+              </div>
+              <div class="fc-mini-row">
+                <dt id="fc-c2-gap-k">Balanço projetado vs meta</dt>
+                <dd id="fc-c2-gap-v">--</dd>
+              </div>
+            </dl>
+            <div class="fc-card-foot" id="fc-c2-foot">--</div>
+            <a href="https://dashboard.wisesales.com.br/home" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="margin-top: 8px; width: 100%; justify-content: center; font-size: 11px; padding: 4px 8px; border-color: rgba(2, 132, 199, 0.4); text-decoration: none;" title="Abrir ferramenta Wise Sales para captação de oportunidades e clientes">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <span>Oportunidades no Wise</span>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-left: 3px; opacity: 0.8;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+            </a>
+          </article>
+
+          <!-- Card 3: Plano de Ação Operacional (Adapta entre Ritmo Diário no Sell-out e Carteira/Pedido Sugerido no Sell-in) -->
+          <article class="card fc-kpi-card" id="fc-card-action">
+            <div class="fc-card-top">
+              <h2 class="fc-card-title" id="fc-c3-title">Ritmo para bater a meta</h2>
+              <span class="fc-sub-tag" id="fc-c3-tag">Decisão diária</span>
+            </div>
+            <div class="fc-card-val" id="fc-c3-val"><span class="sk sk-val"></span></div>
+            <dl class="fc-mini-dl">
+              <div class="fc-mini-row">
+                <dt id="fc-c3-r1-k">Ritmo projetado pelo modelo</dt>
+                <dd id="fc-c3-r1-v">--</dd>
+              </div>
+              <div class="fc-mini-row">
+                <dt id="fc-c3-r2-k">Dias úteis restantes</dt>
+                <dd id="fc-c3-r2-v">--</dd>
+              </div>
+            </dl>
+            <div class="fc-card-foot fc-card-foot-action" id="fc-c3-foot">--</div>
+          </article>
+
+          <!-- Card 4: Assertividade de Predição & Ações Rápidas por SKU -->
+          <article class="card fc-kpi-card">
+            <div class="fc-card-top">
+              <h2 class="fc-card-title" id="fc-c4-title" title="Confiabilidade histórica auditada do modelo preditivo">Assertividade de Predição Sell-out</h2>
+              <span class="badge-up" id="fc-c4-badge">--</span>
+            </div>
+            <div class="fc-card-val" id="fc-c4-val"><span class="sk sk-val"></span></div>
+            <p class="fc-stock-diag" id="fc-c4-diag" title="Auditado por backtest nos meses anteriores">Calculando confiança preditiva…</p>
+            <div class="fc-sku-quick-pills">
+              <button type="button" class="fc-quick-pill is-danger" id="fc-pill-ruptura" data-sku-filter="ruptura">
+                <span class="fc-qp-num" id="fc-qp-ruptura-num">0</span>
+                <span>SKUs em risco de ruptura</span>
+              </button>
+              <button type="button" class="fc-quick-pill is-warn" id="fc-pill-pedir" data-sku-filter="pedir">
+                <span class="fc-qp-num" id="fc-qp-pedir-num">0</span>
+                <span>com sugestão de pedido</span>
+              </button>
+            </div>
+          </article>
+        </section>
+
+        <!-- Gráfico Principal: Curva Diária de Tendência & Trajetória Acumulada -->
+        <section class="card fc-chart-card" aria-labelledby="fc-chart-title">
+          <header class="card-head fc-chart-head">
+            <div class="card-head-l">
+              <h2 class="card-title" id="fc-chart-title">Curva de evolução e tendência até o fim do mês</h2>
+              <p class="fc-chart-sub" id="fc-chart-sub">Toque ou passe o mouse sobre qualquer dia para inspecionar realizado, projeção e média histórica do dia da semana.</p>
+            </div>
+            <div class="card-head-r">
+              <div class="segmented" role="radiogroup" aria-label="Modo de visualização da curva">
+                <button type="button" class="toggle-label active-label" id="fc-view-daily" data-view="daily" role="radio" aria-checked="true">Dia a dia</button>
+                <button type="button" class="toggle-label" id="fc-view-cum" data-view="cumulative" role="radio" aria-checked="false" tabindex="-1">Acumulado vs meta</button>
+              </div>
+            </div>
+          </header>
+
+          <div class="chart-legend fc-chart-legend" id="fc-chart-legend">
+            <span class="leg-item"><span class="fc-lg-solid" aria-hidden="true"></span>Realizado</span>
+            <span class="leg-item"><span class="fc-lg-proj" aria-hidden="true"></span>Projeção futura</span>
+            <span class="leg-item" id="fc-leg-ref-wrap"><span class="fc-lg-hist" aria-hidden="true"></span><span id="fc-leg-ref-lbl">Média histórica do dia da semana</span></span>
+          </div>
+
+          <div class="fc-chart-stage" id="fc-chart-stage" aria-busy="true">
+            <div class="sk sk-chart"></div>
+          </div>
+        </section>
+
+        <!-- Faixa de Ritmo por Semana do Mês (nativamente minimizada) -->
+        <section class="card fc-weeks-card is-collapsed" id="fc-weeks-card" aria-labelledby="fc-weeks-title">
+          <header class="card-head fc-weeks-head" id="fc-weeks-head">
+            <div class="card-head-l">
+              <h2 class="card-title" id="fc-weeks-title">Desempenho e projeção por semana do mês</h2>
+              <span class="muted fc-weeks-sub" id="fc-weeks-hint">Comparativo entre realizado/projetado e a meta proporcional dos dias úteis de cada semana</span>
+            </div>
+            <div class="card-head-r">
+              <button type="button" class="btn btn-secondary btn-sm fc-weeks-toggle" id="fc-weeks-toggle" aria-expanded="false" aria-controls="fc-weeks-grid">
+                <span id="fc-weeks-toggle-txt">Mostrar semanas</span>
+                <svg class="ico fc-weeks-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+            </div>
+          </header>
+          <div class="fc-weeks-grid" id="fc-weeks-grid" hidden>
+            <div class="sk sk-cal"></div>
+          </div>
+        </section>
+
+        <!-- Matriz de Decisão e Reposição por Produto / SKU -->
+        <section class="card fc-sku-card" id="fc-sku-section" aria-labelledby="fc-sku-title">
+          <header class="card-head fc-sku-head">
+            <div class="card-head-l">
+              <h2 class="card-title" id="fc-sku-title">Planejamento e decisão de estoque por produto (SKU)</h2>
+              <p class="fc-chart-sub">Identifique itens com cobertura crítica ou ritmo abaixo da meta para direcionar seus próximos pedidos e rotas de venda.</p>
+            </div>
+            <div class="card-head-r">
+              <button type="button" class="btn btn-secondary btn-sm" id="fc-export-csv">
+                <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Exportar planilha (CSV)</span>
+              </button>
+              <a href="https://bimbo.mercanet.com.br/PRD/Login/Login.aspx?ReturnUrl=%2fPRD%2fDefault.aspx" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm fc-mercanet-cta" id="fc-mercanet-cta">
+                <span>Emitir pedido no Mercanet</span>
+                <svg class="ico" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>
+              </a>
+            </div>
+          </header>
+
+          <div class="fc-sku-toolbar">
+            <div class="fc-filter-pills" role="tablist" aria-label="Filtrar SKUs por situação operacional">
+              <button type="button" class="fc-pill active" data-filter="all" role="tab" aria-selected="true">Todos <span class="fc-pill-cnt" id="fc-cnt-all">0</span></button>
+              <button type="button" class="fc-pill" data-filter="ruptura" role="tab" aria-selected="false">Risco de ruptura <span class="fc-pill-cnt" id="fc-cnt-ruptura">0</span></button>
+              <button type="button" class="fc-pill" data-filter="pedir" role="tab" aria-selected="false">Sugestão de pedido <span class="fc-pill-cnt" id="fc-cnt-pedir">0</span></button>
+              <button type="button" class="fc-pill" data-filter="acelerar" role="tab" aria-selected="false">Acelerar giro <span class="fc-pill-cnt" id="fc-cnt-acelerar">0</span></button>
+              <button type="button" class="fc-pill" data-filter="no_ritmo" role="tab" aria-selected="false">No ritmo <span class="fc-pill-cnt" id="fc-cnt-noritmo">0</span></button>
+            </div>
+            <label class="search fc-sku-search">
+              <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="search" id="fc-sku-search-input" placeholder="Buscar produto ou código SKU…" aria-label="Buscar produto ou código SKU" autocomplete="off">
+            </label>
+          </div>
+
+          <div class="fc-table-wrap">
+            <table class="fc-sku-table" id="fc-sku-table">
+              <caption class="sr-only">Previsão de fechamento e recomendação de estoque por SKU</caption>
+              <thead>
+                <tr>
+                  <th scope="col" data-fc-sort="produto" aria-sort="none"><button type="button" class="th-sort">Produto / SKU <span class="sort-ic" aria-hidden="true"></span></button></th>
+                  <th scope="col" class="num" data-fc-sort="real" aria-sort="none"><button type="button" class="th-sort"><span id="fc-th-real">Realizado mês</span> <span class="sort-ic" aria-hidden="true"></span></button></th>
+                  <th scope="col" class="num" data-fc-sort="proj" aria-sort="descending"><button type="button" class="th-sort"><span id="fc-th-proj">Projeção fechamento</span> <span class="sort-ic" aria-hidden="true"></span></button></th>
+                  <th scope="col" class="num" data-fc-sort="meta" aria-sort="none"><button type="button" class="th-sort">Referência / Meta <span class="sort-ic" aria-hidden="true"></span></button></th>
+                  <th scope="col" class="num" data-fc-sort="ating" aria-sort="none"><button type="button" class="th-sort">% Ating. proj. <span class="sort-ic" aria-hidden="true"></span></button></th>
+                  <th scope="col" class="num" data-fc-sort="carteira" aria-sort="none"><button type="button" class="th-sort">Carteira aberta <span class="sort-ic" aria-hidden="true"></span></button></th>
+                  <th scope="col" class="num" data-fc-sort="dias" aria-sort="none"><button type="button" class="th-sort">Cobertura estoque <span class="sort-ic" aria-hidden="true"></span></button></th>
+                  <th scope="col" data-fc-sort="status" aria-sort="none"><button type="button" class="th-sort">Status &amp; recomendação <span class="sort-ic" aria-hidden="true"></span></button></th>
+                </tr>
+              </thead>
+              <tbody id="fc-sku-tbody">
+                <tr class="sk-row"><td colspan="8"><span class="sk sk-line"></span></td></tr>
+              </tbody>
+            </table>
+            <div class="v2-empty sm" id="fc-sku-empty" hidden><p>Nenhum item encontrado para o filtro selecionado.</p></div>
+          </div>
+
+          <div class="grade-footer fc-sku-footer">
+            <span class="grade-count" id="fc-sku-count-txt">Mostrando 0 itens</span>
+            <div class="grade-pagination" id="fc-sku-pagination"></div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- ═══════════ Tab: Helpdesk & Suporte BQ (US 116257) ═══════════ -->
+    <div class="tab-panel" id="tab-help" role="tabpanel" aria-label="Suporte & Chamados BQ" style="display:none; flex-direction:column; gap:1.25rem;">
+      <section class="card" style="padding: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-size: 1.25rem; font-weight: 750; color: var(--text-strong); margin: 0 0 4px;">Canal Direto de Suporte &amp; Chamados</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Comunicação estruturada com o Back Office da Bimbo QSR: logística de carretas, faturamento, divergências e qualidade.</p>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="window.abrirModalNovoChamado()">
+            <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>+ Abrir Novo Chamado</span>
+          </button>
+        </div>
+      </section>
+
+      <div id="chamados-list">
+        <div class="v2-empty"><p>Carregando chamados de suporte…</p></div>
+      </div>
+    </div>
+
+    <!-- ADMIN_ONLY_START -->
+    <!-- ── Tab: Visão Executiva (Apenas Admin - Consolidado 30.000 pés) ── -->
+    <div class="tab-panel v2-admin-only v2-exec-tab" id="tab-executivo" role="tabpanel" aria-label="Visão Executiva do Canal" style="display:none;" hidden>
+      <div class="ex-workspace" id="ex-workspace">
+        <!-- Resumo Executivo Cascateado com I.A. (Mensal / Semanal) -->
+        <section class="card ex-ai-card" id="ex-ai-brief" aria-labelledby="ex-ai-title">
+          <div class="ex-ai-head">
+            <div class="ex-ai-head-l">
+              <svg class="ico ex-ai-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
+              <h2 class="ex-ai-title" id="ex-ai-title">Resumo Executivo</h2>
+              <span class="ex-ai-window" id="ex-ai-window">Carregando período…</span>
+            </div>
+            <div class="ex-ai-head-r">
+              <div class="segmented ex-ai-switch" role="radiogroup" aria-label="Periodicidade do resumo executivo">
+                <button type="button" class="toggle-label active-label" id="ex-ai-mensal" data-ai-mode="mensal" role="radio" aria-checked="true">Mensal</button>
+                <button type="button" class="toggle-label" id="ex-ai-semanal" data-ai-mode="semanal" role="radio" aria-checked="false" tabindex="-1">Semanal</button>
+              </div>
+              <button type="button" class="btn btn-secondary btn-sm ex-ai-btn" id="ex-ai-refresh" title="Gerar nova leitura com os dados atuais">Atualizar</button>
+              <button type="button" class="btn btn-secondary btn-sm ex-ai-btn" id="ex-ai-toggle" aria-expanded="true" aria-controls="ex-ai-body">Recolher</button>
+            </div>
+          </div>
+
+          <div class="ex-ai-body" id="ex-ai-body">
+            <div class="ex-ai-loading" id="ex-ai-loading">
+              <div class="sk sk-line" style="width:72%;height:18px"></div>
+              <div class="sk sk-line" style="width:94%;height:14px"></div>
+              <div class="sk sk-line" style="width:84%;height:14px"></div>
+            </div>
+            <div id="ex-ai-content" hidden>
+              <p class="ex-ai-headline" id="ex-ai-manchete"></p>
+              <p class="ex-ai-macro" id="ex-ai-macro"></p>
+              <div class="ex-ai-cascade" id="ex-ai-movimentos" aria-label="Principais movimentos"></div>
+              <div class="ex-ai-actions" id="ex-ai-acoes" aria-label="Prioridades de ação"></div>
+              <p class="ex-ai-meta" id="ex-ai-meta"></p>
+            </div>
+            <div class="v2-empty sm" id="ex-ai-error" hidden>
+              <p id="ex-ai-err-msg">Não foi possível gerar o resumo executivo agora.</p>
+              <button type="button" class="btn btn-secondary btn-sm" id="ex-ai-retry">Tentar novamente</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="ex-kpi-grid" aria-label="Resumo executivo consolidado">
+          <article class="card ex-kpi-card ex-kpi-primary">
+            <div class="fc-card-top">
+              <h2 class="fc-card-title">Sell-out Consolidado</h2>
+              <span class="badge-neutral" id="ex-c1-badge" data-tip="Crescimento no mesmo número de dias úteis transcorridos do ano anterior.">--</span>
+            </div>
+            <div class="fc-card-val" id="ex-c1-val"><span class="sk sk-val"></span></div>
+            <div class="fc-card-foot" id="ex-c1-foot">Carregando consolidado…</div>
+          </article>
+
+          <article class="card ex-kpi-card">
+            <div class="fc-card-top">
+              <h2 class="fc-card-title">Projeção fechamento</h2>
+              <span class="badge-neutral" id="ex-c2-badge">--</span>
+            </div>
+            <div class="fc-card-val" id="ex-c2-val"><span class="sk sk-val"></span></div>
+            <div class="fc-card-foot" id="ex-c2-foot">--</div>
+          </article>
+
+          <article class="card ex-kpi-card">
+            <div class="fc-card-top">
+              <h2 class="fc-card-title">Sell-in + Carteira</h2>
+              <span class="fc-sub-tag" id="ex-c3-badge">--</span>
+            </div>
+            <div class="fc-card-val" id="ex-c3-val"><span class="sk sk-val"></span></div>
+            <div class="fc-card-foot" id="ex-c3-foot">--</div>
+          </article>
+
+          <article class="card ex-kpi-card">
+            <div class="fc-card-top">
+              <h2 class="fc-card-title">Mix &amp; preço médio</h2>
+              <span class="fc-sub-tag" id="ex-c4-badge">--</span>
+            </div>
+            <div class="fc-card-val" id="ex-c4-val" tabindex="0" data-tip="Receita Sell-out ÷ Volume em Dúzias. Linhas Brioche &amp; Gourmet incluem Brioche, Australiano, Artesano e Nuvem."><span class="sk sk-val"></span></div>
+            <div class="fc-card-foot" id="ex-c4-foot">--</div>
+          </article>
+        </section>
+
+        <section class="card ex-table-card" aria-labelledby="ex-tbl-title">
+          <header class="card-head ex-table-head">
+            <div class="card-head-l">
+              <h2 class="card-title" id="ex-tbl-title">Desempenho por distribuidor</h2>
+            </div>
+            <div class="card-head-r ex-table-tools">
+              <div class="ex-filter-pills" role="tablist" aria-label="Filtro rápido">
+                <button type="button" class="fc-pill active" data-ex-filter="all" role="tab" aria-selected="true">Todos <span class="fc-pill-cnt" id="ex-cnt-all">0</span></button>
+                <button type="button" class="fc-pill" data-ex-filter="below" role="tab" aria-selected="false">Abaixo da meta <span class="fc-pill-cnt" id="ex-cnt-below">0</span></button>
+                <button type="button" class="fc-pill" data-ex-filter="late" role="tab" aria-selected="false">Sem envio &gt;3d <span class="fc-pill-cnt" id="ex-cnt-late">0</span></button>
+              </div>
+              <label class="search ex-search">
+                <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="search" id="ex-search-input" placeholder="Buscar distribuidor" aria-label="Buscar distribuidor" autocomplete="off">
+              </label>
+            </div>
+          </header>
+
+          <div class="ex-table-wrap">
+            <table class="ex-table" id="ex-dist-table">
+              <caption class="sr-only">Matriz comparativa por distribuidor</caption>
+              <thead>
+                <tr>
+                  <th scope="col" data-ex-sort="nome" aria-sort="none"><button type="button" class="th-sort">Distribuidor <span class="sort-ic" aria-hidden="true"></span></button></th>
+                  <th scope="col" class="num" data-ex-sort="so_real" aria-sort="descending"><button type="button" class="th-sort">Sell-out real <span class="sort-ic" aria-hidden="true"></span></button></th>
+                  <th scope="col" class="num" data-ex-sort="so_proj" aria-sort="none" data-tip="Ritmo atual projetado para os dias úteis totais do mês."><button type="button" class="th-sort">Projeção mês <span class="sort-ic" aria-hidden="true"></span></button></th>
+                  <th scope="col" class="num" data-ex-sort="att" aria-sort="none"><button type="button" class="th-sort">% Meta <span class="sort-ic" aria-hidden="true"></span></button></th>
+                  <th scope="col" class="num" data-ex-sort="yoy" aria-sort="none" data-tip="Variação sobre o mesmo número de dias úteis do ano passado."><button type="button" class="th-sort">Var. ano ant. <span class="sort-ic" aria-hidden="true"></span></button></th>
+                  <th scope="col" class="num" data-ex-sort="preco" aria-sort="none" data-tip="Receita Sell-out ÷ Volume em Dúzias."><button type="button" class="th-sort">R$/DZ <span class="sort-ic" aria-hidden="true"></span></button></th>
+                  <th scope="col" class="num" data-ex-sort="mix" aria-sort="none" data-tip="Participação de Brioche, Australiano, Artesano e Nuvem na receita Sell-out."><button type="button" class="th-sort">% Mix Brioche <span class="sort-ic" aria-hidden="true"></span></button></th>
+                  <th scope="col" class="num" data-ex-sort="si" aria-sort="none"><button type="button" class="th-sort">Sell-in + Cart. <span class="sort-ic" aria-hidden="true"></span></button></th>
+                  <th scope="col" class="num" data-ex-sort="envio" aria-sort="none" data-tip="Dias desde a última venda de Sell-out recebida no mês."><button type="button" class="th-sort">Envio SO <span class="sort-ic" aria-hidden="true"></span></button></th>
+                  <th scope="col" class="num">Ação</th>
+                </tr>
+              </thead>
+              <tbody id="ex-tbody">
+                <tr class="sk-row"><td colspan="10"><span class="sk sk-line"></span></td></tr>
+                <tr class="sk-row"><td colspan="10"><span class="sk sk-line"></span></td></tr>
+                <tr class="sk-row"><td colspan="10"><span class="sk sk-line"></span></td></tr>
+              </tbody>
+            </table>
+            <div class="v2-empty sm" id="ex-empty" hidden>
+              <p id="ex-empty-msg">Nenhum distribuidor encontrado para o filtro aplicado.</p>
+              <button type="button" class="btn btn-secondary btn-sm" id="ex-retry-btn" hidden>Tentar novamente</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <!-- ADMIN_ONLY_END -->
+
+    <!-- ADMIN_ONLY_START -->
+    <!-- ── Tab: Guia do Usuário & Documentação Técnica (Apenas Admin - Muda de tela no App) ── -->
+    <div class="tab-panel" id="tab-guia" style="display: none; flex-direction: column; width: 100%;">
+      <div class="guia-top-banner" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; padding: 1rem 1.4rem; background: rgba(10, 37, 88, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; backdrop-filter: blur(12px);">
+        <div>
+          <span style="font-size: 11px; font-weight: 800; color: #38BDF8; letter-spacing: 0.08em; text-transform: uppercase;">DOCUMENTAÇÃO TÉCNICA &amp; REGRAS DE NEGÓCIO</span>
+          <h2 style="font-size: 1.25rem; font-weight: 850; color: #FFFFFF; margin: 2px 0 0 0;">Manual de Operação, Métricas &amp; Arquitetura</h2>
+        </div>
+      </div>
+
+      <div class="guia-container" style="padding: 0; max-width: 100%;">
+<!-- Barra de Abas do Guia (Padrão Compras 360) -->
+    <div class="guia-tab-bar" role="tablist">
+      <button class="guia-tab-btn active" onclick="switchGuiaSubTab('guia-sub-negocio')" id="btn-sub-negocio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+        <span>1. Guia de Negócio &amp; Navegação</span>
+      </button>
+
+      <button class="guia-tab-btn" onclick="switchGuiaSubTab('guia-sub-arquitetura')" id="btn-sub-arquitetura">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+          <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+          <line x1="6" y1="6" x2="6.01" y2="6"></line>
+          <line x1="6" y1="18" x2="6.01" y2="18"></line>
+        </svg>
+        <span>2. Arquitetura &amp; Pipeline</span>
+      </button>
+
+      <button class="guia-tab-btn" onclick="switchGuiaSubTab('guia-sub-metricas')" id="btn-sub-metricas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+        <span>3. Manual de Métricas &amp; Fórmulas</span>
+      </button>
+
+      <button class="guia-tab-btn" onclick="switchGuiaSubTab('guia-sub-schema')" id="btn-sub-schema">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+          <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+          <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+        </svg>
+        <span>4. Star Schema &amp; Dicionário</span>
+      </button>
+
+      <button class="guia-tab-btn" onclick="switchGuiaSubTab('guia-sub-rls')" id="btn-sub-rls">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>5. Governança &amp; RLS</span>
+      </button>
+
+      <button class="guia-tab-btn" onclick="switchGuiaSubTab('guia-sub-runbook')" id="btn-sub-runbook">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="4 17 10 11 4 5"></polyline>
+          <line x1="12" y1="19" x2="20" y2="19"></line>
+        </svg>
+        <span>6. Runbook do Desenvolvedor</span>
+      </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- SUB-ABA 1: GUIA DE NEGÓCIO & NAVEGAÇÃO                            -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="guia-tab-content active" id="guia-sub-negocio">
+      <div class="tech-section">
+        <h2><span class="sec-num">01</span> Visão Geral do Portal de Distribuidores</h2>
+        <p>O <strong>Portal de Distribuidores Bimbo QSR</strong> é a plataforma analítica oficial de monitoramento de performance comercial, logística e de estoques da rede de distribuição credenciada no Brasil. Desenvolvido nativamente sobre o <strong>Databricks Lakehouse</strong>, o portal unifica os fluxos de <strong>Sell-in</strong> (faturamento da Bimbo para o distribuidor) e <strong>Sell-out</strong> (vendas do distribuidor para restaurantes, hamburguerias e clientes finais), eliminando defasagens manuais em planilhas.</p>
+        
+        <div class="tech-alert alert-success">
+          <span style="font-size:1.2rem;">🔒</span>
+          <div>
+            <strong>Segurança &amp; Isolamento de Dados (RLS Nativo):</strong><br>
+            Cada distribuidor acessa o portal via Single Sign-On (SSO) corporativo e visualiza <strong>estritamente os dados do seu próprio CNPJ</strong>. Nenhuma informação de concorrentes, clientes ou preços de outros distribuidores é trafegada para o navegador.
+          </div>
+        </div>
+
+        <div class="mod-grid">
+          <div class="mod-card">
+            <div class="mod-num">SI</div>
+            <div class="mod-info">
+              <div class="mod-name">Sell-In (Bimbo → Distribuidor)</div>
+              <div class="mod-desc">Acompanhamento das compras realizadas junto à Bimbo QSR vs Forecast planejado, em valor monetário e volume de caixas/dúzias.</div>
+            </div>
+          </div>
+          <div class="mod-card">
+            <div class="mod-num">SO</div>
+            <div class="mod-info">
+              <div class="mod-name">Sell-Out (Distribuidor → Clientes)</div>
+              <div class="mod-desc">Vendas faturadas aos estabelecimentos de alimentação vs Metas comerciais, permitindo identificar oportunidades de expansão de demanda.</div>
+            </div>
+          </div>
+          <div class="mod-card">
+            <div class="mod-num">ET</div>
+            <div class="mod-info">
+              <div class="mod-name">Estoque &amp; Giro por SKU</div>
+              <div class="mod-desc">Posição de cobertura em dias de estoque calculada com base na média diária de vendas, sinalizando riscos de ruptura ou excesso.</div>
+            </div>
+          </div>
+          <div class="mod-card">
+            <div class="mod-num">PS</div>
+            <div class="mod-info">
+              <div class="mod-name">Positivação por Linha</div>
+              <div class="mod-desc">Penetração de clientes atendidos no período por linha de produto (Gourmet Brioche, Tradicionais, Hot Dog, Artesanais e Bolos).</div>
+            </div>
+          </div>
+          <div class="mod-card">
+            <div class="mod-num">PD</div>
+            <div class="mod-info">
+              <div class="mod-name">Fluxo de Pedidos &amp; Faturamento</div>
+              <div class="mod-desc">Status da carteira de compras: pedidos faturados (Invoiced), pedidos em aberto (Open Order) e acompanhamento de entregas.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tech-section">
+        <h2><span class="sec-num">02</span> Como Usar os Filtros Analíticos</h2>
+        <p>A barra de filtros superior possui controles interativos sincronizados que recalculam todos os visuais instantaneamente:</p>
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th style="width: 20%;">Filtro</th>
+              <th style="width: 25%;">Opções &amp; Comportamento</th>
+              <th style="width: 55%;">Regra de Aplicação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Ano</strong></td>
+              <td>Padrão nativo: <code>2026</code> (permite 2025 ou Todos)</td>
+              <td>Filtra todas as frentes pelo ano contábil do fato.</td>
+            </tr>
+            <tr>
+              <td><strong>Mês</strong></td>
+              <td>Padrão nativo: <code>09 - Set</code> (ou seleção múltipla / Todos)</td>
+              <td>Filtra os cards de KPIs pelo mês selecionado. No gráfico anual de barras, exibe os 12 meses para comparação e destaca o período filtrado.</td>
+            </tr>
+            <tr>
+              <td><strong>Semana / Dia</strong></td>
+              <td>Semanas (1 a 52) / Dias (01 a 31)</td>
+              <td>Permite análise tática semanal e diária da evolução de vendas e pedidos.</td>
+            </tr>
+            <tr>
+              <td><strong>Produto &amp; SKU</strong></td>
+              <td>Dropdown pesquisável com autocomplete</td>
+              <td>Filtra por descrição corporativa Bimbo ou código SKU de catálogo do distribuidor.</td>
+            </tr>
+            <tr>
+              <td><strong>Nº Pedido</strong></td>
+              <td>Lista de ordens de compra oficiais</td>
+              <td>Rastreia um pedido específico da emissão até a entrega física.</td>
+            </tr>
+            <tr>
+              <td><strong>Seletor Valor / Volume</strong></td>
+              <td>Chave seletora no canto superior direito</td>
+              <td>Alterna toda a tela entre <strong>R$ (Reais)</strong> e <strong>Volume Físico</strong>. Pães são apresentados em <strong>Dúzias (DZ)</strong> e demais produtos em <strong>Unidades (UN)</strong>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- SUB-ABA 2: ARQUITETURA & PIPELINE DE DADOS (END-TO-END)            -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="guia-tab-content" id="guia-sub-arquitetura">
+      <div class="tech-section">
+        <h2><span class="sec-num">01</span> Arquitetura do Pipeline de Dados (End-to-End)</h2>
+        <p>O fluxo de dados parte dos sistemas transacionais operacionais dos distribuidores e da Bimbo QSR até a exibição no navegador. A arquitetura segue o padrão <strong>Medallion Lakehouse</strong> no Azure Databricks com governança unificada pelo <strong>Unity Catalog</strong>:</p>
+
+        <div class="tech-diagram"><span class="diag-box">[ORIGEM: AZURE SQL DATABASE &amp; ERPs DE DISTRIBUIÇÃO]</span>
+  │   • Bancos transacionais dos distribuidores (pedidos, clientes, estoque)
+  │   • ERP SAP / QSR Bimbo (faturamento corporativo Sell-in, forecast e pedidos)
+  │   • Arquivos de coleta diária padronizada de distribuidores (PASTA_FONTE = 'BQB')
+  ▼
+<span class="diag-hl">┌─────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="diag-hl">│ CAMADA BRONZE / LANDING ZONE (cat_dnabb_dv.bracatlg_lz)                     │</span>
+<span class="diag-hl">├─────────────────────────────────────────────────────────────────────────────┤</span>
+│ • <span class="diag-hl">clientes_distribuidores</span> : Base cadastral de CNPJs de clientes atendidos  │
+│ • <span class="diag-hl">produtos_distribuidores</span> : Tabela de de-para SKU Distribuidor vs SKU Bimbo │
+│ • <span class="diag-hl">calendario_bimbo</span>        : Calendário fiscal corporativo Bimbo              │
+<span class="diag-hl">└─────────────────────────────────────────────────────────────────────────────┘</span>
+  │
+  │  Pipeline PySpark ETL Diário (Padronização, Limpeza, Tratamento de Nulos)
+  ▼
+<span class="diag-hl">┌─────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="diag-hl">│ CAMADA SILVER / MODELO STAR SCHEMA (cat_dnabb_dv.opebrapodis_sz)            │</span>
+<span class="diag-hl">├─────────────────────────────────────────────────────────────────────────────┤</span>
+│ • <span class="diag-hl">tbl_dim_distributor_user_mapping</span> : Mapeamento E-mail SSO ↔ CNPJ + is_admin│
+│ • <span class="diag-hl">tbl_factdy_sellin</span>               : Fato diária Sell-in Realizado e Forecast│
+│ • <span class="diag-hl">tbl_factdy_sellout</span>              : Fato diária Sell-out Realizado e Metas  │
+│ • <span class="diag-hl">tbl_factdy_stock</span>                : Posição diária de Estoque e Giro por SKU│
+│ • <span class="diag-hl">tbl_factdy_order</span>                : Pedidos de Compra colocados à Bimbo     │
+<span class="diag-hl">└─────────────────────────────────────────────────────────────────────────────┘</span>
+  │
+  │  Aplicado Row-Level Security (Row Filter) pelo Unity Catalog:
+  │  <code>fn_rls_distribuidor(CNPJ_DISTRIBUIDOR)</code>
+  ▼
+<span class="diag-box">┌─────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="diag-box">│ CAMADA DE SEGURANÇA UNITY CATALOG (RLS)                                     │</span>
+<span class="diag-box">├─────────────────────────────────────────────────────────────────────────────┤</span>
+│ • Service Principal App DEV  : 46439f81-6e3f-4c66-ae17-232900143dc9 (Bypass)│
+│ • Service Principal App PROD : 05577799-e0de-4e37-8e4b-d06a8f306e72 (Bypass)│
+│ • Consultas SQL Interativas  : Filtradas estritamente por session_user()    │
+<span class="diag-box">└─────────────────────────────────────────────────────────────────────────────┘</span>
+  │
+  │  Execução via Statement Execution API no Databricks SQL Warehouse (f4a2e26b8410f1e3)
+  ▼
+<span class="diag-hl">┌─────────────────────────────────────────────────────────────────────────────┐</span>
+<span class="diag-hl">│ BACKEND PYTHON FLASK — DATABRICKS APPS (src/app/app.py)                     │</span>
+<span class="diag-hl">├─────────────────────────────────────────────────────────────────────────────┤</span>
+│ 1. Captura e-mail autenticado via header <code>X-Forwarded-Email</code>                 │
+│ 2. Consulta <code>tbl_dim_distributor_user_mapping</code> para validar CNPJs autorizados│
+│ 3. Injeta cláusulas parametrizadas <code>WHERE f.CNPJ_DISTRIBUIDOR IN (...)</code>    │
+│ 4. Executa 6 queries simultâneas em paralelo via ThreadPoolExecutor (max 6) │
+│ 5. Constrói JSON estruturado com cards, gráficos, drilldowns e paginação    │
+<span class="diag-hl">└─────────────────────────────────────────────────────────────────────────────┘</span>
+  │
+  │  REST API HTTP JSON Payload (/api/me, /api/kpi, /api/filtros)
+  ▼
+<span class="diag-box">[FRONTEND: Navegador do Usuário (dashboard.html + kpi_distribuidores.js)]</span>
+  • Atualização dinâmica de cards, medidores de atingimento e gráfico de barras
+  • Drilldown com modais de alta resolução (Estoque e Positivação de Clientes)</div>
+
+        <h3>Linha do Tempo e Frequência das Cargas</h3>
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th>Camada</th>
+              <th>Origem</th>
+              <th>Destino</th>
+              <th>Mecanismo / Ferramenta</th>
+              <th>Frequência</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Ingestão Bronze</strong></td>
+              <td>Azure SQL Database / Pastas de Coleta</td>
+              <td><code>cat_dnabb_dv.bracatlg_lz</code></td>
+              <td>Azure Data Factory (ADF) / Cópia Delta Lake</td>
+              <td>Diária (Madrugada)</td>
+            </tr>
+            <tr>
+              <td><strong>Processamento Silver</strong></td>
+              <td>Landing Zone</td>
+              <td><code>cat_dnabb_dv.opebrapodis_sz</code></td>
+              <td>PySpark ETL Notebooks (Agregações e Validações)</td>
+              <td>Diária (05:00 AM)</td>
+            </tr>
+            <tr>
+              <td><strong>Acesso do App</strong></td>
+              <td>Tabelas Fato com RLS</td>
+              <td>Flask API (Databricks Apps)</td>
+              <td>Databricks SQL Statement Execution API (HTTPS)</td>
+              <td>Tempo Real / On-Demand</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- SUB-ABA 3: MANUAL DE MÉTRICAS & FÓRMULAS                           -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="guia-tab-content" id="guia-sub-metricas">
+      <div class="tech-section">
+        <h2><span class="sec-num">01</span> Manual Detalhado de Métricas, Fórmulas e Regras de Negócio</h2>
+        <p>Detalhamento exaustivo de cada card, gráfico e tabela analítica do Portal de Distribuidores. Todas as métricas respeitam rigorosamente a âncora temporal e as regras de negócio corporativas.</p>
+
+        <div class="tech-alert">
+          <span style="font-size:1.1rem;">ℹ️</span>
+          <div>
+            <strong>Âncoras de Data dos Filtros no Sistema:</strong><br>
+            • <strong>Sell-in</strong>: incide estritamente sobre <span class="badge-date-anchor">tbl_factdy_sellin.DT_SELL_IN</span>.<br>
+            • <strong>Sell-out &amp; Positivação</strong>: incidem estritamente sobre <span class="badge-date-anchor">tbl_factdy_sellout.DATA_SELL_OUT</span>.<br>
+            • <strong>Estoque &amp; Giro</strong>: incide sobre <span class="badge-date-anchor">tbl_factdy_stock.DATA_ESTOQUE</span> com partição por data mais recente.<br>
+            • <strong>Pedidos de Compra</strong>: incide sobre <span class="badge-date-anchor">tbl_factdy_order.DATA_EMISSAO_PEDIDO</span>.
+          </div>
+        </div>
+
+        <!-- Card 1: SELL-IN METAS -->
+        <div class="metric-module-card">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num">01</span> Card Sell-in Metas (Compras do Distribuidor junto à Bimbo QSR)
+            </h3>
+            <span class="metric-module-badge">Tabela: tbl_factdy_sellin</span>
+          </div>
+          <div class="metric-module-body">
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 18%;">Métrica</th>
+                  <th style="width: 28%;">Fórmula de Cálculo</th>
+                  <th style="width: 24%;">Colunas &amp; Tabela de Origem</th>
+                  <th style="width: 30%;">Regras &amp; Regra de Negócio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Sell-in Realizado</strong></td>
+                  <td><code>SUM(VL_SELL_IN)</code> (se Valor)<br><code>SUM(QTDE_SELL_IN)</code> (se Volume)</td>
+                  <td><code>tbl_factdy_sellin.VL_SELL_IN</code><br><code>tbl_factdy_sellin.QTDE_SELL_IN</code></td>
+                  <td>Soma das compras faturadas no período filtrado. No modo Volume, pães são calculados em DZ e demais itens em UN.</td>
+                </tr>
+                <tr>
+                  <td><strong>Forecast (Previsão)</strong></td>
+                  <td><code>SUM(VL_FORECAST)</code> (se Valor)<br><code>SUM(QTDE_FORECAST)</code> (se Volume)</td>
+                  <td><code>tbl_factdy_sellin.VL_FORECAST</code><br><code>tbl_factdy_sellin.QTDE_FORECAST</code></td>
+                  <td>Volume ou valor acordado de previsão comercial entre Bimbo e distribuidor para o período.</td>
+                </tr>
+                <tr>
+                  <td><strong>% Atingimento</strong></td>
+                  <td><code>ROUND((Realizado / Forecast) * 100, 0)</code></td>
+                  <td>Cálculo direto de atingimento</td>
+                  <td>Representado no mini-gauge circular. Badge verde para &gt;= 100%, amarelo para 70-99% e vermelho para &lt; 70%.</td>
+                </tr>
+                <tr>
+                  <td><strong>Diferença (Gap)</strong></td>
+                  <td><code>Realizado - Forecast</code><br><code>% Gap = Atingimento - 100%</code></td>
+                  <td>Diferença absoluta e complementar</td>
+                  <td>Exemplo: Se o atingimento for 18%, a diferença exibe <code>↓ Diferença: -R$ 13.0M (-82%)</code>, garantindo soma complementar exata (18 + 82 = 100%).</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Card 2: SELL-OUT METAS -->
+        <div class="metric-module-card">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num">02</span> Card Sell-out Metas (Vendas do Distribuidor aos Clientes Finais)
+            </h3>
+            <span class="metric-module-badge">Tabela: tbl_factdy_sellout</span>
+          </div>
+          <div class="metric-module-body">
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 18%;">Métrica</th>
+                  <th style="width: 28%;">Fórmula de Cálculo</th>
+                  <th style="width: 24%;">Colunas &amp; Tabela de Origem</th>
+                  <th style="width: 30%;">Regras &amp; Regra de Negócio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Sell-out Realizado</strong></td>
+                  <td><code>SUM(VL_SELL_OUT)</code> (se Valor)<br><code>SUM(QTDE_UNITARIO_SELL_OUT)</code></td>
+                  <td><code>tbl_factdy_sellout.VL_SELL_OUT</code><br><code>tbl_factdy_sellout.QTDE_UNITARIO_SELL_OUT</code></td>
+                  <td><strong>Regra Crítica P4:</strong> Filtra <code>SKU_PROD_BQ != 'META' OR SKU_PROD_BQ IS NULL</code> para computar somente as vendas reais sem duplicar linhas de meta.</td>
+                </tr>
+                <tr>
+                  <td><strong>Meta de Sell-out</strong></td>
+                  <td><code>SUM(VL_META)</code></td>
+                  <td><code>tbl_factdy_sellout.VL_META</code></td>
+                  <td>Filtra linhas onde <code>(SKU_PROD_BQ = 'META' OR VL_SELL_OUT = 0) AND VL_META &gt; 0</code>. Isola as metas cadastradas, evitando distorção por cruzamento cartesiano.</td>
+                </tr>
+                <tr>
+                  <td><strong>% Atingimento &amp; Gap</strong></td>
+                  <td><code>(Realizado / Meta) * 100</code><br><code>% Gap = Atingimento - 100%</code></td>
+                  <td>Relação percentual entre realizado e meta comercial</td>
+                  <td>Indica se o distribuidor atingiu a meta de abastecimento do mercado no período selecionado.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Card 3: GRÁFICO COMPARATIVO SELL-IN VS SELL-OUT -->
+        <div class="metric-module-card">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num">03</span> Gráfico Anual de Barras (Sell-in Realizado vs Sell-out Realizado)
+            </h3>
+            <span class="metric-module-badge">Visual Comparativo Mensal</span>
+          </div>
+          <div class="metric-module-body">
+            <p>Compara as vendas da Bimbo para o Distribuidor (Sell-In, barra azul marinho <code>#0A2558</code>) com as vendas do Distribuidor para as lanchonetes e restaurantes (Sell-Out, barra azul ciano <code>#38BDF8</code>) em todos os 12 meses do ano:</p>
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 20%;">Elemento</th>
+                  <th style="width: 40%;">Lógica de Construção</th>
+                  <th style="width: 40%;">Interpretação de Negócio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Barra Sell-in</strong></td>
+                  <td>Agrupamento mensal <code>MONTH(DT_SELL_IN)</code> sobre a tabela fato <code>tbl_factdy_sellin</code>.</td>
+                  <td>Quanto estoque novo entrou no armazém do distribuidor naquele mês.</td>
+                </tr>
+                <tr>
+                  <td><strong>Barra Sell-out</strong></td>
+                  <td>Agrupamento mensal <code>MONTH(DATA_SELL_OUT)</code> sobre a tabela fato <code>tbl_factdy_sellout</code>.</td>
+                  <td>Quanto produto efetivamente saiu para o mercado consumidor.</td>
+                </tr>
+                <tr>
+                  <td><strong>Badge de Variação</strong></td>
+                  <td><code>((Total Sell-out / Total Sell-in) - 1) * 100</code> no topo do gráfico.</td>
+                  <td>Se positivo (↑ verde), o mercado demandou mais produto do que a reposição (estoque baixou). Se negativo, reposição superou a demanda (estoque subiu).</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Card 4: ESTOQUE E GIRO -->
+        <div class="metric-module-card">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num">04</span> Estoque por SKU &amp; Dias de Cobertura (Giro)
+            </h3>
+            <span class="metric-module-badge">Tabela: tbl_factdy_stock</span>
+          </div>
+          <div class="metric-module-body">
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 20%;">Campo / Métrica</th>
+                  <th style="width: 35%;">Fórmula / Regra SQL</th>
+                  <th style="width: 45%;">Comportamento Operacional</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Data de Posição Mais Recente</strong></td>
+                  <td><code>ROW_NUMBER() OVER (PARTITION BY CNPJ_DISTRIBUIDOR, SKU ORDER BY DATA_ESTOQUE DESC) = 1</code></td>
+                  <td>Garante que o dashboard exiba rigorosamente a posição de estoque do último inventário/dia informado pelo distribuidor.</td>
+                </tr>
+                <tr>
+                  <td><strong>Dias de Estoque (Giro)</strong></td>
+                  <td><code>ROUND(COALESCE(GIRO_ESTOQUE, CASE WHEN MEDIA_VENDA &gt; 0 THEN QTDE_ESTOQUE / MEDIA_VENDA ELSE 0 END), 0)</code></td>
+                  <td>Quantos dias de vendas a quantidade atual em armazém é capaz de suportar com base no histórico de giro diário.</td>
+                </tr>
+                <tr>
+                  <td><strong>Alerta de Dias</strong></td>
+                  <td>Pílula colorida ao lado do item</td>
+                  <td>
+                    <span style="color:#22C55E;font-weight:700;">&gt;= 10 dias</span>: Cobertura saudável.<br>
+                    <span style="color:#F59E0B;font-weight:700;">4 a 9 dias</span>: Atenção para reabastecimento.<br>
+                    <span style="color:#EF4444;font-weight:700;">&lt;= 3 dias</span>: Risco crítico de ruptura de estoque.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Card 5: POSITIVAÇÃO -->
+        <div class="metric-module-card">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num">05</span> Positivação por Grupo de Produtos
+            </h3>
+            <span class="metric-module-badge">Tabela: tbl_factdy_sellout</span>
+          </div>
+          <div class="metric-module-body">
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 25%;">Grupo Classificado</th>
+                  <th style="width: 40%;">Regra de Classificação (CASE WHEN no SQL)</th>
+                  <th style="width: 35%;">Objetivo Comercial</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Linha Gourmet &amp; Brioche</strong></td>
+                  <td><code>UPPER(DESC_PROD_BQ) LIKE '%BRIOCHE%'</code></td>
+                  <td>Monitorar penetração de pães premium para hambúrguer artesanal.</td>
+                </tr>
+                <tr>
+                  <td><strong>Pães Tradicionais</strong></td>
+                  <td><code>UPPER(DESC_PROD_BQ) LIKE '%HB%' OR '%HAMB%' OR '%TRADICIONAL%'</code></td>
+                  <td>Linha de alto volume com e sem gergelim.</td>
+                </tr>
+                <tr>
+                  <td><strong>Pães de Hot Dog</strong></td>
+                  <td><code>UPPER(DESC_PROD_BQ) LIKE '%HOT DOG%'</code></td>
+                  <td>Acompanhamento de lanchonetes e redes de fast-food.</td>
+                </tr>
+                <tr>
+                  <td><strong>Pães Especiais &amp; Artesanais</strong></td>
+                  <td><code>UPPER(DESC_PROD_BQ) LIKE '%AUSTRALIANO%' OR '%ARTESANO%' OR '%NUVEM%'</code></td>
+                  <td>Linhas gourmet diferenciadas.</td>
+                </tr>
+                <tr>
+                  <td><strong>Bolos, Snacks &amp; Doces</strong></td>
+                  <td><code>UPPER(DESC_PROD_BQ) LIKE '%ANA MARIA%' OR '%BOLO%' OR '%BISNAG%'</code></td>
+                  <td>Linha de sobremesas e lanches rápidos.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- SUB-ABA 4: STAR SCHEMA & DICIONÁRIO DE DADOS                       -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="guia-tab-content" id="guia-sub-schema">
+      <div class="tech-section">
+        <h2><span class="sec-num">01</span> Modelo Dimensional Star Schema</h2>
+        <p>Todas as tabelas residem no catálogo corporativo <code>cat_dnabb_dv</code>. A modelagem estrela separa dimensões descritivas das métricas quantitativas de fato:</p>
+
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th style="width: 28%;">Tabela / View</th>
+              <th style="width: 15%;">Tipo</th>
+              <th style="width: 27%;">Chaves &amp; Campos Principais</th>
+              <th style="width: 30%;">Finalidade no Lakehouse</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>opebrapodis_sz.tbl_factdy_sellin</code></td>
+              <td>Fato Diária</td>
+              <td><code>CNPJ_DISTRIBUIDOR</code>, <code>DT_SELL_IN</code>, <code>SKU_PROD_BQ</code>, <code>VL_SELL_IN</code>, <code>VL_FORECAST</code></td>
+              <td>Faturamento de Sell-in da Bimbo QSR para a rede de distribuidores.</td>
+            </tr>
+            <tr>
+              <td><code>opebrapodis_sz.tbl_factdy_sellout</code></td>
+              <td>Fato Diária</td>
+              <td><code>CNPJ_DISTRIBUIDOR</code>, <code>CNPJ_CLIENTE</code>, <code>DATA_SELL_OUT</code>, <code>VL_SELL_OUT</code>, <code>VL_META</code></td>
+              <td>Vendas do distribuidor para restaurantes e clientes finais.</td>
+            </tr>
+            <tr>
+              <td><code>opebrapodis_sz.tbl_factdy_stock</code></td>
+              <td>Fato Diária</td>
+              <td><code>CNPJ_DISTRIBUIDOR</code>, <code>DATA_ESTOQUE</code>, <code>SKU_PROD_DIST</code>, <code>QTDE_ESTOQUE</code>, <code>GIRO_ESTOQUE</code></td>
+              <td>Posição diária de inventário e giro calculada por armazém.</td>
+            </tr>
+            <tr>
+              <td><code>opebrapodis_sz.tbl_factdy_order</code></td>
+              <td>Fato Diária</td>
+              <td><code>CNPJ_DISTRIBUIDOR</code>, <code>NUMERO_PEDIDO</code>, <code>DATA_EMISSAO_PEDIDO</code>, <code>VL_PEDIDO_BRUTO</code></td>
+              <td>Ordens de compra colocadas pelos distribuidores junto à Bimbo.</td>
+            </tr>
+            <tr>
+              <td><code>opebrapodis_sz.tbl_dim_distributor_user_mapping</code></td>
+              <td>Dimensão RLS</td>
+              <td><code>user_email</code>, <code>distributor_cnpj_code</code>, <code>is_admin</code>, <code>is_active</code></td>
+              <td>Controle centralizado de autenticação SSO e permissões RLS.</td>
+            </tr>
+            <tr>
+              <td><code>bracatlg_lz.vw_dim_clientes_rls</code></td>
+              <td>Dimensão</td>
+              <td><code>CNPJ_CLIENTE</code>, <code>CNPJ_DISTRIBUIDOR</code>, <code>RAZAO_SOCIAL</code>, <code>PASTA_FONTE</code></td>
+              <td>Cadastro oficial de clientes atendidos com filtro <code>PASTA_FONTE = 'BQB'</code>.</td>
+            </tr>
+            <tr>
+              <td><code>bracatlg_lz.vw_dim_produtos_rls</code></td>
+              <td>Dimensão</td>
+              <td><code>SKU_DISTRIB</code>, <code>DESC_PRODUTO_ARQUIVO_DIST</code>, <code>CNPJ_DISTRIBUIDOR</code></td>
+              <td>Catálogo de de-para entre SKUs do distribuidor e SKUs corporativos Bimbo.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- SUB-ABA 5: GOVERNANÇA & RLS                                        -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="guia-tab-content" id="guia-sub-rls">
+      <div class="tech-section">
+        <h2><span class="sec-num">01</span> Governança de Acesso e Row-Level Security (RLS)</h2>
+        <p>O isolamento de dados no Portal de Distribuidores é garantido na camada de dados do Unity Catalog por meio da função nativa <code>fn_rls_distribuidor</code>, vinculada como <strong>Row Filter</strong> nas tabelas <code>tbl_factdy_sellin</code>, <code>tbl_factdy_sellout</code> e <code>tbl_factdy_stock</code>.</p>
+
+        <div class="tech-alert alert-warning">
+          <span style="font-size:1.1rem;">⚠️</span>
+          <div>
+            <strong>Como a Função Opera:</strong><br>
+            A função avalia quem é o <code>session_user()</code> que está executando a consulta no SQL Warehouse:
+            <ol style="margin: .5rem 0 .2rem; padding-left: 1.2rem;">
+              <li><strong>Service Principals do App</strong>: Os IDs das aplicações Databricks Apps (<code>46439f81-6e3f-4c66-ae17-232900143dc9</code> em DEV e <code>05577799-e0de-4e37-8e4b-d06a8f306e72</code> em PROD) possuem <strong>acesso total</strong> para que o backend Flask filtre os CNPJs autorizados do usuário autenticado no header SSO.</li>
+              <li><strong>Usuários Distribuidores</strong>: Ao executar uma query diretamente no Databricks, o Unity Catalog busca o e-mail na tabela <code>tbl_dim_distributor_user_mapping</code> e restringe os registros rigorosamente ao CNPJ cadastrado.</li>
+              <li><strong>Administradores Bimbo</strong>: Usuários corporativos com <code>is_admin = TRUE</code> possuem visibilidade de todos os distribuidores. Caso um administrador deseje <strong>simular</strong> um distribuidor específico, basta cadastrá-lo com <code>is_admin = FALSE</code> vinculado ao CNPJ de teste.</li>
+            </ol>
+          </div>
+        </div>
+
+        <h3>DDL Oficial da Função de RLS no Unity Catalog</h3>
+        <div class="tech-diagram">CREATE OR REPLACE FUNCTION cat_dnabb_dv.opebrapodis_sz.fn_rls_distribuidor(
+  cnpj_distribuidor_linha STRING
+)
+RETURN 
+  -- 1. Identidades de Serviço do Databricks Apps (Bypass para o Backend)
+  LOWER(TRIM(session_user())) LIKE '%46439f81%'
+  OR LOWER(TRIM(session_user())) LIKE '%05577799%'
+  OR LOWER(TRIM(session_user())) LIKE '%portal-distribuidores%'
+  OR LOWER(TRIM(session_user())) IN (
+    '46439f81-6e3f-4c66-ae17-232900143dc9',
+    '05577799-e0de-4e37-8e4b-d06a8f306e72',
+    'app-4q6vld portal-distribuidores-dev',
+    'app-4q6vld portal-distribuidores'
+  )
+  OR
+  -- 2. Consultas Diretas no Databricks por Usuários Distribuidores
+  (
+    EXISTS (
+      SELECT 1
+      FROM cat_dnabb_dv.opebrapodis_sz.tbl_dim_distributor_user_mapping d
+      WHERE LOWER(TRIM(d.user_email)) = LOWER(TRIM(session_user()))
+        AND d.is_active = TRUE
+        AND (d.valid_to_date IS NULL OR d.valid_to_date &gt;= CURRENT_DATE())
+        AND LPAD(REGEXP_REPLACE(d.distributor_cnpj_code, '[^0-9]', ''), 14, '0')
+          = LPAD(REGEXP_REPLACE(cnpj_distribuidor_linha, '[^0-9]', ''), 14, '0')
+    )
+  )
+  OR
+  -- 3. Administradores Corporativos Bimbo QSR com is_admin = True
+  (
+    NOT EXISTS (
+      SELECT 1
+      FROM cat_dnabb_dv.opebrapodis_sz.tbl_dim_distributor_user_mapping d
+      WHERE LOWER(TRIM(d.user_email)) = LOWER(TRIM(session_user()))
+        AND d.is_active = TRUE
+        AND (d.valid_to_date IS NULL OR d.valid_to_date &gt;= CURRENT_DATE())
+        AND COALESCE(d.is_admin, FALSE) = FALSE
+    )
+    AND LOWER(TRIM(session_user())) IN (
+      'bruno.fellipe@grupobimbo.com',
+      'ana.ferraz@grupobimbo.com',
+      'daniel.moreira@grupobimbo.com',
+      'renan.ferreira@grupobimbo.com'
+    )
+  );</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- SUB-ABA 6: RUNBOOK DO DESENVOLVEDOR                                -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="guia-tab-content" id="guia-sub-runbook">
+      <div class="tech-section">
+        <h2><span class="sec-num">01</span> Runbook do Desenvolvedor (Guia de Manutenção e Deploy)</h2>
+        <p>Este guia foi concebido para fornecer autonomia completa a qualquer engenheiro ou desenvolvedor que precise evoluir ou depurar o Portal de Distribuidores.</p>
+
+        <h3>Estrutura de Diretórios do Projeto</h3>
+        <div class="tech-diagram">bq_app_portal_distribuidores/
+├── databricks.yml                      # Configuração do Databricks Asset Bundle (DAB)
+├── resources/
+│   └── portal_distribuidores.app.yml  # Definição do recurso App DEV/PROD
+└── src/app/
+    ├── app.py                          # Backend Python Flask (Endpoints, SSO, SQL Execution)
+    ├── app.yaml                        # Manifesto de runtime do Databricks Apps (Comando e Escopos)
+    ├── requirements.txt                # Dependências Python (Flask, databricks-sdk)
+    ├── dashboard.html                  # Interface do Dashboard Principal
+    ├── guia.html                       # Página dedicada do Guia Técnico & Usuário (Nova Aba)
+    ├── preview_dashboard.html          # Ambiente de visualização rápida local
+    ├── css/
+    │   ├── kpi_distribuidores.css      # Design System do Dashboard
+    │   └── guia.css                    # Estilos da Documentação Técnica (Padrão Compras 360)
+    ├── js/
+    │   └── kpi_distribuidores.js       # Controladora Front-end (Fetch, KPIs, Filtros e Modais)
+    └── img/                            # Logotipos oficiais Bimbo QSR e DNA</div>
+
+        <h3>Comandos Essenciais de Desenvolvimento &amp; Deploy</h3>
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th style="width: 25%;">Ação</th>
+              <th style="width: 45%;">Comando Terminal (PowerShell / Bash)</th>
+              <th style="width: 30%;">Efeito</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Validar Bundle</strong></td>
+              <td><code>databricks bundle validate -t dev -p DEFAULT</code></td>
+              <td>Verifica sintaxe do <code>databricks.yml</code> e permissões do workspace.</td>
+            </tr>
+            <tr>
+              <td><strong>Deploy em DEV</strong></td>
+              <td><code>databricks bundle deploy -t dev -p DEFAULT</code></td>
+              <td>Faz upload do código para o workspace de desenvolvimento.</td>
+            </tr>
+            <tr>
+              <td><strong>Reiniciar App DEV</strong></td>
+              <td><code>databricks bundle run portal_distribuidores_dev -t dev -p DEFAULT</code></td>
+              <td>Reinicia o contêiner Databricks Apps para aplicar novas alterações.</td>
+            </tr>
+            <tr>
+              <td><strong>Sincronizar com PROD (Staging)</strong></td>
+              <td><code>databricks sync "src/app" "/Workspace/Shared/CONSULTAS_AUTOMATIZADAS/bq_app_portal_distribuidores/prod/files" -p DEFAULT</code></td>
+              <td>Atualiza o diretório oficial de homologação/staging para release em produção.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Troubleshooting Comum (Perguntas &amp; Respostas Técnicas)</h3>
+        <div class="tech-alert alert-warning">
+          <div>
+            <strong>Visuais do Dashboard aparecem zerados ou em branco:</strong><br>
+            1. Verifique se o e-mail autenticado possui cadastro ativo em <code>cat_dnabb_dv.opebrapodis_sz.tbl_dim_distributor_user_mapping</code>.<br>
+            2. Verifique se a conta proprietária do token do SQL Warehouse (variável <code>MY_DATABRICKS_TOKEN</code> em <code>app.yaml</code>) está com <code>is_admin = TRUE</code> na tabela de mapping. Se estiver com <code>is_admin = FALSE</code>, a função <code>fn_rls_distribuidor</code> restringirá o warehouse apenas ao CNPJ daquela conta, zerando as consultas dos demais distribuidores.
+          </div>
+        </div>
+
+        <div class="tech-alert">
+          <div>
+            <strong>Como simular o acesso de um distribuidor específico:</strong><br>
+            1. Na tabela <code>tbl_dim_distributor_user_mapping</code>, insira ou atualize seu e-mail apontando para o <code>distributor_cnpj_code</code> desejado (ex.: Jedimix <code>31448685000167</code>) com <code>is_admin = FALSE</code>.<br>
+            2. Abra o app no navegador. O portal detectará o vínculo e operará estritamente como aquele distribuidor.<br>
+            3. Para voltar a ver todos os distribuidores, adicione <code>?perfil=admin</code> na URL ou atualize <code>is_admin = TRUE</code>.
+          </div>
+        </div>
+
+      </div>
+    </div><!-- #tab-guia -->
+    <!-- ADMIN_ONLY_END -->
+
+  </main>
+  </div><!-- #portal-workspace -->
+
+  <!-- ═══════════ Painel de Filtros Retrátil à Direita ═══════════ -->
+  <aside class="portal-filter-drawer" id="portal-filter-drawer" aria-label="Painel de filtros retrátil à direita">
+    <div class="pfd-header">
+      <div class="pfd-title-group">
+        <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20a1 1 0 0 0 .55.89l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .52-1.34L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.74 1.67l7.22 7.99A2 2 0 0 1 10 14z"/></svg>
+        <span class="pfd-title">Filtros &amp; Parâmetros</span>
+      </div>
+      <button type="button" class="pfd-close-btn" id="close-filter-drawer-btn" aria-label="Fechar painel de filtros (Esc)" title="Fechar / Minimizar painel">
+        <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="pfd-body drawer-body">
+      <div class="drawer-section-title">Modo de Exibição</div>
+      <div class="visualization-controls" style="margin-bottom: 16px;">
+        <div class="segmented toggle-group" role="radiogroup" aria-label="Exibir valores em" style="width: 100%;">
+          <button type="button" class="toggle-label active-label" id="lbl-valor" role="radio" aria-checked="true" style="flex:1;">Valor (R$)</button>
+          <button type="button" class="toggle-label" id="lbl-volume" role="radio" aria-checked="false" tabindex="-1" style="flex:1;">Volume (Físico)</button>
+          <input type="checkbox" id="toggleValVol" class="sr-only" tabindex="-1" aria-hidden="true" />
+        </div>
+      </div>
+
+      <div class="drawer-section-title">Filtros de Período</div>
+      <div class="drawer-grid-2">
+        <div class="filter-group filter-wrapper">
+          <label class="group-label" for="filter-ano">Ano</label>
+          <div class="custom-select" id="select-ano"><div class="select-trigger"><input type="text" class="search-input" id="filter-ano" placeholder="Todos" autocomplete="off" /><span class="arrow" aria-hidden="true"></span></div><div class="options-container"></div></div>
+        </div>
+        <div class="filter-group filter-wrapper">
+          <label class="group-label" for="filter-mes">Mês</label>
+          <div class="custom-select" id="select-mes"><div class="select-trigger"><input type="text" class="search-input" id="filter-mes" placeholder="Todos" autocomplete="off" /><span class="arrow" aria-hidden="true"></span></div><div class="options-container"></div></div>
+        </div>
+        <div class="filter-group filter-wrapper">
+          <label class="group-label" for="filter-semana">Semana</label>
+          <div class="custom-select" id="select-semana"><div class="select-trigger"><input type="text" class="search-input" id="filter-semana" placeholder="Todos" autocomplete="off" /><span class="arrow" aria-hidden="true"></span></div><div class="options-container"></div></div>
+        </div>
+        <div class="filter-group filter-wrapper">
+          <label class="group-label" for="filter-dia">Dia</label>
+          <div class="custom-select" id="select-dia"><div class="select-trigger"><input type="text" class="search-input" id="filter-dia" placeholder="Todos" autocomplete="off" /><span class="arrow" aria-hidden="true"></span></div><div class="options-container"></div></div>
+        </div>
+      </div>
+
+      <div class="drawer-section-title" style="margin-top: 14px;">Filtros de Produtos &amp; Pedidos</div>
+      <div class="filter-group-container drawer-stack">
+        <div class="filter-group filter-wrapper">
+          <label class="group-label" for="filter-categoria">Categoria</label>
+          <div class="custom-select" id="select-categoria"><div class="select-trigger"><input type="text" class="search-input" id="filter-categoria" placeholder="Todos" autocomplete="off" /><span class="arrow" aria-hidden="true"></span></div><div class="options-container"></div></div>
+        </div>
+        <div class="filter-group filter-wrapper">
+          <label class="group-label" for="filter-produto">Produto</label>
+          <div class="custom-select" id="select-produto"><div class="select-trigger"><input type="text" class="search-input" id="filter-produto" placeholder="Todos" autocomplete="off" /><span class="arrow" aria-hidden="true"></span></div><div class="options-container"></div></div>
+        </div>
+        <div class="filter-group filter-wrapper">
+          <label class="group-label" for="filter-sku">SKU</label>
+          <div class="custom-select" id="select-sku"><div class="select-trigger"><input type="text" class="search-input" id="filter-sku" placeholder="Todos" autocomplete="off" /><span class="arrow" aria-hidden="true"></span></div><div class="options-container"></div></div>
+        </div>
+        <div class="filter-group filter-wrapper">
+          <label class="group-label" for="filter-pedido">Nº Pedido</label>
+          <div class="custom-select" id="select-pedido"><div class="select-trigger"><input type="text" class="search-input" id="filter-pedido" placeholder="Todos" autocomplete="off" /><span class="arrow" aria-hidden="true"></span></div><div class="options-container"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pfd-footer drawer-foot">
+      <button type="button" class="btn btn-secondary" id="v2-clear-inline">Limpar</button>
+      <button type="button" class="btn btn-primary" id="v2-sheet-apply" style="flex:1;">Aplicar Filtros</button>
+      <button type="button" class="btn btn-secondary" id="pfd-close-footer-btn">Fechar</button>
+    </div>
+  </aside>
+
+  <div class="v2-scrim" id="v2-scrim" hidden></div>
+</div><!-- #portal-layout -->
+</div><!-- .kpi-wrapper -->
+
+<!-- Modal Expandido de Estoque por SKU -->
+<div id="modal-estoque-expand" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-block-title" style="display:none;" onclick="if(event.target===this) closeEstoqueModal();">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div class="modal-header-titles">
+        <span class="modal-tag" id="modal-block-tag">ESTOQUE POR SKU • VISÃO AMPLIADA</span>
+        <h2 class="modal-title" id="modal-block-title">Detalhamento Completo de Dias de Estoque</h2>
+      </div>
+      <div class="modal-header-actions">
+        <div class="filter-wrapper">
+          <span class="filter-label">Cliente:</span>
+          <div class="custom-select modal-select" id="select-modal-est-cliente">
+            <div class="select-trigger">
+              <input type="text" class="search-input" id="filter-modal-est-cliente" placeholder="Todos" autocomplete="off" />
+              <span class="arrow"></span>
+            </div>
+            <div class="options-container"></div>
+          </div>
+        </div>
+        <div class="filter-wrapper">
+          <span class="filter-label">Produto:</span>
+          <div class="custom-select modal-select" id="select-modal-est-produto">
+            <div class="select-trigger">
+              <input type="text" class="search-input" id="filter-modal-est-produto" placeholder="Todos" autocomplete="off" />
+              <span class="arrow"></span>
+            </div>
+            <div class="options-container"></div>
+          </div>
+        </div>
+        <button class="btn-modal-close" onclick="closeEstoqueModal()" title="Fechar (Esc)">&times;</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <table class="modal-table">
+        <thead>
+          <tr>
+            <th style="width: 44%;">Cliente</th>
+            <th style="width: 44%;">Descrição do Produto</th>
+            <th style="width: 12%; text-align: center;">Dias</th>
+          </tr>
+        </thead>
+        <tbody id="modal-tbody-estoque"></tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <span class="modal-count-info" id="modal-records-count">Exibindo 0 registros</span>
+      <button class="btn-modal-done" onclick="closeEstoqueModal()">Concluído</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Expandido de Positivação & Reativação de Clientes -->
+<div id="modal-positivacao-expand" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-positiv-title" style="display:none;" onclick="if(event.target===this) closePositivacaoModal();">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div class="modal-header-titles">
+        <span class="modal-tag" id="modal-positiv-tag">POSITIVAÇÃO &amp; REATIVAÇÃO DE CLIENTES</span>
+        <h2 class="modal-title" id="modal-positiv-title">Clientes para Reativar &amp; Positivação por Grupo</h2>
+        <div class="segmented modal-pos-switch" role="radiogroup" aria-label="Visão de clientes" style="margin-top: 8px;">
+          <button type="button" class="toggle-label active-label" id="modal-pos-tab-rx" data-pos-mode="reactivate" role="radio" aria-checked="true">Para reativar no mês (<span id="modal-pos-rx-cnt">0</span>)</button>
+          <button type="button" class="toggle-label" id="modal-pos-tab-all" data-pos-mode="all" role="radio" aria-checked="false" tabindex="-1">Positivados no mês</button>
+        </div>
+      </div>
+      <div class="modal-header-actions">
+        <div class="filter-wrapper" id="wrap-modal-pos-cidade">
+          <span class="filter-label">Cidade / Bairro:</span>
+          <div class="custom-select modal-select" id="select-modal-pos-cidade">
+            <div class="select-trigger">
+              <input type="text" class="search-input" id="filter-modal-pos-cidade" placeholder="Todas" autocomplete="off" />
+              <span class="arrow"></span>
+            </div>
+            <div class="options-container"></div>
+          </div>
+        </div>
+        <div class="filter-wrapper">
+          <span class="filter-label">Cliente:</span>
+          <div class="custom-select modal-select" id="select-modal-pos-cliente">
+            <div class="select-trigger">
+              <input type="text" class="search-input" id="filter-modal-pos-cliente" placeholder="Todos" autocomplete="off" />
+              <span class="arrow"></span>
+            </div>
+            <div class="options-container"></div>
+          </div>
+        </div>
+        <div class="filter-wrapper" id="wrap-modal-pos-grupo">
+          <span class="filter-label">Grupo:</span>
+          <div class="custom-select modal-select" id="select-modal-pos-grupo">
+            <div class="select-trigger">
+              <input type="text" class="search-input" id="filter-modal-pos-grupo" placeholder="Todos" autocomplete="off" />
+              <span class="arrow"></span>
+            </div>
+            <div class="options-container"></div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-modal-pos-export" onclick="exportPositivacaoCsv()" title="Exportar lista para roteiro de vendas">
+          <span>Exportar CSV</span>
+        </button>
+        <button class="btn-modal-close" onclick="closePositivacaoModal()" title="Fechar (Esc)">&times;</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <table class="modal-table">
+        <thead id="modal-thead-positivacao">
+          <tr>
+            <th style="width: 32%;">Cliente (Razão Social)</th>
+            <th style="width: 32%;">Linha / Grupo de Produto</th>
+            <th style="width: 18%; text-align: center;">Status de Positivação</th>
+            <th style="width: 18%; text-align: center;">Classificação</th>
+          </tr>
+        </thead>
+        <tbody id="modal-tbody-positivacao"></tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <span class="modal-count-info" id="modal-positiv-records-count">Exibindo 0 registros</span>
+      <button class="btn-modal-done" onclick="closePositivacaoModal()">Concluído</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN_ONLY_START -->
+<script src="js/admin_mode.js?v=20261117_v5"></script>
+<!-- ADMIN_ONLY_END -->
+<script src="js/fmt.js?v=v2_1"></script>
+<script src="js/kpi_distribuidores.js?v=v2_20"></script>
+<script src="js/v2_render.js?v=v2_15"></script>
+<script src="js/v2_forecast.js?v=v2_20_merged_rec"></script>
+<!-- ADMIN_ONLY_START -->
+<script src="js/v2_executivo.js?v=v2_14"></script>
+<!-- ADMIN_ONLY_END -->
+<script src="js/v2_shell.js?v=v2_25"></script>
+
+<!-- Modal Ficha Técnica do Produto (US 116253) -->
+<div class="modal-backdrop" id="modal-ficha-produto" style="display:none;" onclick="if(event.target===this)fecharModalFicha()">
+  <div class="modal-card" style="max-width: 860px;">
+    <div class="modal-header">
+      <div class="modal-header-titles">
+        <span class="modal-tag">FICHA TÉCNICA OFICIAL · BIMBO QSR</span>
+        <h2 class="modal-title" id="modal-ficha-title">Detalhes do Produto</h2>
+      </div>
+      <button class="btn-modal-close" onclick="fecharModalFicha()" title="Fechar (Esc)">&times;</button>
+    </div>
+    <div class="modal-body" id="modal-ficha-body" style="padding: 1.25rem;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary btn-sm" onclick="fecharModalFicha()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Novo Chamado de Suporte (US 116257) -->
+<div class="modal-backdrop" id="modal-novo-chamado" style="display:none;" onclick="if(event.target===this)fecharModalNovoChamado()">
+  <div class="modal-card" style="max-width: 600px;">
+    <div class="modal-header">
+      <div class="modal-header-titles">
+        <span class="modal-tag">SUPORTE &amp; BACK OFFICE BQ</span>
+        <h2 class="modal-title">Abrir Nova Solicitação</h2>
+      </div>
+      <button class="btn-modal-close" onclick="fecharModalNovoChamado()" title="Fechar (Esc)">&times;</button>
+    </div>
+    <div class="modal-body" style="padding: 1.25rem; display: flex; flex-direction: column; gap: 12px;">
+      <div>
+        <label style="font-size: 12px; font-weight: 700; color: var(--text-strong); display: block; margin-bottom: 4px;">Categoria do Chamado *</label>
+        <select id="chamado-in-categoria" class="search-input" style="width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; background: var(--surface-card);">
+          <option value="Logística & Atraso de Carga">Logística &amp; Atraso de Carga</option>
+          <option value="Financeiro & Boletos">Financeiro &amp; Boletos</option>
+          <option value="Divergência de Pedido SAP">Divergência de Pedido SAP</option>
+          <option value="Qualidade & Avaria de Pães">Qualidade &amp; Avaria de Pães</option>
+          <option value="Dúvidas Comerciais & Metas">Dúvidas Comerciais &amp; Metas</option>
+          <option value="Suporte ao Portal & Acessos">Suporte ao Portal &amp; Acessos</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size: 12px; font-weight: 700; color: var(--text-strong); display: block; margin-bottom: 4px;">Assunto *</label>
+        <input type="text" id="chamado-in-assunto" class="search-input" placeholder="Ex: Previsão de chegada da carreta #89211" style="width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px;" />
+      </div>
+      <div>
+        <label style="font-size: 12px; font-weight: 700; color: var(--text-strong); display: block; margin-bottom: 4px;">Número do Pedido SAP (opcional)</label>
+        <input type="text" id="chamado-in-sap" class="search-input" placeholder="Ex: 89211" style="width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px;" />
+      </div>
+      <div>
+        <label style="font-size: 12px; font-weight: 700; color: var(--text-strong); display: block; margin-bottom: 4px;">Descrição Detalhada *</label>
+        <textarea id="chamado-in-msg" rows="4" class="search-input" placeholder="Descreva sua solicitação com o máximo de detalhes para agilizar o atendimento…" style="width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; font-family: inherit; resize: vertical;"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary btn-sm" onclick="fecharModalNovoChamado()">Cancelar</button>
+      <button class="btn btn-primary btn-sm" onclick="enviarNovoChamado()">Enviar Solicitação</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Integração Wise (US 116256) -->
+<div class="modal-backdrop" id="modal-wise-integration" style="display:none;" onclick="if(event.target===this)fecharModalWise()">
+  <div class="modal-card" style="max-width: 620px;">
+    <div class="modal-header">
+      <div class="modal-header-titles">
+        <span class="modal-tag">INTEGRAÇÃO COMERCIAL · FERRAMENTA WISE</span>
+        <h2 class="modal-title">Captação de Oportunidades &amp; Novos Mercados</h2>
+      </div>
+      <button class="btn-modal-close" onclick="fecharModalWise()" title="Fechar (Esc)">&times;</button>
+    </div>
+    <div class="modal-body" style="padding: 1.25rem;">
+      <div class="camp-audit-banner" style="margin-bottom: 1rem;">
+        <strong>Conexão Preditiva Bimbo QSR ↔ Wise</strong>
+        <p>As projeções de demanda e eventuais gaps contra a meta são enviadas como gatilhos para acionar a rota comercial do distribuidor na ferramenta Wise.</p>
+      </div>
+      <div class="ficha-box" style="margin-bottom: 1rem;">
+        <strong>Status da Conexão:</strong> <span class="status-pill status-good" style="margin-left: 4px;">Ativo</span> Conectado a Wise Sales.<br>
+        <strong>URL Oficial:</strong> <a href="https://dashboard.wisesales.com.br/home" target="_blank" rel="noopener noreferrer" style="color: var(--action); word-break: break-all;">https://dashboard.wisesales.com.br/home</a><br>
+        <strong>Gatilho Atual:</strong> Distribuidor ativo com recomendação de captação de <strong>novos restaurantes de hambúrguer</strong> para fechar o gap da cota.
+      </div>
+      <p style="font-size: 12.5px; color: var(--text-muted); margin: 0;">Acesse diretamente a carteira de leads e estabelecimentos pré-mapeados para prospecção em campo.</p>
+    </div>
+    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px;">
+      <button class="btn btn-secondary btn-sm" onclick="fecharModalWise()">Fechar</button>
+      <a href="https://dashboard.wisesales.com.br/home" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+        <span>Abrir Wise Sales</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="js/v2_modulos_novos.js?v=20261117_v2"></script>
+</body>
+</html>

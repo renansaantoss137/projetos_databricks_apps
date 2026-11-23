@@ -1,0 +1,986 @@
+﻿{
+    "measures":  [
+                     {
+                         "ID":  4145464,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "%OPENnatendida",
+                         "Expression":  "\nVAR Resultado =\n    DIVIDE(\n        COALESCE([Open Orders], 0),\n        COALESCE([OpenOrders+Invo Selecionada], 0),\n        0\n    )\nRETURN\nIF(ISBLANK(Resultado), 0, Resultado)\n",
+                         "TableID":  487331
+                     },
+                     {
+                         "ID":  4165498,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "100% FcsT",
+                         "Expression":  "1-[% FCST]",
+                         "TableID":  487331
+                     },
+                     {
+                         "ID":  4166719,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "100% bgt",
+                         "Expression":  "1-[% BGT]",
+                         "TableID":  487331
+                     },
+                     {
+                         "ID":  3689350,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Vl_Total",
+                         "Expression":  "(SUM(BQB_VENDAS_PEDIDOS_PPTO[VENDA_LIQUIDA_VLR]) + [Open Orders])",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3693137,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "QT BGT",
+                         "Expression":  "SUM(BQB_VENDAS_PEDIDOS_PPTO[BUDGET_QTDE])\n//SUM(\u0027BQB_SALES REPORT_DL\u0027[QT_CYW_BUDGET_CON])",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3694400,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "QT FCST",
+                         "Expression":  "SUM(BQB_VENDAS_PEDIDOS_PPTO[FORECAST_QTDE])\n//SUM(\u0027BQB_SALES REPORT_DL\u0027[QT_CYW_FCST])",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3695663,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "VL_FCST",
+                         "Expression":  "SUM(BQB_VENDAS_PEDIDOS_PPTO[FORECAST_VALOR])",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3697556,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "vs $FCST",
+                         "Expression":  "([vl_invoiced] - [vl_fcst] )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3700082,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "vs $BGT",
+                         "Expression":  "([vl_invoiced] - [vl_bgt]) ",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3701344,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "VL_BGT",
+                         "Expression":  "sum(BQB_VENDAS_PEDIDOS_PPTO[BUDGET_VALOR])",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3702607,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "PY_VLR_INVOICED",
+                         "Expression":  "\n    CALCULATE(\n        [vl_invoiced],\n        SAMEPERIODLASTYEAR(CALENDARIO_BIMBO_VENDAS[DATA]) \n    )\n",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3703869,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "VL_INVOICED",
+                         "Expression":  "CALCULATE(sum(BQB_VENDAS_PEDIDOS_PPTO[VL_CYW_LIQ_VENDIDO]))",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3705762,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "VL_PY",
+                         "Expression":  "\n-- Ano anterior respeitando o mês do eixo do gráfico,\n-- mas sempre o mês CHEIO (removo cortes de data/dia útil)\nVAR AnoSel = SELECTEDVALUE ( CALENDARIO_BIMBO_VENDAS[ANO] )\n-- Meses em contexto (pode ser 1 ou vários)\nVAR MesesSel = \n    CALCULATETABLE ( \n        VALUES ( CALENDARIO_BIMBO_VENDAS[MES] ) \n    )\nRETURN\nCALCULATE (\n    [VL_INVOICED],\n    CALENDARIO_BIMBO_VENDAS[ANO] = AnoSel - 1,\n    TREATAS ( MesesSel, CALENDARIO_BIMBO_VENDAS[MES] ),\n    REMOVEFILTERS (\n        CALENDARIO_BIMBO_VENDAS[DATA],\n        CALENDARIO_BIMBO_VENDAS[NUM_DIA_UTIL],\n        CALENDARIO_BIMBO_VENDAS[NomeMes3]\n    )\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3707025,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "vs $PY",
+                         "Expression":  "([vl_invoiced] - [vl_PY])",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3708288,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "% QT PY",
+                         "Expression":  "DIVIDE([QT_Total],[PY_QTD_Invoiced],0) - 1",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3709550,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "QT_Total",
+                         "Expression":  "SUM(BQB_VENDAS_PEDIDOS_PPTO[PEDIDO_QTDE])\n//(sum(\u0027BQB_SALES REPORT_DL\u0027[QT_CONVERTIDA_BI]) + sum(\u0027BQB_SALES REPORT_DL\u0027[QT_CONVERTIDA__PEDIDO_BI]))",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3710813,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "PY_QTD_INVOICED",
+                         "Expression":  "\n-- Volume do ano anterior respeitando o mês do eixo,\n-- sempre mês CHEIO (sem corte de dia útil)\nVAR AnoSel = SELECTEDVALUE ( CALENDARIO_BIMBO_VENDAS[ANO] )\n-- Meses em contexto (pode ser 1 ou vários)\nVAR MesesSel = \n    CALCULATETABLE ( \n        VALUES ( CALENDARIO_BIMBO_VENDAS[MES] ) \n    )\nRETURN\nCALCULATE (\n    [qt_invoiced],\n    CALENDARIO_BIMBO_VENDAS[ANO] = AnoSel - 1,\n    TREATAS ( MesesSel, CALENDARIO_BIMBO_VENDAS[MES] ),\n    REMOVEFILTERS (\n        CALENDARIO_BIMBO_VENDAS[DATA],\n        CALENDARIO_BIMBO_VENDAS[NUM_DIA_UTIL],\n        CALENDARIO_BIMBO_VENDAS[NomeMes3]\n    )\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3712076,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "% BGT",
+                         "Expression":  "DIVIDE([Vl_Invoiced + Open Orders], [Budget Selecionada],0) ",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3713339,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "% FCST",
+                         "Expression":  "\nDIVIDE(\n    [Vl_Invoiced + Open Orders],\n    [Forecast Selecionada],0\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3714602,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "vs Qt BGT",
+                         "Expression":  "([QT_Invoiced] - [QT BGT])",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3715864,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "vs Qt PY",
+                         "Expression":  "([QT_Invoiced] - [PY_QTD_Invoiced])",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3717127,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "QT_Invoiced",
+                         "Expression":  "\nCALCULATE(\n    SUM(BQB_VENDAS_PEDIDOS_PPTO[QTD_CONVERTIDA_INVOICED])\n)\n //sum(BQB_VENDAS_PEDIDOS_PPTO[PEDIDO_QTDE])",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3718390,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Qt_OpenOrd",
+                         "Expression":  "\nVAR Valor = CALCULATE(SUM(BQB_VENDAS_PEDIDOS_PPTO[QT_OPEN_ORDERS]))\nRETURN\nIF(Valor = 0, BLANK(), Valor)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3721490,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "% PY",
+                         "Expression":  "divide([Vl_Total],[vl_PY],0) -1",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3722641,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "% QT BGT",
+                         "Expression":  "DIVIDE([QT_Total],sum(BQB_VENDAS_PEDIDOS_PPTO[PEDIDO_QTDE]),0) -1",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3724940,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "% QT FCST",
+                         "Expression":  "DIVIDE([QT_Total],sum(BQB_VENDAS_PEDIDOS_PPTO[PEDIDO_QTDE]),0) - 1\n\n",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3726091,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "vs Qt FCST",
+                         "Expression":  "([QT_Invoiced] - [QT FCST])",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3754809,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Forecast Selecionada",
+                         "Expression":  "\nSWITCH(\n    SELECTEDVALUE(TABELA_CONDICIONAL[DESCRICAO]),\n                \"VALOR\", [VL_FCST],\n                \"VOLUME\",[QT FCST]                      \n) ",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3756184,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Budget Selecionada",
+                         "Expression":  "\nSWITCH(\n    SELECTEDVALUE(TABELA_CONDICIONAL[DESCRICAO]),\n                \"VALOR\", [VL_BGT],\n                \"VOLUME\",[QT BGT]                     \n) ",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3776072,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Invoiced Selecionada",
+                         "Expression":  "\nSWITCH(\n    SELECTEDVALUE(TABELA_CONDICIONAL[DESCRICAO]),\n                \"VALOR\", [VL_INVOICED],\n                \"VOLUME\",[QT_Invoiced]                     \n) \n\n",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3846795,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Open Orders",
+                         "Expression":  "\nVAR Valor =\n    CALCULATE(\n        SUM(BQB_VENDAS_PEDIDOS_PPTO[VL_LIQ_OPEN_ORDERS])\n    )\nRETURN\nIF(Valor = 0, BLANK(), Valor)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  3902743,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Invoiced Selecionada AA",
+                         "Expression":  "\nSWITCH(\n    SELECTEDVALUE(TABELA_CONDICIONAL[DESCRICAO]),\n                \"VALOR\", [VL_PY],\n                \"VOLUME\",[PY_QTD_Invoiced]                     \n) ",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4026800,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Vl_Invoiced + Open Orders",
+                         "Expression":  "[Invoiced Selecionada]+[OpenOrders Selecionada]",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4034924,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "% Invoiced",
+                         "Expression":  "divide([Vl_Total],[VL_INVOICED],0) -1 ",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4060063,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "OpenOrders Selecionada",
+                         "Expression":  "\nSWITCH(\n    SELECTEDVALUE(TABELA_CONDICIONAL[DESCRICAO]),\n                \"VALOR\", [Open Orders],\n                \"VOLUME\",[Qt_OpenOrd]                     \n) ",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4167534,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "OpenOrders+Invo Selecionada",
+                         "Expression":  "\nSWITCH(\n    SELECTEDVALUE(TABELA_CONDICIONAL[DESCRICAO]),\n                \"VALOR\", [Vl_Invoiced + Open Orders],\n                \"VOLUME\",[Qt_OpenOrd] + [QT_Invoiced]                      \n) ",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4408078,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "QT_NOTA_FISCAL",
+                         "Expression":  "sum(BQB_VENDAS_PEDIDOS_PPTO[QT_CYW_LIQ_VENDIDO]) ",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4696960,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Atualizado_Até",
+                         "Expression":  "\n\"Dados atualizados em: \" \u0026\nFORMAT(\n    CALCULATE(\n        MAX(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[DT_UPDATE_PEDIDO])\n    ),\n    \"dd/mm/yy HH:mm\"\n)\n",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4806202,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "ΔPY",
+                         "Expression":  "[Invoiced Selecionada] - [Invoiced Selecionada AA]",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4807276,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "ΔPY%",
+                         "Expression":  "DIVIDE([ΔPY], [Invoiced Selecionada AA])",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4808350,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "ΔBDGT",
+                         "Expression":  "[Invoiced Selecionada] - [Budget Selecionada]",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4809067,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "ΔBDGT%",
+                         "Expression":  "DIVIDE([ΔBDGT], [Budget Selecionada])",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4809784,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "ΔFC",
+                         "Expression":  "[Invoiced Selecionada] - [Forecast Selecionada]",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4810501,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "ΔFC%",
+                         "Expression":  "DIVIDE([ΔFC], [Forecast Selecionada])",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4839330,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Var Budget %",
+                         "Expression":  "\nVAR DataMin =\n    MIN(\u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA])\n\nVAR DataMax =\n    MAX(\u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA])\n\nVAR DataMaxComparavel =\n    MIN(DataMax, TODAY())\n\nVAR PeriodoValido =\n    DataMin \u003c= TODAY()\n\nVAR InvoicedComparavel =\n    IF(\n        PeriodoValido,\n        CALCULATE(\n            [Invoiced Selecionada],\n            DATESBETWEEN(\n                \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n                DataMin,\n                DataMaxComparavel\n            )\n        )\n    )\n\nVAR BudgetComparavel =\n    IF(\n        PeriodoValido,\n        CALCULATE(\n            [Budget Diário Selecionada],\n            DATESBETWEEN(\n                \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n                DataMin,\n                DataMaxComparavel\n            )\n        )\n    )\n\nRETURN\n    DIVIDE(\n        InvoicedComparavel - BudgetComparavel,\n        BudgetComparavel\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4840047,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Var Forecast %",
+                         "Expression":  "\nVAR DataMin =\n    MIN(\u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA])\n\nVAR DataMax =\n    MAX(\u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA])\n\nVAR DataMaxComparavel =\n    MIN(DataMax, TODAY())\n\nVAR PeriodoValido =\n    DataMin \u003c= TODAY()\n\nVAR InvoicedComparavel =\n    IF(\n        PeriodoValido,\n        CALCULATE(\n            [Invoiced Selecionada],\n            DATESBETWEEN(\n                \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n                DataMin,\n                DataMaxComparavel\n            )\n        )\n    )\n\nVAR ForecastComparavel =\n    IF(\n        PeriodoValido,\n        CALCULATE(\n            [Forecast Diário Selecionada],\n            DATESBETWEEN(\n                \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n                DataMin,\n                DataMaxComparavel\n            )\n        )\n    )\n\nRETURN\n    DIVIDE(\n        InvoicedComparavel - ForecastComparavel,\n        ForecastComparavel\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4840764,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Budget Referência",
+                         "Expression":  "\nVAR Variacao = [Var Budget %]\nRETURN\n    FORMAT(Variacao, \"0.0%\", \"pt-BR\")\n        \u0026 \" \"\n        \u0026 IF(Variacao \u003e= 0, UNICHAR(9650), UNICHAR(9660))",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4841480,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Forecast Referência",
+                         "Expression":  "\nVAR Variacao = [Var Forecast %]\nRETURN\n    FORMAT(Variacao, \"0.0%\", \"pt-BR\")\n        \u0026 \" \"\n        \u0026 IF(Variacao \u003e= 0, UNICHAR(9650), UNICHAR(9660))",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4842196,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Cor Budget",
+                         "Expression":  "\nIF([Var Budget %] \u003e= 0, \"#1AAB40\", \"#D51D23\")",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4842912,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Cor Forecast",
+                         "Expression":  "\nIF([Var Forecast %] \u003e= 0, \"#1AAB40\", \"#D51D23\")",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4845061,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Var OpenOrders+Invo vs Budget %",
+                         "Expression":  "\nVAR DataContexto =\n    MAX ( \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA] )\n\nVAR EhMesAtual =\n    YEAR ( DataContexto ) = YEAR ( TODAY() )\n        \u0026\u0026 MONTH ( DataContexto ) = MONTH ( TODAY() )\n\nVAR DataInicioMesAtual =\n    DATE (\n        YEAR ( TODAY() ),\n        MONTH ( TODAY() ),\n        1\n    )\n\nVAR OpenOrdersInvoComparavel =\n    IF (\n        EhMesAtual,\n        CALCULATE (\n            [OpenOrders+Invo Selecionada],\n            DATESBETWEEN (\n                \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n                DataInicioMesAtual,\n                TODAY()\n            )\n        ),\n        [OpenOrders+Invo Selecionada]\n    )\n\nVAR BudgetComparavel =\n    IF (\n        EhMesAtual,\n        CALCULATE (\n            [Budget Diário Selecionada],\n            DATESBETWEEN (\n                \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n                DataInicioMesAtual,\n                TODAY()\n            )\n        ),\n        [Budget Diário Selecionada]\n    )\n\nRETURN\n    DIVIDE (\n        OpenOrdersInvoComparavel - BudgetComparavel,\n        BudgetComparavel\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4845778,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Var OpenOrders+Invo vs Forecast %",
+                         "Expression":  "\nVAR DataContexto =\n    MAX(\u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA])\n\nVAR EhMesAtual =\n    YEAR(DataContexto) = YEAR(TODAY())\n        \u0026\u0026 MONTH(DataContexto) = MONTH(TODAY())\n\nVAR DataInicioMes =\n    DATE(\n        YEAR(DataContexto),\n        MONTH(DataContexto),\n        1\n    )\n\nVAR DataFimComparavel =\n    IF(\n        EhMesAtual,\n        MIN(TODAY(), EOMONTH(DataContexto, 0)),\n        EOMONTH(DataContexto, 0)\n    )\n\nVAR OpenOrdersInvoComparavel =\n    CALCULATE(\n        [OpenOrders+Invo Selecionada],\n        REMOVEFILTERS(\u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA]),\n        DATESBETWEEN(\n            \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n            DataInicioMes,\n            DataFimComparavel\n        )\n    )\n\nVAR ForecastComparavel =\n    CALCULATE(\n        [Forecast Diário Selecionada],\n        REMOVEFILTERS(\u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA]),\n        DATESBETWEEN(\n            \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n            DataInicioMes,\n            DataFimComparavel\n        )\n    )\n\nRETURN\n    DIVIDE(\n        OpenOrdersInvoComparavel - ForecastComparavel,\n        ForecastComparavel\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4846852,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Budget Referência OpenOrders+Invo",
+                         "Expression":  "\nVAR Variacao = [Var OpenOrders+Invo vs Budget %]\nRETURN\n    IF(\n        ISBLANK(Variacao),\n        BLANK(),\n        FORMAT(Variacao, \"0.0%\", \"pt-BR\")\n            \u0026 \" \"\n            \u0026 IF(Variacao \u003e= 0, UNICHAR(9650), UNICHAR(9660))\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4847568,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Forecast Referência OpenOrders+Invo",
+                         "Expression":  "\nVAR Variacao = [Var OpenOrders+Invo vs Forecast %]\nRETURN\n    IF(\n        ISBLANK(Variacao),\n        BLANK(),\n        FORMAT(Variacao, \"0.0%\", \"pt-BR\")\n            \u0026 \" \"\n            \u0026 IF(Variacao \u003e= 0, UNICHAR(9650), UNICHAR(9660))\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4848284,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Cor Budget OpenOrders+Invo",
+                         "Expression":  "\nVAR Variacao = [Var OpenOrders+Invo vs Budget %]\nRETURN\n    SWITCH(\n        TRUE(),\n        ISBLANK(Variacao), \"#808080\",\n        Variacao \u003c 0, \"#D51D23\",\n        Variacao \u003e 0, \"#1AAB40\",\n        \"#808080\"\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4849000,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Cor Forecast OpenOrders+Invo",
+                         "Expression":  "\nVAR Variacao = [Var OpenOrders+Invo vs Forecast %]\nRETURN\n    SWITCH(\n        TRUE(),\n        ISBLANK(Variacao), \"#808080\",\n        Variacao \u003c 0, \"#D51D23\",\n        Variacao \u003e 0, \"#1AAB40\",\n        \"#808080\"\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4850073,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Var Invoiced vs AA %",
+                         "Expression":  "\nDIVIDE(\n    [Invoiced Selecionada] - [Invoiced Selecionada AA],\n    [Invoiced Selecionada AA]\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4850790,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Ano Anterior Referência",
+                         "Expression":  "\nVAR Variacao = [Var Invoiced vs AA %]\nRETURN\n    IF(\n        ISBLANK(Variacao),\n        BLANK(),\n        FORMAT(Variacao, \"0.0%\", \"pt-BR\")\n            \u0026 \" \"\n            \u0026 IF(\n                Variacao \u003e= 0,\n                UNICHAR(9650),\n                UNICHAR(9660)\n            )\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4851506,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Cor Ano Anterior",
+                         "Expression":  "\nVAR Variacao = [Var Invoiced vs AA %]\nRETURN\n    SWITCH(\n        TRUE(),\n        ISBLANK(Variacao), \"#808080\",\n        Variacao \u003e 0, \"#1AAB40\",\n        Variacao \u003c 0, \"#D51D23\",\n        \"#808080\"\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4852222,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Var Budget vs Forecast %",
+                         "Expression":  "\nDIVIDE(\n    [VL_BGT Diário] - [VL_FCST Diário],\n    [VL_FCST Diário]\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4852939,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Forecast Referência Budget",
+                         "Expression":  "\nVAR Variacao = [Var Budget vs Forecast %]\nRETURN\n    IF(\n        ISBLANK(Variacao),\n        BLANK(),\n        FORMAT(Variacao, \"0.0%\", \"pt-BR\")\n            \u0026 \" \"\n            \u0026 IF(\n                Variacao \u003e= 0,\n                UNICHAR(9650),\n                UNICHAR(9660)\n            )\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4853655,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Cor Forecast Budget",
+                         "Expression":  "\nVAR Variacao = [Var Budget vs Forecast %]\nRETURN\n    SWITCH(\n        TRUE(),\n        ISBLANK(Variacao), \"#808080\",\n        Variacao \u003e 0, \"#1AAB40\",\n        Variacao \u003c 0, \"#D51D23\",\n        \"#808080\"\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4854371,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Var Forecast vs Budget %",
+                         "Expression":  "\nDIVIDE(\n    [VL_FCST Diário] - [VL_BGT Diário],\n    [VL_BGT Diário]\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4855088,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Budget Referência Forecast",
+                         "Expression":  "\nVAR Variacao = [Var Forecast vs Budget %]\nRETURN\n    IF(\n        ISBLANK(Variacao),\n        BLANK(),\n        FORMAT(Variacao, \"0.0%\", \"pt-BR\")\n            \u0026 \" \"\n            \u0026 IF(\n                Variacao \u003e= 0,\n                UNICHAR(9650),\n                UNICHAR(9660)\n            )\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4855804,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Cor Budget Forecast",
+                         "Expression":  "\nVAR Variacao = [Var Forecast vs Budget %]\nRETURN\n    SWITCH(\n        TRUE(),\n        ISBLANK(Variacao), \"#808080\",\n        Variacao \u003e 0, \"#1AAB40\",\n        Variacao \u003c 0, \"#D51D23\",\n        \"#808080\"\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4856520,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Var Invoiced vs Budget %",
+                         "Expression":  "\n    IF(\n        [Invoiced Selecionada] = 0, 0,\n        DIVIDE(\n        [Invoiced Selecionada] - [Budget Selecionada],\n        [Budget Selecionada]\n        )\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4858008,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Invoiced Selecionada YTD",
+                         "Expression":  "\nVAR DataLimite =\n    MIN(\n        TODAY(),\n        MAX(\u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA])\n    )\nRETURN\n    CALCULATE(\n        [Invoiced Selecionada],\n        DATESBETWEEN(\n            \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n            DATE(YEAR(DataLimite), 1, 1),\n            DataLimite\n        )\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4858767,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Budget Selecionada YTD",
+                         "Expression":  "\nTOTALYTD(\n    [Budget Selecionada],\n    \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA]\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4859526,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Forecast Selecionada YTD",
+                         "Expression":  "\nTOTALYTD(\n    [Forecast Selecionada],\n    \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA]\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4864699,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Cor Invoiced Budget",
+                         "Expression":  "\nVAR Variacao = [Invoiced Selecionada] - [Budget Selecionada]\nRETURN\n    SWITCH(\n        TRUE(),\n        ISBLANK(Variacao), \"#032030\",\n        Variacao \u003e= 0, \"#1AAB40\",\n        Variacao \u003c 0, \"#D51D23\",\n        \"#032030\"\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4883637,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Subtitulo Invoiced YTD",
+                         "Expression":  "\nVAR DataLimite =\n    MIN(\n        TODAY(),\n        MAX(\u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA])\n    )\n\nVAR AnoSelecionado =\n    YEAR(DataLimite)\n\nRETURN\n    \"Acumulado até \"\n        \u0026 FORMAT(DataLimite, \"dd/MM\")\n        \u0026 \" de \"\n        \u0026 FORMAT(AnoSelecionado, \"0\")",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4884395,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Subtitulo Periodo Completo",
+                         "Expression":  "\nVAR TemFiltroMes =\n    ISFILTERED(\u0027CALENDARIO_BIMBO_VENDAS\u0027[NomeMes2])\n        || ISFILTERED(\u0027CALENDARIO_BIMBO_VENDAS\u0027[MES])\n\nVAR MesSelecionado =\n    SELECTEDVALUE(\u0027CALENDARIO_BIMBO_VENDAS\u0027[NomeMes2])\n\nVAR AnoSelecionado =\n    SELECTEDVALUE(\u0027CALENDARIO_BIMBO_VENDAS\u0027[ANO])\n\nRETURN\n    IF(\n        TemFiltroMes,\n        \"Mês completo: \" \u0026 MesSelecionado,\n        \"Ano completo: \" \u0026 FORMAT(AnoSelecionado, \"0\")\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4888179,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Delta Invoiced vs Forecast",
+                         "Expression":  "\n[Invoiced Selecionada] - [Forecast Selecionada]",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4890077,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Invoiced vs AA %",
+                         "Expression":  "\nDIVIDE(\n    [Invoiced Selecionada] - [Invoiced Selecionada AA],\n    [Invoiced Selecionada AA]\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4892353,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Var Invoiced vs Forecast %",
+                         "Expression":  "\nIF(\n    [Invoiced Selecionada] = 0, 0,\n    DIVIDE(\n        [Invoiced Selecionada] - [Forecast Selecionada],\n        [Forecast Selecionada]\n    )\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4897480,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Invoiced por Período",
+                         "Expression":  "\nVAR Periodo =\n    SELECTEDVALUE(PERIODO_VISUAL[DESC_PERIODO])\n\n-- Limita o cálculo até a data atual ou até a última data selecionada\nVAR DataFim =\n    MIN(\n        TODAY(),\n        MAXX(\n            ALLSELECTED(\u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA]),\n            \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA]\n        )\n    )\n\nRETURN\n    SWITCH(\n        Periodo,\n\n        \"YTD\",\n            CALCULATE(\n                [Invoiced Selecionada],\n                DATESBETWEEN(\n                    \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n                    DATE(YEAR(DataFim), 1, 1),\n                    DataFim\n                )\n            ),\n\n        \"12 W\",\n            CALCULATE(\n                [Invoiced Selecionada],\n                DATESBETWEEN(\n                    \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n                    DataFim - 83,\n                    DataFim\n                )\n            ),\n\n        \"6 W\",\n            CALCULATE(\n                [Invoiced Selecionada],\n                DATESBETWEEN(\n                    \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n                    DataFim - 41,\n                    DataFim\n                )\n            ),\n\n        \"MTD\",\n            CALCULATE(\n                [Invoiced Selecionada],\n                DATESBETWEEN(\n                    \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n                    DATE(YEAR(DataFim), MONTH(DataFim), 1),\n                    DataFim\n                )\n            )\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4898239,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Comparação por Período",
+                         "Expression":  "\nVAR Comparacao =\n    SELECTEDVALUE(\n        Seletor_Comparacao[Comparacao],\n        \"FCST\"\n    )\n\nVAR Periodo =\n    SELECTEDVALUE(\n        PERIODO_VISUAL[DESC_PERIODO]\n    )\n\nVAR DataFim =\n    MIN(\n        TODAY(),\n        CALCULATE(\n            MAX(\u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA]),\n            REMOVEFILTERS(PERIODO_VISUAL)\n        )\n    )\n\nVAR DataInicio =\n    SWITCH(\n        Periodo,\n        \"YTD\", DATE(YEAR(DataFim), 1, 1),\n        \"12 W\", DataFim - 83,\n        \"6 W\", DataFim - 41,\n        \"MTD\", DATE(YEAR(DataFim), MONTH(DataFim), 1)\n    )\n\nRETURN\n    SWITCH(\n        Comparacao,\n\n        \"FCST\",\n            CALCULATE(\n                [Forecast Selecionada],\n\n                REMOVEFILTERS(\n                    \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n                    \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA_AJUSTADA],\n                    \u0027CALENDARIO_BIMBO_VENDAS\u0027[DIA],\n                    \u0027CALENDARIO_BIMBO_VENDAS\u0027[MES],\n                    \u0027CALENDARIO_BIMBO_VENDAS\u0027[NomeMes2],\n                    \u0027CALENDARIO_BIMBO_VENDAS\u0027[SEMANA],\n                    \u0027CALENDARIO_BIMBO_VENDAS\u0027[SEMANA_BQB]\n                ),\n\n                DATESBETWEEN(\n                    \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n                    DataInicio,\n                    DataFim\n                )\n            ),\n\n        \"PY\",\n            VAR DataInicioPY =\n                EDATE(DataInicio, -12)\n\n            VAR DataFimPY =\n                EDATE(DataFim, -12)\n\n            RETURN\n                CALCULATE(\n                    [Invoiced Selecionada],\n\n                    REMOVEFILTERS(\n                        \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n                        \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA_AJUSTADA],\n                        \u0027CALENDARIO_BIMBO_VENDAS\u0027[ANO],\n                        \u0027CALENDARIO_BIMBO_VENDAS\u0027[MES],\n                        \u0027CALENDARIO_BIMBO_VENDAS\u0027[NomeMes2],\n                        \u0027CALENDARIO_BIMBO_VENDAS\u0027[DIA],\n                        \u0027CALENDARIO_BIMBO_VENDAS\u0027[SEMANA],\n                        \u0027CALENDARIO_BIMBO_VENDAS\u0027[SEMANA_BQB]\n                    ),\n\n                    DATESBETWEEN(\n                        \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n                        DataInicioPY,\n                        DataFimPY\n                    )\n                )\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4923118,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Comparação Selecionada",
+                         "Expression":  "\nSWITCH(\n    SELECTEDVALUE(\n        Seletor_Comparacao[Comparacao],\n        \"FCST\"\n    ),\n    \"FCST\", [Forecast Selecionada],\n    \"PY\", [Invoiced Selecionada AA]\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4934892,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "VL_FCST Diário",
+                         "Expression":  "\nSUMX (\n    VALUES ( CALENDARIO_BIMBO_VENDAS[DATA] ),\n\n    VAR _Dia =\n        CALENDARIO_BIMBO_VENDAS[DATA]\n\n    VAR _DiaSemana =\n        WEEKDAY ( _Dia, 2 )\n\n    VAR _SegundaSemana =\n        _Dia - _DiaSemana + 1\n\n    VAR _InicioMes =\n        DATE (\n            YEAR ( _Dia ),\n            MONTH ( _Dia ),\n            1\n        )\n\n    VAR _FimMes =\n        EOMONTH ( _Dia, 0 )\n\n    VAR _InicioDistribuicao =\n        MAX (\n            _SegundaSemana,\n            _InicioMes\n        )\n\n    VAR _FimDistribuicao =\n        MIN (\n            _SegundaSemana + 6,\n            _FimMes\n        )\n\n    VAR _Divisor =\n        COUNTROWS (\n            FILTER (\n                CALENDAR (\n                    _InicioDistribuicao,\n                    _FimDistribuicao\n                ),\n                WEEKDAY ( [Date], 2 ) \u003c\u003e 7\n            )\n        )\n\n    VAR _FcstPeriodo =\n        CALCULATE (\n            SUM ( BQB_VENDAS_PEDIDOS_PPTO[FORECAST_VALOR] ),\n\n            REMOVEFILTERS (\n                CALENDARIO_BIMBO_VENDAS\n            ),\n\n            BQB_VENDAS_PEDIDOS_PPTO[DT_REGISTRO]\n                \u003e= _InicioDistribuicao,\n\n            BQB_VENDAS_PEDIDOS_PPTO[DT_REGISTRO]\n                \u003c= _FimDistribuicao\n        )\n\n    VAR _DiaValido =\n        _Dia \u003e= _InicioDistribuicao\n            \u0026\u0026 _Dia \u003c= _FimDistribuicao\n            \u0026\u0026 _DiaSemana \u003c\u003e 7\n\n    RETURN\n        IF (\n            _DiaValido,\n            DIVIDE (\n                _FcstPeriodo,\n                _Divisor\n            ),\n            0\n        )\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4938675,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "VL_BGT Diário",
+                         "Expression":  "\nSUMX (\n    VALUES ( CALENDARIO_BIMBO_VENDAS[DATA] ),\n\n    VAR _Dia =\n        CALENDARIO_BIMBO_VENDAS[DATA]\n\n    VAR _DiaSemana =\n        WEEKDAY ( _Dia, 2 )\n\n    VAR _SegundaSemana =\n        _Dia - _DiaSemana + 1\n\n    VAR _InicioMes =\n        DATE (\n            YEAR ( _Dia ),\n            MONTH ( _Dia ),\n            1\n        )\n\n    VAR _FimMes =\n        EOMONTH ( _Dia, 0 )\n\n    VAR _InicioDistribuicao =\n        MAX (\n            _SegundaSemana,\n            _InicioMes\n        )\n\n    VAR _FimDistribuicao =\n        MIN (\n            _SegundaSemana + 6,\n            _FimMes\n        )\n\n    VAR _Divisor =\n        COUNTROWS (\n            FILTER (\n                CALENDAR (\n                    _InicioDistribuicao,\n                    _FimDistribuicao\n                ),\n                WEEKDAY ( [Date], 2 ) \u003c\u003e 7\n            )\n        )\n\n    VAR _BudgetPeriodo =\n        CALCULATE (\n            SUM (\n                BQB_VENDAS_PEDIDOS_PPTO[BUDGET_VALOR]\n            ),\n            REMOVEFILTERS (\n                CALENDARIO_BIMBO_VENDAS\n            ),\n            BQB_VENDAS_PEDIDOS_PPTO[DT_REGISTRO]\n                \u003e= _InicioDistribuicao,\n            BQB_VENDAS_PEDIDOS_PPTO[DT_REGISTRO]\n                \u003c= _FimDistribuicao\n        )\n\n    VAR _DiaValido =\n        _Dia \u003e= _InicioDistribuicao\n            \u0026\u0026 _Dia \u003c= _FimDistribuicao\n            \u0026\u0026 _DiaSemana \u003c\u003e 7\n\n    RETURN\n        IF (\n            _DiaValido,\n            DIVIDE (\n                _BudgetPeriodo,\n                _Divisor\n            ),\n            0\n        )\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4951579,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Cor Status Invoiced x Budget YTD",
+                         "Expression":  "\nVAR _Invoiced = [Invoiced Selecionada YTD]\nVAR _Budget = [Budget Selecionada YTD]\nRETURN\nSWITCH(\n    TRUE(),\n    ISBLANK(_Invoiced) || ISBLANK(_Budget), \"#808080\",\n    _Invoiced \u003e _Budget, \"#1AAB40\",\n    _Invoiced \u003c _Budget, \"#D51D23\",\n    \"#808080\"\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4952715,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "1 - BGT (Texto)",
+                         "Expression":  "\nVAR _Valor = DIVIDE([OpenOrders+Invo Selecionada], [Budget Selecionada], 0) - 1\nRETURN\nSWITCH(\n    TRUE(),\n    ISBLANK(_Valor), \"—\",\n    _Valor \u003e 0, \"▲ +\" \u0026 FORMAT(_Valor, \"0.0%\"),\n    _Valor \u003c 0, \"▼ \" \u0026 FORMAT(_Valor, \"0.0%\"),\n    FORMAT(_Valor, \"0.0%\")\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4954608,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "1 - BGT (Cor)",
+                         "Expression":  "\nVAR _Valor = DIVIDE([VL_Invoiced] + [Open Orders], [vl_bgt], 0) - 1\nRETURN\nSWITCH(\n    TRUE(),\n    ISBLANK(_Valor), \"#1AAB40\",\n    _Valor \u003e 0, \"#16A34A\",\n    _Valor \u003c 0, \"#D51D23\",\n    \"#032030\"\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4956500,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "1 - forecast (Texto)",
+                         "Expression":  "\nVAR _Valor = DIVIDE([OpenOrders+Invo Selecionada], [Forecast Selecionada], 0) - 1\nRETURN\nSWITCH(\n    TRUE(),\n    ISBLANK(_Valor), \"—\",\n    _Valor \u003e 0, \"▲ +\" \u0026 FORMAT(_Valor, \"0.0%\"),\n    _Valor \u003c 0, \"▼ \" \u0026 FORMAT(_Valor, \"0.0%\"),\n    FORMAT(_Valor, \"0.0%\")\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4957258,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "1 - forecast (Cor)",
+                         "Expression":  "\nVAR _Valor = DIVIDE([VL_Invoiced] + [Open Orders], [VL_FCST], 0) - 1\nRETURN\nSWITCH(\n    TRUE(),\n    ISBLANK(_Valor), \"#032030\",\n    _Valor \u003e 0, \"#1AAB40\",\n    _Valor \u003c 0, \"#D51D23\",\n    \"#032030\"\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4975453,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "QT BGT Diário",
+                         "Expression":  "\nSUMX (\n    VALUES ( CALENDARIO_BIMBO_VENDAS[DATA] ),\n    VAR _Dia = CALENDARIO_BIMBO_VENDAS[DATA]\n    VAR _DiaSemana = WEEKDAY ( _Dia, 2 )        -- 1 = segunda ... 7 = domingo\n    RETURN\n        IF (\n            _DiaSemana = 7,\n            0,                                  -- domingo não recebe budget\n            VAR _SegundaSemana = _Dia - _DiaSemana + 1\n            VAR _Inicio =\n                MAX (\n                    _SegundaSemana,\n                    DATE ( YEAR ( _Dia ), 1, 1 )\n                )\n            VAR _Fim =\n                MIN (\n                    _SegundaSemana + 6,\n                    DATE ( YEAR ( _Dia ), 12, 31 )\n                )\n\n            -- divisor = dias não-domingo dentro do período efetivo\n            VAR _Divisor =\n                COUNTROWS (\n                    FILTER (\n                        CALENDAR ( _Inicio, _Fim ),\n                        WEEKDAY ( [Date], 2 ) \u003c\u003e 7\n                    )\n                )\n\n            -- janela de busca: segunda a domingo da própria semana\n            VAR _FimBusca =\n                MIN (\n                    _SegundaSemana + 6,\n                    DATE ( YEAR ( _Dia ), 12, 31 )\n                )\n\n            -- exceção: 01/01 caindo num domingo cobre a semana seguinte\n            VAR _InicioBusca =\n                IF (\n                    _Inicio - 1 = DATE ( YEAR ( _Dia ), 1, 1 )\n                        \u0026\u0026 WEEKDAY ( _Inicio - 1, 2 ) = 7,\n                    _Inicio - 1,\n                    _Inicio\n                )\n\n            VAR _BudgetPeriodo =\n                CALCULATE (\n                    SUM ( BQB_VENDAS_PEDIDOS_PPTO[BUDGET_QTDE] ),\n                    REMOVEFILTERS ( CALENDARIO_BIMBO_VENDAS ),\n                    BQB_VENDAS_PEDIDOS_PPTO[DT_REGISTRO] \u003e= _InicioBusca\n                        \u0026\u0026 BQB_VENDAS_PEDIDOS_PPTO[DT_REGISTRO] \u003c= _FimBusca\n                )\n\n            RETURN\n                DIVIDE ( _BudgetPeriodo, _Divisor )\n        )\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4977724,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Budget Diário Selecionada",
+                         "Expression":  "\nSWITCH(\n    SELECTEDVALUE(TABELA_CONDICIONAL[DESCRICAO]),\n    \"VALOR\", [VL_BGT Diário],\n    \"VOLUME\", [QT BGT Diário]\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4978861,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Forecast Diário Selecionada",
+                         "Expression":  "\nSWITCH(\n    SELECTEDVALUE(TABELA_CONDICIONAL[DESCRICAO]),\n    \"VALOR\", [VL_FCST Diário],\n    \"VOLUME\", [QT FCST Diário]\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4979619,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "QT FCST Diário",
+                         "Expression":  "\nSUMX (\n    VALUES ( CALENDARIO_BIMBO_VENDAS[DATA] ),\n    VAR _Dia =\n        CALENDARIO_BIMBO_VENDAS[DATA]\n\n    VAR _DiaSemana =\n        WEEKDAY ( _Dia, 2 ) -- 1 = segunda ... 7 = domingo\n\n    RETURN\n        IF (\n            _DiaSemana = 7,\n            0, -- domingo não recebe forecast\n\n            VAR _SegundaSemana =\n                _Dia - _DiaSemana + 1\n\n            VAR _Inicio =\n                MAX (\n                    _SegundaSemana,\n                    DATE ( YEAR ( _Dia ), 1, 1 )\n                )\n\n            VAR _Fim =\n                MIN (\n                    _SegundaSemana + 6,\n                    DATE ( YEAR ( _Dia ), 12, 31 )\n                )\n\n            -- Quantidade de dias não-domingo da semana efetiva\n            VAR _Divisor =\n                COUNTROWS (\n                    FILTER (\n                        CALENDAR ( _Inicio, _Fim ),\n                        WEEKDAY ( [Date], 2 ) \u003c\u003e 7\n                    )\n                )\n\n            -- Busca o forecast lançado na semana correspondente\n            VAR _FimBusca =\n                MIN (\n                    _SegundaSemana + 6,\n                    DATE ( YEAR ( _Dia ), 12, 31 )\n                )\n\n            -- Exceção para 01/01 quando cair em domingo\n            VAR _InicioBusca =\n                IF (\n                    _Inicio - 1 = DATE ( YEAR ( _Dia ), 1, 1 )\n                        \u0026\u0026 WEEKDAY ( _Inicio - 1, 2 ) = 7,\n                    _Inicio - 1,\n                    _Inicio\n                )\n\n            VAR _FcstPeriodo =\n                CALCULATE (\n                    [QT FCST],\n                    REMOVEFILTERS ( CALENDARIO_BIMBO_VENDAS ),\n                    BQB_VENDAS_PEDIDOS_PPTO[DT_REGISTRO] \u003e= _InicioBusca,\n                    BQB_VENDAS_PEDIDOS_PPTO[DT_REGISTRO] \u003c= _FimBusca\n                )\n\n            RETURN\n                DIVIDE (\n                    _FcstPeriodo,\n                    _Divisor\n                )\n        )\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  4988447,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Cor Status Invoiced x Forecast YTD",
+                         "Expression":  "\nVAR _Invoiced = [Invoiced Selecionada YTD]\nVAR _Budget = [forecast Selecionada YTD]\nRETURN\nSWITCH(\n    TRUE(),\n    ISBLANK(_Invoiced) || ISBLANK(_Budget), \"#808080\",\n    _Invoiced \u003e _Budget, \"#1AAB40\",\n    _Invoiced \u003c _Budget, \"#D51D23\",\n    \"#808080\"\n)",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  5106173,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Invoiced Selecionada YTD LY",
+                         "Expression":  "\nVAR MaxDataSel = MAX(\u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA])\nVAR AnoSelLY   = YEAR(MaxDataSel) - 1\nVAR MesSel     = MONTH(MaxDataSel)\nVAR FimMesLY   = EOMONTH(DATE(AnoSelLY, MesSel, 1), 0)\nRETURN\n    CALCULATE(\n        [Invoiced Selecionada],\n        DATESBETWEEN(\n            \u0027CALENDARIO_BIMBO_VENDAS\u0027[DATA],\n            DATE(AnoSelLY, 1, 1),\n            FimMesLY\n        )\n    )",
+                         "TableID":  3688688
+                     },
+                     {
+                         "ID":  7075649,
+                         "Description":  null,
+                         "IsHidden":  false,
+                         "Name":  "Maior Pedido Aberto",
+                         "Expression":  "\nCALCULATE (\n    MAXX (VALUES (BQB_VENDAS_PEDIDOS_PPTO[NUMERO_PEDIDO]), [Open Orders]),\n    REMOVEFILTERS (CALENDARIO_BIMBO_VENDAS)\n)",
+                         "TableID":  3688688
+                     }
+                 ],
+    "tables":  [
+                   {
+                       "IsHidden":  false,
+                       "Description":  null,
+                       "Name":  "CALENDARIO_BIMBO_VENDAS",
+                       "ID":  273728
+                   },
+                   {
+                       "IsHidden":  false,
+                       "Description":  null,
+                       "Name":  "TEMPORAL",
+                       "ID":  340046
+                   },
+                   {
+                       "IsHidden":  false,
+                       "Description":  null,
+                       "Name":  "ATUALIZACAO_BASE",
+                       "ID":  487331
+                   },
+                   {
+                       "IsHidden":  false,
+                       "Description":  null,
+                       "Name":  "TABELA_CONDICIONAL",
+                       "ID":  1350042
+                   },
+                   {
+                       "IsHidden":  false,
+                       "Description":  null,
+                       "Name":  "BQB_VENDAS_PEDIDOS_PPTO",
+                       "ID":  3581954
+                   },
+                   {
+                       "IsHidden":  false,
+                       "Description":  null,
+                       "Name":  "BQB_CAT_PRODUTOS_DL",
+                       "ID":  3667398
+                   },
+                   {
+                       "IsHidden":  false,
+                       "Description":  null,
+                       "Name":  "BQB_CAT_GRUPO_CLIENTE_DL",
+                       "ID":  3669904
+                   },
+                   {
+                       "IsHidden":  false,
+                       "Description":  null,
+                       "Name":  "Medidas",
+                       "ID":  3688688
+                   },
+                   {
+                       "IsHidden":  false,
+                       "Description":  null,
+                       "Name":  "DIMENSAO",
+                       "ID":  3728682
+                   },
+                   {
+                       "IsHidden":  false,
+                       "Description":  null,
+                       "Name":  "MEDIDAS 2",
+                       "ID":  3730849
+                   },
+                   {
+                       "IsHidden":  false,
+                       "Description":  null,
+                       "Name":  "Matriz Linha",
+                       "ID":  3735461
+                   },
+                   {
+                       "IsHidden":  false,
+                       "Description":  null,
+                       "Name":  "BQB_CAT_GRUPO_CLIENTE_DL_NEW",
+                       "ID":  4095773
+                   },
+                   {
+                       "IsHidden":  false,
+                       "Description":  null,
+                       "Name":  "DIMENSAO_COLUNA2",
+                       "ID":  4303799
+                   },
+                   {
+                       "IsHidden":  false,
+                       "Description":  null,
+                       "Name":  "FABRICA",
+                       "ID":  4322829
+                   },
+                   {
+                       "IsHidden":  false,
+                       "Description":  null,
+                       "Name":  "Seletor_Comparacao",
+                       "ID":  4902067
+                   },
+                   {
+                       "IsHidden":  false,
+                       "Description":  null,
+                       "Name":  "PERIODO_VISUAL",
+                       "ID":  4908498
+                   }
+               ],
+    "partitions":  [
+                       {
+                           "TableID":  273728,
+                           "QueryDefinition":  "let\n    Fonte = Sql.Database(\"bbraclbbsqlcp02.database.windows.net\", \"ACL-DNA-BRPROD\"),\n    Calendario = Value.NativeQuery(\n        Fonte,\n        \"SELECT\n            [DATA], [ANO], [MES], [DIA], [TRIM], [SEMANA], [SEMANA_BQB], [DIAS_UTEIS],\n            LEFT([DIA_NOME], 6) AS [DIA_SEMANA_BB]\n        FROM catalogos.calendario_bimbo\n        WHERE [ANO] \u003e= 2024\",\n        null,\n        [EnableFolding = true]\n    ),\n    #\"Tipo Alterado\" = Table.TransformColumnTypes(Calendario, {\n        {\"DATA\", type date}, {\"ANO\", Int64.Type}, {\"DIA\", Int64.Type}, {\"DIA_SEMANA_BB\", type text}\n    }),\n    #\"Dia da Semana Adicionado\" = Table.AddColumn(#\"Tipo Alterado\", \"NUM_DIA_SEMANA\", each Date.DayOfWeek([DATA], Day.Sunday), Int64.Type)\nin\n    #\"Dia da Semana Adicionado\"",
+                           "Name":  "CALENDARIO_BIMBO_VENDAS-78555943-4715-4a8c-99f4-73ad0748eda1",
+                           "ID":  273755
+                       },
+                       {
+                           "TableID":  340046,
+                           "QueryDefinition":  "{\n    (\"Dia_num\", NAMEOF(\u0027CALENDARIO_BIMBO_VENDAS\u0027[DIA_AJUSTADO]), 1),\n    (\"Semana\", NAMEOF(\u0027CALENDARIO_BIMBO_VENDAS\u0027[SEMANA]), 1),\n    (\"Mês\", NAMEOF(\u0027CALENDARIO_BIMBO_VENDAS\u0027[MES]), 2),\n    (\"Ano\", NAMEOF(CALENDARIO_BIMBO_VENDAS[ANO]), 3),\n    (\"Trim\", NAMEOF(CALENDARIO_BIMBO_VENDAS[TRIM]), 4),\n    (\"Dia\", NAMEOF(CALENDARIO_BIMBO_VENDAS[DATA_AJUSTADA]), 0)\n    }",
+                           "Name":  "TEMPORAL-3982a773-3df4-44d6-9922-fc58fc4cd918",
+                           "ID":  340049
+                       },
+                       {
+                           "TableID":  487331,
+                           "QueryDefinition":  "let\n    Fonte = DateTimeZone.UtcNow() -#duration(0,3,0,0),\n    #\"Convertido para Tabela\" = #table(1, {{Fonte}}),\n    #\"Tipo Alterado\" = Table.TransformColumnTypes(#\"Convertido para Tabela\",{{\"Column1\", type datetimezone}}),\n    #\"Colunas Renomeadas\" = Table.RenameColumns(#\"Tipo Alterado\",{{\"Column1\", \"Atualizacao\"}}),\n    #\"Columns removed by Measure Killer\"= Table.RemoveColumns(#\"Colunas Renomeadas\",{\"Atualizacao\"})\nin\n    #\"Columns removed by Measure Killer\"",
+                           "Name":  "ATUALIZACAO_BASE-e7e71439-a56b-49d1-a84e-1d6c72b9f8af",
+                           "ID":  487346
+                       },
+                       {
+                           "TableID":  1350042,
+                           "QueryDefinition":  "let\n    Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText(\"i45WMlTSUQpz9PEPUorViVYyAvH8fUJ9XcFcYyA3xN/P1cfRxTFYKTYWAA==\", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [INDICE = _t, DESCRICAO = _t]),\n    #\"Tipo Alterado\" = Table.TransformColumnTypes(Fonte,{{\"INDICE\", Int64.Type}, {\"DESCRICAO\", type text}}),\n    #\"Columns removed by Measure Killer\"= Table.SelectColumns(#\"Tipo Alterado\",{\"DESCRICAO\"})\nin\n    #\"Columns removed by Measure Killer\"",
+                           "Name":  "TABELA_CONDICIONAL-97efdd8f-d842-4f3e-a199-56b80309a366",
+                           "ID":  1350047
+                       },
+                       {
+                           "TableID":  3581954,
+                           "QueryDefinition":  "let\n    Fonte = Sql.Database(\"bbraclbbsqlcp02.database.windows.net\", \"ACL-DNA-BRPROD\"),\n    query = Value.NativeQuery(Fonte, \"\n        SELECT\n            -- Chaves\n            vbq.CNPJ_BIMBO,\n            vbq.CNPJ_CLIENTE,\n            vbq.ID_PRODUTO,\n            vbq.GRUPO_CLI,\n            cp.COD_PRODUTO,\n\n            -- Datas\n            vbq.DT_REGISTRO,\n            vbq.DT_ENTREGA,\n            vbq.DT_EMISSAO,\n            vbq.DT_UPDATE_PEDIDO,\n\n            -- Documento\n            vbq.NUMERO_PEDIDO,\n            vbq.NOTA_FISCAL,\n            vbq.SERIE,\n            vbq.CHAVE_ACESSO_VENDA,\n            vbq.CHAVE_ACESSO_RETORNO,\n            vbq.ID_STATUS_PEDIDO,\n            vbq.STATUS_PEDIDO,\n            vbq.STATUS_NOTA,\n            vbq.NATUREZA_AJUSTADA,\n\n            -- Cliente da nota\n            vbq.COD_CLI,\n            vbq.SIGLA_CLI,\n            vbq.RAZAO_SOCIAL_DEST_NF,\n            vbq.UF_DEST_NF,\n            vbq.MUNICIPIO_DEST_NF,\n            vbq.BAIRRO_DEST_NF,\n            vbq.CEP_DEST_NF,\n            vbq.ENDERECO_DEST_NF,\n\n            -- Quantidades e valores\n            vbq.PEDIDO_QTDE,\n            vbq.VENDA_LIQUIDA_VLR,\n            vbq.QT_CYW_LIQ_VENDIDO,\n            vbq.VL_CYW_LIQ_VENDIDO,\n            vbq.BUDGET_QTDE,\n            vbq.BUDGET_VALOR,\n            vbq.FORECAST_QTDE,\n            vbq.FORECAST_VALOR,\n\n            -- Open orders: somente do mês corrente, no horário de Brasília\n            CASE\n                WHEN YEAR(vbq.DT_REGISTRO) = YEAR(SYSDATETIMEOFFSET() AT TIME ZONE \u0027E. South America Standard Time\u0027)\n                 AND MONTH(vbq.DT_REGISTRO) = MONTH(SYSDATETIMEOFFSET() AT TIME ZONE \u0027E. South America Standard Time\u0027)\n                    THEN ISNULL(vbq.VL_LIQ_OPEN_ORDERS, 0)\n                ELSE 0\n            END AS VL_LIQ_OPEN_ORDERS,\n            CASE\n                WHEN YEAR(vbq.DT_REGISTRO) = YEAR(SYSDATETIMEOFFSET() AT TIME ZONE \u0027E. South America Standard Time\u0027)\n                 AND MONTH(vbq.DT_REGISTRO) = MONTH(SYSDATETIMEOFFSET() AT TIME ZONE \u0027E. South America Standard Time\u0027)\n                    THEN ISNULL(vbq.QT_OPEN_ORDERS, 0)\n                ELSE 0\n            END AS QT_OPEN_ORDERS\n\n        FROM BQB.vendas_pedidos_ppto_bq_v2 vbq\n        INNER JOIN catalogos.produtos_view cp\n            ON CAST(cp.INVENTORY_ITEM_ID AS VARCHAR) = CAST(vbq.ID_PRODUTO AS VARCHAR)\n        WHERE\n            vbq.DT_ENTREGA \u003e= \u002720240101\u0027\n            AND cp.COD_PRODUTO NOT IN (\u0027100234\u0027, \u0027100235\u0027)\n            AND vbq.GRUPO_CLI \u003c\u003e 108\n    \", null, [EnableFolding = true]),\n\n    // Filtro da atualização incremental (enviado ao SQL pelo EnableFolding)\n    #\"Linhas Filtradas\" = Table.SelectRows(query, each [DT_ENTREGA] \u003e= RangeStart and [DT_ENTREGA] \u003c RangeEnd)\nin\n    #\"Linhas Filtradas\"",
+                           "Name":  "BQB_VENDAS_PEDIDOS_PPTO",
+                           "ID":  3581987
+                       },
+                       {
+                           "TableID":  3667398,
+                           "QueryDefinition":  "let\n    Fonte = Sql.Database(servidor, banco),\n    Produtos = Value.NativeQuery(\n        Fonte,\n        \"SELECT\n            [INVENTORY_ITEM_ID], [COD_PRODUTO], [DESCRICAO_PRODUTO], [CODIGO_BARRAS],\n            [MARCA], [UE], [UNIDADE_NEGOCIO], [CATEGORIA_MKT], [SUBCATEGORIA], [SUBCATEGORIA_BQ],\n            [LINHA_PRODUTO], [TIPO_CESTO], [GRUPO_PRODUTO_DESC_BQ], [FAMILIA_DESC_BQ],\n            [TIPO_PRODUTO_BQ], [DS_CLASIF_BQ], [CUPO_NOR_BQ], [QT_NA_EMB_BQ]\n        FROM catalogos.produtos_view\",\n        null,\n        [EnableFolding = true]\n    ),\n    #\"Tipo Alterado\" = Table.TransformColumnTypes(Produtos, {{\"CUPO_NOR_BQ\", type number}}),\n    #\"Nulos Tratados\" = Table.TransformColumns(#\"Tipo Alterado\", {\n        {\"CUPO_NOR_BQ\", each _ ?? 0, type number},\n        {\"QT_NA_EMB_BQ\", each _ ?? 0, type number}\n    }),\n    #\"Classificação FIN\" = Table.AddColumn(#\"Nulos Tratados\", \"Classificação FIN\", each\n        if [DS_CLASIF_BQ] = null then null\n        else if Text.Upper([DS_CLASIF_BQ]) = \"BUNS\" then \"BUNS\"\n        else \"NON BUNS\",\n        type text\n    )\nin\n    #\"Classificação FIN\"",
+                           "Name":  "BQB_CAT_PRODUTOS_DL",
+                           "ID":  3667416
+                       },
+                       {
+                           "TableID":  3669904,
+                           "QueryDefinition":  "let\n    Fonte = Sql.Database(servidor, banco),\n    Clientes = Value.NativeQuery(\n        Fonte,\n        \"SELECT [ID_CNPJ], [REGIAO], [TIPO_DEV] FROM catalogos.clientes_mc1_oracle\",\n        null,\n        [EnableFolding = true]\n    )\nin\n    Clientes",
+                           "Name":  "BQB_CAT_GRUPO_CLIENTE_DL",
+                           "ID":  3669920
+                       },
+                       {
+                           "TableID":  3688688,
+                           "QueryDefinition":  "let\n    Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText(\"i44FAA==\", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#\"Coluna 1\" = _t]),\n    #\"Tipo Alterado\" = Table.TransformColumnTypes(Fonte,{{\"Coluna 1\", type text}}),\n    #\"Colunas Removidas\" = Table.RemoveColumns(#\"Tipo Alterado\",{\"Coluna 1\"})\nin\n    #\"Colunas Removidas\"",
+                           "Name":  "Medidas",
+                           "ID":  3688692
+                       },
+                       {
+                           "TableID":  3728682,
+                           "QueryDefinition":  "{\n    (\"Ano\", NAMEOF(CALENDARIO_BIMBO_VENDAS[ANO]), 0),\n    (\"Canal\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[NM_CANAL]), 10),\n    (\"Canal Fin\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[NM_SEGMENTO]), 20),\n    (\"Categoria Bq\", NAMEOF(BQB_CAT_PRODUTOS_DL[DS_CLASIF_BQ]), 30),\n    (\"Categoria Fin\", NAMEOF(BQB_CAT_PRODUTOS_DL[Classificação FIN]), 40),\n    (\"Categoria Mkt\", NAMEOF(BQB_CAT_PRODUTOS_DL[CATEGORIA_MKT]), 50),\n    (\"Chave Venda\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[CHAVE_ACESSO_VENDA]), 60),\n    (\"Chave Retorno\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[CHAVE_ACESSO_RETORNO]), 60),\n    --(\"Chave Acesso Venda\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[CHAVE_ACESSO_VENDA]), 70),\n    (\"Cluster\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[CLUSTER_COMERCIAL]), 80),\n    --(\"Cluster Detal.\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[CLUSTER_1]), 90),\n    (\"Cluster Detalhe\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[SUB_CLUSTER_COMERCIAL]), 100),\n  //  (\"Cod Familia\", NAMEOF(BQB_CAT_PRODUTOS_DL[FAMILIA_COD_BQ]), 110),\n  //  (\"Cod Grupo Produto\", NAMEOF(BQB_CAT_PRODUTOS_DL[GRP_PROD_COD_BQ]), 120),\n    (\"Cnpj Bimbo\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[CNPJ_BIMBO]), 130),\n    (\"Cnpj Cliente\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[CNPJ_CLIENTE]), 140),\n    (\"Qtd Na Emb\", NAMEOF(BQB_CAT_PRODUTOS_DL[QT_NA_EMB_BQ]), 150),\n    (\"Cupo\", NAMEOF(BQB_CAT_PRODUTOS_DL[CUPO_NOR_BQ]), 150),\n    (\"Data Emissão\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[DT_EMISSAO]), 160),\n //   (\"Data Saída\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[DT_ENTREGA]), 170),\n    (\"Desc. Familia\", NAMEOF(BQB_CAT_PRODUTOS_DL[FAMILIA_DESC_BQ]), 180),\n    (\"Dia\", NAMEOF(CALENDARIO_BIMBO_VENDAS[DIA]), 190),\n   // (\"Dia Semana\", NAMEOF(CALENDARIO_BIMBO_VENDAS[DIA_SEMANA_BB]), 200),\n    (\"Fecha\", NAMEOF(CALENDARIO_BIMBO_VENDAS[DATA_AJUSTADA]), 210),\n    (\"Filial\", NAMEOF(FABRICA[FILIAL NN]), 220),\n    (\"Planta\", NAMEOF(FABRICA[PLANTA]), 220),\n    (\"Gerente\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[NM_NV1]), 230),\n    (\"Gerente Nv2\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[NM_NV2]), 240),\n    (\"Gerente Nv3\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[NM_NV3]), 250),\n    (\"Gerente Nv4\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[NM_NV4]), 260),\n    (\"Grupo_Cliente\", NAMEOF(\u0027BQB_CAT_GRUPO_CLIENTE_DL_NEW\u0027[GRUPO_CLIENTE_DESC]), 270),\n    (\"Grupo_Cliente Cod\", NAMEOF(\u0027BQB_CAT_GRUPO_CLIENTE_DL_NEW\u0027[COD_GR_CLIENTE]), 280),\n    (\"Cliente Cod\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[COD_CLI]), 281),\n    (\"Cliente Sigla\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[SIGLA_CLI]), 282),\n    (\"Nome Cliente Nota\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[RAZAO_SOCIAL_DEST_NF]), 283),\n    (\"UF Cliente Nota\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[UF_DEST_NF]), 284),\n    (\"Cidade Cliente Nota\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[MUNICIPIO_DEST_NF]), 285),\n    (\"Bairro Cliente Nota\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[BAIRRO_DEST_NF]), 286),\n    (\"Endereço Cliente Nota\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[ENDERECO_DEST_NF]), 287),\n    (\"CEP Cliente Nota\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[CEP_DEST_NF]), 288),\n    (\"Linha Produto\", NAMEOF(BQB_CAT_PRODUTOS_DL[LINHA_PRODUTO]), 290),\n    (\"Mes\", NAMEOF(CALENDARIO_BIMBO_VENDAS[MES]), 300),\n    (\"Nota Fiscal\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[NOTA_FISCAL]), 310),\n    (\"Nº Documento\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[NUMERO_PEDIDO]), 320),\n    (\"Produto Cod.\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[COD_PRODUTO]), 330),\n    (\"Produto Cod. Fin\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[ID_PRODUTO_FIN]), 340),\n    (\"Natureza Da Operação Do Pedido\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[STATUS_PEDIDO]), 350),\n    (\"Natureza Ajustada\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[NATUREZA_AJUSTADA]), 360),\n    (\"Produto Desc.\", NAMEOF(BQB_CAT_PRODUTOS_DL[DESCRICAO_PRODUTO]), 370),\n //   (\"Qtd Embalagem\", NAMEOF(BQB_CAT_PRODUTOS_DL[QT_NA_EMB_BQ]), 380),\n  //  (\"Qtd Embalagem (Ajustada)\", NAMEOF(BQB_CAT_PRODUTOS_DL[CUPO_NOR_BQ]), 390),\n    (\"Semana\", NAMEOF(CALENDARIO_BIMBO_VENDAS[SEMANA_BQB]), 400),\n   // (\"Serie\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[SERIE]), 410),\n   (\"Status Pedido\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[ID_STATUS_PEDIDO]), 420),\n    (\"Sub Categoria\", NAMEOF(BQB_CAT_PRODUTOS_DL[GRUPO_PRODUTO_DESC_BQ]), 430),\n    //(\"Sub Categoria\", NAMEOF(BQB_CAT_PRODUTOS_DL[SUBCATEGORIA]), 430),\n  //  (\"Tipo Produto\", NAMEOF(BQB_CAT_PRODUTOS_DL[ITEM_TYPE]), 440),\n    (\"Tipo Produto Bq\", NAMEOF(BQB_CAT_PRODUTOS_DL[TIPO_PRODUTO_BQ]), 440)\n  //  (\"Unid. Vendida\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[PEDIDO_QTDE_ATENDIDO]), 450)\n}",
+                           "Name":  "DIMENSAO",
+                           "ID":  3728685
+                       },
+                       {
+                           "TableID":  3730849,
+                           "QueryDefinition":  "{\n    // Percentuais\n    (\"% BGT\", NAMEOF(\u0027Medidas\u0027[% BGT]), 0),\n    (\"% FCST\", NAMEOF(\u0027Medidas\u0027[% FCST]), 10),\n    (\"% PY\", NAMEOF(\u0027Medidas\u0027[% PY]), 20),\n    \n    // Quantidades previstas\n    (\"% Qt BGT\", NAMEOF(\u0027Medidas\u0027[% QT BGT]), 30),\n    (\"% Qt FCST\", NAMEOF(\u0027Medidas\u0027[% QT FCST]), 40),\n    (\"% Qt PY\", NAMEOF(\u0027Medidas\u0027[% QT PY]), 50),\n\n    // Quantidades reais e históricas\n    (\"Qt PY Invoiced\", NAMEOF(\u0027Medidas\u0027[PY_QTD_Invoiced]), 60),\n    (\"Qt Invoiced\", NAMEOF(\u0027Medidas\u0027[QT_Invoiced]), 70),\n    (\"Qt Open Orders\", NAMEOF(\u0027Medidas\u0027[Qt_OpenOrd]), 80),\n    (\"Qt BGT\", NAMEOF(\u0027Medidas\u0027[QT BGT]), 90),\n    (\"Qt FCST\", NAMEOF(\u0027Medidas\u0027[QT FCST]), 100),\n    (\"Qt Nota Fiscal\", NAMEOF(\u0027Medidas\u0027[QT_NOTA_FISCAL]), 110),\n\n    // Valores previstos e realizados\n    (\"VL PY Invoiced\", NAMEOF(\u0027Medidas\u0027[PY_VLR_Invoiced]), 120),\n    (\"R$ Budget\", NAMEOF(\u0027Medidas\u0027[vl_bgt]), 130),\n    (\"R$ fcst\", NAMEOF(\u0027Medidas\u0027[vl_fcst]), 140),\n    (\"R$ Invoiced\", NAMEOF(\u0027Medidas\u0027[vl_invoiced]), 150),\n    (\"R$ Open Orders\", NAMEOF(\u0027Medidas\u0027[Open Orders]), 160),\n\n    // Variações vs bases\n    (\"vs R$ BGT\", NAMEOF(\u0027Medidas\u0027[vs $BGT]), 170),\n    (\"vs R$ FCST\", NAMEOF(\u0027Medidas\u0027[vs $FCST]), 180),\n    (\"vs R$ PY\", NAMEOF(\u0027Medidas\u0027[vs $PY]), 190),\n    (\"vs Qt BGT\", NAMEOF(\u0027Medidas\u0027[vs Qt BGT]), 200),\n    (\"vs Qt FCST\", NAMEOF(\u0027Medidas\u0027[vs Qt FCST]), 210),\n    (\"vs Qt PY\", NAMEOF(\u0027Medidas\u0027[vs Qt PY]), 220)\n\n    // Comentários de medidas desativadas\n    //(\"QT Actual do Pedido\", NAMEOF(\u0027NovasMedidas\u0027[QT_Total]), 60),\n    //(\"VL Actual\", NAMEOF(\u0027NovasMedidas\u0027[Vl_Total]), 130),\n    //(\"Fator\", NAMEOF(FATOR_PEDIDOS[FATOR_PEDIDOS_ATUAL]), 220),\n}",
+                           "Name":  "MEDIDAS 2",
+                           "ID":  3730852
+                       },
+                       {
+                           "TableID":  3735461,
+                           "QueryDefinition":  "{\n    (\"Ano\", NAMEOF(CALENDARIO_BIMBO_VENDAS[ANO]), 0),\n    (\"Cluster\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[CLUSTER_COMERCIAL]), 10),\n    (\"Cluster Detalhado \", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[SUB_CLUSTER_COMERCIAL]), 20),\n    (\"Filial\", NAMEOF(FABRICA[FILIAL]), 30),\n    (\"Canal\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[NM_CANAL]), 40),\n    (\"Cnpj_Bimbo Novo\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[CNPJ_BIMBO]), 50),\n    (\"Cnpj_Cliente\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[CNPJ_CLIENTE]), 60),\n    (\"Tipo Cesto\", NAMEOF(BQB_CAT_PRODUTOS_DL[TIPO_CESTO]), 70),\n    (\"Fecha\", NAMEOF(CALENDARIO_BIMBO_VENDAS[DATA_AJUSTADA]), 80),\n    (\"Gerente\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[NM_NV1]), 90),\n    (\"Gerente Nv2\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[NM_NV2]), 100),  \n    (\"Gerente Nv3\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[NM_NV3]), 110),\n    (\"Gerente Nv4\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[NM_NV4]), 120),\n    (\"Natureza Operação\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[NATUREZA_AJUSTADA]), 130),\n    (\"Nota_Fiscal\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[NOTA_FISCAL]), 140),\n    (\"Mes\", NAMEOF(CALENDARIO_BIMBO_VENDAS[MES]), 150),\n    (\"Regiao\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL[REGIAO]), 160),\n    (\"Status_Nota\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[STATUS_NOTA]), 170),\n    (\"Tipo_Dev\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL[TIPO_DEV]), 180),\n    (\"Ue\", NAMEOF(BQB_CAT_PRODUTOS_DL[UE]), 190),\n    (\"Status Pedido\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[STATUS_PEDIDO]), 200),\n    (\"Dia\", NAMEOF(CALENDARIO_BIMBO_VENDAS[DIA]), 210),\n    (\"Semana\", NAMEOF(CALENDARIO_BIMBO_VENDAS[SEMANA]), 220),\n    (\"Categoria Mkt\", NAMEOF(BQB_CAT_PRODUTOS_DL[CATEGORIA_MKT]), 230),\n    (\"Marca\", NAMEOF(BQB_CAT_PRODUTOS_DL[MARCA]), 240),\n    (\"Linha Produto\", NAMEOF(BQB_CAT_PRODUTOS_DL[LINHA_PRODUTO]), 250),\n    (\"Descrição Produto\", NAMEOF(BQB_CAT_PRODUTOS_DL[DESCRICAO_PRODUTO]), 260),\n    (\"Id Produto\", NAMEOF(BQB_CAT_PRODUTOS_DL[COD_PRODUTO]), 270),\n    (\"Ean\", NAMEOF(BQB_CAT_PRODUTOS_DL[CODIGO_BARRAS]), 280),\n    (\"Chave Acesso Novo\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[CHAVE_ACESSO_VENDA]), 290),\n    (\"Data Emissão Novo\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[DT_EMISSAO]), 300),\n    (\"Data Saída Novo\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[DT_ENTREGA]), 310),\n    (\"Sub_Categoria\", NAMEOF(BQB_CAT_PRODUTOS_DL[CATEGORIA_MKT]), 320),\n    (\"Unidade Negocio\", NAMEOF(BQB_CAT_PRODUTOS_DL[UNIDADE_NEGOCIO]), 330),\n    (\"Tipo Cesto\", NAMEOF(BQB_CAT_PRODUTOS_DL[TIPO_CESTO]), 340),\n    (\"Serie\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[SERIE]), 350),\n    (\"Dia Semana BB\", NAMEOF(CALENDARIO_BIMBO_VENDAS[DIA_SEMANA_BB]), 360)\n}",
+                           "Name":  "Matriz Linha",
+                           "ID":  3735464
+                       },
+                       {
+                           "TableID":  4095773,
+                           "QueryDefinition":  "let\n    Fonte = Sql.Database(servidor, banco),\n    Grupos = Value.NativeQuery(\n        Fonte,\n        \"SELECT\n            [COD_GR_CLIENTE], [GRUPO_CLIENTE_DESC], [GRUPO_QSR_DESC], [NM_CANAL],\n            [NM_NV1], [NM_NV2], [NM_NV3], [NM_NV4], [CLUSTER], [CLUSTER_1],\n            CASE WHEN [COD_GR_CLIENTE] IN (139, 168) THEN \u0027FOOD SERVICE\u0027 ELSE [NM_SEGMENTO] END AS [NM_SEGMENTO]\n        FROM DEV.grupo_clientes_view\",\n        null,\n        [EnableFolding = true]\n    ),\n    #\"Cluster Comercial\" = Table.AddColumn(Grupos, \"CLUSTER_COMERCIAL\", each\n        let\n            cluster = Text.Upper([CLUSTER]),\n            grupo = Text.Upper([GRUPO_CLIENTE_DESC])\n        in\n            if cluster = \"MCD\" then \"McD\"\n            else if Text.Contains(grupo, \"BURGER KING\") or Text.Contains(grupo, \"POPEYES\") then \"RBI\"\n            else if Text.Contains(cluster, \"SUBWAY\") then \"Subway\"\n            else \"Other QSR\",\n        type text\n    ),\n    #\"Sub Cluster Comercial\" = Table.AddColumn(#\"Cluster Comercial\", \"SUB_CLUSTER_COMERCIAL\", each\n        let\n            cluster = Text.Upper([CLUSTER]),\n            cluster1 = Text.Upper([CLUSTER_1]),\n            grupo = Text.Upper([GRUPO_CLIENTE_DESC])\n        in\n            if cluster = \"MCD\" then \"McD\"\n            else if Text.Contains(grupo, \"BURGER KING\") then \"Burger King\"\n            else if Text.Contains(grupo, \"POPEYES\") then \"Popeyes\"\n            else if Text.Contains(grupo, \"SUBWAY\") then \"Subway Brasil\"\n            else if Text.Contains(cluster1, \"SUBWAY EXPORTAÇÃO\") then \"SUBWAY Exportação\"\n            else if Text.Contains(cluster1, \"INDUSTRY\") then \"Industry\"\n            else \"Chains\",\n        type text\n    )\nin\n    #\"Sub Cluster Comercial\"",
+                           "Name":  "BQB_CAT_GRUPO_CLIENTE_DL_NEW",
+                           "ID":  4095791
+                       },
+                       {
+                           "TableID":  4303799,
+                           "QueryDefinition":  "{\n    (\"ANO\", NAMEOF(CALENDARIO_BIMBO_VENDAS[ANO]), 0),\n    (\"CANAL\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[NM_CANAL]), 1),\n    (\"FILIAL\", NAMEOF(FABRICA[FILIAL]), 1),\n    //(\"CNPJ_BIMBO NOVO\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[CNPJ_BIMBO]), 2),\n   // (\"CNPJ_CLIENTE\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[CNPJ_CLIENTE]), 3),\n    (\"GRUPO_CLIENTE\", NAMEOF(\u0027BQB_CAT_GRUPO_CLIENTE_DL_NEW\u0027[GRUPO_CLIENTE_DESC]), 6),\n    //(\"GRUPO_CLIENTE\", NAMEOF(\u0027BQB_CAT_GRUPO_CLIENTE_DL\u0027[BQB_GRUPO_CLIENTE_DESC]), 6),\n    (\"GRUPO_CLIENTE COD\", NAMEOF(\u0027BQB_CAT_GRUPO_CLIENTE_DL_NEW\u0027[COD_GR_CLIENTE]), 7),\n   // (\"GRUPO_CLIENTE COD\", NAMEOF(\u0027BQB_CAT_GRUPO_CLIENTE_DL\u0027[BQB_GRUPO_CLIENTE_COD]), 7),\n   // (\"FECHA\", NAMEOF(CALENDARIO_BIMBO_VENDAS[DATA_AJUSTADA]), 8),\n   // (\"Nº DOCUMENTO\", NAMEOF(\u0027BQB_VENDAS_PEDIDOS_PPTO\u0027[NUMERO_PEDIDO]), 9),\n  //  (\"NOTA FISCAL\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[NOTA_FISCAL]), 10),\n    //(\"ID_CNPJ\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL[ID_CNPJ]), 11),\n    (\"CATEGORIA\", NAMEOF(BQB_CAT_PRODUTOS_DL[CATEGORIA_MKT]), 12),\n    (\"SUB CATEGORIA\", NAMEOF(BQB_CAT_PRODUTOS_DL[GRUPO_PRODUTO_DESC_BQ]), 13),\n    (\"TIPO PRODUTO\", NAMEOF(BQB_CAT_PRODUTOS_DL[TIPO_PRODUTO_BQ]), 14),\n    (\"GERENTE\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[NM_NV1]), 15),\n    (\"GERENTE NV2\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[NM_NV2]), 16),  \n    (\"GERENTE NV3\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[NM_NV3]), 17),\n    (\"GERENTE NV4\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[NM_NV4]), 18),\n    (\"CLUSTER\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[CLUSTER_COMERCIAL]), 19),\n   // (\"CLUSTER DETAL.\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[CLUSTER_1]), 20),\n    (\"CLUSTER DETALHE\", NAMEOF(BQB_CAT_GRUPO_CLIENTE_DL_NEW[SUB_CLUSTER_COMERCIAL]), 21),\n   // (\"SERIE\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[SERIE]), 23),\n   // (\"UNID. VENDIDA\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[PEDIDO_QTDE_ATENDIDO]), 25),\n    (\"PRODUTO DESC.\", NAMEOF(BQB_CAT_PRODUTOS_DL[DESCRICAO_PRODUTO]), 18),\n    (\"PRODUTO COD.\", NAMEOF(BQB_CAT_PRODUTOS_DL[COD_PRODUTO]), 19),\n    (\"MES\", NAMEOF(CALENDARIO_BIMBO_VENDAS[MES]), 21),\n    (\"STATUS PRODUTO\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[STATUS_NOTA]), 29),\n    (\"DIA\", NAMEOF(CALENDARIO_BIMBO_VENDAS[DIA]), 30),\n    (\"SEMANA\", NAMEOF(CALENDARIO_BIMBO_VENDAS[SEMANA_BQB]), 31),\n    (\"LINHA PRODUTO\", NAMEOF(BQB_CAT_PRODUTOS_DL[LINHA_PRODUTO]), 36),\n  //  (\"COD GRUPO PRODUTO\", NAMEOF(BQB_CAT_PRODUTOS_DL[GRP_PROD_COD_BQ]), 38),\n    (\"GRUPO PRODUTO\", NAMEOF(BQB_CAT_PRODUTOS_DL[GRUPO_PRODUTO_DESC_BQ]), 39),\n    (\"CHAVE ACESSO VENDA\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[CHAVE_ACESSO_VENDA]),51),\n    (\"DATA EMISSÃO \", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[DT_EMISSAO]),52),\n    (\"DATA SAÍDA \", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[DT_ENTREGA]),52),\n    (\"SUB CATEGORIA\", NAMEOF(BQB_CAT_PRODUTOS_DL[SUBCATEGORIA]),56),\n    (\"DIA SEMANA BB\", NAMEOF(CALENDARIO_BIMBO_VENDAS[DIA_SEMANA_BB]),57),\n    (\"CHAVE\", NAMEOF(BQB_VENDAS_PEDIDOS_PPTO[CHAVE_ACESSO_VENDA]),58),\n    (\"DESC. FAMILIA\", NAMEOF(BQB_CAT_PRODUTOS_DL[FAMILIA_DESC_BQ]), 59)\n}",
+                           "Name":  "DIMENSAO_COLUNA2",
+                           "ID":  4303802
+                       },
+                       {
+                           "TableID":  4322829,
+                           "QueryDefinition":  "let\n    // Criando a tabela com os valores de CNPJ_BIMBO\n    Fonte = Table.FromRecords({\n        [CNPJ_BIMBO = \"35402759011209\"],\n        [CNPJ_BIMBO = \"35402759011110\"],\n        [CNPJ_BIMBO = \"35402759011381\"],\n        [CNPJ_BIMBO = \"35402759011543\"],\n        [CNPJ_BIMBO = \"35402759011462\"],\n        [CNPJ_BIMBO = \"35402759011624\"],\n        [CNPJ_BIMBO = \"35402759011039\"],\n        [CNPJ_BIMBO = \"35402759001580\"],\n        [CNPJ_BIMBO = \"35402759011977\"],\n        [CNPJ_BIMBO = \"00000000000000\"]\n    }),\n\n    // Adiciona a coluna FILIAL com número + nome\n    AdicionarFilial = Table.AddColumn(Fonte, \"FILIAL\", each \n        if [CNPJ_BIMBO] = \"35402759011209\" then \"02 - Juiz de Fora\" \n        else if [CNPJ_BIMBO] = \"35402759011110\" then \"08 - Jaguariuna\"\n        else if [CNPJ_BIMBO] = \"35402759011381\" then \"03 - Osasco\"\n        else if [CNPJ_BIMBO] = \"35402759011543\" then \"11 - Pouso Alegre\"\n        else if [CNPJ_BIMBO] = \"35402759011462\" then \"04 - Santo Amaro\"\n        else if [CNPJ_BIMBO] = \"35402759011624\" then \"03 - Osasco\"\n        else if [CNPJ_BIMBO] = \"35402759011039\" then \"11 - Pouso Alegre\"\n        else if [CNPJ_BIMBO] = \"35402759001580\" then \"01 - Fábrica RJ\"\n        else if [CNPJ_BIMBO] = \"35402759011977\" then \"07 - Guarulhos\"\n        else \"Desconhecido\"\n    ),\n\n    // Adiciona a coluna PLANTA com apenas o número\n    AdicionarPlanta = Table.AddColumn(AdicionarFilial, \"PLANTA\", each \n        if [CNPJ_BIMBO] = \"35402759011209\" then \"02\"\n        else if [CNPJ_BIMBO] = \"35402759011110\" then \"08\"\n        else if [CNPJ_BIMBO] = \"35402759011381\" then \"03\"\n        else if [CNPJ_BIMBO] = \"35402759011543\" then \"11\"\n        else if [CNPJ_BIMBO] = \"35402759011462\" then \"04\"\n        else if [CNPJ_BIMBO] = \"35402759011624\" then \"03\"\n        else if [CNPJ_BIMBO] = \"35402759011039\" then \"11\"\n        else if [CNPJ_BIMBO] = \"35402759001580\" then \"01\"\n        else if [CNPJ_BIMBO] = \"35402759011977\" then \"07\"\n        else null\n    ),\n\n    // Adiciona a coluna FILIAL NN com apenas o nome\n    AdicionarFilialNN = Table.AddColumn(AdicionarPlanta, \"FILIAL NN\", each \n        if [CNPJ_BIMBO] = \"35402759011209\" then \"Juiz de Fora\" \n        else if [CNPJ_BIMBO] = \"35402759011110\" then \"Jaguariuna\"\n        else if [CNPJ_BIMBO] = \"35402759011381\" then \"Osasco\"\n        else if [CNPJ_BIMBO] = \"35402759011543\" then \"Pouso Alegre\"\n        else if [CNPJ_BIMBO] = \"35402759011462\" then \"Santo Amaro\"\n        else if [CNPJ_BIMBO] = \"35402759011624\" then \"Osasco\"\n        else if [CNPJ_BIMBO] = \"35402759011039\" then \"Pouso Alegre\"\n        else if [CNPJ_BIMBO] = \"35402759001580\" then \"Fábrica RJ\"\n        else if [CNPJ_BIMBO] = \"35402759011977\" then \"Guarulhos\"\n        else \"Desconhecido\"\n    ),\n\n    // Substituindo nulos nas colunas criadas\n    SubstituirNulos = Table.ReplaceValue(AdicionarFilialNN, null, \"Desconhecido\", Replacer.ReplaceValue, {\"FILIAL\", \"PLANTA\", \"FILIAL NN\"})\n\nin\n    SubstituirNulos",
+                           "Name":  "FABRICA",
+                           "ID":  4322834
+                       },
+                       {
+                           "TableID":  4902067,
+                           "QueryDefinition":  "\nDATATABLE(\n    \"Comparacao\", STRING,\n    {\n        {\"FCST\"},\n        {\"PY\"}\n    }\n)",
+                           "Name":  "Seletor_Comparacao",
+                           "ID":  4902070
+                       },
+                       {
+                           "TableID":  4908498,
+                           "QueryDefinition":  "\nDATATABLE(\n    \"DESC_PERIODO\", STRING,\n    \"ORDEM\", INTEGER,\n    {\n        {\"YTD\", 1},\n        {\"12 W\", 2},\n        {\"6 W\", 3},\n        {\"MTD\", 4}\n    }\n)",
+                           "Name":  "PERIODO_VISUAL",
+                           "ID":  4908501
+                       }
+                   ],
+    "relationships":  [
+                          {
+                              "ToColumnID":  3920732,
+                              "ID":  3923069,
+                              "ToTableID":  3667398,
+                              "CrossFilteringBehavior":  1,
+                              "FromTableID":  3581954,
+                              "IsActive":  null,
+                              "FromColumnID":  3581959
+                          },
+                          {
+                              "ToColumnID":  3924688,
+                              "ID":  3929928,
+                              "ToTableID":  3669904,
+                              "CrossFilteringBehavior":  1,
+                              "FromTableID":  3581954,
+                              "IsActive":  null,
+                              "FromColumnID":  3581958
+                          },
+                          {
+                              "ToColumnID":  4095776,
+                              "ID":  4097501,
+                              "ToTableID":  4095773,
+                              "CrossFilteringBehavior":  1,
+                              "FromTableID":  3581954,
+                              "IsActive":  null,
+                              "FromColumnID":  3581964
+                          },
+                          {
+                              "ToColumnID":  4322832,
+                              "ID":  4324759,
+                              "ToTableID":  4322829,
+                              "CrossFilteringBehavior":  1,
+                              "FromTableID":  3581954,
+                              "IsActive":  null,
+                              "FromColumnID":  3581957
+                          },
+                          {
+                              "ToColumnID":  273735,
+                              "ID":  4508703,
+                              "ToTableID":  273728,
+                              "CrossFilteringBehavior":  1,
+                              "FromTableID":  3581954,
+                              "IsActive":  null,
+                              "FromColumnID":  4409929
+                          }
+                      ],
+    "columns":  {
+
+                }
+}

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BQ Landing | Painel Operacional Grupo Bimbo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <!-- Header Corporativo -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand-group">
+                <div class="brand-badge">BIMBO</div>
+                <div class="brand-titles">
+                    <h1>BQ Landing</h1>
+                    <span class="subtitle">Monitoramento & Ingestão de Dados Operacionais</span>
+                </div>
+            </div>
+            <div class="header-status">
+                <div class="status-indicator">
+                    <span class="pulse-dot"></span>
+                    <span id="system-status-text">Databricks Conectado</span>
+                </div>
+                <div class="last-sync-badge">
+                    <span>Última Sincronização:</span>
+                    <strong id="last-sync-time">Carregando...</strong>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Barra de Destaque / KPIs -->
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-icon">📁</div>
+                <div class="kpi-details">
+                    <span class="kpi-label">Origem dos Dados</span>
+                    <h3 class="kpi-value" id="kpi-origem">base_landing.xlsx</h3>
+                    <span class="kpi-subtext">Volume Unity Catalog</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">📊</div>
+                <div class="kpi-details">
+                    <span class="kpi-label">Total de Registros</span>
+                    <h3 class="kpi-value" id="kpi-total-linhas">--</h3>
+                    <span class="kpi-subtext">Linhas carregadas</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">📐</div>
+                <div class="kpi-details">
+                    <span class="kpi-label">Campos Mapeados</span>
+                    <h3 class="kpi-value" id="kpi-total-colunas">--</h3>
+                    <span class="kpi-subtext">Colunas estruturadas</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">⚡</div>
+                <div class="kpi-details">
+                    <span class="kpi-label">Status da Automação</span>
+                    <h3 class="kpi-value status-active">Ativo</h3>
+                    <span class="kpi-subtext">Gatilho file_arrival</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Ações & Tabela de Dados -->
+        <section class="data-panel">
+            <div class="panel-header">
+                <div class="panel-title-area">
+                    <h2>Dados da Base de Aterrissagem</h2>
+                    <p id="table-info-counter">Carregando registros...</p>
+                </div>
+                
+                <div class="panel-actions">
+                    <div class="search-box">
+                        <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18">
+                            <path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                        <input type="text" id="search-input" placeholder="Pesquisar registros..." autocomplete="off">
+                    </div>
+
+                    <button id="btn-refresh" class="btn btn-secondary" title="Recarregar Dados">
+                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                        Atualizar
+                    </button>
+
+                    <a id="btn-export" href="/api/exportar" class="btn btn-primary" download>
+                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        Exportar CSV
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tabela com Scroll Responsivo -->
+            <div class="table-container">
+                <div id="table-loader" class="loader-overlay">
+                    <div class="spinner"></div>
+                    <span>Carregando dados do Volume...</span>
+                </div>
+                <table id="data-table" class="modern-table">
+                    <thead>
+                        <tr id="table-headers"></tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+
+            <!-- Paginação -->
+            <div class="pagination-footer">
+                <div class="pagination-info">
+                    Página <strong id="current-page">1</strong> de <strong id="total-pages">1</strong>
+                </div>
+                <div class="pagination-controls">
+                    <button id="btn-prev-page" class="btn btn-sm" disabled>Anterior</button>
+                    <button id="btn-next-page" class="btn btn-sm" disabled>Próxima</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <p>Grupo Bimbo Brasil • Databricks Apps & Unity Catalog • <strong>cat_dnabb_dv.default.tbl_bq_landing</strong></p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

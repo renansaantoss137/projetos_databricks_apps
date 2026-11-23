@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendômetro (Budget & Forecast) | DNA de Vendas · Bimbo Brasil</title>
+  <link rel="stylesheet" href="styles.css?v=3.5.3">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+
+    /* SVG Failsafe Dimensioning */
+    svg { box-sizing: border-box; flex-shrink: 0; }
+    .dna-header svg, .dna-nav-tabs svg, .dna-nav-tab svg {
+      width: 16px !important; height: 16px !important; max-width: 16px !important; max-height: 16px !important;
+      display: inline-block !important; vertical-align: middle !important;
+    }
+    .dna-mobile-nav svg, .dna-mobile-nav-item svg {
+      width: 18px !important; height: 18px !important; max-width: 18px !important; max-height: 18px !important;
+      display: inline-block !important;
+    }
+    
+    body.vend-body {
+      background: var(--bg-glow), var(--bg-page);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      font-family: Inter, 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sp-header-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sp-qsr-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: var(--r-pill);
+      background: var(--primary-soft);
+      border: 1px solid var(--primary);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary-strong);
+    }
+    :root[data-theme="dark"] .sp-qsr-pill {
+      color: var(--link);
+      border-color: rgba(96, 165, 250, 0.4);
+    }
+
+    .sp-meta-desktop {
+      font-size: var(--fs-12, 12px);
+      color: var(--text-muted);
+    }
+    .sp-meta-mobile {
+      display: none;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    @media (max-width: 768px) {
+      .sp-meta-desktop { display: none; }
+      .sp-meta-mobile { display: block; }
+    }
+
+    /* Insight Dinâmico no Cabeçalho */
+    .dna-header-insight {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      flex: 1;
+      padding-right: 20px;
+    }
+    .dna-header-insight .sp-banner-headline {
+      font-size: 0.95rem;
+      font-weight: 500;
+      line-height: 1.45;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+    .hl-neg,
+    .hl-pos {
+      color: var(--text-strong);
+      font-weight: 700;
+      background: var(--surface-sunken);
+      padding: 1px 7px;
+      border-radius: 6px;
+    }
+
+    /* Métrica dentro do painel lateral de filtros */
+    .fp-metric-box {
+      padding: 10px 14px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .fp-metric-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .fp-metric-box .sp-metric-pill {
+      display: flex;
+      width: 100%;
+      box-sizing: border-box;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--r-control);
+      padding: 3px;
+      gap: 2px;
+    }
+    .fp-metric-box .sp-pill-btn {
+      flex: 1;
+      text-align: center;
+      padding: 6px 8px;
+      font-size: var(--fs-12, 12px);
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: var(--r-control, 8px);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .fp-metric-box .sp-pill-btn.active {
+      background: var(--primary);
+      color: var(--text-on-accent);
+    }
+
+    /* KPIs Row — Padrão Portal Distribuidores (3 cards executivos) */
+    .sp-kpi-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr 0.9fr;
+      gap: clamp(10px, 1.2vw, 16px);
+      align-items: stretch;
+    }
+    @media (max-width: 1120px) {
+      .sp-kpi-grid { grid-template-columns: 1fr 1fr; }
+      .sp-kpi-grid > .card-cobertura { grid-column: 1 / -1; }
+    }
+    @media (max-width: 720px) {
+      .sp-kpi-grid { grid-template-columns: 1fr; }
+    }
+
+    .kpi-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 18px 20px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-card, 14px);
+      box-shadow: var(--shadow-card);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .kpi-card:hover { border-color: var(--border-strong, rgba(38,53,118,0.22)); }
+
+    .kpi-card.kpi-hero {
+      overflow: hidden;
+      border-color: color-mix(in srgb, var(--primary) 22%, var(--border));
+      background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 4%, var(--surface)) 0%, var(--surface) 60%);
+    }
+    .kpi-card.kpi-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 3px;
+      background: var(--primary);
+    }
+    .kpi-hero-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .kpi-hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+    .kpi-hero-label .kl-ico { color: var(--text-muted); flex-shrink: 0; }
+
+    .kpi-yoy {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px 6px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      cursor: help;
+    }
+    .kpi-yoy-v { display: inline-flex; align-items: center; gap: 2px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .kpi-yoy.is-up .kpi-yoy-v { color: var(--success); }
+    .kpi-yoy.is-down .kpi-yoy-v { color: var(--danger); }
+    .kpi-yoy-b { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+    .kpi-yoy-b::before { content: "·"; margin-right: 6px; }
+
+    .kpi-hero-val {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+      margin-top: 10px;
+      cursor: help;
+      align-self: flex-start;
+    }
+    .kpi-target-line {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      cursor: help;
+      align-self: flex-start;
+    }
+    .kpi-target-line strong { color: var(--text-primary); font-weight: 600; }
+
+    .kpi-delta {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      margin-top: 6px;
+      cursor: help;
+      align-self: flex-start;
+    }
+    .kpi-delta.delta-pos { color: var(--success); }
+    .kpi-delta.delta-neg { color: var(--danger); }
+    .kpi-delta.delta-neutral { color: var(--text-muted); }
+    .kpi-delta .delta-pct { opacity: 0.85; }
+
+    .kpi-progress {
+      position: relative;
+      height: 10px;
+      margin-top: 26px;
+      border-radius: 999px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      overflow: visible;
+    }
+    .kpi-progress-fill {
+      display: block;
+      height: 100%;
+      width: 0;
+      border-radius: 999px;
+      background: var(--primary);
+      transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .kpi-pace-mark {
+      position: absolute;
+      top: -12px;
+      bottom: -4px;
+      width: 2px;
+      margin-left: -1px;
+      border-radius: 1px;
+      background: var(--text-primary);
+      box-shadow: 0 0 0 2px var(--surface);
+      transition: left 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .kpi-pace-mark[hidden], .kpi-pace-lbl[hidden] { display: none; }
+    .kpi-pace-lbl {
+      position: absolute;
+      bottom: calc(100% + 5px);
+      transform: translateX(calc(-100% - 6px));
+      font-size: 12px;
+      line-height: 1;
+      color: var(--text-muted);
+      white-space: nowrap;
+      pointer-events: none;
+      transition: left 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .kpi-pace-lbl.is-left { transform: translateX(6px); }
+
+    .kpi-foot {
+      position: relative;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      min-height: 1.5em;
+      margin-top: 6px;
+    }
+    .gauge-pct-txt {
+      position: absolute;
+      top: 0;
+      left: clamp(2.75em, var(--att, 0%), 100%);
+      transform: translateX(-100%);
+      white-space: nowrap;
+      transition: left 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .gauge-pct-txt strong { font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+
+    .kpi-pace {
+      position: relative;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px 6px;
+      margin-top: auto;
+      padding-top: 10px;
+      padding-right: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: help;
+    }
+    .kpi-pace[hidden] { display: none; }
+    .kpi-pace-k { font-weight: 600; color: var(--text-primary); }
+    .kpi-pace-v { font-weight: 700; font-variant-numeric: tabular-nums; }
+    .kpi-pace-v.att-good { color: var(--success); }
+    .kpi-pace-v.att-warn { color: var(--warning, #d97706); }
+    .kpi-pace-v.att-bad { color: var(--danger); }
+    .kpi-pace-t { font-variant-numeric: tabular-nums; }
+    .kpi-pace-i { position: absolute; right: 0; top: 50%; transform: translateY(-20%); color: var(--text-muted); display: inline-flex; }
+    .kpi-pace:hover .kpi-pace-i { color: var(--primary); }
+
+    /* Card 2: Pedidos do período */
+    .kpi-card.kpi-orders { padding: 16px 20px; justify-content: space-between; }
+    .ord-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+    .ord-head h2 { margin: 0; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+    .ord-unit { font-size: 12px; color: var(--text-muted); }
+    .ord-list { margin: 0; display: flex; flex-direction: column; }
+    .ord-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .ord-row dt { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+    .ord-k { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap; }
+    .ord-row small { font-size: 12px; color: var(--text-muted); padding-left: 16px; }
+    .ord-sw { width: 8px; height: 8px; border-radius: 2px; flex: none; }
+    .ord-sw-inv { background: var(--primary); }
+    .ord-sw-open { background: #60a5fa; }
+    .ord-val { margin: 0; text-align: right; font-size: 18px; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; white-space: nowrap; cursor: help; }
+    .ord-total { border-bottom: 0; }
+    .ord-total .ord-k { color: var(--text-muted); }
+    .stack { display: flex; height: 7px; margin-top: 4px; border-radius: 999px; overflow: hidden; background: var(--surface-alt); gap: 2px; }
+    .stack .seg { display: block; height: 100%; transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+    .seg-inv { background: var(--primary); }
+    .seg-open { background: #60a5fa; }
+    .stack-legend { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 8px; font-size: 12px; color: var(--text-muted); }
+    .stack-legend .lg { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-left: 6px; }
+    .stack-legend .lg:first-child { margin-left: 0; }
+    .lg-inv { background: var(--primary); }
+    .lg-open { background: #60a5fa; }
+
+    /* Card 3: Cobertura */
+    .card-cobertura { justify-content: space-between; }
+    .card-cobertura .sp-kpi-title { font-size: 14px; font-weight: 600; color: var(--text-primary); text-transform: none; letter-spacing: 0; margin: 0; }
+    .cov-bars-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+      padding: 6px 0;
+    }
+    .cov-item {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .cov-item-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .cov-item-lbl {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .cov-item-lbl strong {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+    .cov-item-pct {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+    .card-cobertura .sp-cov-bar-bg {
+      flex: none;
+      width: 100%;
+      height: 14px;
+      border-radius: 999px;
+    }
+    .card-cobertura .sp-cov-bar-fill {
+      border-radius: 999px;
+    }
+    .cov-gap-foot { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text-muted); display: flex; flex-direction: column; gap: 3px; }
+    .cov-fc-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed var(--border);
+      font-size: 11.5px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .cov-fc-link:hover {
+      color: var(--primary);
+    }
+    .cov-fc-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .cov-fc-cta {
+      color: var(--primary);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .cov-fc-link:hover .cov-fc-cta {
+      text-decoration: underline;
+    }
+
+    /* Card Visual de Canais (Donut + Rótulos diretos nas fatias) */
+    .card-canal-visual {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .canal-donut-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 0;
+    }
+    .canal-donut-box {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      aspect-ratio: 360 / 236;
+      display: grid;
+      place-items: center;
+    }
+    .canal-donut-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .canal-donut-track {
+      fill: none;
+      stroke: var(--surface-alt);
+      stroke-width: 22;
+    }
+    .canal-donut-seg {
+      fill: none;
+      stroke-width: 22;
+      stroke-linecap: butt;
+      cursor: pointer;
+      transition: stroke-dasharray 0.55s cubic-bezier(0.22, 1, 0.36, 1), stroke-dashoffset 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.15s ease;
+    }
+    .canal-donut-seg:hover { opacity: 0.88; }
+    .canal-donut-qsr { stroke: var(--primary); }
+    .canal-donut-dist { stroke: #60a5fa; }
+    .canal-donut-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      pointer-events: none;
+    }
+    .canal-donut-tot {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.15;
+    }
+    .canal-donut-sub {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .donut-callout-line {
+      fill: none;
+      stroke: var(--border-strong);
+      stroke-width: 1.25;
+    }
+    .donut-callout-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      fill: var(--text-primary);
+    }
+    .donut-callout-val {
+      font-size: 11.5px;
+      font-weight: 600;
+      fill: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+    .canal-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .canal-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: transparent;
+      border: 1px solid transparent;
+      cursor: help;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+    .canal-item:hover {
+      background: var(--surface-alt);
+      border-color: var(--border);
+    }
+    .canal-item-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .canal-item-name {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .canal-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .canal-dot-qsr { background: var(--primary); }
+    .canal-dot-dist { background: #60a5fa; }
+    .canal-item-nums {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      font-variant-numeric: tabular-nums;
+    }
+    .canal-item-val {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .canal-item-pct {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .canal-mini-bar {
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.18);
+      overflow: hidden;
+    }
+    .canal-mini-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .canal-mini-fill.qsr { background: var(--primary); }
+    .canal-mini-fill.dist { background: #60a5fa; }
+
+    .badge-neg { color: var(--danger) !important; font-weight: 700; }
+    .badge-pos { color: var(--success) !important; font-weight: 700; }
+
+    /* Barra de progresso de cobertura */
+    .sp-cov-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+    .sp-cov-label { min-width: 90px; color: var(--text-secondary); }
+    .sp-cov-bar-bg {
+      flex: 1;
+      height: 12px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .sp-cov-bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    .sp-cov-pct {
+      min-width: 44px;
+      text-align: right;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Cards Direita (YTD e Trimestres) */
+    .sp-sec-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-card);
+      padding: 1.15rem;
+      box-shadow: var(--shadow-card);
+    }
+    .sp-sec-title {
+      font-size: var(--fs-12, 12px);
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .sp-sec-val {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.35rem;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Barras Horizontais de Trimestre */
+    .sp-tri-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 0.45rem;
+      font-size: var(--fs-12, 12px);
+    }
+    .sp-tri-lbl { width: 50px; color: var(--text-secondary); font-weight: 600; }
+    .sp-tri-bar {
+      flex: 1;
+      height: 14px;
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .sp-tri-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 4px;
+    }
+    .sp-tri-fill.in-progress {
+      background: var(--chart-focus);
+      opacity: 0.65;
+    }
+    .sp-tri-val {
+      min-width: 110px;
+      text-align: right;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Barra de Canais */
+    .sp-channel-bar {
+      height: 18px;
+      border-radius: 4px;
+      display: flex;
+      overflow: hidden;
+      margin: 0.65rem 0 0.5rem;
+    }
+    .ch-qsr { background: var(--primary); }
+    .ch-distrib { background: var(--chart-compare); }
+    .sp-channel-legend {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--fs-12, 12px);
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sp-footer-note {
+      font-size: var(--fs-12, 12px);
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 0.85rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Estado de Erro de Conexão */
+    .sp-error-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 16px;
+      background: var(--danger-soft, rgba(185, 28, 28, 0.1));
+      border: 1px solid var(--danger);
+      border-radius: var(--r-control, 8px);
+      color: var(--danger);
+      margin-bottom: 16px;
+    }
+    .sp-error-banner[hidden] {
+      display: none !important;
+    }
+    .sp-error-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+    }
+    .sp-error-content p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    .sp-error-banner button {
+      flex-shrink: 0;
+      height: 34px;
+      font-size: 12px;
+    }
+
+    /* Indicador de Carregamento Não-Bloqueante (Top Progress Bar) */
+    .sp-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--primary);
+      display: none;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.85;
+    }
+    .sp-loading.show { display: block; }
+    body.is-fetching .sp-kpi-grid,
+    body.is-fetching .vend-grid-12 {
+      opacity: 0.65;
+      transition: opacity 0.15s ease;
+    }
+  </style>
+</head>
+<body class="vend-body">
+  <div class="sp-app-layout">
+  <aside class="sp-sidebar" id="spSidebar">
+    <button type="button" class="sp-sidebar-toggle-btn" id="btnToggleSidebar" aria-label="Expandir ou recolher menu" title="Expandir/recolher menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <a href="/" class="sp-nav-item" title="Início">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Início</span>
+    </a>
+    <a href="vendometro.html" class="sp-nav-item active" title="Vendômetro">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      <span>Vendômetro</span>
+    </a>
+    <a href="previsoes.html?v=3.3.0" class="sp-nav-item" title="Previsões de Invoiced">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+      <span>Previsões</span>
+    </a>
+    <a href="relatorios.html?v=3.3.0" class="sp-nav-item" title="Report Dinâmico">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      <span>Report</span>
+    </a>
+  </aside>
+    <div class="sp-main">
+
+  <!-- CABEÇALHO COM INSIGHT DINÂMICO EXECUTIVO -->
+  <header class="dna-header">
+    <div class="dna-header-insight">
+      <div class="sp-banner-headline" id="banner-text">
+        Carregando desempenho do mês...
+      </div>
+    </div>
+
+    <!-- Metadados à direita no Desktop (R9) + Menu do Usuário (R1) -->
+    <div style="display:flex; align-items:center; gap:16px; flex-shrink:0;">
+      <div class="sp-sync-badge" id="txt-last-update" tabindex="0" role="note" aria-label="Status de atualização dos dados">
+        <span class="sp-sync-dot" aria-hidden="true"></span>
+        <span class="sp-sync-text">Atualizado há 18 h</span>
+        <div class="sp-sync-tooltip" role="tooltip">
+          <div class="sp-sync-tip-title">Última sincronização</div>
+          <div>Data: <strong class="sp-sync-tip-date" id="txt-sync-date">15/11/2026 às 15:35</strong></div>
+          <div class="sp-sync-tip-sub">Última sincronização do banco de dados via Databricks Workflow (Horário de Brasília)</div>
+        </div>
+      </div>
+      <div class="app-menu-container" id="app-menu-container"></div>
+    </div>
+  </header>
+
+  <!-- NAVEGAÇÃO MOBILE INFERIOR (R2) -->
+  <nav class="dna-mobile-nav" aria-label="Navegação mobile">
+    <a href="/" class="dna-mobile-nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="vendometro.html?v=3.3.0" class="dna-mobile-nav-item active" aria-current="page">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      <span>Vendômetro</span>
+    </a>
+    <a href="previsoes.html?v=3.3.0" class="dna-mobile-nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+      <span>Previsões</span>
+    </a>
+    <a href="relatorios.html?v=3.3.0" class="dna-mobile-nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      <span>Report</span>
+    </a>
+  </nav>
+
+  <!-- LAYOUT PRINCIPAL COM PAINEL RETRÁTIL À DIREITA (R3 / F1-F11) -->
+  <div class="layout" id="appLayout">
+
+    <!-- ÁREA DE CONTEÚDO (KPIs + GRÁFICOS EM 12 COLUNAS) -->
+    <main class="conteudo">
+      
+      <!-- Barra Superior de Filtros Ativos (Resumo Compacto e Botão de Abertura do Painel) -->
+      <div class="active-filters-bar" id="active-filters-bar" aria-label="Filtros ativos">
+        <div class="afb-left">
+          <div class="qf-group" id="fpQuickFilters"></div>
+          <div class="afb-chips" id="afb-chips-container"></div>
+        </div>
+        <div class="afb-right">
+          <div class="segmented" id="global-target-seg" role="radiogroup" aria-label="Meta de comparação da página">
+            <button type="button" class="toggle-label active-label" data-target="Budget" aria-checked="true">Budget</button>
+            <button type="button" class="toggle-label" data-target="Forecast" aria-checked="false">Forecast</button>
+          </div>
+          <div class="fp-bookmarks-wrap" id="fpBookmarksWrap"></div>
+          <span class="afb-sep" aria-hidden="true" style="width:1px; height:18px; background:var(--border); margin:0 4px; display:inline-block;"></span>
+          <button type="button" class="afb-reset-btn" id="afb-reset" hidden title="Voltar aos filtros padrão" aria-label="Limpar todos os filtros">
+            <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+            </svg>
+            <span>Limpar filtros</span>
+          </button>
+          <button type="button" class="btn btn-secondary afb-drawer-btn" id="open-filter-drawer-btn" aria-label="Abrir painel de filtros retrátil à direita">
+            <svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 20a1 1 0 0 0 .55.89l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .52-1.34L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.74 1.67l7.22 7.99A2 2 0 0 1 10 14z"/></svg>
+            <span>Filtros</span>
+            <span class="afb-count" id="afb-count-badge" style="display:none;">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Metadados no celular (R9) -->
+      <div class="sp-meta-mobile" id="txt-last-update-mob">
+        Dados atualizados em 21/10/26 às 14:30 · Data & Analytics
+      </div>
+
+      <!-- BANNER DE RECUPERAÇÃO DE ERRO (R10) -->
+      <div id="vendometro-error-state" class="sp-error-banner" hidden role="alert">
+        <div class="sp-error-content">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div>
+            <strong>Instabilidade de conexão</strong>
+            <p>Não foi possível carregar os dados atualizados do SQL Warehouse.</p>
+          </div>
+        </div>
+        <button type="button" class="btn btn-secundario" onclick="fetchVendometroData(currentFilters)">Tentar novamente</button>
+      </div>
+
+      <!-- CARDS DE KPIS (Padrão Portal Distribuidores) -->
+      <section class="sp-kpi-grid">
+        <!-- Card 1: Invoiced Líquido (Hero) -->
+        <article class="kpi-card kpi-hero card-invoiced" id="card-invoiced">
+          <div class="kpi-hero-top">
+            <h2 class="kpi-hero-label" id="kpi-invoiced-title">
+              <svg class="kl-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>
+              <span>Invoiced Líquido</span>
+            </h2>
+            <div class="kpi-yoy" id="kpi-invoiced-yoy" tabindex="0"></div>
+          </div>
+          <div class="kpi-hero-val" id="kpi-invoiced" tabindex="0">—</div>
+          <div class="kpi-target-line" id="kpi-invoiced-meta" tabindex="0">Meta de —</div>
+          <div class="kpi-delta" id="kpi-invoiced-diff" tabindex="0"></div>
+          <div class="kpi-progress" id="kpi-invoiced-progress" role="progressbar" aria-label="Atingimento da meta de Invoiced Líquido" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <span class="kpi-progress-fill" id="kpi-invoiced-fill"></span>
+            <span class="kpi-pace-mark" id="kpi-pace-mark" hidden></span>
+            <span class="kpi-pace-lbl" id="kpi-pace-lbl" hidden></span>
+          </div>
+          <div class="kpi-foot"><span class="gauge-pct-txt" id="kpi-gauge-pct"></span></div>
+          <div class="kpi-pace" id="kpi-pace-row" tabindex="0" hidden></div>
+        </article>
+
+        <!-- Card 2: Pedidos do período (Carteira + Invoiced + Carteira) -->
+        <article class="kpi-card kpi-orders" aria-labelledby="ord-title">
+          <div class="ord-head">
+            <h2 id="ord-title">Pedidos do período</h2>
+            <span class="ord-unit" id="ord-unit">valores líquidos</span>
+          </div>
+          <dl class="ord-list">
+            <div class="ord-row">
+              <dt><span class="ord-k"><span class="ord-sw ord-sw-open" aria-hidden="true"></span>Open Orders</span><small>Pedidos pendentes</small></dt>
+              <dd class="ord-val" id="kpi-open" tabindex="0">—</dd>
+            </div>
+            <div class="ord-row ord-total">
+              <dt><span class="ord-k">Invoiced + Open Orders</span></dt>
+              <dd class="ord-val" id="kpi-inv-open" tabindex="0">—</dd>
+            </div>
+          </dl>
+          <div class="stack" id="kpi-stack" role="img" aria-label="Composição Invoiced e Open Orders" hidden>
+            <span class="seg seg-inv" id="kpi-stack-inv"></span>
+            <span class="seg seg-open" id="kpi-stack-open"></span>
+          </div>
+          <div class="stack-legend" id="kpi-stack-legend">Carregando composição...</div>
+        </article>
+
+        <!-- Card 3: Cobertura das Metas -->
+        <article class="kpi-card card-cobertura">
+          <div class="sp-kpi-hdr" style="margin-bottom: 4px;">
+            <h2 class="sp-kpi-title">Cobertura do mês inteiro</h2>
+            <button type="button" class="card-info-btn" id="tip-btn-cov" aria-label="Informações sobre Cobertura do mês inteiro" tabindex="0"
+              data-tip="<div class='tip-h'>Cobertura das Metas do Mês</div><div class='tip-r'><span>Cálculo</span><strong>(Faturado + Carteira) ÷ Meta Total</strong></div><div class='tip-f'>Indica o percentual da meta cheia do mês já coberto pela operação.</div>">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            </button>
+          </div>
+          <div class="cov-bars-wrap">
+            <div class="cov-item">
+              <div class="cov-item-top">
+                <span class="cov-item-lbl"><strong>Budget</strong> · <span id="lbl-bgt-full">—</span></span>
+                <span class="cov-item-pct" id="pct-bgt-full">—</span>
+              </div>
+              <div class="sp-cov-bar-bg"><div class="sp-cov-bar-fill" id="bar-bgt-fill" style="width: 0%;"></div></div>
+            </div>
+            <div class="cov-item">
+              <div class="cov-item-top">
+                <span class="cov-item-lbl"><strong>Forecast</strong> · <span id="lbl-fcst-full">—</span></span>
+                <span class="cov-item-pct" id="pct-fcst-full">—</span>
+              </div>
+              <div class="sp-cov-bar-bg"><div class="sp-cov-bar-fill" id="bar-fcst-fill" style="width: 0%; background: var(--chart-compare);"></div></div>
+            </div>
+          </div>
+          <div class="cov-gap-foot">
+            <span id="kpi-gap-bgt">—</span>
+            <span id="kpi-gap-fcst">—</span>
+            <a href="previsoes.html" class="cov-fc-link" id="cov-fc-link" title="Ver projeção estatística de fechamento na aba Previsões">
+              <span class="cov-fc-label">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                <span>Projeção de fechamento</span>
+              </span>
+              <span class="cov-fc-cta">Ver Previsões →</span>
+            </a>
+          </div>
+        </article>
+      </section>
+
+      <!-- GRID DE 12 COLUNAS DO VENDÔMETRO (R4) -->
+      <section class="vend-grid-12">
+        
+        <!-- COLUNA ESQUERDA -->
+        <div class="vend-col-left">
+          
+          <!-- Card 1: Gráfico Mensal / Trimestral vs Budget/Forecast -->
+          <article class="gr-cartao card-mensal" aria-labelledby="grTitulo" style="flex:1;">
+            <header class="gr-topo">
+              <div>
+                <h2 class="gr-titulo" id="grTitulo" style="margin-top:0;">Invoiced por mês vs budget</h2>
+                <div class="gr-legenda" style="margin-top:6px;">
+                  <span><i class="sw-barra"></i><b id="grLegSerie" style="font-weight:400">Invoiced realizado</b></span>
+                  <span><i class="sw-traco"></i><b id="grLegComp" style="font-weight:400">Budget</b></span>
+                </div>
+              </div>
+              <div class="gr-acoes">
+                <span class="gr-acumulado">
+                  <span id="grAcumRotulo">Acumulado vs budget</span>
+                  <span class="selo" id="grAcumSelo"></span>
+                </span>
+                <div class="segmented sm" id="grPeriodSeg" role="radiogroup" aria-label="Granularidade do gráfico">
+                  <button type="button" class="toggle-label active-label" data-gran="Mensal" aria-checked="true">Mensal</button>
+                  <button type="button" class="toggle-label" data-gran="Trimestral" aria-checked="false">Trimestral</button>
+                </div>
+              </div>
+            </header>
+            <div class="gr-rolagem">
+              <div class="bar-chart-area" id="barChartContainer">
+                <!-- Gráfico IBCS padrão Portal Distribuidores v2 -->
+              </div>
+            </div>
+            <details class="gr-tabela">
+              <summary>Ver dados em tabela</summary>
+              <div style="overflow-x:auto;">
+                <table id="grTabela"></table>
+              </div>
+            </details>
+          </article>
+
+        </div>
+
+        <!-- COLUNA DIREITA -->
+        <div class="vend-col-right">
+
+          <!-- Card 2: Acumulado no Ano YTD -->
+          <div class="sp-sec-card card-ytd">
+            <div class="sp-sec-hdr">
+              <div class="sp-sec-title">Acumulado no ano (YTD)</div>
+              <button type="button" class="card-info-btn" id="tip-btn-ytd" aria-label="Informações sobre Acumulado YTD" tabindex="0"
+                data-tip="<div class='tip-h'>Desempenho Acumulado no Ano (YTD)</div><div class='tip-r'><span>Período</span><strong>De 1º de Janeiro até a data atual</strong></div><div class='tip-r'><span>vs Budget</span><strong>Compara com a meta acumulada até hoje</strong></div><div class='tip-r'><span>vs Ano Anterior</span><strong>Crescimento sobre o mesmo período de 2025</strong></div><div class='tip-f'>Visão consolidada do ano para avaliar se a operação sustenta crescimento anual e cumprimento do plano de negócios.</div>">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              </button>
+            </div>
+            <div class="sp-sec-val" id="kpi-ytd">R$ 596,6 Mi</div>
+            <div style="display:flex; flex-direction:column; gap:4px; font-size:0.75rem;">
+              <span class="badge-neg" id="ytd-vs-bgt">▼ -3,8% vs budget até hoje (R$ 620,1 Mi)</span>
+              <span class="badge-pos" id="ytd-vs-py">▲ +3,9% vs ano anterior (R$ 574,2 Mi)</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Invoiced + Open Orders por Canal (Donut + Proporção Visual) -->
+          <div class="sp-sec-card card-canal-visual">
+            <div class="sp-sec-hdr" style="margin-bottom:0;">
+              <div class="sp-sec-title" id="canal-chart-title">Invoiced + open orders por canal</div>
+              <button type="button" class="card-info-btn" id="tip-btn-canal" aria-label="Informações sobre Canal" tabindex="0"
+                data-tip="<div class='tip-h'>Divisão por Canal de Vendas</div><div class='tip-r'><span>QSR</span><strong>Grandes redes diretas</strong></div><div class='tip-r'><span>Distribuidores</span><strong>Centros de distribuição parceiros (CDs)</strong></div><div class='tip-f'>Mostra como o volume total (Invoiced + Carteira) se distribui entre o canal QSR e o canal Distribuidores.</div>">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              </button>
+            </div>
+
+            <div class="canal-donut-wrap">
+              <div class="canal-donut-box">
+                <svg class="canal-donut-svg" viewBox="0 0 360 236" role="img" aria-label="Distribuição por canal QSR e Distribuidores">
+                  <g transform="translate(180,118) rotate(-90)">
+                    <circle class="canal-donut-track" cx="0" cy="0" r="74"/>
+                    <circle class="canal-donut-seg canal-donut-qsr" id="donut-qsr" cx="0" cy="0" r="74" stroke-dasharray="0 464.96" stroke-dashoffset="0" tabindex="0"/>
+                    <circle class="canal-donut-seg canal-donut-dist" id="donut-dist" cx="0" cy="0" r="74" stroke-dasharray="0 464.96" stroke-dashoffset="0" tabindex="0"/>
+                  </g>
+                  <g id="donut-callouts"></g>
+                </svg>
+                <div class="canal-donut-center">
+                  <span class="canal-donut-tot" id="canal-donut-total">—</span>
+                  <span class="canal-donut-sub">Total canais</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- PAINEL RETRÁTIL DE FILTROS À DIREITA (Padrão Portal Distribuidores) -->
+    <aside class="portal-filter-drawer" id="portal-filter-drawer" aria-label="Painel de filtros retrátil à direita">
+      <div class="pfd-header">
+        <div class="pfd-title-group">
+          <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 20a1 1 0 0 0 .55.89l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .52-1.34L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.74 1.67l7.22 7.99A2 2 0 0 1 10 14z"/></svg>
+          <span class="pfd-title">Filtros &amp; Parâmetros</span>
+        </div>
+        <button type="button" class="pfd-close-btn" id="close-filter-drawer-btn" aria-label="Fechar painel de filtros (Esc)" title="Fechar / Minimizar painel">
+          <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="pfd-body drawer-body" id="pfd-body"></div>
+      <div class="pfd-footer drawer-foot">
+        <button type="button" class="btn btn-secondary" id="pfd-clear-btn">Limpar</button>
+        <button type="button" class="btn btn-primary" id="pfd-apply-btn" style="flex:1;">Aplicar Filtros</button>
+        <button type="button" class="btn btn-secondary" id="pfd-close-footer-btn">Fechar</button>
+      </div>
+    </aside>
+    <div class="v2-scrim" id="v2-scrim" hidden></div>
+
+  </div>
+
+    </div><!-- /.sp-main -->
+  </div><!-- /.sp-app-layout -->
+
+  <!-- LOADING OVERLAY -->
+  <div class="sp-loading" id="sp-loading">
+    <div class="sp-spinner"></div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="app-menu.js?v=3.2.0"></script>
+  <script src="view-scale.js?v=1.0.3"></script>
+  <script src="format-utils.js?v=3.2.0"></script>
+  <script src="filters-component.js?v=3.5.2"></script>
+
+  <script>
+    let currentMetric = 'Valor';
+    let comparisonMode = 'Budget';
+    let currentDashboardData = null;
+    let currentFilters = {};
+    let filtersPanel = null;
+    let currentMetadata = null;
+    let activeAbortCtrl = null;
+
+    function showLoading(show) {
+      const el = document.getElementById('sp-loading');
+      if (el) el.classList.toggle('show', show);
+      document.body.classList.toggle('is-fetching', show);
+      if (show && typeof window.showFilterUpdatingIndicator === 'function') {
+        window.showFilterUpdatingIndicator('Atualizando indicadores…');
+      } else if (!show && typeof window.hideFilterUpdatingIndicator === 'function') {
+        window.hideFilterUpdatingIndicator();
+      }
+    }
+
+    function setMetric(metric) {
+      if (currentMetric === metric) return;
+      currentMetric = metric;
+      window.currentMetric = metric;
+      if (filtersPanel) {
+        filtersPanel.syncMetricButtons(metric);
+        filtersPanel.aplicar();
+      }
+    }
+
+    function toggleComparison(mode) {
+      comparisonMode = mode;
+      renderSegmentado();
+      renderCabecalho();
+      if (currentDashboardData && currentDashboardData.mensal) {
+        renderMonthlyChart(currentDashboardData.mensal);
+      }
+    }
+
+    async function loadMetadata() {
+      try {
+        const data = window.DNACache ? await window.DNACache.getMetadata() : await (await fetch('/api/metadata')).json();
+        currentMetadata = data;
+
+        if (data.last_update) {
+          const syncDateEl = document.getElementById('txt-sync-date');
+          if (syncDateEl) syncDateEl.textContent = data.last_update;
+          const mEl = document.getElementById('txt-last-update-mob');
+          if (mEl) mEl.innerHTML = `Atualizado em <strong>${data.last_update}</strong>`;
+        }
+
+        const MESES_CONFIG = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'].map((t, i) => ({
+          v: String(i + 1),
+          t
+        }));
+
+        const nowDt = new Date();
+        const defAno = String(data.ano_atual || nowDt.getFullYear());
+        const defMes = String(data.mes_atual || (nowDt.getMonth() + 1));
+
+        const definicoes = [
+          { id: 'ano', rotulo: 'Ano', tipo: 'unico', opcoes: data.anos || [defAno, '2025', '2024'], padrao: defAno },
+          { id: 'mes', rotulo: 'Mês', tipo: 'multi', opcoes: MESES_CONFIG, padrao: [defMes] },
+          { id: 'grupo_cliente', rotulo: 'Grupo de clientes', tipo: 'multi', opcoes: data.grupos_clientes || [] },
+          { id: 'gerente', rotulo: 'Gerente', tipo: 'multi', opcoes: data.gerentes || [] },
+          { id: 'canal', rotulo: 'Canal', tipo: 'multi', opcoes: data.canais || [] },
+          { id: 'categoria', rotulo: 'Categoria', tipo: 'multi', opcoes: data.categorias || [] },
+          { id: 'cluster', rotulo: 'Cluster', tipo: 'multi', opcoes: data.clusters || [] },
+          { id: 'cluster_detalhe', rotulo: 'Cluster detalhado', tipo: 'multi', opcoes: data.clusters_detalhe || [] },
+          { id: 'tipo_produto', rotulo: 'Tipo de produto', tipo: 'multi', opcoes: data.tipos_produto || [] },
+          { id: 'filial', rotulo: 'Filial / fábrica', tipo: 'multi', opcoes: data.filiais || [] }
+        ];
+
+        filtersPanel = new DNAFiltersPanel({
+          filtros: definicoes,
+          onApply: (filtrosAtivos) => fetchVendometroData(filtrosAtivos)
+        });
+
+      } catch (err) {
+        console.error('Erro ao carregar metadados:', err);
+      }
+    }
+
+    async function fetchVendometroData(filtrosAtivos = null) {
+      const nowDt = new Date();
+      const defAno = String(currentMetadata?.ano_atual || nowDt.getFullYear());
+      const defMes = String(currentMetadata?.mes_atual || (nowDt.getMonth() + 1));
+      if (!filtrosAtivos) {
+        filtrosAtivos = filtersPanel ? filtersPanel.getPayload() : { mes: [defMes], ano: defAno };
+      }
+      currentFilters = filtrosAtivos;
+      if (activeAbortCtrl) {
+        try { activeAbortCtrl.abort(); } catch (_) {}
+      }
+      activeAbortCtrl = new AbortController();
+      showLoading(true);
+
+      const mesVal = (filtrosAtivos.mes !== undefined && filtrosAtivos.mes !== null) ? filtrosAtivos.mes : [defMes];
+      const anoVal = (filtrosAtivos.ano !== undefined && filtrosAtivos.ano !== null) ? filtrosAtivos.ano : defAno;
+
+      const payload = {
+        grupo_cliente: filtrosAtivos.grupo_cliente || 'Todos',
+        gerente: filtrosAtivos.gerente || 'Todos',
+        canal: filtrosAtivos.canal || 'Todos',
+        categoria: filtrosAtivos.categoria || 'Todos',
+        cluster: filtrosAtivos.cluster || 'Todos',
+        cluster_detalhe: filtrosAtivos.cluster_detalhe || 'Todos',
+        tipo_produto: filtrosAtivos.tipo_produto || 'Todos',
+        filial: filtrosAtivos.filial || 'Todos',
+        mes: mesVal,
+        ano: anoVal,
+        metrica: currentMetric
+      };
+
+      try {
+        const errBanner = document.getElementById('vendometro-error-state');
+        if (errBanner) errBanner.hidden = true;
+
+        const data = window.DNACache
+          ? await window.DNACache.postJson('/api/vendometro', payload, activeAbortCtrl.signal)
+          : await (async () => {
+              const res = await fetch('/api/vendometro', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+                signal: activeAbortCtrl.signal
+              });
+              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+              return res.json();
+            })();
+        if (errBanner) errBanner.hidden = true;
+        currentDashboardData = data;
+        renderDashboard(data);
+      } catch (err) {
+        if (err && err.name === 'AbortError') return;
+        console.error('Erro ao carregar vendômetro:', err);
+        const errBanner = document.getElementById('vendometro-error-state');
+        if (errBanner) errBanner.hidden = false;
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    function renderDashboard(data) {
+      if (!data) return;
+      const isVal = (currentMetric === 'Valor');
+      const isVol = !isVal;
+      const fFull = (rawNum, fallbackMi = 0) => {
+        const num = (rawNum !== undefined && rawNum !== null) ? Number(rawNum) : (Number(fallbackMi) * 1e6);
+        if (isVol) {
+          return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num) + ' kg';
+        }
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
+      };
+
+      const k = data.kpis;
+      if (k) {
+        const isFcst = (comparisonMode === 'Forecast');
+        const metaLbl = isFcst ? 'Forecast' : 'Budget';
+        const metaLblLower = metaLbl.toLowerCase();
+        const activeMetaFull = isFcst ? k.forecast_full : k.budget_full;
+        const activeMetaAteHoje = isFcst ? (k.forecast_ate_hoje ?? k.budget_ate_hoje) : k.budget_ate_hoje;
+        const activeVsPct = isFcst ? (k.vs_forecast_pct ?? k.vs_budget_pct) : k.vs_budget_pct;
+        const activeCobPct = isFcst ? k.cobertura_fcst_pct : k.cobertura_bgt_pct;
+
+        const pLblBanner = data.periodo_label || 'O período';
+        const vsPctAbs = Math.round(Math.abs(activeVsPct || 0));
+        const vsWord = (activeVsPct || 0) < 0 ? 'abaixo' : 'acima';
+        const vsCls = (activeVsPct || 0) < 0 ? 'hl-neg' : 'hl-pos';
+        const cobPct = Math.round(activeCobPct || 0);
+        const cobCls = cobPct >= 80 ? 'hl-pos' : 'hl-neg';
+        const bannerEl = document.getElementById('banner-text');
+        if (bannerEl) {
+          bannerEl.innerHTML = `${pLblBanner} está <span class="${vsCls}">${vsPctAbs}% ${vsWord} do ${metaLblLower}</span> até hoje. Com as open orders, chega a <span class="${cobCls}">${cobPct}% do ${metaLblLower}</span>.`;
+        }
+        const fVal = v => DNAFormat.fmtCurrency(v, true, isVol);
+        const rk = k.raw || {};
+        const fPct = v => DNAFormat.fmtPercent(v, false);
+        const pLbl = data.periodo_label || 'Período selecionado';
+
+        // 1. Card Hero: Invoiced Líquido (Padrão Portal Distribuidores)
+        const invEl = document.getElementById('kpi-invoiced');
+        if (invEl) {
+          invEl.textContent = fVal(k.invoiced);
+          invEl.setAttribute('data-tip',
+            `<div class='tip-h'>Invoiced Líquido · ${pLbl}</div>` +
+            `<div class='tip-r'><span>Faturado realizado</span><strong>${fFull(rk.invoiced, k.invoiced)}</strong></div>` +
+            `<div class='tip-r'><span>Meta (${metaLbl}) do mês</span><strong>${fFull(isFcst ? rk.forecast_full : rk.budget_full, activeMetaFull)}</strong></div>` +
+            `<div class='tip-f'>Receita líquida efetivamente faturada e entregue no período (descontadas devoluções e cancelamentos).</div>`
+          );
+        }
+
+        // Vs. Ano Anterior no topo direito do Card Hero
+        const yoyEl = document.getElementById('kpi-invoiced-yoy');
+        if (yoyEl) {
+          const pyYr = k.py_year_label || '2025';
+          if (k.py_invoiced > 0) {
+            const yoyPct = ((k.invoiced / k.py_invoiced) - 1) * 100;
+            const up = yoyPct >= 0;
+            yoyEl.className = `kpi-yoy ${up ? 'is-up' : 'is-down'}`;
+            yoyEl.innerHTML = `<span class="kpi-yoy-k">Vs. ${pyYr}</span>` +
+              `<strong class="kpi-yoy-v">${up ? '↑ +' : '↓ −'}${fPct(Math.abs(yoyPct))}</strong>` +
+              `<span class="kpi-yoy-b">${fVal(k.py_invoiced)}</span>`;
+            const cutBr = k.py_cutoff_dt ? k.py_cutoff_dt.split('-').reverse().join('/') : '';
+            const pyNote = (k.pace_open && k.pace_done_bdays > 0 && cutBr)
+              ? `Mesmos ${k.pace_done_bdays} dias úteis do ano anterior (até ${cutBr}).`
+              : `Mesmos meses do ano anterior (${pyYr}).`;
+            yoyEl.setAttribute('data-tip',
+              `<div class='tip-h'>Vs. ano anterior (dias úteis)</div>` +
+              `<div class='tip-r'><span>Realizado atual</span><strong>${fFull(rk.invoiced, k.invoiced)}</strong></div>` +
+              `<div class='tip-r'><span>Base ${pyYr}</span><strong>${fFull(rk.py_invoiced, k.py_invoiced)}</strong></div>` +
+              `<div class='tip-f'>${pyNote}</div>`
+            );
+          } else {
+            yoyEl.className = 'kpi-yoy';
+            yoyEl.innerHTML = `<span class="kpi-yoy-k">Vs. ${pyYr}</span><span class="kpi-yoy-b">sem base</span>`;
+            yoyEl.removeAttribute('data-tip');
+          }
+        }
+
+        // Meta & Delta (claramente rotulada como Budget ou Forecast)
+        const metaEl = document.getElementById('kpi-invoiced-meta');
+        if (metaEl) {
+          metaEl.innerHTML = `<strong>Meta (${metaLbl})</strong> de ${fVal(activeMetaFull)}`;
+          metaEl.setAttribute('data-tip',
+            `<div class='tip-h'>Meta ${metaLbl} · ${pLbl}</div>` +
+            `<div class='tip-r'><span>Budget cheio</span><strong>${fFull(rk.budget_full, k.budget_full)}</strong></div>` +
+            `<div class='tip-r'><span>Forecast S&amp;OP</span><strong>${fFull(rk.forecast_full, k.forecast_full)}</strong></div>` +
+            `<div class='tip-f'>Base ativa da página: <strong>${metaLbl}</strong>. Use o seletor Budget / Forecast no topo para alternar toda a página.</div>`
+          );
+        }
+
+        const diffEl = document.getElementById('kpi-invoiced-diff');
+        const fillEl = document.getElementById('kpi-invoiced-fill');
+        const progEl = document.getElementById('kpi-invoiced-progress');
+        const pctTxtEl = document.getElementById('kpi-gauge-pct');
+        const cardInv = document.getElementById('card-invoiced');
+        if (activeMetaFull > 0) {
+          const attPct = Math.round((k.invoiced / activeMetaFull) * 100);
+          const above = k.invoiced >= activeMetaFull;
+          const absDiff = Math.abs(k.invoiced - activeMetaFull);
+          const rawInvVal = (rk.invoiced !== undefined) ? rk.invoiced : (k.invoiced * 1e6);
+          const rawMetaVal = isFcst ? ((rk.forecast_full !== undefined) ? rk.forecast_full : k.forecast_full * 1e6) : ((rk.budget_full !== undefined) ? rk.budget_full : k.budget_full * 1e6);
+          const absDiffRaw = Math.abs(rawInvVal - rawMetaVal);
+          const diffPct = Math.abs(attPct - 100);
+          if (diffEl) {
+            diffEl.className = `kpi-delta ${above ? 'delta-pos' : 'delta-neg'}`;
+            diffEl.innerHTML = `<span>${above ? '↑ +' : '↓ −'}${fVal(absDiff)}</span> <span class="delta-pct">(${above ? '+' : '−'}${diffPct}%)</span>`;
+            diffEl.setAttribute('data-tip',
+              `<div class='tip-h'>Diferença para o ${metaLbl}</div>` +
+              `<div class='tip-r'><span>Invoiced realizado</span><strong>${fFull(rawInvVal)}</strong></div>` +
+              `<div class='tip-r'><span>Meta ${metaLbl} do mês</span><strong>${fFull(rawMetaVal)}</strong></div>` +
+              `<div class='tip-r'><span>Saldo</span><strong>${above ? '+' : '−'}${fFull(absDiffRaw)}</strong></div>` +
+              `<div class='tip-f'>Quanto falta faturar (ou excedente) em relação ao ${metaLbl} completo do período.</div>`
+            );
+          }
+          const clampedAtt = Math.min(100, Math.max(0, attPct));
+          if (fillEl) fillEl.style.width = `${clampedAtt}%`;
+          if (progEl) progEl.setAttribute('aria-valuenow', String(attPct));
+          if (cardInv) cardInv.style.setProperty('--att', `${clampedAtt}%`);
+          if (pctTxtEl) pctTxtEl.innerHTML = `<strong>${attPct}%</strong>`;
+        }
+
+        // Marcador de ritmo ("Esperado até DD/mmm") + Rodapé "Ritmo"
+        const markEl = document.getElementById('kpi-pace-mark');
+        const markLblEl = document.getElementById('kpi-pace-lbl');
+        const paceRowEl = document.getElementById('kpi-pace-row');
+        if (k.pace_open && activeMetaAteHoje > 0 && activeMetaFull > 0) {
+          const expectedPct = Math.min(100, (activeMetaAteHoje / activeMetaFull) * 100);
+          const pacePct = Math.round((k.invoiced / activeMetaAteHoje) * 100);
+          const paceCls = pacePct >= 95 ? 'att-good' : (pacePct >= 80 ? 'att-warn' : 'att-bad');
+          const cutLbl = k.pace_cutoff_lbl || 'ontem';
+          if (markEl) { markEl.hidden = false; markEl.style.left = `${expectedPct.toFixed(1)}%`; }
+          if (markLblEl) {
+            markLblEl.hidden = false;
+            markLblEl.textContent = `Esperado até ${cutLbl}`;
+            markLblEl.style.left = `${expectedPct.toFixed(1)}%`;
+            markLblEl.classList.toggle('is-left', expectedPct < 50);
+          }
+          if (paceRowEl) {
+            paceRowEl.hidden = false;
+            const rawMetaFullPace = isFcst ? ((rk.forecast_full !== undefined) ? rk.forecast_full : k.forecast_full * 1e6) : ((rk.budget_full !== undefined) ? rk.budget_full : k.budget_full * 1e6);
+            const rawMetaAteHojePace = isFcst ? ((rk.forecast_ate_hoje !== undefined) ? rk.forecast_ate_hoje : activeMetaAteHoje * 1e6) : ((rk.budget_ate_hoje !== undefined) ? rk.budget_ate_hoje : activeMetaAteHoje * 1e6);
+            const metaPorDiaRaw = k.pace_total_bdays > 0 ? (rawMetaFullPace / k.pace_total_bdays) : 0;
+            paceRowEl.innerHTML = `<span class="kpi-pace-k">Ritmo</span>` +
+              `<strong class="kpi-pace-v ${paceCls}">${pacePct}%</strong>` +
+              `<span class="kpi-pace-t">do esperado · ${fVal(activeMetaAteHoje)} até ${cutLbl}</span>` +
+              `<span class="kpi-pace-i" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>`;
+            paceRowEl.setAttribute('data-tip',
+              `<div class='tip-h'>Ritmo vs ${metaLbl}</div>` +
+              `<div class='tip-r'><span>Dias úteis transcorridos</span><strong>${k.pace_done_bdays} de ${k.pace_total_bdays}</strong></div>` +
+              `<div class='tip-r'><span>${metaLbl} por dia útil</span><strong>${fFull(metaPorDiaRaw)}</strong></div>` +
+              `<div class='tip-r'><span>Esperado até ${cutLbl}</span><strong>${fFull(rawMetaAteHojePace)}</strong></div>` +
+              `<div class='tip-f'>${metaLbl} do mês dividido igualmente pelos dias úteis (seg a sex). Sábados, domingos e feriados nacionais não contam.</div>`
+            );
+          }
+        } else {
+          if (markEl) markEl.hidden = true;
+          if (markLblEl) markLblEl.hidden = true;
+          if (paceRowEl) { paceRowEl.hidden = true; paceRowEl.removeAttribute('data-tip'); }
+        }
+
+        // 2. Card Pedidos do período (Carteira + Invoiced + Carteira)
+        const ordUnit = document.getElementById('ord-unit');
+        if (ordUnit) ordUnit.textContent = isVol ? 'volume (kg)' : 'valores líquidos';
+
+        const openEl = document.getElementById('kpi-open');
+        if (openEl) {
+          openEl.textContent = k.open_orders === 0 ? '—' : fVal(k.open_orders);
+          openEl.setAttribute('data-tip',
+            `<div class='tip-h'>Open Orders</div>` +
+            `<div class='tip-r'><span>Pedidos pendentes</span><strong>${fFull(rk.open_orders, k.open_orders)}</strong></div>` +
+            `<div class='tip-f'>Pedidos já digitados e liberados comercialmente que aguardam faturamento em ${pLbl}.</div>`
+          );
+        }
+
+        const invOpenEl = document.getElementById('kpi-inv-open');
+        if (invOpenEl) {
+          invOpenEl.textContent = fVal(k.invoiced_plus_open);
+          invOpenEl.setAttribute('data-tip',
+            `<div class='tip-h'>Invoiced + Open Orders</div>` +
+            `<div class='tip-r'><span>Já faturado (Invoiced)</span><strong>${fFull(rk.invoiced, k.invoiced)}</strong></div>` +
+            `<div class='tip-r'><span>Open Orders</span><strong>+ ${fFull(rk.open_orders, k.open_orders)}</strong></div>` +
+            `<div class='tip-r'><span>Total</span><strong>${fFull(rk.invoiced_plus_open, k.invoiced_plus_open)}</strong></div>` +
+            `<div class='tip-f'>Total já garantido na operação considerando faturamento realizado + Open Orders.</div>`
+          );
+        }
+
+        const stackEl = document.getElementById('kpi-stack');
+        const segInv = document.getElementById('kpi-stack-inv');
+        const segOpen = document.getElementById('kpi-stack-open');
+        const stackLeg = document.getElementById('kpi-stack-legend');
+        if (k.invoiced_plus_open > 0) {
+          const pInv = Math.round((k.invoiced / k.invoiced_plus_open) * 100);
+          const pOpen = 100 - pInv;
+          if (stackEl) { stackEl.hidden = false; stackEl.setAttribute('aria-label', `${pInv}% Invoiced e ${pOpen}% Open Orders`); }
+          if (segInv) segInv.style.width = `${pInv}%`;
+          if (segOpen) segOpen.style.width = `${pOpen}%`;
+          if (stackLeg) stackLeg.innerHTML = `<span class="lg lg-inv"></span>Invoiced ${pInv}% <span class="lg lg-open"></span>Open Orders ${pOpen}%`;
+        } else {
+          if (stackEl) stackEl.hidden = true;
+          if (stackLeg) stackLeg.textContent = 'Sem pedidos registrados';
+        }
+
+        // 3. Card Cobertura
+        document.getElementById('kpi-gap-bgt').textContent = `Faltam ${fVal(k.gap_budget)} para o budget`;
+        document.getElementById('kpi-gap-fcst').textContent = `e ${fVal(k.gap_forecast)} para o forecast`;
+
+        document.getElementById('lbl-bgt-full').textContent = fVal(k.budget_full);
+        document.getElementById('pct-bgt-full').textContent = fPct(k.cobertura_bgt_pct);
+        document.getElementById('bar-bgt-fill').style.width = `${Math.min(k.cobertura_bgt_pct, 100)}%`;
+
+        document.getElementById('lbl-fcst-full').textContent = fVal(k.forecast_full);
+        document.getElementById('pct-fcst-full').textContent = fPct(k.cobertura_fcst_pct);
+        document.getElementById('bar-fcst-fill').style.width = `${Math.min(k.cobertura_fcst_pct, 100)}%`;
+
+        document.getElementById('kpi-ytd').textContent = fVal(k.ytd_invoiced);
+        const ytdMetaVal = isFcst ? (k.forecast_ytd ?? k.budget_ytd) : k.budget_ytd;
+        const ytdVsPct = isFcst ? (k.vs_forecast_ytd_pct ?? k.vs_budget_ytd_pct) : k.vs_budget_ytd_pct;
+        const ytdBadgeEl = document.getElementById('ytd-vs-bgt');
+        if (ytdBadgeEl) {
+          ytdBadgeEl.className = ytdVsPct < 0 ? 'badge-neg' : 'badge-pos';
+          ytdBadgeEl.textContent = `${ytdVsPct < 0 ? '▼' : '▲'} ${fPct(ytdVsPct)} vs ${metaLbl.toLowerCase()} até hoje (${fVal(ytdMetaVal)})`;
+        }
+        document.getElementById('ytd-vs-py').textContent = `${k.vs_py_ytd_pct >= 0 ? '▲ +' : '▼ -'}${fPct(k.vs_py_ytd_pct)} vs ano anterior (${fVal(k.py_ytd)})`;
+
+        const btnCov = document.getElementById('tip-btn-cov');
+        if (btnCov) {
+          btnCov.setAttribute('data-tip',
+            `<div class='tip-h'>Cobertura das Metas do Mês</div>` +
+            `<div class='tip-r'><span>Meta Budget cheia</span><strong>${fFull(rk.budget_full, k.budget_full)} (${fPct(k.cobertura_bgt_pct)})</strong></div>` +
+            `<div class='tip-r'><span>Meta Forecast cheia</span><strong>${fFull(rk.forecast_full, k.forecast_full)} (${fPct(k.cobertura_fcst_pct)})</strong></div>` +
+            `<div class='tip-r'><span>Fórmula</span><strong>(Faturado + Carteira) ÷ Meta</strong></div>` +
+            `<div class='tip-f'>Budget é a meta oficial anual; Forecast é a revisão mensal de S&amp;OP. As barras mostram quanto da meta total do mês já está coberto pela operação.</div>`
+          );
+        }
+
+        const btnYtd = document.getElementById('tip-btn-ytd');
+        if (btnYtd) {
+          const rkMetaYtd = isFcst ? (rk.forecast_ytd ?? rk.budget_ytd) : rk.budget_ytd;
+          btnYtd.setAttribute('data-tip',
+            `<div class='tip-h'>Acumulado no Ano (YTD)</div>` +
+            `<div class='tip-r'><span>Realizado no ano</span><strong>${fFull(rk.ytd_invoiced, k.ytd_invoiced)}</strong></div>` +
+            `<div class='tip-r'><span>Meta acumulada (${metaLbl} YTD)</span><strong>${fFull(rkMetaYtd, ytdMetaVal)} (${ytdVsPct >= 0 ? '+' : ''}${fPct(ytdVsPct)})</strong></div>` +
+            `<div class='tip-r'><span>Ano anterior (PY YTD)</span><strong>${fFull(rk.py_ytd, k.py_ytd)} (${k.vs_py_ytd_pct >= 0 ? '+' : ''}${fPct(k.vs_py_ytd_pct)})</strong></div>` +
+            `<div class='tip-f'>Soma de todo o faturamento líquido desde 1º de janeiro até a data de corte atual, comparando com a meta ${metaLbl}.</div>`
+          );
+        }
+      }
+
+      // Canais (Donut SVG + Rótulos diretos próximos às fatias)
+      if (data.canais) {
+        const qVal = Number(data.canais.qsr_val) || 0;
+        const dVal = Number(data.canais.distrib_val) || 0;
+        const qPct = Number(data.canais.qsr_pct) || 0;
+        const dPct = Number(data.canais.distrib_pct) || 0;
+        const totCanal = qVal + dVal;
+        const fCVal = v => DNAFormat.fmtCurrency(v, true, isVol);
+        const fCPct = v => DNAFormat.fmtPercent(v, false);
+
+        const totEl = document.getElementById('canal-donut-total');
+        if (totEl) totEl.textContent = fCVal(totCanal);
+
+        const r = 74;
+        const circ = 2 * Math.PI * r; // 464.96
+        const gap = (qPct > 0 && dPct > 0) ? 4 : 0;
+        const qLen = Math.max(0, (qPct / 100) * circ - gap);
+        const dLen = Math.max(0, (dPct / 100) * circ - gap);
+        const donutQsr = document.getElementById('donut-qsr');
+        const donutDist = document.getElementById('donut-dist');
+
+        const qsrTip =
+          `<div class='tip-h'>Canal QSR</div>` +
+          `<div class='tip-r'><span>Invoiced + Open Orders</span><strong>${fFull(data.canais.qsr_raw, qVal)}</strong></div>` +
+          `<div class='tip-r'><span>Participação</span><strong>${fCPct(qPct)}</strong></div>` +
+          `<div class='tip-f'>Atendimento direto às grandes redes de fast-food.</div>`;
+
+        const distTip =
+          `<div class='tip-h'>Canal Distribuidores</div>` +
+          `<div class='tip-r'><span>Invoiced + Open Orders</span><strong>${fFull(data.canais.distrib_raw, dVal)}</strong></div>` +
+          `<div class='tip-r'><span>Participação</span><strong>${fCPct(dPct)}</strong></div>` +
+          `<div class='tip-f'>Fornecimento para Centros de Distribuição parceiros (CDs).</div>`;
+
+        if (donutQsr) {
+          donutQsr.setAttribute('stroke-dasharray', `${qLen.toFixed(2)} ${circ.toFixed(2)}`);
+          donutQsr.setAttribute('stroke-dashoffset', '0');
+          donutQsr.setAttribute('data-tip', qsrTip);
+        }
+        if (donutDist) {
+          donutDist.setAttribute('stroke-dasharray', `${dLen.toFixed(2)} ${circ.toFixed(2)}`);
+          donutDist.setAttribute('stroke-dashoffset', `-${((qPct / 100) * circ).toFixed(2)}`);
+          donutDist.setAttribute('data-tip', distTip);
+        }
+
+        // Rótulos posicionados próximos às respectivas fatias
+        const calloutsEl = document.getElementById('donut-callouts');
+        if (calloutsEl) {
+          const cx = 180, cy = 118;
+          const slices = [];
+          if (qPct > 0) {
+            slices.push({
+              name: 'QSR', pct: qPct, val: qVal, color: 'var(--primary)',
+              midDeg: -90 + (qPct / 100) * 180, tip: qsrTip
+            });
+          }
+          if (dPct > 0) {
+            slices.push({
+              name: 'Distrib.', pct: dPct, val: dVal, color: '#60a5fa',
+              midDeg: -90 + ((qPct + dPct * 0.5) / 100) * 360, tip: distTip
+            });
+          }
+          calloutsEl.innerHTML = slices.map(s => {
+            const rad = (s.midDeg * Math.PI) / 180;
+            const cos = Math.cos(rad), sin = Math.sin(rad);
+            const x0 = cx + (r + 12) * cos;
+            const y0 = cy + (r + 12) * sin;
+            const x1 = cx + (r + 24) * cos;
+            const y1 = Math.max(24, Math.min(212, cy + (r + 24) * sin));
+            const rightSide = cos >= 0;
+            const x2 = rightSide ? Math.min(282, x1 + 14) : Math.max(78, x1 - 14);
+            const anchor = rightSide ? 'start' : 'end';
+            const tx = rightSide ? x2 + 5 : x2 - 5;
+            return `<g class="donut-callout" style="cursor:pointer;" data-tip="${s.tip.replace(/"/g, '&quot;')}">
+              <polyline class="donut-callout-line" points="${x0.toFixed(1)},${y0.toFixed(1)} ${x1.toFixed(1)},${y1.toFixed(1)} ${x2.toFixed(1)},${y1.toFixed(1)}"/>
+              <circle cx="${x0.toFixed(1)}" cy="${y0.toFixed(1)}" r="3" fill="${s.color}"/>
+              <text class="donut-callout-title" x="${tx.toFixed(1)}" y="${(y1 - 3).toFixed(1)}" text-anchor="${anchor}">${s.name} · ${fCPct(s.pct)}</text>
+              <text class="donut-callout-val" x="${tx.toFixed(1)}" y="${(y1 + 12).toFixed(1)}" text-anchor="${anchor}">${fCVal(s.val)}</text>
+            </g>`;
+          }).join('');
+        }
+      }
+
+      // Gráfico Mensal / Trimestral
+      if (data.mensal) {
+        renderMonthlyChart(data.mensal);
+      }
+    }
+
+    /* ===== Gráfico D&A: Configuração, Padrão IBCS (Portal Distribuidores v2) ===== */
+    const GR_CONFIG = {
+      locale: 'pt-BR',
+      moeda: 'BRL',
+      eyebrow: 'Realizado',
+      meses: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+      mesesExtenso: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+      mesFiltrado: 9, // default Outubro (0-indexed)
+      visoes: {
+        'Budget': {
+          titulo: 'Invoiced por mês vs budget',
+          serie: 'Invoiced realizado',
+          comparacao: 'Budget',
+          percentual: 'Atingimento',
+          realizado: [],
+          comp: []
+        },
+        'Forecast': {
+          titulo: 'Invoiced por mês vs forecast',
+          serie: 'Invoiced realizado',
+          comparacao: 'Forecast',
+          percentual: 'Atingimento',
+          realizado: [],
+          comp: []
+        }
+      }
+    };
+
+    const fmtMi = v => {
+      if (v == null || isNaN(v)) return '—';
+      if (currentMetric === 'Volume') {
+        return new Intl.NumberFormat(GR_CONFIG.locale, {maximumFractionDigits:1, minimumFractionDigits:1}).format(v) + ' mil t';
+      }
+      return 'R$ ' + new Intl.NumberFormat(GR_CONFIG.locale, {maximumFractionDigits:1, minimumFractionDigits:1}).format(v) + ' mi';
+    };
+
+    const fmtPct = (v, sinal=false) => {
+      if (v == null || isNaN(v)) return '—';
+      return new Intl.NumberFormat(GR_CONFIG.locale, {
+        maximumFractionDigits: sinal ? 1 : 0,
+        minimumFractionDigits: sinal ? 1 : 0,
+        signDisplay: sinal ? 'exceptZero' : 'auto'
+      }).format(v) + '%';
+    };
+
+    const fmtDif = v => (v < 0 ? '−' : '+') + fmtMi(Math.abs(v));
+
+    let chartGranularity = 'Mensal';
+
+    function renderCabecalho(){
+      const v = GR_CONFIG.visoes[comparisonMode] || GR_CONFIG.visoes['Budget'];
+      const eb = document.getElementById('grEyebrow');
+      const tit = document.getElementById('grTitulo');
+      const lSerie = document.getElementById('grLegSerie');
+      const lComp = document.getElementById('grLegComp');
+      if (eb) eb.textContent = GR_CONFIG.eyebrow;
+      if (tit) {
+        const compLower = v.comparacao.toLowerCase();
+        tit.textContent = chartGranularity === 'Trimestral'
+          ? `Invoiced por trimestre vs ${compLower}`
+          : `Invoiced por mês vs ${compLower}`;
+      }
+      if (lSerie) lSerie.textContent = v.serie;
+      if (lComp) lComp.textContent = v.comparacao;
+
+      const ate = GR_CONFIG.mesFiltrado + 1;
+      const somaR = v.realizado.slice(0, ate).reduce((a, b) => a + (b ?? 0), 0);
+      const somaC = v.comp.slice(0, ate).reduce((a, b) => a + (b ?? 0), 0);
+      const varAcum = somaC ? ((somaR / somaC) - 1) * 100 : null;
+      const pctAcum = somaC ? (somaR / somaC) * 100 : null;
+
+      const rotuloEl = document.getElementById('grAcumRotulo');
+      if (rotuloEl) rotuloEl.textContent = `Acumulado vs ${v.comparacao.toLowerCase()}`;
+      const selo = document.getElementById('grAcumSelo');
+      if (selo) {
+        selo.textContent = varAcum == null ? '—' : `${varAcum < 0 ? '↓' : '↑'} ${fmtPct(varAcum, true).replace('-', '−')}`;
+        selo.className = 'selo ' + (pctAcum == null ? '' : (pctAcum >= 100 ? 'bom' : (pctAcum >= 90 ? 'atencao' : 'ruim')));
+      }
+    }
+
+    window.setComparisonMode = function setComparisonMode(nome) {
+      comparisonMode = (nome === 'Forecast') ? 'Forecast' : 'Budget';
+      document.querySelectorAll('#global-target-seg button[data-target]').forEach(btn => {
+        const on = btn.dataset.target === comparisonMode;
+        btn.classList.toggle('active-label', on);
+        btn.setAttribute('aria-checked', String(on));
+      });
+      renderSegmentado();
+      renderCabecalho();
+      if (currentDashboardData) {
+        renderDashboard(currentDashboardData);
+      }
+    }
+
+    function renderSegmentado(){
+      const seg = document.getElementById('grSeg');
+      if (!seg) return;
+      seg.innerHTML = '';
+      Object.keys(GR_CONFIG.visoes).forEach(nome => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('role', 'tab');
+        b.textContent = nome;
+        b.setAttribute('aria-selected', String(nome === comparisonMode));
+        b.addEventListener('click', () => setComparisonMode(nome));
+        seg.append(b);
+      });
+    }
+
+    document.querySelectorAll('#global-target-seg button[data-target]').forEach(btn => {
+      btn.addEventListener('click', () => setComparisonMode(btn.dataset.target));
+    });
+
+    document.querySelectorAll('#grPeriodSeg button[data-gran]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        chartGranularity = btn.dataset.gran === 'Trimestral' ? 'Trimestral' : 'Mensal';
+        document.querySelectorAll('#grPeriodSeg button[data-gran]').forEach(b => {
+          const on = b.dataset.gran === chartGranularity;
+          b.classList.toggle('active-label', on);
+          b.setAttribute('aria-checked', String(on));
+        });
+        if (currentDashboardData && currentDashboardData.mensal) {
+          renderMonthlyChart(currentDashboardData.mensal);
+        }
+      });
+    });
+
+    function buildTargetBarsHtml(opts) {
+      const vals = opts.values, tgts = opts.targets, maxIdx = opts.maxIdx;
+      const visV = vals.slice(0, maxIdx + 1), visT = tgts.slice(0, maxIdx + 1);
+      const maxVal = Math.max(...visV, ...visT, 1);
+      const top = maxVal * 1.15;
+      const hi = opts.selectedIdx !== undefined ? opts.selectedIdx : 9;
+
+      let cols = '';
+      for (let i = 0; i <= maxIdx; i++) {
+        const v = vals[i] || 0, t = tgts[i] || 0;
+        const hasReal = v > 0;
+        const hasMeta = t > 0;
+        const pct = (hasMeta && hasReal) ? Math.round((v / t) * 100) : null;
+        let cls = 'att-none';
+        if (pct !== null) {
+          cls = pct >= 100 ? 'att-good' : (pct >= 90 ? 'att-warn' : 'att-bad');
+        }
+        const h = Math.min(100, (v / top) * 100);
+        const ht = Math.min(100, (t / top) * 100);
+        const mName = opts.monthsShort[i], mLong = opts.monthsLong[i];
+        const vStr = hasReal ? opts.fmt(v) : '—';
+        const tStr = hasMeta ? opts.fmt(t) : '—';
+
+        // Rótulo de dado SOMENTE no mês filtrado / foco
+        const valHtml = (i === hi && hasReal) ? `<span class="tc-val" style="bottom:calc(${h.toFixed(1)}% + 6px)">${vStr}</span>` : '';
+
+        // Payload serializado para o tooltip da barra (data-bar-tip evita conflito com data-tip dos cards)
+        const tipObj = {
+          mes: mLong,
+          real: vStr,
+          comp: tStr,
+          compLabel: opts.targetLabel,
+          pct: pct !== null ? `${pct}%` : '—',
+          pctStatus: cls,
+          dif: (hasReal && hasMeta) ? fmtDif(v - t) : '—',
+          difStatus: (v - t >= 0) ? 'att-good' : 'att-bad'
+        };
+        const tipAttr = encodeURIComponent(JSON.stringify(tipObj));
+
+        cols += `
+          <div class="tc-col ${i === hi ? 'is-current' : ''}" data-bar-tip="${tipAttr}" tabindex="0" role="group" aria-label="${mLong}: ${vStr}">
+            <div class="tc-plot">
+              ${valHtml}
+              <div class="tc-bar" style="height:${h.toFixed(1)}%"></div>
+              ${hasMeta ? `<div class="tc-target" style="bottom:${ht.toFixed(1)}%" title="${opts.targetLabel}: ${tStr}"></div>` : ''}
+            </div>
+            <span class="tc-month">${mName}</span>
+            <span class="tc-att ${cls}">${pct !== null ? `${pct}%` : '—'}</span>
+          </div>
+        `;
+      }
+
+      return `<div class="tc" style="--cols:${maxIdx + 1}">${cols}</div>`;
+    }
+
+    function bindBarTooltips(container) {
+      const tip = document.getElementById('grTip');
+      if (!tip) return;
+
+      container.querySelectorAll('.tc-col').forEach(col => {
+        function showTip() {
+          const raw = col.getAttribute('data-bar-tip');
+          if (!raw) return;
+          const info = JSON.parse(decodeURIComponent(raw));
+
+          const linhas = [
+            ['Realizado', info.real, ''],
+            [info.compLabel, info.comp, ''],
+            ['Atingimento', info.pct, info.pctStatus],
+            ['Diferença', info.dif, info.difStatus]
+          ];
+
+          tip.innerHTML = `<h3>${info.mes}</h3><dl>${linhas.map(([k, val, st]) => `<dt>${k}</dt><dd class="${st || ''}">${val}</dd>`).join('')}</dl>`;
+          tip.style.visibility = 'hidden';
+          tip.hidden = false;
+
+          const rect = col.getBoundingClientRect();
+          let left = rect.left + rect.width / 2 - tip.offsetWidth / 2;
+          let top = rect.top - tip.offsetHeight - 12;
+          left = Math.max(8, Math.min(left, window.innerWidth - tip.offsetWidth - 8));
+          if (top < 8) top = rect.bottom + 12;
+
+          tip.style.left = `${Math.round(left)}px`;
+          tip.style.top = `${Math.round(top)}px`;
+          tip.style.visibility = 'visible';
+        }
+
+        col.addEventListener('mouseenter', showTip);
+        col.addEventListener('focus', showTip);
+        col.addEventListener('mouseleave', () => { tip.hidden = true; });
+        col.addEventListener('blur', () => { tip.hidden = true; });
+        col.style.cursor = 'pointer';
+        col.addEventListener('click', (e) => {
+          e.stopPropagation();
+          tip.hidden = true;
+          const cols = Array.from(container.querySelectorAll('.tc-col'));
+          const mIdx = cols.indexOf(col);
+          if (mIdx >= 0 && filtersPanel) {
+            if (chartGranularity === 'Trimestral') {
+              const startM = mIdx * 3 + 1;
+              filtersPanel.aplicado['mes'] = new Set([String(startM), String(startM + 1), String(startM + 2)]);
+            } else {
+              filtersPanel.aplicado['mes'] = new Set([String(mIdx + 1)]);
+            }
+            filtersPanel.rascunho = filtersPanel.clonar(filtersPanel.aplicado);
+            filtersPanel.aplicar();
+          }
+        });
+      });
+    }
+
+    function renderTabelaDados(v, customLabels = null, customReal = null, customComp = null) {
+      const t = document.getElementById('grTabela');
+      if (!t) return;
+      const labels = customLabels || GR_CONFIG.mesesExtenso;
+      const realArr = customReal || v.realizado;
+      const compArr = customComp || v.comp;
+      t.innerHTML = `
+        <thead>
+          <tr>
+            <th>${chartGranularity === 'Trimestral' ? 'Trimestre' : 'Mês'}</th>
+            <th>${v.serie}</th>
+            <th>${v.comparacao}</th>
+            <th>${v.percentual}</th>
+            <th>Diferença</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${labels.map((m, i) => {
+            const r = realArr[i] || 0;
+            const c = compArr[i] || 0;
+            const hasR = r > 0;
+            const hasC = c > 0;
+            const pct = (hasR && hasC) ? Math.round((r / c) * 100) : null;
+            const dif = (hasR && hasC) ? (r - c) : null;
+            return `
+              <tr>
+                <td><strong>${m}</strong></td>
+                <td>${hasR ? fmtMi(r) : '—'}</td>
+                <td>${hasC ? fmtMi(c) : '—'}</td>
+                <td>${pct !== null ? `${pct}%` : '—'}</td>
+                <td>${dif !== null ? fmtDif(dif) : '—'}</td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      `;
+    }
+
+    function renderMonthlyChart(mensalData) {
+      if (!mensalData) return;
+
+      // Determinar mês filtrado / foco sem estourar ReferenceError
+      let foco = 9; // Outubro (0-indexed)
+      const mesFiltro = (typeof currentFilters !== 'undefined' && currentFilters.mes) ? currentFilters.mes : 'Todos';
+      if (mesFiltro && mesFiltro !== 'Todos') {
+        const mList = Array.isArray(mesFiltro) ? mesFiltro : [mesFiltro];
+        if (mList.length > 0) {
+          const p = parseInt(mList[mList.length - 1], 10);
+          if (!isNaN(p) && p >= 1 && p <= 12) foco = p - 1;
+        }
+      }
+      GR_CONFIG.mesFiltrado = foco;
+
+      const realizadoArr = [];
+      const budgetArr = [];
+      const forecastArr = [];
+
+      mensalData.forEach((m, idx) => {
+        realizadoArr[idx] = (m.invoiced != null) ? m.invoiced : 0;
+        budgetArr[idx] = (m.budget != null) ? m.budget : 0;
+        forecastArr[idx] = (m.forecast != null) ? m.forecast : (m.budget != null ? m.budget * 0.96 : 0);
+      });
+
+      GR_CONFIG.visoes['Budget'].realizado = realizadoArr;
+      GR_CONFIG.visoes['Budget'].comp = budgetArr;
+      GR_CONFIG.visoes['Forecast'].realizado = realizadoArr;
+      GR_CONFIG.visoes['Forecast'].comp = forecastArr;
+
+      renderCabecalho();
+      renderSegmentado();
+
+      const v = GR_CONFIG.visoes[comparisonMode] || GR_CONFIG.visoes['Budget'];
+      const container = document.getElementById('barChartContainer');
+      if (!container) return;
+
+      if (chartGranularity === 'Trimestral') {
+        const qShort = ['1º Tri', '2º Tri', '3º Tri', '4º Tri'];
+        const qLong = ['1º Trimestre (Jan–Mar)', '2º Trimestre (Abr–Jun)', '3º Trimestre (Jul–Set)', '4º Trimestre (Out–Dez)'];
+        const qReal = [0, 1, 2, 3].map(q => v.realizado.slice(q * 3, q * 3 + 3).reduce((a, b) => a + (b || 0), 0));
+        const qComp = [0, 1, 2, 3].map(q => v.comp.slice(q * 3, q * 3 + 3).reduce((a, b) => a + (b || 0), 0));
+        container.innerHTML = buildTargetBarsHtml({
+          values: qReal,
+          targets: qComp,
+          maxIdx: 3,
+          selectedIdx: Math.floor(foco / 3),
+          fmt: fmtMi,
+          realLabel: 'Invoiced realizado',
+          targetLabel: v.comparacao,
+          monthsShort: qShort,
+          monthsLong: qLong
+        });
+        bindBarTooltips(container);
+        renderTabelaDados(v, qLong, qReal, qComp);
+        return;
+      }
+
+      container.innerHTML = buildTargetBarsHtml({
+        values: v.realizado,
+        targets: v.comp,
+        maxIdx: 11,
+        selectedIdx: foco,
+        fmt: fmtMi,
+        realLabel: 'Invoiced realizado',
+        targetLabel: v.comparacao,
+        monthsShort: GR_CONFIG.meses,
+        monthsLong: GR_CONFIG.mesesExtenso
+      });
+
+      bindBarTooltips(container);
+      renderTabelaDados(v);
+    }
+
+    window.addEventListener('scroll', () => {
+      const tip = document.getElementById('grTip');
+      if (tip) tip.hidden = true;
+    }, { passive: true });
+
+    window.addEventListener('bimbo:themeChange', () => {
+      if (currentDashboardData && currentDashboardData.mensal) {
+        renderMonthlyChart(currentDashboardData.mensal);
+      }
+    });
+
+    // Engine de Tooltip rico do Portal Distribuidores (v2-tip)
+    (function initV2Tooltip() {
+      let tip = null, owner = null, shownAt = 0;
+      function ensure() {
+        if (tip) return tip;
+        tip = document.createElement('div');
+        tip.id = 'v2-tip';
+        tip.className = 'v2-tip';
+        tip.setAttribute('role', 'tooltip');
+        tip.hidden = true;
+        document.body.appendChild(tip);
+        return tip;
+      }
+      function show(el) {
+        const html = el.getAttribute('data-tip');
+        if (!html) return;
+        ensure();
+        if (owner !== el || tip.hidden) shownAt = Date.now();
+        owner = el;
+        tip.innerHTML = html;
+        tip.style.visibility = 'hidden';
+        tip.style.left = '0px';
+        tip.style.top = '0px';
+        tip.hidden = false;
+        const r = el.getBoundingClientRect();
+        const tw = tip.offsetWidth, th = tip.offsetHeight;
+        let x = r.left + r.width / 2 - tw / 2;
+        x = Math.max(8, Math.min(x, window.innerWidth - tw - 8));
+        let y = r.top - th - 10;
+        if (y < 8) y = r.bottom + 10;
+        tip.style.left = `${Math.round(x)}px`;
+        tip.style.top = `${Math.round(y + window.scrollY)}px`;
+        tip.style.visibility = 'visible';
+        el.setAttribute('aria-describedby', 'v2-tip');
+      }
+      function hide() {
+        if (tip) tip.hidden = true;
+        if (owner) owner.removeAttribute('aria-describedby');
+        owner = null;
+      }
+      document.addEventListener('mouseover', (e) => {
+        const el = e.target.closest && e.target.closest('[data-tip]');
+        if (el) show(el); else if (owner && !(e.target.closest && e.target.closest('#v2-tip'))) hide();
+      });
+      document.addEventListener('focusin', (e) => {
+        const el = e.target.closest && e.target.closest('[data-tip]');
+        if (el) show(el); else hide();
+      });
+      document.addEventListener('click', (e) => {
+        const el = e.target.closest && e.target.closest('[data-tip]');
+        if (el) {
+          if (owner === el && tip && !tip.hidden && Date.now() - shownAt > 400) hide();
+          else show(el);
+        } else {
+          hide();
+        }
+      });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hide(); });
+      window.addEventListener('scroll', hide, { passive: true });
+      window.addEventListener('resize', hide);
+    })();
+
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', async () => {
+      showLoading(true);
+      await loadMetadata();
+      const nowDt = new Date();
+      const defAno = String(currentMetadata?.ano_atual || nowDt.getFullYear());
+      const defMes = String(currentMetadata?.mes_atual || (nowDt.getMonth() + 1));
+      const initialFilters = filtersPanel ? filtersPanel.getPayload() : { mes: [defMes], ano: defAno };
+      await fetchVendometroData(initialFilters);
+      showLoading(false);
+    });
+
+    window.addEventListener('bimbo:langChange', () => {
+      if (currentDashboardData) renderDashboard(currentDashboardData);
+    });
+
+    // Atalhos de teclado (Power User: 'V' para métrica, 'Esc' para fechar gavetas)
+    document.addEventListener('keydown', (e) => {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
+
+      if (e.key === 'v' || e.key === 'V') {
+        setMetric(currentMetric === 'Valor' ? 'Volume' : 'Valor');
+      }
+
+      if (e.key === 'Escape') {
+        const gaveta = document.getElementById('fpGaveta');
+        if (gaveta && gaveta.open) {
+          gaveta.close();
+        } else {
+          const layout = document.getElementById('appLayout');
+          if (layout && layout.getAttribute('data-filtros') !== 'recolhido') {
+            layout.setAttribute('data-filtros', 'recolhido');
+          }
+        }
+      }
+    });
+  </script>
+  <div class="gr-tip" id="grTip" role="tooltip" hidden></div>
+</body>
+</html>

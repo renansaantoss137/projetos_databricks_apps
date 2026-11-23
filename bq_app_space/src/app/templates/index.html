@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPACE - Analytics Portal</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=20260819_04">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}?v=20260911_02">
+</head>
+<body class="home-page-body dark-theme">
+    <script>
+        // Apply class to <html> for cross-browser fixed viewport layout
+        // (replaces html:has(body.home-page-body) which is unsupported on some browsers)
+        document.documentElement.classList.add('home-page-active');
+        if (localStorage.getItem('theme') === 'light') document.body.classList.remove('dark-theme');
+    </script>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="hamburger-menu" id="hamburger-btn" aria-label="Menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <div class="logo-container">
+                <a href="/" class="logo-link">
+                    <img src="{{ url_for('static', filename='images/space-one-logo.png') }}" alt="SPACE" class="logo-img">
+                </a>
+            </div>
+        </div>
+
+        <div class="topbar-center">
+            <div class="search-container">
+    <i data-lucide="search" class="search-icon"></i>
+    <input type="text" id="search-input" placeholder="Pesquisar Dashboard" autocomplete="off">
+    <ul id="search-suggestions" class="search-suggestions"></ul>
+</div>
+        </div>
+
+        <div class="topbar-right">
+            {% if local_mode %}
+            <!-- MOCK USER SWITCHER -->
+            <div class="mock-user-switcher-container">
+                <button class="mock-user-btn" id="mock-user-btn" title="Simular Usuário/Grupos">
+                    <i data-lucide="user-cog"></i>
+                    <span class="mock-user-email-badge">{{ user_email }}</span>
+                </button>
+                <div class="mock-user-dropdown" id="mock-user-dropdown">
+                    <form action="/mock-user" method="POST" class="mock-user-form">
+                        <h4>Simular Usuário (Local)</h4>
+                        <div class="form-group">
+                            <label for="mock_email">E-mail</label>
+                            <input type="email" id="mock_email" name="email" value="{{ user_email }}" required>
+                        </div>
+                        <div class="form-group" style="flex-direction: row; align-items: center; gap: 8px; justify-content: flex-start;">
+                            <input type="checkbox" id="mock_is_admin" name="is_admin" value="true" {% if is_admin %}checked{% endif %}>
+                            <label for="mock_is_admin" style="margin: 0; cursor: pointer;">Administrador</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="mock_groups">Grupos AD (separados por vírgula)</label>
+                            <textarea id="mock_groups" name="groups" placeholder="Ex: Grupo-People,Grupo-Commercial">{{ user_groups }}</textarea>
+                        </div>
+                        <button type="submit" class="btn-submit-mock">Aplicar Alterações</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+            <button class="theme-toggle" id="theme-toggle-btn" aria-label="Alternar Tema">
+                <i data-lucide="moon" class="theme-icon-moon" style="display: none;"></i>
+                <i data-lucide="sun" class="theme-icon-sun"></i>
+            </button>
+            <div class="language-selector" id="lang-selector">
+                <span class="lang-badge">EN</span>
+                <i data-lucide="chevron-down" class="chevron-icon"></i>
+                <!-- Idioma Dropdown -->
+                <div class="lang-dropdown" id="lang-dropdown">
+                    <a href="#" data-lang="en" class="active">EN</a>
+                    <a href="#" data-lang="pt">PT</a>
+                    <a href="#" data-lang="es">ES</a>
+                </div>
+            </div>
+            <div class="user-analytics-logo">
+                <span class="data-text">Data</span><span class="analytics-text">&Analytics</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- SIDE DRAWER MENU -->
+    <div class="drawer" id="side-drawer">
+        <div class="drawer-header">
+            <span class="drawer-title" data-i18n="menu_title">Menu</span>
+        </div>
+        <nav class="drawer-content">
+            <a href="/admin" class="drawer-item">
+                <div class="drawer-icon-wrapper">
+                    <i data-lucide="settings" class="drawer-item-icon"></i>
+                </div>
+                <span class="drawer-item-label" data-i18n="admin_panel">Administração</span>
+            </a>
+        </nav>
+    </div>
+    <div class="drawer-overlay" id="drawer-overlay"></div>
+
+    <!-- CONTENT WRAPPER -->
+    <div class="content-wrapper">
+        
+        <!-- MAIN DASHBOARD CONTENT -->
+        <main class="main-content">
+            
+            <!-- TOP GRID (General, Suggested, Favorites) -->
+            <div class="top-sections">
+                <!-- GENERAL -->
+                {% if 'geral' in (area_options | map(attribute='key') | list) and 'geral' not in hidden_areas %}
+                <section class="section-box general-section">
+                    <h2 class="section-title" data-i18n="general">General</h2>
+                    <div class="cards-horizontal">
+                        <div class="card-item tile-card" data-title="operational discipline" style="cursor: pointer;"
+                             onclick="openDashViewer('https://prioridades-bb-8674310331778219.19.azure.databricksapps.com', 'Operational Discipline', 'Geral', 'geral')">
+                            <span class="card-fav-btn"
+                                  data-title="Operational Discipline"
+                                  data-type="dashboard"
+                                  data-area-key="geral"
+                                  data-icon="building-2"
+                                  data-link="https://prioridades-bb-8674310331778219.19.azure.databricksapps.com"
+                                  data-has-access="true"
+                                  onclick="handleCardFavClick(event, this)"
+                                  role="button"
+                                  title="Favoritar">
+                                <i data-lucide="star"></i>
+                            </span>
+                            <div class="card-icon-wrapper">
+                                <i data-lucide="building-2" class="card-icon"></i>
+                            </div>
+                            <span class="card-label" data-i18n="general_kpis">Operational Discipline</span>
+                        </div>
+                    </div>
+                </section>
+                {% endif %}
+
+                <!-- SUGGESTED DASHBOARDS -->
+                <section class="section-box suggested-section">
+                    <h2 class="section-title" data-i18n="suggested_dashboards">Suggested Dashboards</h2>
+                    <div class="cards-horizontal">
+                        {% for dash in suggested_dashboards %}
+                        <div class="card-item tile-card" data-title="{{ dash.title|lower }}" style="cursor: pointer;"
+                             {% if dash.link and dash.link != '#' %}
+                             onclick="openDashViewer('{{ dash.link }}', '{{ dash.title }}', '{{ dash.area_title or dash.area_key.capitalize() }}', '{{ dash.area_key }}')"
+                             {% else %}
+                             onclick="window.location.href='/area/{{ dash.area_key }}'"
+                             {% endif %}>
+                            <span class="card-fav-btn"
+                                  data-title="{{ dash.title }}"
+                                  data-type="dashboard"
+                                  data-area-key="{{ dash.area_key }}"
+                                  data-icon="{{ dash.icon or 'file-text' }}"
+                                  data-link="{{ dash.link or dash.url }}"
+                                  data-has-access="{% if dash.has_access %}true{% else %}false{% endif %}"
+                                  onclick="handleCardFavClick(event, this)"
+                                  role="button"
+                                  title="Favoritar">
+                                <i data-lucide="star"></i>
+                            </span>
+                            <div class="card-icon-wrapper">
+                                <i data-lucide="{{ dash.icon or 'file-text' }}" class="card-icon"></i>
+                            </div>
+                            <span class="card-label"{% if dash.title_key and dash.title_key in ('general_kpis', 'unified_sales_report', 'fill_rate_unified', 'results', 'operational_discipline') %} data-i18n="{{ dash.title_key }}"{% endif %}>{{ dash.title }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <!-- FAVORITES -->
+                <section class="section-box favorites-section">
+                    <h2 class="section-title">
+                        <span data-i18n="favorites">Favorites</span>
+                        <button class="plus-btn" id="favorites-expand-btn" title="Ver todos os favoritos" style="background:none; border:none; color:inherit; font-size:1.3rem; cursor:pointer; line-height:1; display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; padding:0; margin:0; border-radius:50%; transition: background 0.2s;">+</button>
+                    </h2>
+                    <div class="cards-horizontal" id="favorites-container">
+                        <!-- Dynamically filled by JS -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- AREAS GRID -->
+            <section class="section-box areas-section">
+                <h2 class="section-title" data-i18n="areas">Areas</h2>
+                <div class="cards-grid-4">
+                    {% for area in area_options %}
+                        {% if area.key not in hidden_areas and area.key != 'geral' %}
+                            {% if area.key == 'wickbold' %}
+                            <a href="/area/wickbold" class="card-item area-card brand-card wickbold-card" data-title="wickbold">
+                                <div class="card-icon-wrapper brand-logo">
+                                    <!-- Wickbold logo replica -->
+                                    <span class="wickbold-text">WICKBOLD</span>
+                                </div>
+                                <span class="card-label" data-i18n="wickbold">Wickbold</span>
+                            </a>
+                            {% else %}
+                            <a href="/area/{{ area.key }}" class="card-item area-card" data-title="{{ area.key }}">
+                                <div class="card-icon-wrapper">
+                                    <i data-lucide="{{ area.icon }}" class="card-icon"></i>
+                                </div>
+                                <span class="card-label" {% if area.key in ('people', 'commercial', 'marketing', 'adm_finances', 'logistics', 'rgm', 'supply_chain', 'purchase', 'dna', 'industrial', 'transformation', 'fpa', 'legal', 'audit', 'quality') %}data-i18n="{{ area.key }}"{% endif %}>{{ area.title }}</span>
+                            </a>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </section>
+        </main>
+
+        <!-- RIGHT SIDEBAR (APPS) -->
+        <aside class="apps-sidebar">
+            <h2 class="section-title" data-i18n="apps">Apps</h2>
+            <div class="apps-container">
+                {% for app in sidebar_apps %}
+                    {% if app.app_key == 'space_copilot' %}
+                    <!-- App 1: Space Copilot -->
+                    <a href="{{ app.link if app.link and app.link != '#' else 'javascript:void(0)' }}" {% if app.link and app.link != '#' %}target="_blank"{% endif %} class="app-card space-copilot-card" data-title="{{ app.title | lower }}" style="text-decoration: none;">
+                        <div class="app-card-overlay"></div>
+                        <div class="app-card-content">
+                            <h3 class="app-title-name">{{ app.title }}</h3>
+                        </div>
+                    </a>
+                    {% elif app.app_key == 'threego' %}
+                    <!-- App 2: 3GO -->
+                    <a href="{{ app.link if app.link and app.link != '#' else 'javascript:void(0)' }}" {% if app.link and app.link != '#' %}target="_blank"{% endif %} class="app-card threego-card" data-title="{{ app.title | lower }}" style="text-decoration: none;">
+                        <div class="app-card-overlay"></div>
+                        <div class="threego-rocket-wrapper">
+                            <img src="{{ url_for('static', filename='images/3go_rocket.png') }}" alt="{{ app.title }}" class="threego-rocket-img">
+                        </div>
+                        <div class="app-card-content">
+                            <h3 class="app-title-name">{{ app.title }}</h3>
+                        </div>
+                    </a>
+                    {% elif app.app_key == 'fermenta' %}
+                    <!-- App 3: Fermenta -->
+                    <a href="{{ app.link if app.link and app.link != '#' else 'javascript:void(0)' }}" {% if app.link and app.link != '#' %}target="_blank"{% endif %} class="app-card fermenta-card" data-title="{{ app.title | lower }}" style="text-decoration: none;">
+                        <div class="app-card-overlay"></div>
+                        <div class="app-card-content">
+                            <h3 class="app-title-name">{{ app.title }}</h3>
+                        </div>
+                    </a>
+                    {% elif app.app_key == 'threegohub' or app.app_key == 'tradego' or app.title | lower == 'tradego' %}
+                    <!-- App 4: TradeGO -->
+                    <a href="{{ app.link if app.link and app.link != '#' else 'javascript:void(0)' }}" {% if app.link and app.link != '#' %}target="_blank"{% endif %} class="app-card tradego-card threegohub-card" data-title="tradego 3gohub {{ app.title | lower }}" style="text-decoration: none;">
+                        <div class="app-card-overlay"></div>
+                        <div class="tradego-img-wrapper">
+                            <img src="{{ url_for('static', filename='images/tradego_transparent.png') }}" alt="{{ app.title }}" class="tradego-card-img">
+                        </div>
+                        <div class="app-card-content">
+                            <h3 class="app-title-name">{{ app.title }}</h3>
+                        </div>
+                    </a>
+                    {% elif 'radar' in app.app_key or 'radar' in app.title | lower %}
+                    <!-- App: Radar Bimbo (Full Logo Card) -->
+                    <a href="{{ app.link if app.link and app.link != '#' else 'javascript:void(0)' }}" {% if app.link and app.link != '#' %}target="_blank"{% endif %} class="app-card radar-bimbo-card" data-title="{{ app.title | lower }}" title="{{ app.title }}" style="text-decoration: none;">
+                        <div class="app-card-overlay" style="background: transparent;"></div>
+                        <div class="radar-bimbo-img-wrapper">
+                            <img src="{{ url_for('static', filename='images/radar_bimbo.png') }}" alt="{{ app.title }}" class="radar-bimbo-card-img">
+                        </div>
+                    </a>
+                    {% else %}
+                    <!-- Generic App Card -->
+                    <a href="{{ app.link if app.link and app.link != '#' else 'javascript:void(0)' }}" {% if app.link and app.link != '#' %}target="_blank"{% endif %} class="app-card generic-app-card {% if app.icon and ('/' in app.icon or '.' in app.icon or app.icon.startswith('http')) %}custom-image-app-card{% endif %}" data-title="{{ app.title | lower }}" style="text-decoration: none;">
+                        {% if app.icon and ('/' in app.icon or '.' in app.icon or app.icon.startswith('http')) %}
+                        <img src="{{ app.icon }}" alt="{{ app.title }}" class="custom-card-bg-img">
+                        <div class="app-card-overlay" style="background: transparent;"></div>
+                        {% else %}
+                        <div class="app-card-overlay"></div>
+                        {% if app.icon %}
+                        <div class="custom-app-logo-wrapper" style="color: rgba(255,255,255,0.85);">
+                            <i data-lucide="{{ app.icon }}" style="width: 32px; height: 32px;"></i>
+                        </div>
+                        {% endif %}
+                        {% endif %}
+                        <div class="app-card-content">
+                            <h3 class="app-title-name">{{ app.title }}</h3>
+                        </div>
+                    </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- =============================================
+         DASHBOARD IFRAME VIEWER (SLIDE-OVER PANEL)
+         ============================================= -->
+    <div class="dash-viewer-overlay" id="dashViewerOverlay" onclick="closeDashViewer()"></div>
+
+    <div class="dash-viewer-panel" id="dashViewerPanel">
+        <!-- Collapsible Areas Drawer inside Viewer -->
+        <div class="dv-areas-drawer-overlay" id="dvAreasDrawerOverlay" onclick="toggleDvDrawer(event)"></div>
+        <div class="dv-areas-drawer" id="dvAreasDrawer">
+            <div class="dv-areas-drawer-header">
+                <span class="dv-areas-drawer-title">Selecionar Área</span>
+                <button class="dv-areas-drawer-close" onclick="toggleDvDrawer(event)" title="Fechar Menu"><i data-lucide="x"></i></button>
+            </div>
+            <nav class="dv-areas-drawer-content">
+                {% for area in area_options %}
+                <a href="/area/{{ area.key }}" class="dv-areas-drawer-item" data-area-key="{{ area.key }}">
+                    <div class="dv-areas-drawer-icon-wrapper">
+                        <i data-lucide="{{ area.icon }}"></i>
+                    </div>
+                    <span class="dv-areas-drawer-label">{{ area.title }}</span>
+                </a>
+                {% endfor %}
+            </nav>
+        </div>
+
+        <!-- Panel Header -->
+        <div class="dash-viewer-header">
+            <div class="dash-viewer-title-group">
+                <button class="dv-hamburger-btn" id="dvHamburgerBtn" onclick="toggleDvDrawer(event)" title="Menu de Áreas">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+                <div class="dash-viewer-icon">
+                    <i data-lucide="bar-chart-3" id="dashViewerIcon"></i>
+                </div>
+                <nav class="dash-viewer-breadcrumb" aria-label="breadcrumb">
+                    <a href="/" class="dv-bc-link">Home</a>
+                    <span class="dv-bc-sep">›</span>
+                    <a href="#" class="dv-bc-link" id="dvBcArea" style="display:none;">Area</a>
+                    <span class="dv-bc-sep" id="dvBcAreaSep" style="display:none;">›</span>
+                    <span class="dv-bc-current" id="dvBcTitle">Dashboard</span>
+                </nav>
+            </div>
+            <div class="dash-viewer-actions">
+                <button class="dash-viewer-close-btn" onclick="closeDashViewer()" title="Fechar">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Iframe Container -->
+        <div class="dash-viewer-body">
+            <div class="dash-viewer-loading" id="dashViewerLoading">
+                <div class="dash-loader-spinner"></div>
+                <span>Carregando dashboard...</span>
+            </div>
+            <iframe
+                id="dashViewerIframe"
+                src=""
+                frameborder="0"
+                allowfullscreen
+                style="display:none;"
+                onload="onIframeLoad()"
+            ></iframe>
+            <div class="dash-viewer-no-url" id="dashViewerNoUrl" style="display:none;">
+                <i data-lucide="alert-circle"></i>
+                <p>Nenhuma URL configurada para este dashboard.</p>
+                <a href="/admin" class="dash-no-url-link">Configurar no Painel Admin</a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FAVORITES EXPANSION MODAL -->
+    <div class="modal-overlay" id="favoritesModal" style="display: none; backdrop-filter: blur(10px); background: rgba(0,0,0,0.6); z-index: 1050; align-items: center; justify-content: center; position: fixed; inset: 0;">
+        <div class="modal-card" style="max-width: 800px; width: 90%; background: var(--bg-card); border: 1px solid var(--border-color-card); border-radius: var(--border-radius-section); box-shadow: var(--shadow-soft); padding: 24px; box-sizing: border-box;">
+            <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color-section); padding-bottom: 16px; margin-bottom: 16px;">
+                <h3 style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--color-text-main);">
+                    <i data-lucide="star" style="color: #eab308; fill: #eab308; width: 22px; height: 22px;"></i>
+                    <span>Meus Favoritos</span>
+                </h3>
+                <button type="button" class="modal-close-btn" id="closeFavoritesModalBtn" style="background: none; border: none; color: var(--color-text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 50%; transition: background-color 0.2s;"><i data-lucide="x" style="width: 20px; height: 20px;"></i></button>
+            </div>
+            <div class="modal-body" style="padding: 10px 0;">
+                <div class="favorites-grid" id="favorites-modal-grid">
+                    <!-- 9 slots (filled or empty) -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if show_welcome_popup %}
+    <!-- WELCOME POPUP MODAL FOR FIRST ACCESS -->
+    <div class="modal-overlay welcome-modal-overlay active" id="welcomeModal">
+        <div class="modal-card welcome-modal-card">
+            <!-- LEFT HERO IMAGE COLUMN -->
+            <div class="welcome-modal-hero">
+                <img src="{{ url_for('static', filename='images/welcome_rocket.jpg') }}" alt="SPACE Rocket" class="welcome-hero-img">
+            </div>
+
+            <!-- RIGHT CONTENT COLUMN -->
+            <div class="welcome-modal-content">
+                <div class="welcome-modal-header">
+                    <div class="welcome-badge">
+                        <i data-lucide="sparkles" class="welcome-badge-icon"></i>
+                        <span data-i18n="first_access_badge">Primeiro Acesso</span>
+                    </div>
+                    <h2 class="welcome-title" data-i18n="welcome_title">Seja bem-vindo ao SPACE! 👋</h2>
+                    <p class="welcome-subtitle">
+                        {% if user_cargo %}Identificamos que você possui o cargo de <strong>{{ user_cargo }}</strong> e{% else %}Identificamos que{% endif %} este é o seu primeiro acesso ao portal. Preparamos alguns dashboards sugeridos especialmente para você:
+                    </p>
+                </div>
+
+                <div class="welcome-modal-body">
+                    <div class="welcome-dashboards-grid">
+                        {% for dash in suggested_dashboards %}
+                        <div class="card-item tile-card welcome-dash-card" data-title="{{ dash.title|lower }}" title="{{ dash.title }}" style="cursor: pointer;"
+                             {% if dash.link and dash.link != '#' %}
+                             onclick="handleWelcomeDashClick('{{ dash.link }}', '{{ dash.title }}', '{{ dash.area_title or dash.area_key.capitalize() }}', '{{ dash.area_key }}')"
+                             {% else %}
+                             onclick="window.location.href='/area/{{ dash.area_key }}'"
+                             {% endif %}>
+                            <span class="card-fav-btn"
+                                  data-title="{{ dash.title }}"
+                                  data-type="dashboard"
+                                  data-area-key="{{ dash.area_key }}"
+                                  data-icon="{{ dash.icon or 'file-text' }}"
+                                  data-link="{{ dash.link or dash.url }}"
+                                  data-has-access="{% if dash.has_access %}true{% else %}false{% endif %}"
+                                  onclick="handleCardFavClick(event, this)"
+                                  role="button"
+                                  title="Favoritar">
+                                <i data-lucide="star"></i>
+                            </span>
+                            <div class="card-icon-wrapper">
+                                <i data-lucide="{{ dash.icon or 'file-text' }}" class="card-icon"></i>
+                            </div>
+                            <span class="card-label" title="{{ dash.title }}"{% if dash.title_key and dash.title_key in ('general_kpis', 'unified_sales_report', 'fill_rate_unified', 'results', 'operational_discipline') %} data-i18n="{{ dash.title_key }}"{% endif %}>{{ dash.title }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="welcome-modal-footer">
+                    <button type="button" class="btn-confirm-welcome" id="confirm-welcome-btn" onclick="closeWelcomeModal()">
+                        <i data-lucide="check-circle-2"></i>
+                        <span data-i18n="confirm_btn">Confirmar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Custom JS -->
+    <script>
+        window.ALL_DASHBOARDS = {{ dashboards|tojson }};
+        window.CURRENT_USER_EMAIL = "{{ user_email }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/script.js') }}?v=20261111_02"></script>
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        function closeWelcomeModal() {
+            const welcomeModal = document.getElementById('welcomeModal');
+            if (welcomeModal) {
+                welcomeModal.classList.remove('active');
+                welcomeModal.style.opacity = '0';
+                welcomeModal.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                setTimeout(() => {
+                    welcomeModal.style.display = 'none';
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+            fetch('/api/confirm-welcome', { method: 'POST' }).catch(function(){});
+        }
+        window.closeWelcomeModal = closeWelcomeModal;
+
+        function handleWelcomeDashClick(url, label, areaLabel, areaKey) {
+            closeWelcomeModal();
+            setTimeout(() => {
+                if (typeof openDashViewer === 'function') {
+                    openDashViewer(url, label, areaLabel, areaKey);
+                }
+            }, 350);
+        }
+        window.handleWelcomeDashClick = handleWelcomeDashClick;
+
+        // =============================================
+        // IFRAME DASHBOARD VIEWER CONTROLLER
+        // =============================================
+        const viewerOverlay = document.getElementById('dashViewerOverlay');
+        const viewerPanel   = document.getElementById('dashViewerPanel');
+        const viewerIframe  = document.getElementById('dashViewerIframe');
+        const dvBcTitle     = document.getElementById('dvBcTitle');
+        const dvBcArea      = document.getElementById('dvBcArea');
+        const dvBcAreaSep   = document.getElementById('dvBcAreaSep');
+        const viewerLoading = document.getElementById('dashViewerLoading');
+        const viewerNoUrl   = document.getElementById('dashViewerNoUrl');
+
+        function openDashViewer(url, label, areaLabel, areaKey) {
+            // Track dashboard access
+            fetch('/api/track-dashboard', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({dashboard_name: label || 'Dashboard', area_key: areaKey || ''})
+            }).catch(function(){});
+
+            // Check access by looking up the dashboard in window.ALL_DASHBOARDS
+            let hasAccess = true;
+            let requiredGroup = "";
+            if (window.ALL_DASHBOARDS && label) {
+                const found = window.ALL_DASHBOARDS.find(d => 
+                    d.title.toLowerCase().trim() === label.toLowerCase().trim() && 
+                    d.area_key.toLowerCase().trim() === (areaKey || '').toLowerCase().trim()
+                );
+                if (found) {
+                    hasAccess = found.has_access;
+                    requiredGroup = found.required_group || '';
+                }
+            }
+
+
+
+            if (dvBcTitle) dvBcTitle.textContent = label || 'Dashboard';
+            if (dvBcArea && areaLabel) {
+                dvBcArea.textContent = areaLabel;
+                dvBcArea.href = areaKey ? `/area/${areaKey}` : '#';
+                
+                // Mark active option in nested drawer
+                const drawerItems = document.querySelectorAll('#dvAreasDrawer .dv-areas-drawer-item');
+                drawerItems.forEach(item => {
+                    if (item.getAttribute('data-area-key') === areaKey) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+                
+                dvBcArea.style.display = 'inline-block';
+                if (dvBcAreaSep) dvBcAreaSep.style.display = 'inline-block';
+            } else if (dvBcArea) {
+                dvBcArea.style.display = 'none';
+                if (dvBcAreaSep) dvBcAreaSep.style.display = 'none';
+            }
+            viewerOverlay.classList.add('active');
+            viewerPanel.classList.add('open');
+            document.body.style.overflow = 'hidden';
+
+            if (url && url !== '#' && url !== '') {
+                viewerLoading.style.display = 'flex';
+                viewerIframe.style.display  = 'none';
+                viewerNoUrl.style.display   = 'none';
+                viewerIframe.src = url;
+            } else {
+                viewerLoading.style.display = 'none';
+                viewerIframe.style.display  = 'none';
+                viewerNoUrl.style.display   = 'flex';
+            }
+        }
+
+
+
+        function closeDashViewer() {
+            viewerOverlay.classList.remove('active');
+            viewerPanel.classList.remove('open');
+            
+            // Hide iframe immediately to prevent transition lag and GPU stuttering
+            viewerIframe.style.display = 'none';
+            viewerIframe.src = '';
+            if (viewerLoading) viewerLoading.style.display = 'flex';
+            
+            // Close nested drawer if open
+            const dvDrawer = document.getElementById('dvAreasDrawer');
+            const dvOverlay = document.getElementById('dvAreasDrawerOverlay');
+            const dvHamburger = document.getElementById('dvHamburgerBtn');
+            if (dvDrawer) {
+                dvDrawer.classList.remove('open');
+                dvDrawer.style.display = 'none'; // Force hide immediately to prevent ghosting
+            }
+            if (dvOverlay) dvOverlay.classList.remove('active');
+            if (dvHamburger) {
+                dvHamburger.classList.remove('open');
+                const bars = dvHamburger.querySelectorAll('.bar');
+                if (bars && bars.length >= 3) {
+                    bars[0].style.transform = 'none';
+                    bars[1].style.opacity = '1';
+                    bars[2].style.transform = 'none';
+                }
+            }
+
+            // Restore body scroll only after transition finishes (350ms)
+            setTimeout(() => {
+                document.body.style.overflow = '';
+            }, 350);
+        }
+
+        function onIframeLoad() {
+            viewerLoading.style.display = 'none';
+            viewerIframe.style.display  = 'block';
+        }
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeDashViewer();
+        });
+
+        // Toggle Nested Areas Drawer in Viewer
+        function toggleDvDrawer(e) {
+            if (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+            const dvDrawer = document.getElementById('dvAreasDrawer');
+            const dvOverlay = document.getElementById('dvAreasDrawerOverlay');
+            const dvHamburger = document.getElementById('dvHamburgerBtn');
+            
+            if (dvDrawer && dvOverlay) {
+                if (dvDrawer.style.display === 'none') {
+                    dvDrawer.style.display = '';
+                    dvDrawer.offsetHeight; // Force browser layout reflow to register display change before class transition
+                }
+                dvDrawer.classList.toggle('open');
+                dvOverlay.classList.toggle('active');
+            }
+            if (dvHamburger) {
+                dvHamburger.classList.toggle('open');
+                const bars = dvHamburger.querySelectorAll('.bar');
+                if (bars && bars.length >= 3) {
+                    if (dvHamburger.classList.contains('open')) {
+                        bars[0].style.transform = 'rotate(45deg) translate(4px, 4px)';
+                        bars[1].style.opacity = '0';
+                        bars[2].style.transform = 'rotate(-45deg) translate(4px, -4px)';
+                    } else {
+                        bars[0].style.transform = 'none';
+                        bars[1].style.opacity = '1';
+                        bars[2].style.transform = 'none';
+                    }
+                }
+            }
+        }
+        window.toggleDvDrawer = toggleDvDrawer;
+    </script>
+</body>
+</html>

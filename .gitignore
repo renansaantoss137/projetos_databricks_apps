@@ -218,3 +218,8 @@ __marimo__/
 
 # Databricks
 .databricks
+
+*.lnk
+_backup_*/
+
+*.pbix

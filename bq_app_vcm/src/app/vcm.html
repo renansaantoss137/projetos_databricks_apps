@@ -1,0 +1,2936 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <script>
+    (function(){try{var t=localStorage.getItem("theme_preference")||localStorage.getItem("portal_theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();
+  </script>
+  <title>BQ VCM - Análise por Cliente | Grupo Bimbo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=11">
+  <script src="nav-shell.js?v=1" defer></script>
+  <style>
+    /* ── Barra de Filtros e Dropdowns (D&A Operate) ── */
+    .filter-bar {
+      background: var(--da-surface);
+      border: 1px solid var(--da-border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      align-items: flex-end;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
+    }
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      min-width: 145px;
+      flex: 1 1 160px;
+    }
+    .fg label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--da-txt-sec);
+    }
+    .ms-dropdown {
+      position: relative;
+      min-width: 120px;
+    }
+    .ms-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.75rem;
+      background: var(--da-surface-alt);
+      border: 1px solid var(--da-border-strong);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.84rem;
+      color: var(--da-txt);
+      min-height: 40px;
+      gap: 0.4rem;
+      box-sizing: border-box;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .ms-trigger:hover {
+      border-color: var(--da-primary);
+      background: var(--da-surface-hover);
+    }
+    .ms-trigger .ms-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .ms-trigger .ms-arrow {
+      font-size: 0.75rem;
+      color: var(--da-txt-muted);
+      flex-shrink: 0;
+    }
+    .ms-panel {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      min-width: 100%;
+      width: max-content;
+      max-width: min(340px, 90vw);
+      background: var(--da-surface);
+      border: 1px solid var(--da-border-strong);
+      border-radius: 10px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+      z-index: 1000;
+      padding: 0.55rem;
+      box-sizing: border-box;
+    }
+    .ms-panel.open {
+      display: block;
+    }
+    .ms-search {
+      width: 100%;
+      padding: 0.48rem 0.65rem;
+      border: 1px solid var(--da-border-strong);
+      border-radius: 6px;
+      background: var(--da-surface-alt);
+      color: var(--da-txt);
+      font-size: 0.84rem;
+      margin-bottom: 0.45rem;
+      box-sizing: border-box;
+    }
+    .ms-search::placeholder {
+      color: var(--da-txt-muted);
+    }
+    .ms-search:focus {
+      border-color: var(--da-primary);
+      outline: none;
+    }
+    .ms-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+      padding: 0 0.2rem;
+    }
+    .ms-actions a {
+      font-size: 0.75rem;
+      color: var(--da-primary-txt);
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .ms-actions a:hover {
+      text-decoration: underline;
+    }
+    .ms-options {
+      max-height: 220px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .ms-option {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      color: var(--da-txt-sec);
+      transition: background 0.1s;
+      user-select: none;
+      min-height: 36px;
+    }
+    .ms-option:hover {
+      background: var(--da-primary-soft);
+      color: var(--da-txt);
+    }
+    .ms-option input[type=checkbox] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--da-primary);
+      cursor: pointer;
+      flex-shrink: 0;
+      margin: 0;
+    }
+    .ms-option label {
+      cursor: pointer;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-transform: none;
+      letter-spacing: normal;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: inherit;
+    }
+    .ms-badge {
+      background: var(--da-primary-strong);
+      color: #ffffff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 999px;
+      margin-left: 4px;
+      vertical-align: middle;
+      display: inline-block;
+    }
+
+    /* ── Botões de Ação dos Filtros ── */
+    .filter-actions-group {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.55rem;
+      margin-left: auto;
+      flex-wrap: wrap;
+    }
+    .btn-adv-filters,
+    .btn-filter-clear {
+      padding: 0.5rem 0.95rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid var(--da-border-strong);
+      background: var(--da-surface-alt);
+      color: var(--da-txt-sec);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+      line-height: 1.2;
+      box-sizing: border-box;
+      min-height: 40px;
+    }
+    .btn-adv-filters:hover,
+    .btn-filter-clear:hover {
+      background: var(--da-surface-hover);
+      color: var(--da-txt);
+    }
+    .btn-adv-filters.filter-btn-active,
+    .filter-btn-active {
+      background: var(--da-primary-soft) !important;
+      border-color: var(--da-primary) !important;
+      color: var(--da-primary-txt) !important;
+    }
+
+    /* ── Cards Executivos KPI (VCM & Rentabilidade — D&A Sóbrio) ── */
+    .vcm-kpi-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.15rem;
+    }
+    .vcm-kpi-card {
+      background: var(--da-surface);
+      border: 1px solid var(--da-border);
+      border-radius: 12px;
+      padding: 1.1rem 1.3rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.6rem;
+      min-width: 0;
+      transition: border-color 0.15s ease;
+    }
+    .vcm-kpi-card:hover {
+      border-color: var(--da-border-strong);
+    }
+
+    .vcm-kpi-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .vcm-kpi-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--da-txt-sec);
+    }
+    .vcm-delta-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
+      line-height: 1.2;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+    .vcm-delta-badge.pos {
+      color: var(--da-success);
+    }
+    .vcm-delta-badge.neg {
+      color: var(--da-danger);
+    }
+    .vcm-delta-badge.neutral {
+      padding: 0;
+      color: var(--da-txt-muted);
+      font-weight: 600;
+    }
+
+    .vcm-kpi-val {
+      font-size: 1.75rem;
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--da-txt);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+
+    .vcm-kpi-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--da-border);
+      padding-top: 0.55rem;
+      font-size: 0.8rem;
+      gap: 0.5rem;
+    }
+    .vcm-sub-lbl {
+      color: var(--da-txt-muted);
+      font-weight: 500;
+    }
+    .vcm-sub-val {
+      font-weight: 700;
+      color: var(--da-primary-txt);
+      font-variant-numeric: tabular-nums;
+      background: var(--da-primary-soft);
+      padding: 0.15rem 0.55rem;
+      border-radius: 6px;
+    }
+    .kpi-bgt .vcm-sub-val {
+      color: var(--da-success);
+      background: var(--da-success-soft);
+    }
+    .kpi-py .vcm-sub-val {
+      color: var(--da-txt-sec);
+      background: var(--da-surface-alt);
+      border: 1px solid var(--da-border);
+    }
+
+    /* ── Tabela Analítica de VCM por Cliente + Drill-down SKU ── */
+    .vcm-table-container {
+      background: var(--da-surface);
+      border: 1px solid var(--da-border);
+      border-radius: 12px;
+      padding: 1.2rem 1.35rem;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14);
+    }
+    .vcm-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .vcm-title-box h2 {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--da-txt);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .vcm-title-box p {
+      font-size: 0.82rem;
+      color: var(--da-txt-muted);
+      margin: 3px 0 0 0;
+    }
+    .vcm-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .search-box-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-box-wrap svg {
+      position: absolute;
+      left: 0.7rem;
+      width: 15px;
+      height: 15px;
+      color: var(--da-txt-muted);
+      pointer-events: none;
+    }
+    .search-input {
+      background: var(--da-surface-alt);
+      border: 1px solid var(--da-border-strong);
+      border-radius: 8px;
+      padding: 0.5rem 0.85rem 0.5rem 2.15rem;
+      color: var(--da-txt);
+      font-size: 0.85rem;
+      width: 240px;
+      min-height: 40px;
+      box-sizing: border-box;
+      transition: border-color 0.15s ease;
+    }
+    .search-input::placeholder {
+      color: var(--da-txt-muted);
+    }
+    .search-input:focus {
+      border-color: var(--da-primary);
+      outline: none;
+    }
+    .btn-export-subtle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      padding: 0;
+      border-radius: 8px;
+      border: 1px solid var(--da-border-strong, #E2E5EA);
+      background: var(--da-surface-alt, #ffffff);
+      color: var(--da-txt-sec, #6B7587);
+      cursor: pointer;
+      outline: none;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+    }
+    .btn-export-subtle:hover {
+      background: var(--da-surface-hover, #F6F7F9);
+      color: var(--da-txt, #171B23);
+      border-color: var(--da-primary, #2563eb);
+    }
+
+    .table-scroll-wrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 8px;
+    }
+    .table-vcm {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.83rem;
+    }
+    .table-vcm th {
+      background: var(--da-surface-alt);
+      color: var(--da-txt-sec);
+      border-bottom: 1px solid var(--da-border-strong);
+      padding: 0 !important;
+      height: 38px;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .table-vcm th:first-child {
+      min-width: 250px;
+      position: sticky;
+      left: 0;
+      z-index: 3;
+      background: var(--da-surface-alt);
+    }
+    .table-vcm th .th-sort {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 0.85rem;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      user-select: none;
+      box-sizing: border-box;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .table-vcm th.num .th-sort {
+      justify-content: flex-end;
+    }
+    .table-vcm th:hover .th-sort {
+      background: var(--da-surface-hover);
+      color: var(--da-txt);
+    }
+    .table-vcm th[aria-sort="ascending"] .th-sort,
+    .table-vcm th[aria-sort="descending"] .th-sort {
+      color: var(--da-primary-txt);
+      background: var(--da-primary-soft);
+    }
+    .sort-ic {
+      position: relative;
+      width: 8px;
+      height: 12px;
+      flex: none;
+      opacity: 0.35;
+      transition: opacity 0.15s ease;
+    }
+    .sort-ic::before, .sort-ic::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+    }
+    .sort-ic::before {
+      top: 0;
+      border-bottom: 4px solid currentColor;
+    }
+    .sort-ic::after {
+      bottom: 0;
+      border-top: 4px solid currentColor;
+    }
+    .th-sort:hover .sort-ic {
+      opacity: 0.7;
+    }
+    .table-vcm th[aria-sort="ascending"] .sort-ic,
+    .table-vcm th[aria-sort="descending"] .sort-ic {
+      opacity: 1;
+      color: var(--da-primary-txt);
+    }
+    .table-vcm th[aria-sort="ascending"] .sort-ic::after {
+      opacity: 0.2;
+    }
+    .table-vcm th[aria-sort="descending"] .sort-ic::before {
+      opacity: 0.2;
+    }
+    .table-vcm td {
+      padding: 0.65rem 0.85rem;
+      border-bottom: 1px solid var(--da-border);
+      color: var(--da-txt);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .table-vcm td:first-child {
+      text-align: left;
+      font-weight: 600;
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: var(--da-surface);
+      white-space: normal;
+      min-width: 240px;
+    }
+    .table-vcm tbody tr.client-row {
+      cursor: pointer;
+    }
+    .table-vcm tbody tr.client-row:hover td {
+      background: var(--da-surface-hover);
+    }
+    .table-vcm tbody tr.client-row.is-expanded td {
+      background: var(--da-surface-alt);
+      border-bottom-color: var(--da-border-strong);
+    }
+    .table-vcm tfoot tr td {
+      background: var(--da-surface-alt);
+      font-weight: 700;
+      border-top: 2px solid var(--da-border-strong);
+      color: var(--da-txt);
+    }
+    .table-vcm tfoot tr td:first-child {
+      background: var(--da-surface-alt);
+    }
+
+    /* Drill-down controls & SKU child rows */
+    .client-cell-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+    .drill-toggle-btn {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--da-border);
+      background: var(--da-surface-alt);
+      color: var(--da-txt-sec);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      transition: transform 0.18s ease, background 0.15s ease, color 0.15s ease;
+    }
+    .drill-toggle-btn:hover {
+      background: var(--da-primary-soft);
+      color: var(--da-primary-txt);
+      border-color: var(--da-primary);
+    }
+    .drill-toggle-btn[aria-expanded="true"] {
+      background: var(--da-primary-soft);
+      color: var(--da-primary-txt);
+      border-color: var(--da-primary);
+    }
+    .drill-toggle-btn[aria-expanded="true"] svg {
+      transform: rotate(90deg);
+    }
+    .drill-toggle-btn svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.18s ease;
+    }
+
+    /* ── Single Select (Ano) ── */
+    .filter-select-single {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      background: var(--da-surface-alt);
+      border: 1px solid var(--da-border-strong);
+      border-radius: 8px;
+      font-size: 0.84rem;
+      color: var(--da-txt);
+      min-height: 40px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .filter-select-single:hover {
+      border-color: var(--da-primary);
+    }
+
+    /* ── Grouped Advanced Filters ── */
+    .adv-filters-grouped {
+      display: none;
+      flex-direction: column;
+      gap: 0.9rem;
+      margin-top: -0.35rem;
+      margin-bottom: 1.15rem;
+    }
+    .adv-filter-group {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .adv-filter-group-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--da-txt-muted);
+      border-bottom: 1px solid var(--da-border);
+      padding-bottom: 0.3rem;
+    }
+    .adv-filter-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+    }
+
+    /* ── Active Filter Chips ── */
+    .active-chips-bar {
+      display: none;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem;
+      margin: -0.35rem 0 1rem;
+    }
+    .active-chips-bar.visible {
+      display: flex;
+    }
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      background: var(--da-primary-soft);
+      color: var(--da-primary-txt);
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: 1px solid rgba(59, 130, 246, 0.28);
+    }
+    .filter-chip button {
+      background: none;
+      border: none;
+      color: inherit;
+      cursor: pointer;
+      padding: 0 2px;
+      font-size: 0.95rem;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    /* ── Action & Feedback Enhancements ── */
+    .search-clear-btn {
+      position: absolute;
+      right: 0.45rem;
+      background: none;
+      border: none;
+      color: var(--da-txt-muted);
+      cursor: pointer;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      line-height: 1;
+    }
+    .search-clear-btn:hover {
+      background: var(--da-surface-hover);
+      color: var(--da-txt);
+    }
+    .search-box-wrap .search-input {
+      padding-right: 2.1rem;
+    }
+    .btn-collapse-all {
+      background: var(--da-surface-alt);
+      color: var(--da-txt-sec);
+      border: 1px solid var(--da-border-strong);
+      border-radius: 8px;
+      padding: 0.5rem 0.85rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 40px;
+      display: none;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .btn-collapse-all:hover {
+      background: var(--da-surface-hover);
+      color: var(--da-txt);
+    }
+    .btn-retry {
+      margin-left: 0.75rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid var(--da-primary);
+      background: var(--da-primary-soft);
+      color: var(--da-primary-txt);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .vcm-kpi-val.is-loading {
+      opacity: 0.5;
+    }
+    [data-tip-title] {
+      text-decoration: none !important;
+    }
+    th[data-tip-title] {
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+    .vcm-toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 12000;
+      background: var(--da-surface);
+      color: var(--da-txt);
+      border: 1px solid var(--da-border-strong);
+      border-radius: 10px;
+      padding: 0.75rem 1.1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+      display: none;
+      align-items: center;
+      gap: 0.55rem;
+      max-width: min(380px, calc(100vw - 2rem));
+    }
+    .vcm-toast.visible {
+      display: flex;
+    }
+    .vcm-toast.toast-error {
+      border-color: var(--da-danger);
+      color: var(--da-danger);
+    }
+    .vcm-toast.toast-success {
+      border-color: var(--da-success);
+      color: var(--da-success);
+    }
+    .ms-trigger {
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+    }
+    .ms-actions button {
+      background: none;
+      border: none;
+      font-size: 0.75rem;
+      color: var(--da-primary-txt);
+      cursor: pointer;
+      font-weight: 600;
+      padding: 0.15rem 0.25rem;
+      font-family: inherit;
+    }
+    .ms-actions button:hover {
+      text-decoration: underline;
+    }
+
+    .table-vcm tbody tr.sku-child-row td {
+      background: var(--da-bg);
+      color: var(--da-txt-sec);
+      font-size: 0.8rem;
+      padding-top: 0.55rem;
+      padding-bottom: 0.55rem;
+      border-bottom: 1px solid var(--da-border);
+    }
+    .table-vcm tbody tr.sku-child-row td:first-child {
+      background: var(--da-bg);
+      padding-left: 2.35rem;
+      font-weight: 500;
+      color: var(--da-txt-sec);
+    }
+    .sku-label-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.45rem;
+    }
+    .sku-branch-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--da-primary);
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+    .sku-status-row td {
+      background: var(--da-bg) !important;
+      text-align: left !important;
+      padding: 0.75rem 2.35rem !important;
+      color: var(--da-txt-muted) !important;
+      font-size: 0.82rem;
+    }
+
+    .badge-var-pos {
+      color: var(--da-success);
+      font-weight: 700;
+    }
+    .badge-var-neg {
+      color: var(--da-danger);
+      font-weight: 700;
+    }
+    .badge-pct {
+      color: var(--da-txt-sec);
+      font-weight: 600;
+      font-size: 0.84rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Mobile Adaptation (320px–767px & Tablet 768px–1023px) ── */
+    @media (max-width: 1023px) {
+      .vcm-kpi-row {
+        grid-template-columns: 1fr;
+        gap: 0.85rem;
+      }
+    }
+    @media (max-width: 767px) {
+      .filter-bar {
+        padding: 0.85rem;
+        gap: 0.7rem;
+      }
+      .fg {
+        flex: 1 1 100%;
+        min-width: 100%;
+      }
+      .filter-actions-group {
+        width: 100%;
+        margin-left: 0;
+      }
+      .btn-adv-filters,
+      .btn-filter-clear {
+        flex: 1;
+        min-height: 44px;
+      }
+      .ms-trigger {
+        min-height: 44px;
+        font-size: 16px;
+      }
+      .ms-search,
+      .search-input {
+        font-size: 16px;
+        min-height: 44px;
+        width: 100%;
+      }
+      .vcm-actions {
+        width: 100%;
+      }
+      .search-box-wrap {
+        flex: 1 1 100%;
+      }
+      .btn-export {
+        width: 100%;
+        justify-content: center;
+        min-height: 44px;
+      }
+      .vcm-table-container {
+        padding: 0.9rem;
+      }
+      .table-vcm th:first-child,
+      .table-vcm td:first-child {
+        min-width: 175px;
+        max-width: 210px;
+      }
+      .drill-toggle-btn {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+      }
+    }
+  </style>
+</head>
+<body class="fr-page has-vertical-shell">
+
+  <!-- ═══════════════════════ V2: Cabeçalho Alinhado ao Portal Distribuidores ═══════════════════════ -->
+  <header class="kpi-header v2-header">
+    <button type="button" class="nav-expand" id="nav-expand" aria-expanded="false" aria-controls="portal-sidebar" aria-label="Expandir menu" title="Expandir menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <div class="hdr-left">
+      <a class="brand" href="vcm.html" aria-label="BQ VCM">
+        <img src="img/logo_distribuidores.png" alt="" class="brand-mark" width="28" height="28">
+        <span class="brand-name">BQ VCM</span>
+      </a>
+      <span class="hdr-sep" aria-hidden="true"></span>
+      <span class="hdr-page-title" id="v2-header-tab-title">VCM por Cliente</span>
+    </div>
+
+    <div class="hdr-right">
+      <div class="header-sync-pill" id="header-sync-pill" tabindex="0" role="status" title="Última atualização da base VCM">
+        <span class="sync-dot" aria-hidden="true"></span>
+        <span id="v2-sync-rel">Atualizado: 14/10/2026 às 17:06</span>
+      </div>
+      <img src="img/logo-bimbo-qsr.png" alt="Grupo Bimbo QSR" class="hdr-logo" height="28">
+      <div class="user-menu">
+        <button type="button" class="avatar-btn" id="v2-user-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="v2-user-menu" aria-label="Menu do usuário">
+          <span class="avatar" aria-hidden="true">
+            <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <svg class="ico chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="menu" id="v2-user-menu" role="menu" aria-label="Menu do usuário" hidden>
+          <div class="v2-menu-identity" style="padding: 10px 14px 8px; border-bottom: 1px solid var(--border, #E2E5EA);">
+            <div id="v2-menu-user-email" style="font-size: var(--fs-13, 0.8125rem); font-weight: 600; color: var(--text-strong); word-break: break-all;">Carregando...</div>
+            <div style="font-size: var(--fs-12, 0.75rem); color: var(--text-muted); margin-top: 2px;">Databricks SSO</div>
+          </div>
+          <button type="button" class="mi" id="v2-menu-access-gov" role="menuitem" style="display:none;">
+            <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span class="mi-t">Gestão de Acessos</span>
+          </button>
+          <div class="mi-sep" role="separator"></div>
+          <button type="button" class="mi" id="v2-theme-toggle" role="menuitemcheckbox" aria-checked="false">
+            <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <span class="mi-t">Tema escuro</span>
+            <span class="da-switch" id="v2-theme-switch"><span class="da-switch-thumb"></span></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════ LAYOUT PRINCIPAL (SIDEBAR RAIL + WORKSPACE) ═══════════════════════ -->
+  <div class="portal-layout" id="portal-layout">
+    <aside class="sp-sidebar" id="portal-sidebar" aria-label="Navegação Lateral">
+      <button type="button" class="sp-nav-item active tab" id="nav-btn-inicio" data-app-tab="inicio" onclick="switchAppTab('inicio')" title="Início">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Início</span>
+        <span class="nav-long">Início</span>
+      </button>
+      <button type="button" class="sp-nav-item tab" id="nav-btn-vcm" data-app-tab="vcm" onclick="switchAppTab('vcm')" title="VCM por Cliente">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        <span>VCM</span>
+        <span class="nav-long">VCM por Cliente</span>
+      </button>
+      <a href="cadastros.html" class="sp-nav-item tab" title="Base VCM">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>
+        <span>Base VCM</span>
+        <span class="nav-long">Base VCM</span>
+      </a>
+      <a href="guia.html" class="sp-nav-item tab" title="Guia Técnico &amp; Docs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span>Guia</span>
+        <span class="nav-long">Guia do Usuário</span>
+      </a>
+    </aside>
+
+    <div class="portal-workspace" id="portal-workspace">
+      <!-- CONTEÚDO PRINCIPAL -->
+      <main class="fr-content">
+
+    <!-- ═══════════ Tab: Início (Capa & Animação da Cadeia de VCM / Rentabilidade) ═══════════ -->
+    <div class="tab-panel" id="tab-inicio" role="tabpanel" aria-label="Início" style="display:flex;">
+      <section class="home-main inicio-hero" aria-labelledby="inicio-title">
+        <div class="home-copy">
+          <h1 class="home-title" id="inicio-title">Rentabilidade &amp; VCM</h1>
+          <p class="home-lead">Acompanhe a Contribuição Marginal (VCM), Receita Líquida e Custos Variáveis dos seus clientes e produtos com dados oficiais atualizados diariamente.</p>
+          <p class="inicio-live" aria-live="polite">
+            <span class="inicio-live-dot" aria-hidden="true"></span>
+            <span id="inicio-sync">Dados atualizados diariamente</span>
+          </p>
+        </div>
+        <figure class="home-route" aria-hidden="true">
+          <svg class="rt" viewBox="0 0 560 420" fill="none">
+            <!-- Fluxos / Trilhas -->
+            <path id="rt-receita" class="rt-path" d="M96 290 C 96 200, 150 150, 222 150"/>
+            <path id="rt-ingred" class="rt-path rt-custo" d="M372 150 C 420 150, 430 72, 470 72"/>
+            <path id="rt-emb" class="rt-path rt-custo" d="M372 150 C 430 150, 440 196, 478 196"/>
+            <path id="rt-vcm" class="rt-path" style="stroke: #10B981; stroke-width: 2.5;" d="M372 150 C 414 150, 418 318, 462 318"/>
+
+            <!-- Tags dos Trechos -->
+            <g class="rt-tag" transform="translate(70 196)">
+              <rect width="78" height="24" rx="12"/>
+              <text x="39" y="16">Receita Líq</text>
+            </g>
+            <g class="rt-tag" transform="translate(384 246)">
+              <rect width="68" height="24" rx="12" style="stroke: #10B981;"/>
+              <text x="34" y="16" style="fill: #10B981;">VCM Líq</text>
+            </g>
+
+            <!-- Nó 1: Faturamento & Clientes -->
+            <g class="rt-node" transform="translate(20 290)">
+              <rect width="160" height="72" rx="12"/>
+              <svg x="16" y="24" width="24" height="24" viewBox="0 0 24 24" class="rt-ic">
+                <path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/>
+                <path d="M17 18h1M12 18h1M7 18h1"/>
+              </svg>
+              <text class="rt-t" x="52" y="32">Clientes QSR</text>
+              <text class="rt-s" x="52" y="50">Receita Faturada</text>
+            </g>
+
+            <!-- Nó 2: Margem de Contribuição (Hub Central) -->
+            <g class="rt-node rt-node-hub" transform="translate(222 114)">
+              <rect width="150" height="72" rx="12">
+                <animate attributeName="stroke-width" values="1;1;2.5;1;1" keyTimes="0;0.41;0.45;0.52;1" dur="8s" repeatCount="indefinite"/>
+              </rect>
+              <svg x="16" y="24" width="24" height="24" viewBox="0 0 24 24" class="rt-ic">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+              <text class="rt-t" x="52" y="32">Cálculo VCM</text>
+              <text class="rt-s" x="52" y="50">Rec. - Custos</text>
+            </g>
+
+            <!-- Pins de Destino -->
+            <g class="rt-pin" transform="translate(470 72)">
+              <circle r="22"/>
+              <svg x="-11" y="-11" width="22" height="22" viewBox="0 0 24 24" class="rt-ic">
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+            </g>
+
+            <g class="rt-pin" transform="translate(500 196)">
+              <circle r="22"/>
+              <svg x="-11" y="-11" width="22" height="22" viewBox="0 0 24 24" class="rt-ic">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <line x1="3" y1="9" x2="21" y2="9"/>
+              </svg>
+            </g>
+
+            <g class="rt-pin" transform="translate(484 318)">
+              <circle r="22" style="stroke: #10B981; fill: rgba(16, 185, 129, 0.1);"/>
+              <svg x="-11" y="-11" width="22" height="22" viewBox="0 0 24 24" style="fill: none; stroke: #10B981; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;">
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+                <polyline points="16 7 22 7 22 13"/>
+              </svg>
+            </g>
+            <text class="rt-t rt-t-sm" x="484" y="364" text-anchor="middle" style="fill: var(--da-txt);">Rentabilidade &amp; VCM</text>
+
+            <!-- Caminhão / Pulso de Fluxo Animado em Ciclo Único de 8s -->
+            <g class="rt-truck rt-truck-move">
+              <circle r="18"/>
+              <svg x="-10" y="-10" width="20" height="20" viewBox="0 0 24 24" class="rt-ic-truck">
+                <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
+                <path d="M15 18H9"/>
+                <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/>
+                <circle cx="17" cy="18" r="2"/>
+                <circle cx="7" cy="18" r="2"/>
+              </svg>
+              <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.42;1" calcMode="spline" keySplines="0.45 0 0.25 1;0 0 1 1">
+                <mpath href="#rt-receita"/>
+              </animateMotion>
+              <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.04;0.4;0.45;1" dur="8s" repeatCount="indefinite"/>
+            </g>
+            <g class="rt-truck rt-truck-move rt-truck-sm">
+              <circle r="13"/>
+              <svg x="-7.5" y="-7.5" width="15" height="15" viewBox="0 0 24 24" class="rt-ic-truck">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.47;0.83;1" calcMode="spline" keySplines="0 0 1 1;0.4 0 0.2 1;0 0 1 1">
+                <mpath href="#rt-ingred"/>
+              </animateMotion>
+              <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.47;0.5;0.8;0.83;1" dur="8s" repeatCount="indefinite"/>
+            </g>
+            <g class="rt-truck rt-truck-move rt-truck-sm">
+              <circle r="13"/>
+              <svg x="-7.5" y="-7.5" width="15" height="15" viewBox="0 0 24 24" class="rt-ic-truck">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <line x1="3" y1="9" x2="21" y2="9"/>
+              </svg>
+              <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.5;0.86;1" calcMode="spline" keySplines="0 0 1 1;0.4 0 0.2 1;0 0 1 1">
+                <mpath href="#rt-emb"/>
+              </animateMotion>
+              <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.5;0.53;0.83;0.86;1" dur="8s" repeatCount="indefinite"/>
+            </g>
+            <g class="rt-truck rt-truck-move rt-truck-sm">
+              <circle r="15" style="fill: #10B981;"/>
+              <svg x="-8" y="-8" width="16" height="16" viewBox="0 0 24 24" class="rt-ic-truck">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <animateMotion dur="8s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.53;0.89;1" calcMode="spline" keySplines="0 0 1 1;0.4 0 0.2 1;0 0 1 1">
+                <mpath href="#rt-vcm"/>
+              </animateMotion>
+              <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.53;0.56;0.86;0.89;1" dur="8s" repeatCount="indefinite"/>
+            </g>
+
+            <!-- Modo Reduzir Movimento -->
+            <g class="rt-truck rt-truck-still" transform="translate(128 178)">
+              <circle r="18"/>
+              <svg x="-10" y="-10" width="20" height="20" viewBox="0 0 24 24" class="rt-ic-truck">
+                <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
+                <circle cx="17" cy="18" r="2"/>
+                <circle cx="7" cy="18" r="2"/>
+              </svg>
+            </g>
+          </svg>
+        </figure>
+      </section>
+
+      <section class="home-presentation is-open" aria-label="Apresentação do Módulo VCM">
+        <!-- Objetivo Direto -->
+        <div class="obj-strip">
+          <div class="obj-tag">Objetivo</div>
+          <p class="obj-highlight">
+            Transparência analítica de <strong>margem de contribuição (VCM)</strong> da <strong>Bimbo QSR</strong> para monitorar rentabilidade real vs orçada por cliente e SKU.
+          </p>
+        </div>
+
+        <!-- 3 Funcionalidades Principais -->
+        <div class="quick-section">
+          <h2 class="quick-title">O que você acompanha no módulo VCM</h2>
+          <div class="quick-grid">
+            <div class="quick-card" onclick="switchAppTab('vcm')" style="cursor:pointer;">
+              <h3 class="quick-card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                VCM por Cliente &amp; SKU
+              </h3>
+              <p>Consulte ACT, BGT, PY, variações percentuais e abra o drill-down detalhado de cada produto/SKU.</p>
+            </div>
+
+            <div class="quick-card" onclick="window.location.href='cadastros.html'" style="cursor:pointer;">
+              <h3 class="quick-card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                  <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                  <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/>
+                </svg>
+                Base VCM &amp; Upload
+              </h3>
+              <p>Histórico completo de registros, governança de atualização, upload Excel e auditoria de alterações.</p>
+            </div>
+
+            <div class="quick-card" onclick="window.location.href='guia.html'" style="cursor:pointer;">
+              <h3 class="quick-card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                </svg>
+                Guia &amp; Documentação
+              </h3>
+              <p>Fórmulas oficiais do VCM, arquitetura Databricks Apps, governança de acesso e glossário de termos.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Benefícios e Guia em 3 Passos -->
+        <div class="two-col-summary">
+          <div class="summary-box">
+            <h3 class="box-title">Vantagens da Análise VCM</h3>
+            <ul class="clean-list">
+              <li><strong>Margem Real:</strong> Foco no lucro variável deduzindo insumos, embalagem e MOD.</li>
+              <li><strong>Visão Granular:</strong> Expansão imediata de cliente para cada SKU específico.</li>
+              <li><strong>Exportação Oficial:</strong> Planilhas prontas com tabelas e formatação contábil.</li>
+            </ul>
+          </div>
+
+          <div class="summary-box">
+            <h3 class="box-title">Como analisar em 3 passos</h3>
+            <ol class="clean-steps">
+              <li><span>1</span> Selecione o Ano e Mês desejados no cabeçalho ou barra de filtros.</li>
+              <li><span>2</span> Clique na seta de expansão ao lado do Cliente para ver o VCM por SKU.</li>
+              <li><span>3</span> Exporte o relatório em Excel com todas as abas consolidadas.</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- ═══════════ Tab: VCM Analítico ═══════════ -->
+    <div class="tab-panel" id="tab-vcm" role="tabpanel" aria-label="VCM por Cliente" style="display:none; flex-direction:column; width:100%;">
+
+    <!-- BARRA DE FILTROS PRINCIPAIS (APARENTES: ANO, MES, CANAL, CLIENTE) -->
+    <div class="filter-bar">
+      <div class="fg">
+        <label for="fAnoSelect">Ano</label>
+        <select id="fAnoSelect" class="filter-select-single" aria-label="Ano">
+          <option value="2026">2026</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label for="fMes-trigger">Mês</label>
+        <div class="ms-dropdown" id="fMes"></div>
+      </div>
+      <div class="fg">
+        <label for="fCanal-trigger">Canal</label>
+        <div class="ms-dropdown" id="fCanal"></div>
+      </div>
+      <div class="fg">
+        <label for="fCliente-trigger">Cliente</label>
+        <div class="ms-dropdown" id="fCliente"></div>
+      </div>
+
+      <!-- AÇÕES À DIREITA: Botão Mais Filtros + Botão Limpar -->
+      <div class="filter-actions-group">
+        <!-- Botão Mais Filtros (Abre o Drawer Lateral à Direita) -->
+        <button id="btnAdvFilters" type="button" title="Mais filtros" class="btn-adv-filters" aria-expanded="false" aria-controls="portal-filter-drawer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="21" x2="4" y2="14" />
+            <line x1="4" y1="10" x2="4" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12" y2="3" />
+            <line x1="20" y1="21" x2="20" y2="16" />
+            <line x1="20" y1="12" x2="20" y2="3" />
+            <line x1="1" y1="14" x2="7" y2="14" />
+            <line x1="9" y1="8" x2="15" y2="8" />
+            <line x1="17" y1="16" x2="23" y2="16" />
+          </svg>
+          <span id="btnAdvFiltersLabel">Mais Filtros</span>
+        </button>
+
+        <!-- Botão Limpar -->
+        <button type="button" onclick="limparFiltros()" class="btn-filter-clear">
+          Limpar
+        </button>
+      </div>
+    </div>
+
+    <!-- CHIPS DE FILTROS ATIVOS -->
+    <div class="active-chips-bar" id="activeFilterChips" aria-label="Filtros ativos"></div>
+
+    <!-- CARDS EXECUTIVOS DE KPI (VCM & RENTABILIDADE) -->
+    <div class="vcm-kpi-row">
+
+      <!-- CARD 1: VCM REALIZADO (ACT) -->
+      <div class="vcm-kpi-card kpi-act">
+        <div class="vcm-kpi-header">
+          <span class="vcm-kpi-title">VCM Realizado (ACT)</span>
+          <span class="vcm-delta-badge neutral" id="kpiActBadge"
+                data-tip-title="Ano de Realização (ACT)"
+                data-tip-desc="Exercício contábil selecionado nos filtros para os dados realizados."
+                data-tip-formula="Ano Selecionado no Filtro">Realizado</span>
+        </div>
+        <div class="vcm-kpi-val" id="kpiAct"
+             data-tip-title="VCM Realizado (ACT)"
+             data-tip-desc="Valor Contribuição Marginal (lucro variável) efetivamente faturado no período selecionado."
+             data-tip-formula="Σ (Receita Líquida - Custos e Despesas Variáveis)">R$ 0</div>
+        <div class="vcm-kpi-footer">
+          <span class="vcm-sub-lbl">Margem s/ Rec. Líquida (ACT%):</span>
+          <span class="vcm-sub-val" id="kpiActPct"
+                data-tip-title="Margem s/ Rec. Líquida (ACT%)"
+                data-tip-desc="Percentual da Receita Líquida Realizada convertido em contribuição marginal."
+                data-tip-formula="(VCM Realizado ÷ Receita Líquida Realizada) × 100">0.0%</span>
+        </div>
+      </div>
+
+      <!-- CARD 2: ORÇAMENTO (BGT) -->
+      <div class="vcm-kpi-card kpi-bgt">
+        <div class="vcm-kpi-header">
+          <span class="vcm-kpi-title">Orçamento (BGT)</span>
+          <span class="vcm-delta-badge neutral" id="kpiVarBgtBadge"
+                data-tip-title="Variação vs Orçamento (Var BGT)"
+                data-tip-desc="Desempenho relativo do Realizado frente à meta orçada (positivo = meta superada)."
+                data-tip-formula="((VCM Realizado ÷ VCM Orçado) - 1) × 100">— vs BGT</span>
+        </div>
+        <div class="vcm-kpi-val" id="kpiBgt"
+             data-tip-title="Orçamento (BGT)"
+             data-tip-desc="Meta financeira planejada no orçamento anual para a contribuição marginal no período."
+             data-tip-formula="Σ VCM Orçado (Budget Bimbo Brasil)">R$ 0</div>
+        <div class="vcm-kpi-footer">
+          <span class="vcm-sub-lbl">Margem s/ Rec. Líquida (BGT%):</span>
+          <span class="vcm-sub-val" id="kpiBgtPct"
+                data-tip-title="Margem s/ Rec. Líquida (BGT%)"
+                data-tip-desc="Meta percentual de contribuição marginal planejada sobre a Receita Líquida orçada."
+                data-tip-formula="(VCM Orçado ÷ Receita Líquida Orçada) × 100">0.0%</span>
+        </div>
+      </div>
+
+      <!-- CARD 3: ANO ANTERIOR (PY) -->
+      <div class="vcm-kpi-card kpi-py">
+        <div class="vcm-kpi-header">
+          <span class="vcm-kpi-title">Ano Anterior (PY)</span>
+          <span class="vcm-delta-badge neutral" id="kpiVarPyBadge"
+                data-tip-title="Crescimento vs Ano Anterior (Var PY)"
+                data-tip-desc="Evolução percentual de rentabilidade e vendas em relação ao mesmo período do ano anterior."
+                data-tip-formula="((VCM Realizado ÷ VCM Ano Anterior) - 1) × 100">— vs PY</span>
+        </div>
+        <div class="vcm-kpi-val" id="kpiPy"
+             data-tip-title="Ano Anterior (Prior Year - PY)"
+             data-tip-desc="Contribuição marginal histórica faturada no mesmo período do ano anterior para comparação."
+             data-tip-formula="Σ VCM Realizado no Mesmo Período (Ano Anterior)">R$ 0</div>
+        <div class="vcm-kpi-footer">
+          <span class="vcm-sub-lbl">Margem s/ Rec. Líquida (PY%):</span>
+          <span class="vcm-sub-val" id="kpiPyPct"
+                data-tip-title="Margem s/ Rec. Líquida (PY%)"
+                data-tip-desc="Histórico de rentabilidade percentual obtida sobre a Receita Líquida no ano anterior."
+                data-tip-formula="(VCM Ano Anterior ÷ Receita Líquida Ano Anterior) × 100">0.0%</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TABELA ANALÍTICA DE VCM POR CLIENTE -->
+    <div class="vcm-table-container">
+      <div class="vcm-header-bar">
+        <div class="vcm-title-box">
+          <h2>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Rentabilidade e VCM por Cliente
+          </h2>
+          <p id="subtituloFiltro">Clique em um cliente para expandir os SKUs • Clique nos cabeçalhos para ordenar</p>
+        </div>
+        <div class="vcm-actions">
+          <button type="button" class="btn-collapse-all" id="btnCollapseAll" onclick="recolherTodosSkus()">Recolher SKUs</button>
+          <div class="search-box-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" class="search-input" id="searchClientInput" placeholder="Buscar cliente (atalho /)..." aria-label="Buscar cliente" oninput="filtrarTabelaPorBusca()">
+            <button type="button" class="search-clear-btn" id="clearSearchBtn" aria-label="Limpar busca" onclick="limparBuscaCliente()">&times;</button>
+          </div>
+          <button type="button" class="btn-export-subtle" onclick="exportarExcelTabela()" title="Exportar dados para Excel (.xlsx)" aria-label="Exportar Excel">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="table-scroll-wrap">
+      <table class="table-vcm" id="vcmTable">
+        <thead>
+          <tr>
+            <th scope="col" aria-sort="none" id="th-client">
+              <button type="button" class="th-sort" onclick="ordenarTabela('client')">
+                Cliente / SKU <span class="sort-ic" aria-hidden="true"></span>
+              </button>
+            </th>
+            <th scope="col" class="num" aria-sort="descending" id="th-act" data-tip-title="VCM Realizado (ACT)" data-tip-desc="Total de contribuição marginal realizada do cliente no período selecionado." data-tip-formula="Σ VCM Realizado Cliente">
+              <button type="button" class="th-sort" onclick="ordenarTabela('act')">
+                ACT VCM <span class="sort-ic" aria-hidden="true"></span>
+              </button>
+            </th>
+            <th scope="col" class="num" aria-sort="none" id="th-bgt" data-tip-title="VCM Orçado (BGT)" data-tip-desc="Meta de contribuição marginal orçada para o cliente no período." data-tip-formula="Σ VCM Orçado Cliente">
+              <button type="button" class="th-sort" onclick="ordenarTabela('bgt')">
+                BGT VCM <span class="sort-ic" aria-hidden="true"></span>
+              </button>
+            </th>
+            <th scope="col" class="num" aria-sort="none" id="th-var_bgt" data-tip-title="Variação vs Orçado (Var BGT)" data-tip-desc="Atingimento percentual da meta de VCM pelo cliente." data-tip-formula="((ACT ÷ BGT) - 1) × 100">
+              <button type="button" class="th-sort" onclick="ordenarTabela('var_bgt')">
+                Var BGT <span class="sort-ic" aria-hidden="true"></span>
+              </button>
+            </th>
+            <th scope="col" class="num" aria-sort="none" id="th-py" data-tip-title="Ano Anterior (PY)" data-tip-desc="VCM realizado pelo cliente no mesmo período do ano anterior." data-tip-formula="Σ VCM Ano Anterior Cliente">
+              <button type="button" class="th-sort" onclick="ordenarTabela('py')">
+                PY <span class="sort-ic" aria-hidden="true"></span>
+              </button>
+            </th>
+            <th scope="col" class="num" aria-sort="none" id="th-var_py" data-tip-title="Crescimento vs Ano Anterior (Var PY)" data-tip-desc="Evolução percentual de VCM do cliente frente ao ano anterior." data-tip-formula="((ACT ÷ PY) - 1) × 100">
+              <button type="button" class="th-sort" onclick="ordenarTabela('var_py')">
+                Var PY <span class="sort-ic" aria-hidden="true"></span>
+              </button>
+            </th>
+            <th scope="col" class="num" aria-sort="none" id="th-act_pct" data-tip-title="Margem Realizada (ACT%)" data-tip-desc="Percentual da Receita Líquida convertido em contribuição marginal pelo cliente." data-tip-formula="(ACT VCM ÷ Receita Líquida ACT) × 100">
+              <button type="button" class="th-sort" onclick="ordenarTabela('act_pct')">
+                ACT% <span class="sort-ic" aria-hidden="true"></span>
+              </button>
+            </th>
+            <th scope="col" class="num" aria-sort="none" id="th-bgt_pct" data-tip-title="Margem Orçada (BGT%)" data-tip-desc="Meta de margem percentual planejada sobre a Receita Líquida do cliente." data-tip-formula="(BGT VCM ÷ Receita Líquida BGT) × 100">
+              <button type="button" class="th-sort" onclick="ordenarTabela('bgt_pct')">
+                BGT% <span class="sort-ic" aria-hidden="true"></span>
+              </button>
+            </th>
+            <th scope="col" class="num" aria-sort="none" id="th-py_pct" data-tip-title="Margem Ano Anterior (PY%)" data-tip-desc="Margem percentual histórica do cliente no ano anterior." data-tip-formula="(PY VCM ÷ Receita Líquida PY) × 100">
+              <button type="button" class="th-sort" onclick="ordenarTabela('py_pct')">
+                PY% <span class="sort-ic" aria-hidden="true"></span>
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody id="vcmTableBody">
+          <tr>
+            <td colspan="9" style="text-align:center; padding: 2.5rem; color: var(--da-txt-muted);">Carregando dados de VCM...</td>
+          </tr>
+        </tbody>
+        <tfoot id="vcmTableFoot" style="display:none;">
+          <tr>
+            <td>TOTAL GERAL</td>
+            <td id="totAct">-</td>
+            <td id="totBgt">-</td>
+            <td id="totVarBgt">-</td>
+            <td id="totPy">-</td>
+            <td id="totVarPy">-</td>
+            <td id="totActPct">-</td>
+            <td id="totBgtPct">-</td>
+            <td id="totPyPct">-</td>
+          </tr>
+        </tfoot>
+      </table>
+      </div>
+    </div>
+
+          </div><!-- #tab-vcm -->
+
+      </main>
+    </div><!-- #portal-workspace -->
+  </div><!-- #portal-layout -->
+
+  <!-- ═══════════ Painel de Filtros Retrátil à Direita (Filter Drawer) ═══════════ -->
+  <aside class="portal-filter-drawer" id="portal-filter-drawer" aria-label="Painel de filtros retrátil à direita">
+    <div class="pfd-header">
+      <div class="pfd-title-group">
+        <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 20a1 1 0 0 0 .55.89l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .52-1.34L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.74 1.67l7.22 7.99A2 2 0 0 1 10 14z"/></svg>
+        <span class="pfd-title">Filtros &amp; Parâmetros</span>
+      </div>
+      <button type="button" class="pfd-close-btn" id="close-filter-drawer-btn" aria-label="Fechar painel de filtros (Esc)" title="Fechar painel">
+        <svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="pfd-body drawer-body">
+      <div class="drawer-section-title">Estrutura Comercial</div>
+      <div class="drawer-stack">
+        <div class="filter-group">
+          <label for="fDiretor-trigger">Diretor</label>
+          <div class="ms-dropdown" id="fDiretor"></div>
+        </div>
+        <div class="filter-group">
+          <label for="fGestor-trigger">Gestor</label>
+          <div class="ms-dropdown" id="fGestor"></div>
+        </div>
+        <div class="filter-group">
+          <label for="fSupervisor-trigger">Supervisor</label>
+          <div class="ms-dropdown" id="fSupervisor"></div>
+        </div>
+        <div class="filter-group">
+          <label for="fCoordenador-trigger">Coordenador</label>
+          <div class="ms-dropdown" id="fCoordenador"></div>
+        </div>
+      </div>
+
+      <div class="drawer-section-title" style="margin-top: 14px;">Produto &amp; Planta</div>
+      <div class="drawer-stack">
+        <div class="filter-group">
+          <label for="fCategoria-trigger">Categoria</label>
+          <div class="ms-dropdown" id="fCategoria"></div>
+        </div>
+        <div class="filter-group">
+          <label for="fLinha-trigger">Linha</label>
+          <div class="ms-dropdown" id="fLinha"></div>
+        </div>
+        <div class="filter-group">
+          <label for="fMarca-trigger">Marca</label>
+          <div class="ms-dropdown" id="fMarca"></div>
+        </div>
+        <div class="filter-group">
+          <label for="fFamilia-trigger">Família</label>
+          <div class="ms-dropdown" id="fFamilia"></div>
+        </div>
+        <div class="filter-group">
+          <label for="fPlanta-trigger">Planta</label>
+          <div class="ms-dropdown" id="fPlanta"></div>
+        </div>
+        <div class="filter-group">
+          <label for="fDescricao-trigger">Descrição (SKU)</label>
+          <div class="ms-dropdown" id="fDescricao"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pfd-footer drawer-foot">
+      <button type="button" class="btn btn-secondary" id="pfd-clear-btn" onclick="limparFiltros()">Limpar</button>
+      <button type="button" class="btn btn-primary" id="pfd-apply-btn" style="flex:1;">Aplicar Filtros</button>
+      <button type="button" class="btn btn-secondary" id="pfd-close-footer-btn">Fechar</button>
+    </div>
+  </aside>
+
+  <!-- Scrim / Backdrop escurecido -->
+  <div class="v2-scrim" id="v2-scrim" hidden></div>
+
+  <!-- BARRA DE NAVEGAÇÃO INFERIOR MOBILE -->
+  <nav class="mobile-bottom-nav" aria-label="Navegação rápida mobile">
+    <a href="vcm.html" class="mobile-bottom-link active" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      <span>VCM</span>
+    </a>
+    <a href="cadastros.html" class="mobile-bottom-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>
+      <span>Base VCM</span>
+    </a>
+    <a href="guia.html" class="mobile-bottom-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <span>Guia</span>
+    </a>
+  </nav>
+
+  <script>
+    // ── Componente MultiSelect Autônomo e Confiável ──
+    class MultiSelectVCM {
+      constructor(el, opts = [], onChange = null) {
+        this.container = el;
+        this.options = [];
+        this.selected = new Set();
+        this.onChange = onChange;
+        this.render();
+        if (opts && opts.length) {
+          this.setOptions(opts);
+        }
+      }
+
+      render() {
+        const triggerId = this.container.id ? `${this.container.id}-trigger` : '';
+        this.container.innerHTML = `
+          <button type="button" class="ms-trigger" ${triggerId ? `id="${triggerId}"` : ''} aria-expanded="false">
+            <span class="ms-text">Todos</span>
+            <span class="ms-arrow">▼</span>
+          </button>
+          <div class="ms-panel">
+            <input type="text" class="ms-search" placeholder="Pesquisar..." aria-label="Pesquisar opções">
+            <div class="ms-actions">
+              <button type="button" class="ms-sel-all">Selecionar tudo</button>
+              <button type="button" class="ms-desel-all">Limpar</button>
+            </div>
+            <div class="ms-options"></div>
+          </div>
+        `;
+        this.trigger = this.container.querySelector('.ms-trigger');
+        this.panel = this.container.querySelector('.ms-panel');
+        this.search = this.container.querySelector('.ms-search');
+        this.optionsEl = this.container.querySelector('.ms-options');
+
+        const setPanelOpen = (open) => {
+          this.panel.classList.toggle('open', open);
+          this.trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+          if (open && this.search) {
+            setTimeout(() => this.search.focus(), 20);
+          }
+        };
+
+        this.trigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const willOpen = !this.panel.classList.contains('open');
+          document.querySelectorAll('.ms-panel.open').forEach(p => {
+            if (p !== this.panel) {
+              p.classList.remove('open');
+              const trig = p.parentElement && p.parentElement.querySelector('.ms-trigger');
+              if (trig) trig.setAttribute('aria-expanded', 'false');
+            }
+          });
+          setPanelOpen(willOpen);
+        });
+
+        this.panel.addEventListener('click', (e) => e.stopPropagation());
+        this.panel.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            e.stopPropagation();
+            setPanelOpen(false);
+            this.trigger.focus();
+          }
+        });
+        this.search.addEventListener('input', () => this.filterOptions());
+
+        this.container.querySelector('.ms-sel-all').addEventListener('click', () => {
+          this.options.forEach(o => this.selected.add(o));
+          this.renderCheckboxes();
+          this.updateLabel();
+          if (this.onChange) this.onChange();
+        });
+
+        this.container.querySelector('.ms-desel-all').addEventListener('click', () => {
+          this.selected.clear();
+          this.renderCheckboxes();
+          this.updateLabel();
+          if (this.onChange) this.onChange();
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!this.container.contains(e.target)) {
+            setPanelOpen(false);
+          }
+        });
+      }
+
+      setOptions(opts) {
+        this.options = opts.map(String).filter(o => o.trim() && o.toLowerCase() !== 'todos');
+        this.selected = new Set(this.options);
+        this.renderCheckboxes();
+        this.updateLabel();
+      }
+
+      setSelected(newSelectedArray) {
+        if (!this.options || this.options.length === 0) return;
+        const s = new Set((newSelectedArray || []).map(String));
+        const valid = this.options.filter(o => s.has(o));
+        this.selected = new Set(valid);
+        this.renderCheckboxes();
+        this.updateLabel();
+      }
+
+      selectAll() {
+        this.selected = new Set(this.options);
+        this.renderCheckboxes();
+        this.updateLabel();
+      }
+
+      clear() {
+        this.selected.clear();
+        this.renderCheckboxes();
+        this.updateLabel();
+      }
+
+      renderCheckboxes() {
+        const prefix = this.container.id || 'ms';
+        this.optionsEl.innerHTML = this.options.map((o, idx) => {
+          const optId = `${prefix}-opt-${idx}`;
+          const safeOpt = escapeHtml(o);
+          return `
+          <div class="ms-option" data-idx="${idx}">
+            <input type="checkbox" id="${optId}" ${this.selected.has(o) ? 'checked' : ''}>
+            <label for="${optId}">${safeOpt}</label>
+          </div>
+        `;
+        }).join('');
+
+        this.optionsEl.querySelectorAll('.ms-option').forEach(row => {
+          row.addEventListener('click', (e) => {
+            const idx = parseInt(row.dataset.idx, 10);
+            const val = this.options[idx];
+            if (this.selected.has(val)) {
+              this.selected.delete(val);
+            } else {
+              this.selected.add(val);
+            }
+            const cb = row.querySelector('input');
+            if (cb) cb.checked = this.selected.has(val);
+            this.updateLabel();
+            if (this.onChange) this.onChange();
+          });
+        });
+      }
+
+      filterOptions() {
+        const q = this.search.value.toLowerCase().trim();
+        this.optionsEl.querySelectorAll('.ms-option').forEach(row => {
+          const idx = parseInt(row.dataset.idx, 10);
+          const val = (this.options[idx] || '').toLowerCase();
+          row.style.display = val.includes(q) ? 'flex' : 'none';
+        });
+      }
+
+      updateLabel() {
+        const textEl = this.trigger.querySelector('.ms-text');
+        const t = this.options.length;
+        const s = this.selected.size;
+        if (!textEl) return;
+
+        if (s === 0) {
+          textEl.textContent = 'Nenhum';
+          this.trigger.title = 'Nenhum selecionado';
+        } else if (s === t) {
+          textEl.textContent = 'Todos';
+          this.trigger.title = 'Todos selecionados';
+        } else if (s <= 2) {
+          const joined = [...this.selected].join(', ');
+          textEl.textContent = joined;
+          this.trigger.title = joined;
+        } else {
+          textEl.innerHTML = `${s} selecionados <span class="ms-badge">${s}</span>`;
+          this.trigger.title = [...this.selected].join(', ');
+        }
+      }
+
+      getSelected() {
+        if (!this.options || this.options.length === 0) return [];
+        if (this.selected.size === 0) return ['__NONE__'];
+        if (this.selected.size === this.options.length) return [];
+        return [...this.selected];
+      }
+    }
+
+    const meses = [
+      { id: 1, nome: "Jan" }, { id: 2, nome: "Fev" }, { id: 3, nome: "Mar" },
+      { id: 4, nome: "Abr" }, { id: 5, nome: "Mai" }, { id: 6, nome: "Jun" },
+      { id: 7, nome: "Jul" }, { id: 8, nome: "Ago" }, { id: 9, nome: "Set" },
+      { id: 10, nome: "Out" }, { id: 11, nome: "Nov" }, { id: 12, nome: "Dez" }
+    ];
+
+    const vcmDropdowns = {};
+    let cachedClientes = [];
+    let cachedTotais = null;
+    const expandedClients = new Set();
+    const skuCache = new Map();
+    const loadingSkus = new Set();
+    const failedSkus = new Set();
+    let lastFilterParamsStr = "";
+
+    let _toastTimer = null;
+    function showToast(msg, type = "info") {
+      let el = document.getElementById("vcmToast");
+      if (!el) {
+        el = document.createElement("div");
+        el.id = "vcmToast";
+        el.className = "vcm-toast";
+        el.setAttribute("role", "status");
+        el.setAttribute("aria-live", "polite");
+        document.body.appendChild(el);
+      }
+      el.className = `vcm-toast visible ${type === "error" ? "toast-error" : (type === "success" ? "toast-success" : "")}`;
+      el.textContent = msg;
+      if (_toastTimer) clearTimeout(_toastTimer);
+      _toastTimer = setTimeout(() => el.classList.remove("visible"), 4000);
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    // Estado da Ordenação da Tabela
+    let currentSortCol = 'act';
+    let currentSortDir = 'desc';
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      inicializarTema();
+      initMetricTooltips();
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "/" && !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) {
+          e.preventDefault();
+          const s = document.getElementById("searchClientInput");
+          if (s) s.focus();
+        }
+      });
+      await loadUserInfo();
+      await carregarFiltros();
+    });
+
+    async function loadUserInfo() {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+        if (data.base_atualizada_em && typeof window.updateTopbarBaseDate === "function") {
+          window.updateTopbarBaseDate(data.base_atualizada_em);
+        }
+        if (data.ultimo_mes_realizado) window._ultimoMesRealizado = Number(data.ultimo_mes_realizado);
+          if (data.email) {
+            const badge = document.getElementById("operatorEmailText");
+            if (badge) {
+              badge.innerText = `${data.email} ${data.is_admin ? "(Admin)" : ""}`;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("Credenciais do usuário:", e);
+      }
+    }
+
+    // Toggle do Drawer lateral de "Mais Filtros" (Padrão Portal Distribuidores V2)
+    function toggleAdvFilters() {
+      if (typeof window.toggleFilterDrawer === "function") {
+        window.toggleFilterDrawer();
+      }
+      salvarFiltrosNoStorage();
+    }
+
+    function atualizarBadgeMaisFiltros() {
+      const filtrosAdvIds = ["fDiretor", "fGestor", "fSupervisor", "fCoordenador", "fCategoria", "fLinha", "fMarca", "fFamilia", "fPlanta", "fDescricao"];
+      const ativos = filtrosAdvIds.filter(id => vcmDropdowns[id] && vcmDropdowns[id].options.length > 0 && vcmDropdowns[id].selected.size < vcmDropdowns[id].options.length).length;
+      const lbl = document.getElementById("btnAdvFiltersLabel");
+      const btn = document.getElementById("btnAdvFilters");
+      if (lbl) lbl.textContent = ativos > 0 ? `Mais Filtros (${ativos})` : "Mais Filtros";
+      if (btn && ativos > 0) btn.classList.add("filter-btn-active");
+    }
+
+    // ── Persistência de Filtros entre Navegações de Páginas (SessionStorage) ──
+    const STORAGE_KEY_FILTROS = "vcm_active_filters_session";
+
+    function salvarFiltrosNoStorage() {
+      try {
+        const anoSel = document.getElementById("fAnoSelect");
+        const estado = {
+          ano: anoSel ? anoSel.value : "",
+          dropdowns: {},
+          advOpen: false,
+          searchClient: "",
+          sortCol: currentSortCol,
+          sortDir: currentSortDir
+        };
+
+        Object.entries(vcmDropdowns).forEach(([id, dd]) => {
+          if (!dd || !dd.options) return;
+          const isAll = dd.selected.size === dd.options.length;
+          const isNone = dd.selected.size === 0;
+          estado.dropdowns[id] = {
+            all: isAll,
+            none: isNone,
+            selected: Array.from(dd.selected)
+          };
+        });
+
+        const searchEl = document.getElementById("searchClientInput");
+        if (searchEl) {
+          estado.searchClient = searchEl.value || "";
+        }
+
+        sessionStorage.setItem(STORAGE_KEY_FILTROS, JSON.stringify(estado));
+      } catch (e) {
+        console.warn("Aviso ao salvar filtros no sessionStorage:", e);
+      }
+    }
+
+    function restaurarFiltrosDoStorage() {
+      try {
+        const salvoRaw = sessionStorage.getItem(STORAGE_KEY_FILTROS);
+        if (!salvoRaw) return false;
+
+        const salvo = JSON.parse(salvoRaw);
+        if (!salvo || !salvo.dropdowns) return false;
+
+        let algumRestaurado = false;
+
+        const anoSel = document.getElementById("fAnoSelect");
+        if (anoSel && salvo.ano && [...anoSel.options].some(o => o.value === salvo.ano)) {
+          anoSel.value = salvo.ano;
+          algumRestaurado = true;
+        }
+
+        Object.entries(vcmDropdowns).forEach(([id, dd]) => {
+          const item = salvo.dropdowns[id];
+          if (!item || !dd || !dd.options || dd.options.length === 0) return;
+
+          if (item.all) {
+            dd.selectAll();
+          } else if (item.none) {
+            dd.clear();
+          } else if (Array.isArray(item.selected)) {
+            dd.setSelected(item.selected);
+          }
+          algumRestaurado = true;
+        });
+
+        // Restaura busca de cliente
+        const searchEl = document.getElementById("searchClientInput");
+        if (searchEl && typeof salvo.searchClient === "string" && salvo.searchClient) {
+          searchEl.value = salvo.searchClient;
+        }
+
+        // Restaura ordenação
+        if (salvo.sortCol) currentSortCol = salvo.sortCol;
+        if (salvo.sortDir) currentSortDir = salvo.sortDir;
+
+        // Destaque visual no botão se houver filtro secundário ativo (sem abrir drawer automaticamente)
+        const btn = document.getElementById("btnAdvFilters");
+        const filtrosAdvIds = ["fDiretor", "fGestor", "fSupervisor", "fCoordenador", "fCategoria", "fLinha", "fMarca", "fFamilia", "fPlanta", "fDescricao"];
+        const temAdvFiltrado = filtrosAdvIds.some(id => vcmDropdowns[id] && vcmDropdowns[id].selected.size < vcmDropdowns[id].options.length);
+
+        if (btn && temAdvFiltrado) {
+          btn.classList.add("filter-btn-active");
+        }
+
+        return algumRestaurado;
+      } catch (e) {
+        console.warn("Aviso ao restaurar filtros salvos do sessionStorage:", e);
+        return false;
+      }
+    }
+
+    async function carregarFiltros() {
+      const tbody = document.getElementById("vcmTableBody");
+      try {
+        const res = await fetch("/api/filtros");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data.base_atualizada_em && typeof window.updateTopbarBaseDate === "function") {
+          window.updateTopbarBaseDate(data.base_atualizada_em);
+        }
+        if (data.ultimo_mes_realizado) window._ultimoMesRealizado = Number(data.ultimo_mes_realizado);
+
+        const anos = data.anos && data.anos.length ? data.anos : ["2026", "2025", "2024"];
+        const anoEl = document.getElementById("fAnoSelect");
+        if (anoEl) {
+          anoEl.innerHTML = anos.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join("");
+          anoEl.onchange = () => aplicarFiltros();
+        }
+
+        const configs = [
+          // Principais (Aparentes)
+          { id: "fCanal", opts: data.canais || [] },
+          { id: "fCliente", opts: data.clientes || [] },
+          // Secundários (Mais Filtros)
+          { id: "fDiretor", opts: data.diretores || [] },
+          { id: "fGestor", opts: data.gestores || [] },
+          { id: "fSupervisor", opts: data.supervisores || [] },
+          { id: "fCoordenador", opts: data.coordenadores || [] },
+          { id: "fCategoria", opts: data.categorias || [] },
+          { id: "fLinha", opts: data.linhas || [] },
+          { id: "fMarca", opts: data.marcas || [] },
+          { id: "fFamilia", opts: data.familias || [] },
+          { id: "fPlanta", opts: data.plantas || [] },
+          { id: "fDescricao", opts: data.descricoes || [] }
+        ];
+
+        configs.forEach(cfg => {
+          const el = document.getElementById(cfg.id);
+          if (el) {
+            vcmDropdowns[cfg.id] = new MultiSelectVCM(el, cfg.opts, () => aplicarFiltros());
+          }
+        });
+
+        // Configuração de Mês com opções legíveis
+        const mesEl = document.getElementById("fMes");
+        if (mesEl) {
+          const mesOpts = meses.map(m => `${m.id} - ${m.nome}`);
+          vcmDropdowns["fMes"] = new MultiSelectVCM(mesEl, mesOpts, () => aplicarFiltros());
+        }
+
+        // Tenta restaurar filtros preservados da navegação recente
+        const restaurado = restaurarFiltrosDoStorage();
+
+        // Se NÃO havia filtros salvos na sessão (primeira abertura do app), aplica os padrões nativos:
+        if (!restaurado) {
+          // PADRÃO NATIVO: último mês com Realizado (ACT) na base ou mês anterior
+          const agora = new Date();
+          const mesAnteriorNum = window._ultimoMesRealizado || (agora.getMonth() === 0 ? 12 : agora.getMonth());
+          const mesPadraoObj = meses.find(m => m.id === mesAnteriorNum);
+          const mesPadraoStr = mesPadraoObj ? `${mesPadraoObj.id} - ${mesPadraoObj.nome}` : `${mesAnteriorNum}`;
+
+          if (vcmDropdowns["fMes"]) {
+            vcmDropdowns["fMes"].setSelected([mesPadraoStr]);
+          }
+
+          if (anoEl) {
+            const anoSugerido = agora.getMonth() === 0 ? String(agora.getFullYear() - 1) : String(agora.getFullYear());
+            const anoFinal = anos.includes(anoSugerido) ? anoSugerido : (anos.includes("2026") ? "2026" : anos[0]);
+            anoEl.value = anoFinal;
+          }
+        }
+
+        await aplicarFiltros();
+      } catch (err) {
+        console.error("Erro ao carregar filtros:", err);
+        if (tbody) {
+          tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--da-danger); padding: 2rem;">Falha ao carregar filtros do servidor. <button type="button" class="btn-retry" onclick="carregarFiltros()">Tentar novamente</button></td></tr>`;
+        }
+      }
+    }
+
+    function atualizarChipsFiltrosAtivos() {
+      const container = document.getElementById("activeFilterChips");
+      if (!container) return;
+      const labels = {
+        fCanal: "Canal", fCliente: "Cliente", fDiretor: "Diretor", fGestor: "Gestor",
+        fSupervisor: "Supervisor", fCoordenador: "Coordenador", fCategoria: "Categoria",
+        fLinha: "Linha", fMarca: "Marca", fFamilia: "Família", fPlanta: "Planta", fDescricao: "SKU"
+      };
+      let chipsHtml = "";
+      Object.entries(labels).forEach(([id, lbl]) => {
+        const dd = vcmDropdowns[id];
+        if (!dd || !dd.options || dd.options.length === 0) return;
+        if (dd.selected.size < dd.options.length) {
+          const valDesc = dd.selected.size === 0 ? "Nenhum" : (dd.selected.size <= 2 ? [...dd.selected].join(", ") : `${dd.selected.size} sel.`);
+          chipsHtml += `<span class="filter-chip">${lbl}: ${escapeHtml(valDesc)} <button type="button" aria-label="Remover filtro ${lbl}" onclick="resetSingleFilter('${id}')">&times;</button></span>`;
+        }
+      });
+      container.innerHTML = chipsHtml;
+      container.classList.toggle("visible", chipsHtml.length > 0);
+    }
+
+    function resetSingleFilter(id) {
+      if (vcmDropdowns[id]) {
+        vcmDropdowns[id].selectAll();
+        aplicarFiltros();
+      }
+    }
+
+    async function aplicarFiltros() {
+      salvarFiltrosNoStorage();
+      const tbody = document.getElementById("vcmTableBody");
+      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 2.5rem; color: var(--da-txt-muted);">Carregando dados de VCM...</td></tr>`;
+      ["kpiAct", "kpiBgt", "kpiPy"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add("is-loading");
+      });
+
+      const params = new URLSearchParams();
+
+      // Ano (single-select)
+      const anoEl = document.getElementById("fAnoSelect");
+      if (anoEl && anoEl.value) {
+        params.set("ano", anoEl.value);
+      }
+
+      // Mês
+      if (vcmDropdowns["fMes"]) {
+        const selMeses = [...vcmDropdowns["fMes"].selected];
+        if (selMeses.length === 0) {
+          params.append("mes", "__NONE__");
+        } else if (selMeses.length === vcmDropdowns["fMes"].options.length) {
+          params.append("mes", "all");
+        } else {
+          selMeses.forEach(mStr => {
+            const num = mStr.split("-")[0].trim();
+            params.append("mes", num);
+          });
+        }
+      }
+
+      const mapF = {
+        fCanal: "canal",
+        fCliente: "cliente",
+        fDiretor: "diretor",
+        fGestor: "gestor",
+        fSupervisor: "supervisor",
+        fCoordenador: "coordenador",
+        fCategoria: "categoria",
+        fLinha: "linha",
+        fMarca: "marca",
+        fFamilia: "familia",
+        fPlanta: "planta",
+        fDescricao: "descricao"
+      };
+
+      Object.entries(mapF).forEach(([fId, queryParam]) => {
+        if (vcmDropdowns[fId]) {
+          const sel = vcmDropdowns[fId].getSelected();
+          sel.forEach(val => {
+            params.append(queryParam, val);
+          });
+        }
+      });
+
+      atualizarBadgeMaisFiltros();
+      atualizarChipsFiltrosAtivos();
+      lastFilterParamsStr = params.toString();
+      expandedClients.clear();
+      skuCache.clear();
+      loadingSkus.clear();
+      failedSkus.clear();
+
+      try {
+        const res = await fetch(`/api/vcm?${params.toString()}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data.base_atualizada_em && typeof window.updateTopbarBaseDate === "function") {
+          window.updateTopbarBaseDate(data.base_atualizada_em);
+        }
+        if (data.ultimo_mes_realizado) window._ultimoMesRealizado = Number(data.ultimo_mes_realizado);
+
+        if (data.sucesso) {
+          cachedClientes = sortList(data.clientes || [], currentSortCol, currentSortDir);
+          cachedTotais = data.totais || null;
+          atualizarIconesOrdenacao();
+          renderKpis(cachedTotais, data.ano);
+
+          const subEl = document.getElementById("subtituloFiltro");
+          if (subEl) {
+            let infoPeriodo = "Ano " + (data.ano || 2026);
+            if (data.meses && data.meses.length === 12) {
+              infoPeriodo += " (Acumulado Jan-Dez)";
+            } else if (data.meses && data.meses.length > 0) {
+              const nomesMeses = data.meses.map(m => meses.find(item => item.id === m)?.nome || m);
+              infoPeriodo += ` (${nomesMeses.join(", ")})`;
+            }
+            subEl.innerText = `${infoPeriodo} • Clique em um cliente para expandir SKUs`;
+          }
+
+          reRenderTabelaAtual();
+        } else {
+          renderKpis(null);
+          tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--da-danger); padding: 2rem;">Erro ao carregar dados: ${escapeHtml(data.erro || "desconhecido")} <button type="button" class="btn-retry" onclick="aplicarFiltros()">Tentar novamente</button></td></tr>`;
+        }
+      } catch (e) {
+        console.error("Erro na consulta de VCM:", e);
+        renderKpis(null);
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--da-danger); padding: 2rem;">Falha na comunicação com o servidor. <button type="button" class="btn-retry" onclick="aplicarFiltros()">Tentar novamente</button></td></tr>`;
+      } finally {
+        ["kpiAct", "kpiBgt", "kpiPy"].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.remove("is-loading");
+        });
+      }
+    }
+
+    // ═══ Renderização dos Cards KPI Executivos ═══
+    function renderKpis(totais, ano) {
+      const fmtMoeda = (val) => {
+        if (val === 0 || val === null || val === undefined || isNaN(val)) return "R$ 0";
+        const n = Math.round(val);
+        if (n < 0) return `-R$ ${Math.abs(n).toLocaleString("pt-BR")}`;
+        return `R$ ${n.toLocaleString("pt-BR")}`;
+      };
+
+      const anoAtual = ano || 2026;
+      const elActBadge = document.getElementById("kpiActBadge");
+      if (elActBadge) {
+        elActBadge.innerText = `Realizado ${anoAtual}`;
+        elActBadge.setAttribute("data-tip-title", `Ano de Realização (${anoAtual})`);
+      }
+
+      if (!totais) {
+        const elAct = document.getElementById("kpiAct");
+        const elActPct = document.getElementById("kpiActPct");
+        const elBgt = document.getElementById("kpiBgt");
+        const elBgtPct = document.getElementById("kpiBgtPct");
+        const elVarBgt = document.getElementById("kpiVarBgtBadge");
+        const elPy = document.getElementById("kpiPy");
+        const elPyPct = document.getElementById("kpiPyPct");
+        const elVarPy = document.getElementById("kpiVarPyBadge");
+
+        if (elAct) elAct.innerText = "R$ 0";
+        if (elActPct) elActPct.innerText = "0.0%";
+        if (elBgt) elBgt.innerText = "R$ 0";
+        if (elBgtPct) elBgtPct.innerText = "0.0%";
+        if (elVarBgt) { elVarBgt.className = "vcm-delta-badge neutral"; elVarBgt.innerText = "— vs BGT"; }
+        if (elPy) elPy.innerText = "R$ 0";
+        if (elPyPct) elPyPct.innerText = "0.0%";
+        if (elVarPy) { elVarPy.className = "vcm-delta-badge neutral"; elVarPy.innerText = "— vs PY"; }
+        return;
+      }
+
+      // 1. ACT (Realizado)
+      const elAct = document.getElementById("kpiAct");
+      const elActPct = document.getElementById("kpiActPct");
+      if (elAct) elAct.innerText = fmtMoeda(totais.act);
+      if (elActPct) elActPct.innerText = `${(totais.act_pct || 0).toFixed(1)}%`;
+
+      // 2. BGT (Orçamento)
+      const elBgt = document.getElementById("kpiBgt");
+      const elBgtPct = document.getElementById("kpiBgtPct");
+      const elVarBgtBadge = document.getElementById("kpiVarBgtBadge");
+      if (elBgt) elBgt.innerText = fmtMoeda(totais.bgt);
+      if (elBgtPct) elBgtPct.innerText = `${(totais.bgt_pct || 0).toFixed(1)}%`;
+      if (elVarBgtBadge) {
+        const vBgt = Number(totais.var_bgt) || 0;
+        if (!totais.bgt || totais.bgt === 0) {
+          elVarBgtBadge.className = "vcm-delta-badge neutral";
+          elVarBgtBadge.innerText = "— vs BGT";
+        } else {
+          const sinal = vBgt > 0 ? "+" : "";
+          const icone = vBgt > 0 ? "▲ " : (vBgt < 0 ? "▼ " : "");
+          elVarBgtBadge.className = `vcm-delta-badge ${vBgt >= 0 ? "pos" : "neg"}`;
+          elVarBgtBadge.innerText = `${icone}${sinal}${vBgt.toFixed(1)}% vs BGT`;
+        }
+      }
+
+      // 3. PY (Ano Anterior)
+      const elPy = document.getElementById("kpiPy");
+      const elPyPct = document.getElementById("kpiPyPct");
+      const elVarPyBadge = document.getElementById("kpiVarPyBadge");
+      if (elPy) elPy.innerText = fmtMoeda(totais.py);
+      if (elPyPct) elPyPct.innerText = `${(totais.py_pct || 0).toFixed(1)}%`;
+      if (elVarPyBadge) {
+        const vPy = Number(totais.var_py) || 0;
+        if (!totais.py || totais.py === 0) {
+          elVarPyBadge.className = "vcm-delta-badge neutral";
+          elVarPyBadge.innerText = "— vs PY";
+        } else {
+          const sinal = vPy > 0 ? "+" : "";
+          const icone = vPy > 0 ? "▲ " : (vPy < 0 ? "▼ " : "");
+          elVarPyBadge.className = `vcm-delta-badge ${vPy >= 0 ? "pos" : "neg"}`;
+          elVarPyBadge.innerText = `${icone}${sinal}${vPy.toFixed(1)}% vs PY`;
+        }
+      }
+    }
+
+    // ── Algoritmo de Ordenação Crescente/Decrescente ──
+    function sortList(list, col, dir, nameKey = 'client') {
+      return [...list].sort((a, b) => {
+        let valA = a[col === 'client' ? nameKey : col];
+        let valB = b[col === 'client' ? nameKey : col];
+        if (col === 'client') {
+          valA = (valA || '').toString();
+          valB = (valB || '').toString();
+          return dir === 'asc'
+            ? valA.localeCompare(valB, 'pt-BR', { sensitivity: 'base' })
+            : valB.localeCompare(valA, 'pt-BR', { sensitivity: 'base' });
+        } else {
+          valA = Number(valA) || 0;
+          valB = Number(valB) || 0;
+          return dir === 'asc' ? valA - valB : valB - valA;
+        }
+      });
+    }
+
+    function atualizarIconesOrdenacao() {
+      const cols = ['client', 'act', 'bgt', 'var_bgt', 'py', 'var_py', 'act_pct', 'bgt_pct', 'py_pct'];
+      cols.forEach(col => {
+        const thEl = document.getElementById(`th-${col}`);
+        if (!thEl) return;
+        if (col === currentSortCol) {
+          thEl.classList.add('sorted-active');
+          thEl.setAttribute('aria-sort', currentSortDir === 'asc' ? 'ascending' : 'descending');
+        } else {
+          thEl.classList.remove('sorted-active');
+          thEl.setAttribute('aria-sort', 'none');
+        }
+      });
+    }
+
+    function ordenarTabela(col) {
+      if (currentSortCol === col) {
+        currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSortCol = col;
+        currentSortDir = (col === 'client') ? 'asc' : 'desc';
+      }
+      cachedClientes = sortList(cachedClientes, currentSortCol, currentSortDir);
+      atualizarIconesOrdenacao();
+      salvarFiltrosNoStorage();
+
+      const q = (document.getElementById("searchClientInput").value || "").trim().toLowerCase();
+      if (q) {
+        const filtrados = cachedClientes.filter(c => c.client.toLowerCase().includes(q));
+        renderTabela(filtrados, cachedTotais);
+      } else {
+        renderTabela(cachedClientes, cachedTotais);
+      }
+    }
+
+    function reRenderTabelaAtual() {
+      const q = (document.getElementById("searchClientInput").value || "").trim().toLowerCase();
+      if (q) {
+        const filtrados = cachedClientes.filter(c => c.client.toLowerCase().includes(q));
+        renderTabela(filtrados, cachedTotais);
+      } else {
+        renderTabela(cachedClientes, cachedTotais);
+      }
+    }
+
+    async function toggleClientDrillDown(clientName, evt) {
+      if (evt) evt.stopPropagation();
+      if (!clientName) return;
+
+      if (expandedClients.has(clientName)) {
+        expandedClients.delete(clientName);
+        reRenderTabelaAtual();
+        return;
+      }
+
+      expandedClients.add(clientName);
+      failedSkus.delete(clientName);
+      const cacheKey = `${lastFilterParamsStr}::${clientName}`;
+
+      if (!skuCache.has(cacheKey) && !loadingSkus.has(clientName)) {
+        loadingSkus.add(clientName);
+        reRenderTabelaAtual();
+        try {
+          const skuParams = new URLSearchParams(lastFilterParamsStr);
+          skuParams.set("cliente_alvo", clientName);
+          const res = await fetch(`/api/vcm/skus?${skuParams.toString()}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+        if (data.base_atualizada_em && typeof window.updateTopbarBaseDate === "function") {
+          window.updateTopbarBaseDate(data.base_atualizada_em);
+        }
+        if (data.ultimo_mes_realizado) window._ultimoMesRealizado = Number(data.ultimo_mes_realizado);
+          if (data && data.sucesso) {
+            skuCache.set(cacheKey, data.skus || []);
+            failedSkus.delete(clientName);
+          } else {
+            failedSkus.add(clientName);
+          }
+        } catch (err) {
+          console.error("Erro ao carregar SKUs do cliente:", err);
+          failedSkus.add(clientName);
+        } finally {
+          loadingSkus.delete(clientName);
+        }
+      }
+
+      reRenderTabelaAtual();
+    }
+
+    async function retryClientSkus(clientName) {
+      if (!clientName) return;
+      failedSkus.delete(clientName);
+      expandedClients.delete(clientName);
+      await toggleClientDrillDown(clientName);
+    }
+
+    function recolherTodosSkus() {
+      expandedClients.clear();
+      failedSkus.clear();
+      reRenderTabelaAtual();
+    }
+
+    function renderTabela(clientes, totais) {
+      const tbody = document.getElementById("vcmTableBody");
+      const tfoot = document.getElementById("vcmTableFoot");
+      const btnCollapseAll = document.getElementById("btnCollapseAll");
+      if (btnCollapseAll) {
+        btnCollapseAll.style.display = expandedClients.size > 0 ? "inline-flex" : "none";
+      }
+
+      if (!clientes || clientes.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 2.5rem; color: var(--da-txt-muted);">Nenhum cliente com dados encontrado para os filtros selecionados.</td></tr>`;
+        tfoot.style.display = "none";
+        return;
+      }
+
+      const fmtMoeda = (val) => {
+        if (val === 0 || val === null || val === undefined) return "R$ 0";
+        const n = Math.round(val);
+        if (n < 0) {
+          return `-R$ ${Math.abs(n).toLocaleString("pt-BR")}`;
+        }
+        return `R$ ${n.toLocaleString("pt-BR")}`;
+      };
+
+      const fmtPct = (val) => {
+        const n = val || 0;
+        const cls = n >= 0 ? "badge-var-pos" : "badge-var-neg";
+        const sinal = n > 0 ? "+" : "";
+        return `<span class="${cls}">${sinal}${n.toFixed(1)}%</span>`;
+      };
+
+      const fmtPctDireto = (val) => {
+        return `<span class="badge-pct">${(val || 0).toFixed(1)}%</span>`;
+      };
+
+      let html = "";
+      clientes.forEach(c => {
+        if (c.client && c.client.toUpperCase().includes("CLIENTES E FORNECEDORES")) return;
+        const isExpanded = expandedClients.has(c.client);
+        const safeClient = escapeHtml(c.client);
+        html += `
+          <tr class="client-row ${isExpanded ? "is-expanded" : ""}" data-client="${safeClient}">
+            <td>
+              <div class="client-cell-wrap">
+                <button type="button" class="drill-toggle-btn" onclick="toggleClientDrillDown('${safeClient}', event)" aria-expanded="${isExpanded ? "true" : "false"}" aria-label="${isExpanded ? "Recolher" : "Expandir"} SKUs de ${safeClient}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+                <span>${safeClient}</span>
+              </div>
+            </td>
+            <td>${fmtMoeda(c.act)}</td>
+            <td>${fmtMoeda(c.bgt)}</td>
+            <td>${fmtPct(c.var_bgt)}</td>
+            <td>${fmtMoeda(c.py)}</td>
+            <td>${fmtPct(c.var_py)}</td>
+            <td>${fmtPctDireto(c.act_pct)}</td>
+            <td>${fmtPctDireto(c.bgt_pct)}</td>
+            <td>${fmtPctDireto(c.py_pct)}</td>
+          </tr>
+        `;
+
+        if (isExpanded) {
+          const cacheKey = `${lastFilterParamsStr}::${c.client}`;
+          if (loadingSkus.has(c.client)) {
+            html += `
+              <tr class="sku-status-row">
+                <td colspan="9">Carregando SKUs de ${safeClient}...</td>
+              </tr>
+            `;
+          } else if (failedSkus.has(c.client)) {
+            html += `
+              <tr class="sku-status-row">
+                <td colspan="9">
+                  <span>Falha ao carregar SKUs de ${safeClient}.</span>
+                  <button type="button" class="btn-retry" data-retry-client="${safeClient}">Tentar novamente</button>
+                </td>
+              </tr>
+            `;
+          } else {
+            const rawSkus = skuCache.get(cacheKey) || [];
+            if (rawSkus.length === 0) {
+              html += `
+                <tr class="sku-status-row">
+                  <td colspan="9">Nenhum SKU encontrado para este cliente nos filtros atuais.</td>
+                </tr>
+              `;
+            } else {
+              const sortedSkus = sortList(rawSkus, currentSortCol, currentSortDir, 'sku');
+              sortedSkus.forEach(s => {
+                const safeSku = escapeHtml(s.sku);
+                html += `
+                  <tr class="sku-child-row">
+                    <td>
+                      <div class="sku-label-wrap">
+                        <span class="sku-branch-dot" aria-hidden="true"></span>
+                        <span>${safeSku}</span>
+                      </div>
+                    </td>
+                    <td>${fmtMoeda(s.act)}</td>
+                    <td>${fmtMoeda(s.bgt)}</td>
+                    <td>${fmtPct(s.var_bgt)}</td>
+                    <td>${fmtMoeda(s.py)}</td>
+                    <td>${fmtPct(s.var_py)}</td>
+                    <td>${fmtPctDireto(s.act_pct)}</td>
+                    <td>${fmtPctDireto(s.bgt_pct)}</td>
+                    <td>${fmtPctDireto(s.py_pct)}</td>
+                  </tr>
+                `;
+              });
+            }
+          }
+        }
+      });
+      tbody.innerHTML = html;
+
+      tbody.querySelectorAll("tr.client-row").forEach(row => {
+        row.addEventListener("click", (evt) => {
+          toggleClientDrillDown(row.getAttribute("data-client"), evt);
+        });
+      });
+
+      tbody.querySelectorAll("button.btn-retry[data-retry-client]").forEach(btn => {
+        btn.addEventListener("click", (evt) => {
+          evt.stopPropagation();
+          retryClientSkus(btn.getAttribute("data-retry-client"));
+        });
+      });
+
+      if (totais) {
+        tfoot.style.display = "";
+        document.getElementById("totAct").innerText = fmtMoeda(totais.act);
+        document.getElementById("totBgt").innerText = fmtMoeda(totais.bgt);
+        document.getElementById("totVarBgt").innerHTML = fmtPct(totais.var_bgt);
+        document.getElementById("totPy").innerText = fmtMoeda(totais.py);
+        document.getElementById("totVarPy").innerHTML = fmtPct(totais.var_py);
+        document.getElementById("totActPct").innerHTML = fmtPctDireto(totais.act_pct);
+        document.getElementById("totBgtPct").innerHTML = fmtPctDireto(totais.bgt_pct);
+        document.getElementById("totPyPct").innerHTML = fmtPctDireto(totais.py_pct);
+      }
+    }
+
+    function filtrarTabelaPorBusca() {
+      salvarFiltrosNoStorage();
+      const inputEl = document.getElementById("searchClientInput");
+      const clearBtn = document.getElementById("clearSearchBtn");
+      const q = (inputEl ? inputEl.value : "").trim().toLowerCase();
+      if (clearBtn) clearBtn.style.display = q ? "flex" : "none";
+      if (!q) {
+        renderTabela(cachedClientes, cachedTotais);
+        return;
+      }
+      const filtrados = cachedClientes.filter(c => c.client.toLowerCase().includes(q));
+      renderTabela(filtrados, cachedTotais);
+    }
+
+    function limparBuscaCliente() {
+      const inputEl = document.getElementById("searchClientInput");
+      if (inputEl) {
+        inputEl.value = "";
+        inputEl.focus();
+      }
+      filtrarTabelaPorBusca();
+    }
+
+    async function exportarExcelTabela() {
+      const q = (document.getElementById("searchClientInput").value || "").trim().toLowerCase();
+      let linhas = cachedClientes || [];
+      if (q) {
+        linhas = linhas.filter(c => c.client.toLowerCase().includes(q));
+      }
+      linhas = linhas.filter(c => !c.client || !c.client.toUpperCase().includes("CLIENTES E FORNECEDORES"));
+
+      if (!linhas || linhas.length === 0) {
+        showToast("Nenhum dado para exportar.", "error");
+        return;
+      }
+
+      let totaisExport = cachedTotais;
+      if (q && linhas.length > 0) {
+        const sumAct = linhas.reduce((acc, r) => acc + (Number(r.act) || 0), 0);
+        const sumBgt = linhas.reduce((acc, r) => acc + (Number(r.bgt) || 0), 0);
+        const sumPy = linhas.reduce((acc, r) => acc + (Number(r.py) || 0), 0);
+        totaisExport = {
+          act: sumAct,
+          bgt: sumBgt,
+          py: sumPy,
+          var_bgt: sumBgt ? ((sumAct - sumBgt) / Math.abs(sumBgt)) * 100 : 0,
+          var_py: sumPy ? ((sumAct - sumPy) / Math.abs(sumPy)) * 100 : 0,
+          act_pct: null,
+          bgt_pct: null,
+          py_pct: null
+        };
+      }
+
+      const btn = document.querySelector(".btn-export-subtle") || document.querySelector(".btn-export");
+      const originalText = btn ? btn.innerHTML : "";
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="10"/></svg>`;
+      }
+
+      try {
+        const payloadFilters = typeof coletarFiltros === "function" ? coletarFiltros() : {};
+        const res = await fetch("/api/vcm/export_excel", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            rows: linhas,
+            totais: totaisExport,
+            filters: payloadFilters
+          })
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.erro || `Erro HTTP ${res.status}`);
+        }
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Rentabilidade_VCM_Clientes_SKU_${new Date().toISOString().slice(0, 10)}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        showToast("Planilha Excel exportada com sucesso.", "success");
+      } catch (err) {
+        console.error("Erro na exportação para Excel:", err);
+        showToast("Falha ao exportar Excel: " + err.message, "error");
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
+      }
+    }
+
+    function limparFiltros() {
+      sessionStorage.removeItem(STORAGE_KEY_FILTROS);
+      Object.values(vcmDropdowns).forEach(d => {
+        d.selectAll();
+      });
+
+      const searchEl = document.getElementById("searchClientInput");
+      if (searchEl) searchEl.value = "";
+      const clearBtn = document.getElementById("clearSearchBtn");
+      if (clearBtn) clearBtn.style.display = "none";
+
+      // Restaura padrões: último mês com Realizado (ACT) na base ou mês anterior
+      const agora = new Date();
+      const mesAnteriorNum = window._ultimoMesRealizado || (agora.getMonth() === 0 ? 12 : agora.getMonth());
+      const mesPadraoObj = meses.find(m => m.id === mesAnteriorNum);
+      const mesPadraoStr = mesPadraoObj ? `${mesPadraoObj.id} - ${mesPadraoObj.nome}` : `${mesAnteriorNum}`;
+
+      if (vcmDropdowns["fMes"]) {
+        vcmDropdowns["fMes"].setSelected([mesPadraoStr]);
+      }
+      const fAnoSel = document.getElementById("fAnoSelect");
+      if (fAnoSel) {
+        const anos = Array.from(fAnoSel.options).map(o => o.value);
+        const anoSugerido = agora.getMonth() === 0 ? String(agora.getFullYear() - 1) : String(agora.getFullYear());
+        const anoFinal = anos.includes(anoSugerido) ? anoSugerido : (anos.includes("2026") ? "2026" : (anos[0] || "2026"));
+        fAnoSel.value = anoFinal;
+      }
+
+      if (typeof window.closeFilterDrawer === "function") window.closeFilterDrawer();
+      const btn = document.getElementById("btnAdvFilters");
+      const lbl = document.getElementById("btnAdvFiltersLabel");
+      if (btn) {
+        btn.classList.remove("filter-btn-active");
+        btn.setAttribute("aria-expanded", "false");
+      }
+      if (lbl) lbl.textContent = "Mais Filtros";
+
+      expandedClients.clear();
+      failedSkus.clear();
+      skuCache.clear();
+      loadingSkus.clear();
+
+      atualizarChipsFiltrosAtivos();
+      salvarFiltrosNoStorage();
+      aplicarFiltros();
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const atual = html.getAttribute("data-theme") || "dark";
+      const novo = atual === "dark" ? "light" : "dark";
+      html.setAttribute("data-theme", novo);
+      localStorage.setItem("theme_preference", novo);
+      localStorage.setItem("portal_theme", novo);
+    }
+
+    function inicializarTema() {
+      const salvo = localStorage.getItem("theme_preference") || localStorage.getItem("portal_theme") || "dark";
+      document.documentElement.setAttribute("data-theme", salvo);
+    }
+
+    // ═══ Tooltip Executivo de Métricas e Fórmulas ═══
+    function initMetricTooltips() {
+      let tooltip = document.getElementById("vcmMetricTooltip");
+      if (!tooltip) {
+        tooltip = document.createElement("div");
+        tooltip.id = "vcmMetricTooltip";
+        tooltip.className = "vcm-metric-tooltip";
+        tooltip.innerHTML = `
+          <div class="tip-header">
+            <span class="tip-icon" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            </span>
+            <span class="tip-title" id="tipTitle">Métrica</span>
+          </div>
+          <div class="tip-desc" id="tipDesc">Explicação rápida...</div>
+          <div class="tip-formula-box">
+            <span class="tip-formula-lbl">FÓRMULA:</span>
+            <code class="tip-formula-code" id="tipFormula">Fórmula</code>
+          </div>
+        `;
+        document.body.appendChild(tooltip);
+      }
+
+      const tipTitle = document.getElementById("tipTitle");
+      const tipDesc = document.getElementById("tipDesc");
+      const tipFormula = document.getElementById("tipFormula");
+      let activeEl = null;
+
+      function showTip(el) {
+        activeEl = el;
+        const title = el.getAttribute("data-tip-title");
+        const desc = el.getAttribute("data-tip-desc");
+        const formula = el.getAttribute("data-tip-formula");
+
+        if (!title) return;
+
+        tipTitle.textContent = title;
+        tipDesc.textContent = desc || "";
+        tipFormula.textContent = formula || "";
+
+        tooltip.classList.add("visible");
+        positionTip(el);
+      }
+
+      function hideTip() {
+        activeEl = null;
+        tooltip.classList.remove("visible");
+      }
+
+      function positionTip(el) {
+        if (!el || !tooltip.classList.contains("visible")) return;
+        const rect = el.getBoundingClientRect();
+        const tipWidth = tooltip.offsetWidth || 280;
+        const tipHeight = tooltip.offsetHeight || 90;
+
+        // Posição padrão: acima do elemento centralizado
+        let top = rect.top - tipHeight - 8;
+        let left = rect.left + (rect.width / 2) - (tipWidth / 2);
+
+        // Se passar do topo da janela, posiciona abaixo
+        if (top < 10) {
+          top = rect.bottom + 8;
+        }
+
+        // Restringe aos limites laterais da tela com margem de segurança
+        if (left < 12) left = 12;
+        if (left + tipWidth > window.innerWidth - 12) {
+          left = window.innerWidth - tipWidth - 12;
+        }
+
+        tooltip.style.top = `${Math.round(top)}px`;
+        tooltip.style.left = `${Math.round(left)}px`;
+      }
+
+      document.querySelectorAll("[data-tip-title]").forEach(el => {
+        if (!el.matches("button, a, input, select, [tabindex]")) {
+          el.setAttribute("tabindex", "0");
+        }
+      });
+
+      document.addEventListener("mouseover", (e) => {
+        const target = e.target.closest("[data-tip-title]");
+        if (target) {
+          showTip(target);
+        }
+      });
+
+      document.addEventListener("mouseout", (e) => {
+        const target = e.target.closest("[data-tip-title]");
+        if (target && target === activeEl) {
+          hideTip();
+        }
+      });
+
+      document.addEventListener("focusin", (e) => {
+        const target = e.target.closest("[data-tip-title]");
+        if (target) showTip(target);
+      });
+
+      document.addEventListener("focusout", (e) => {
+        const target = e.target.closest("[data-tip-title]");
+        if (target && target === activeEl) hideTip();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && tooltip.classList.contains("visible")) {
+          hideTip();
+        }
+      });
+
+      document.addEventListener("click", (e) => {
+        const target = e.target.closest("[data-tip-title]");
+        if (target && !target.matches("th")) {
+          if (activeEl === target && tooltip.classList.contains("visible")) {
+            hideTip();
+          } else {
+            showTip(target);
+          }
+        } else if (!e.target.closest("#vcmMetricTooltip") && activeEl && !activeEl.matches(":hover")) {
+          hideTip();
+        }
+      });
+
+      window.addEventListener("scroll", () => {
+        if (activeEl) positionTip(activeEl);
+      }, { passive: true });
+
+      window.addEventListener("resize", () => {
+        if (activeEl) positionTip(activeEl);
+      }, { passive: true });
+    }
+
+    // ── GESTÃO DE TAREFA FLUTUANTE EM SEGUNDO PLANO (Base VCM) ──
+    let _vcmPollInterval = null;
+
+    function playVcmNotificationSound() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(659.25, now + 0.12);
+        osc.frequency.setValueAtTime(783.99, now + 0.24);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.75);
+        osc.start(now);
+        osc.stop(now + 0.8);
+      } catch (e) {}
+    }
+
+    function trackVcmBackgroundTask(taskId, fileName, rowCount, mode) {
+      if (!taskId) return;
+      if (_vcmPollInterval) clearInterval(_vcmPollInterval);
+
+      const widget = document.getElementById('vcmTaskFloatingWidget');
+      if (!widget) return;
+      widget.classList.remove('cd-task-success', 'cd-task-error');
+      widget.style.display = 'block';
+
+      const spinner = document.getElementById('vcmTaskSpinner');
+      if (spinner) {
+        spinner.innerText = '⏳';
+        spinner.style.animation = 'spin 1.5s linear infinite';
+      }
+      const title = document.getElementById('vcmTaskTitle');
+      if (title) title.innerText = 'Gravando Base no Volume...';
+      const sub = document.getElementById('vcmTaskSub');
+      if (sub) sub.innerText = `${fileName || 'Base - VCM.xlsx'} • ${(rowCount || 0).toLocaleString('pt-BR')} linhas`;
+
+      _vcmPollInterval = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/lookups/base_vcm/task/${taskId}`);
+          if (!res.ok) return;
+          const data = await res.json();
+        if (data.base_atualizada_em && typeof window.updateTopbarBaseDate === "function") {
+          window.updateTopbarBaseDate(data.base_atualizada_em);
+        }
+        if (data.ultimo_mes_realizado) window._ultimoMesRealizado = Number(data.ultimo_mes_realizado);
+          if (!data.success || !data.task) return;
+
+          const task = data.task;
+          const bar = document.getElementById('vcmTaskProgressBar');
+          const pct = document.getElementById('vcmTaskPercentText');
+          const status = document.getElementById('vcmTaskStatusText');
+          if (bar) bar.style.width = `${task.progress || 20}%`;
+          if (pct) pct.innerText = `${task.progress || 20}%`;
+          if (status && task.message) status.innerText = task.message;
+
+          if (task.status === 'completed') {
+            clearInterval(_vcmPollInterval);
+            _vcmPollInterval = null;
+            localStorage.removeItem('vcm_active_task');
+
+            widget.classList.add('cd-task-success');
+            if (spinner) { spinner.innerText = '✅'; spinner.style.animation = 'none'; }
+            if (title) title.innerText = 'Base VCM Gravada com Sucesso!';
+            if (bar) bar.style.width = '100%';
+            if (pct) pct.innerText = '100%';
+            if (status) status.innerText = task.message || 'Dados atualizados no Volume Databricks.';
+
+            playVcmNotificationSound();
+
+            const totalCount = (task.row_count || 0).toLocaleString('pt-BR');
+            if ('Notification' in window && Notification.permission === 'granted') {
+              try {
+                new Notification('✅ Base VCM Gravada com Sucesso!', {
+                  body: `A base (${totalCount} linhas) foi atualizada no Volume. Recarregando dados analíticos...`,
+                  icon: '/logo-dna.png',
+                  tag: 'vcm-upload-success'
+                });
+              } catch (e) {}
+            }
+
+            // Recarrega os filtros e dashboard automaticamente com os novos dados
+            setTimeout(() => {
+              if (typeof carregarFiltros === 'function') {
+                carregarFiltros();
+              }
+            }, 1000);
+
+            setTimeout(() => {
+              widget.style.display = 'none';
+            }, 10000);
+          } else if (task.status === 'error') {
+            clearInterval(_vcmPollInterval);
+            _vcmPollInterval = null;
+            localStorage.removeItem('vcm_active_task');
+
+            widget.classList.add('cd-task-error');
+            if (spinner) { spinner.innerText = '❌'; spinner.style.animation = 'none'; }
+            if (title) title.innerText = 'Falha ao Gravar Base VCM';
+            if (status) status.innerText = task.error || 'Erro na gravação.';
+          }
+        } catch (e) {
+          console.warn('Erro ao monitorar gravação em segundo plano:', e);
+        }
+      }, 1500);
+    }
+
+    async function checkVcmActiveTask() {
+      try {
+        let taskMeta = null;
+        const stored = localStorage.getItem('vcm_active_task');
+        if (stored) {
+          try { taskMeta = JSON.parse(stored); } catch (e) {}
+        }
+        const res = await fetch('/api/lookups/base_vcm/active_task');
+        if (res.ok) {
+          const data = await res.json();
+        if (data.base_atualizada_em && typeof window.updateTopbarBaseDate === "function") {
+          window.updateTopbarBaseDate(data.base_atualizada_em);
+        }
+        if (data.ultimo_mes_realizado) window._ultimoMesRealizado = Number(data.ultimo_mes_realizado);
+          if (data.success && data.active_task) {
+            const at = data.active_task;
+            trackVcmBackgroundTask(at.task_id, (taskMeta && taskMeta.fileName) || 'Base - VCM.xlsx', at.row_count, at.mode);
+            return;
+          }
+        }
+        if (taskMeta && taskMeta.taskId) {
+          trackVcmBackgroundTask(taskMeta.taskId, taskMeta.fileName, taskMeta.rowCount, taskMeta.mode);
+        }
+      } catch (e) {}
+    }
+
+    // ── Alternância Oficial de Abas (Início vs VCM) ──
+    function switchAppTab(tabId) {
+      const isInicio = tabId === "inicio";
+      const pnlInicio = document.getElementById("tab-inicio");
+      const pnlVcm = document.getElementById("tab-vcm");
+      const btnInicio = document.getElementById("nav-btn-inicio");
+      const btnVcm = document.getElementById("nav-btn-vcm");
+      const hdrTitle = document.getElementById("v2-header-tab-title");
+
+      if (pnlInicio) {
+        pnlInicio.style.display = isInicio ? "flex" : "none";
+        pnlInicio.classList.toggle("active", isInicio);
+      }
+      if (pnlVcm) {
+        pnlVcm.style.display = isInicio ? "none" : "flex";
+        pnlVcm.classList.toggle("active", !isInicio);
+      }
+
+      if (btnInicio) btnInicio.classList.toggle("active", isInicio);
+      if (btnVcm) btnVcm.classList.toggle("active", !isInicio);
+
+      if (hdrTitle) {
+        hdrTitle.textContent = isInicio ? "Início" : "VCM por Cliente";
+      }
+
+      try {
+        history.replaceState(null, "", isInicio ? "#inicio" : "#vcm");
+      } catch (e) {}
+
+      // Se entrou no VCM pela primeira vez e tabela ainda vazia, carrega
+      if (!isInicio && (!cachedClientes || cachedClientes.length === 0)) {
+        aplicarFiltros();
+      }
+    }
+    window.switchAppTab = switchAppTab;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkVcmActiveTask();
+      const hash = (window.location.hash || "").toLowerCase();
+      if (hash === "#vcm") {
+        switchAppTab("vcm");
+      } else {
+        switchAppTab("inicio");
+      }
+    });
+  </script>
+
+  <!-- WIDGET FLUTUANTE DE GRAVAÇÃO EM SEGUNDO PLANO -->
+  <div class="cd-floating-task" id="vcmTaskFloatingWidget" style="display:none;">
+    <div class="cd-floating-task-inner">
+      <div class="cd-floating-task-header">
+        <div class="cd-floating-task-title-wrap">
+          <span class="cd-floating-spinner" id="vcmTaskSpinner">⏳</span>
+          <div>
+            <div class="cd-floating-task-title" id="vcmTaskTitle">Gravando Base VCM...</div>
+            <div class="cd-floating-task-sub" id="vcmTaskSub">Volume Databricks</div>
+          </div>
+        </div>
+        <button type="button" class="cd-floating-close" onclick="document.getElementById('vcmTaskFloatingWidget').style.display='none'" title="Fechar painel" aria-label="Fechar painel">&times;</button>
+      </div>
+      <div class="cd-floating-progress-bar">
+        <div class="cd-floating-progress-fill" id="vcmTaskProgressBar" style="width: 15%;"></div>
+      </div>
+      <div class="cd-floating-task-footer">
+        <span id="vcmTaskStatusText">Processando no Databricks...</span>
+        <strong id="vcmTaskPercentText" style="color:var(--fr-txt);">15%</strong>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

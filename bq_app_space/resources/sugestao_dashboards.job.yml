@@ -1,0 +1,39 @@
+# Configuração do Databricks Workflow Job para sugestão inteligente de dashboards BQ (Serverless)
+# Grupo Bimbo Brasil - DNA Analytics (Bimbo QSR)
+resources:
+  jobs:
+    sugestao_dashboards_qsr_job:
+      name: bq-sugestao-dashboards-job-${bundle.target}
+      description: "Job diário para recalcular e atualizar a base de dashboards sugeridos dos colaboradores Bimbo QSR via IA/KNN"
+      max_concurrent_runs: 1
+
+      schedule:
+        quartz_cron_expression: "0 0 9 * * ?" # Executa diariamente às 06:00 BRT (09:00 UTC)
+        timezone_id: "America/Sao_Paulo"
+        pause_status: UNPAUSED
+
+      tags:
+        AMBIENTE: ${bundle.target}
+        PROJETO: BQ_SPACE
+        dev: renan_ferreira
+
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
+
+      environments:
+        - environment_key: Default
+          spec:
+            environment_version: "5"
+
+      tasks:
+        - task_key: calcular_sugestoes_dashboards
+          notebook_task:
+            notebook_path: ../notebooks/sugestao_dashboards_qsr.py
+            source: WORKSPACE
+
+      permissions:
+        - user_name: ${workspace.current_user.userName}
+          level: CAN_MANAGE
+        - group_name: DNA - GB Brasil Leaders
+          level: CAN_MANAGE

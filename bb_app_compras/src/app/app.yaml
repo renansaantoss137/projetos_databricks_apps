@@ -1,0 +1,13 @@
+command: ["python", "app.py"]
+
+env:
+  - name: PGHOST
+    value: "ep-wispy-wildflower-e5pbme5k.database.brazilsouth.azuredatabricks.net"
+  - name: PGDATABASE
+    value: "databricks_postgres"
+  - name: PGPORT
+    value: "5432"
+  - name: LAKEBASE_ENDPOINT
+    value: "projects/compras-360/branches/production/endpoints/primary"
+  - name: PORT
+    value: "8000"

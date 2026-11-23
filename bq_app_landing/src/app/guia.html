@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <script>
+    (function () {
+      const saved = localStorage.getItem("theme_preference") || localStorage.getItem("portal_theme") || "light";
+      document.documentElement.setAttribute("data-theme", saved);
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guia do Usuário & Documentação | BQ LANDING</title>
+  <link rel="stylesheet" href="styles.css?v=5">
+  <style>
+    /* Estilos específicos da Aba Guia conforme INSTRUCOES_ABA_GUIA.md */
+    .guia-nav {
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--fr-border, rgba(100, 116, 139, 0.2));
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 1.5rem;
+      width: fit-content;
+    }
+    .guia-tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.55rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--fr-txt-soft, #7a9dba);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .guia-tab-btn:hover {
+      color: var(--fr-txt, #E8F4FD);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .guia-tab-btn.active {
+      background: #1d4ed8;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(29, 78, 216, 0.4);
+    }
+
+    .guia-tab-pane {
+      display: none;
+    }
+    .guia-tab-pane.active {
+      display: block;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Banner Azul de Destaque */
+    .guia-alert-banner {
+      background: rgba(29, 78, 216, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 1.8rem;
+    }
+    .guia-alert-icon {
+      font-size: 1.8rem;
+      flex-shrink: 0;
+    }
+    .guia-alert-text {
+      font-size: 0.82rem;
+      color: var(--fr-txt, #E8F4FD);
+      line-height: 1.45;
+    }
+
+    /* Seções com Badge Numerado */
+    .guia-section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 1.6rem 0 1rem;
+    }
+    .guia-num-badge {
+      background: #1d4ed8;
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .guia-section-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--fr-txt, #E8F4FD);
+    }
+
+    /* Steps List */
+    .guia-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+    .guia-step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.78rem;
+      color: var(--fr-txt, #E8F4FD);
+    }
+    .step-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      font-size: 0.68rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Cards Grid */
+    .guia-grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .guia-card {
+      background: var(--fr-surface, #282f3f);
+      border: 1px solid var(--fr-border, rgba(100, 116, 139, 0.2));
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      position: relative;
+    }
+    .guia-card-badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #60a5fa;
+      background: rgba(59, 130, 246, 0.15);
+      padding: 2px 7px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 0.4rem;
+    }
+    .guia-card h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--fr-txt, #E8F4FD);
+      margin-bottom: 0.35rem;
+    }
+    .guia-card p {
+      font-size: 0.75rem;
+      color: var(--fr-txt-soft, #7a9dba);
+      line-height: 1.45;
+    }
+
+    /* Slide Deck Presentation */
+    .slide-deck-wrapper {
+      background: var(--fr-surface, #282f3f);
+      border: 1px solid var(--fr-border, rgba(100, 116, 139, 0.2));
+      border-radius: 14px;
+      padding: 2rem;
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .slide-content {
+      flex: 1;
+    }
+    .slide-tag {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #60a5fa;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .slide-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--fr-txt, #E8F4FD);
+      margin-bottom: 1.2rem;
+      letter-spacing: -0.01em;
+    }
+    .slide-body {
+      font-size: 0.88rem;
+      color: var(--fr-txt, #E8F4FD);
+      line-height: 1.65;
+      max-width: 800px;
+    }
+    .slide-body ul {
+      margin-top: 1rem;
+      padding-left: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .slide-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--fr-border, rgba(100, 116, 139, 0.2));
+      padding-top: 1.2rem;
+      margin-top: 1.5rem;
+    }
+    .slide-btn {
+      padding: 0.5rem 1.2rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--fr-txt, #E8F4FD);
+    }
+    .slide-btn:hover:not(:disabled) {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: #3b82f6;
+    }
+    .slide-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* Tabela Técnica */
+    .tech-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.76rem;
+      margin-top: 0.8rem;
+    }
+    .tech-table th, .tech-table td {
+      padding: 0.6rem 0.8rem;
+      border-bottom: 1px solid var(--fr-border, rgba(100, 116, 139, 0.15));
+      text-align: left;
+    }
+    .tech-table th {
+      background: rgba(0, 0, 0, 0.15);
+      color: var(--fr-txt-soft);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.65rem;
+    }
+    .tech-code {
+      font-family: monospace;
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      color: #93c5fd;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    /* TEMA GLOBAL & PIPELINE DE ARQUITETURA        */
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    :root, [data-theme="dark"] {
+      --fr-bg: #1e2433;
+      --fr-surface: #282f3f;
+      --fr-border: rgba(100, 116, 139, 0.2);
+      --fr-txt: #E8F4FD;
+      --fr-txt-soft: #7a9dba;
+      --fr-txt-muted: #5a7791;
+      --kpi-surface: #232a38;
+      --border: rgba(100, 116, 139, 0.18);
+      --input-bg: rgba(40, 47, 63, 0.9);
+      --input-b: rgba(100, 116, 139, 0.28);
+      --nav-txt: #E8F4FD;
+
+      --pipe-container-bg: #141b29;
+      --pipe-card-bg: #1c2638;
+      --pipe-border: rgba(100, 116, 139, 0.25);
+      --pipe-border-hover: rgba(96, 165, 250, 0.45);
+      --pipe-title: #f8fafc;
+      --pipe-subtitle: #94a3b8;
+      --pipe-path-bg: #0f172a;
+      --pipe-path-color: #60a5fa;
+      --pipe-path-border: rgba(59, 130, 246, 0.3);
+      --pipe-line: #38bdf8;
+      --pipe-badge-bg: #1e293b;
+      --pipe-badge-color: #38bdf8;
+      --pipe-badge-border: rgba(56, 189, 248, 0.35);
+      --pipe-chip-bg: rgba(255, 255, 255, 0.05);
+      --pipe-chip-color: #cbd5e1;
+      --pipe-chip-border: rgba(100, 116, 139, 0.2);
+      
+      --pipe-term-bg: #0b101b;
+      --pipe-term-hdr: #162032;
+      --pipe-term-txt: #e2e8f0;
+      --pipe-term-node: #60a5fa;
+      --pipe-term-path: #38bdf8;
+      --pipe-term-branch: #7dd3fc;
+      --pipe-term-arrow: #38bdf8;
+      --pipe-term-note: #34d399;
+      --pipe-term-event: #fbbf24;
+      --pipe-term-action: #f472b6;
+    }
+
+    [data-theme="light"] {
+      --fr-bg: #f0f4f8;
+      --fr-surface: #ffffff;
+      --fr-border: rgba(38, 53, 118, 0.12);
+      --fr-txt: #1e2433;
+      --fr-txt-soft: #475569;
+      --fr-txt-muted: #64748b;
+      --kpi-surface: #ffffff;
+      --border: rgba(38, 53, 118, 0.12);
+      --input-bg: #f8fafc;
+      --input-b: rgba(38, 53, 118, 0.18);
+      --nav-txt: #1e2433;
+      --pipe-container-bg: #f8fafc;
+      --pipe-card-bg: #ffffff;
+      --pipe-border: rgba(38, 53, 118, 0.14);
+      --pipe-border-hover: rgba(37, 99, 235, 0.35);
+      --pipe-title: #0f172a;
+      --pipe-subtitle: #475569;
+      --pipe-path-bg: #f1f5f9;
+      --pipe-path-color: #1d4ed8;
+      --pipe-path-border: #cbd5e1;
+      --pipe-line: #2563eb;
+      --pipe-badge-bg: #eff6ff;
+      --pipe-badge-color: #1d4ed8;
+      --pipe-badge-border: #bfdbfe;
+      --pipe-chip-bg: #f8fafc;
+      --pipe-chip-color: #334155;
+      --pipe-chip-border: #e2e8f0;
+
+      --pipe-term-bg: #f8fafc;
+      --pipe-term-hdr: #e2e8f0;
+      --pipe-term-txt: #0f172a;
+      --pipe-term-node: #1e293b;
+      --pipe-term-path: #1d4ed8;
+      --pipe-term-branch: #475569;
+      --pipe-term-arrow: #2563eb;
+      --pipe-term-note: #047857;
+      --pipe-term-event: #b45309;
+      --pipe-term-action: #be185d;
+    }
+
+    .pipeline-card {
+      background: var(--pipe-container-bg);
+      border: 1px solid var(--pipe-border);
+      border-radius: 12px;
+      margin: 1.2rem 0 1.6rem;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+      transition: all 0.25s ease;
+    }
+
+    .pipeline-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 0.9rem 1.2rem;
+      border-bottom: 1px solid var(--pipe-border);
+      background: rgba(0, 0, 0, 0.04);
+    }
+    [data-theme="light"] .pipeline-header {
+      background: #f1f5f9;
+    }
+
+    .pipeline-header-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .pipeline-status-pulse {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pipePulse 2s infinite;
+    }
+    @keyframes pipePulse {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .status-text {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--pipe-title);
+    }
+
+    .pipeline-sub {
+      font-size: 0.7rem;
+      color: var(--pipe-subtitle);
+    }
+
+    .pipeline-view-toggle {
+      display: flex;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.1);
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid var(--pipe-border);
+    }
+    [data-theme="light"] .pipeline-view-toggle {
+      background: #e2e8f0;
+    }
+
+    .pipe-toggle-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--pipe-subtitle);
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .pipe-toggle-btn:hover {
+      color: var(--pipe-title);
+    }
+    .pipe-toggle-btn.active {
+      background: #1d4ed8;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(29, 78, 216, 0.35);
+    }
+
+    /* VISUAL VIEW */
+    .pipeline-visual-view {
+      display: flex;
+      flex-direction: column;
+      padding: 1.2rem;
+      gap: 0;
+    }
+
+    .pipe-step {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .pipe-node {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: var(--pipe-card-bg);
+      border: 1px solid var(--pipe-border);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s ease;
+    }
+    .pipe-node:hover {
+      transform: translateY(-2px);
+      border-color: var(--pipe-border-hover);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.12);
+    }
+
+    .pipe-node-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .icon-sharepoint {
+      background: rgba(16, 185, 129, 0.12);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .icon-volume {
+      background: rgba(59, 130, 246, 0.12);
+      color: #3b82f6;
+      border: 1px solid rgba(59, 130, 246, 0.25);
+    }
+    .icon-job {
+      background: rgba(245, 158, 11, 0.12);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+    .icon-delta {
+      background: rgba(14, 165, 233, 0.12);
+      color: #0ea5e9;
+      border: 1px solid rgba(14, 165, 233, 0.25);
+    }
+    .icon-app {
+      background: rgba(139, 92, 246, 0.12);
+      color: #8b5cf6;
+      border: 1px solid rgba(139, 92, 246, 0.25);
+    }
+
+    .pipe-node-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .pipe-node-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 3px;
+      flex-wrap: wrap;
+    }
+
+    .pipe-node-tag {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .tag-source  { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .tag-storage { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+    .tag-process { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .tag-table   { background: rgba(14, 165, 233, 0.15); color: #0ea5e9; }
+    .tag-app     { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+
+    [data-theme="light"] .tag-source  { background: #d1fae5; color: #065f46; }
+    [data-theme="light"] .tag-storage { background: #dbeafe; color: #1e40af; }
+    [data-theme="light"] .tag-process { background: #fef3c7; color: #92400e; }
+    [data-theme="light"] .tag-table   { background: #e0f2fe; color: #075985; }
+    [data-theme="light"] .tag-app     { background: #ede9fe; color: #5b21b6; }
+
+    .pipe-node-meta {
+      font-size: 0.68rem;
+      color: var(--pipe-subtitle);
+      font-weight: 600;
+    }
+
+    .pipe-node-title {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--pipe-title);
+      margin-bottom: 4px;
+    }
+
+    .pipe-node-path {
+      margin-bottom: 6px;
+    }
+    .pipe-node-path code {
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 0.74rem;
+      background: var(--pipe-path-bg);
+      color: var(--pipe-path-color);
+      border: 1px solid var(--pipe-path-border);
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      word-break: break-all;
+      font-weight: 600;
+    }
+
+    .pipe-node-details {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .pipe-chip {
+      font-size: 0.68rem;
+      color: var(--pipe-chip-color);
+      background: var(--pipe-chip-bg);
+      border: 1px solid var(--pipe-chip-border);
+      padding: 2px 7px;
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .pipe-chip strong {
+      color: var(--pipe-title);
+    }
+
+    /* CONNECTOR */
+    .pipe-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      padding: 6px 0;
+      margin-left: 20px;
+      width: fit-content;
+    }
+
+    .pipe-connector-line {
+      width: 2px;
+      height: 12px;
+      background: var(--pipe-line);
+      opacity: 0.7;
+    }
+
+    .pipe-connector-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: var(--pipe-badge-bg);
+      color: var(--pipe-badge-color);
+      border: 1px solid var(--pipe-badge-border);
+      font-size: 0.68rem;
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      white-space: nowrap;
+    }
+    .pipe-connector-badge.pulse-badge {
+      border-color: #f59e0b;
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.1);
+    }
+    [data-theme="light"] .pipe-connector-badge.pulse-badge {
+      background: #fef3c7;
+      color: #b45309;
+      border-color: #fde68a;
+    }
+
+    .pipe-badge-icon {
+      font-size: 0.7rem;
+    }
+
+    /* TERMINAL VIEW */
+    .pipeline-terminal-view {
+      background: var(--pipe-term-bg);
+      border-radius: 0 0 12px 12px;
+      overflow: hidden;
+    }
+
+    .pipe-term-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.55rem 1rem;
+      background: var(--pipe-term-hdr);
+      border-bottom: 1px solid var(--pipe-border);
+    }
+
+    .pipe-term-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .pipe-term-dots .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+
+    .pipe-term-title {
+      font-family: monospace;
+      font-size: 0.72rem;
+      color: var(--pipe-subtitle);
+      font-weight: 600;
+    }
+
+    .pipe-copy-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--pipe-border);
+      color: var(--pipe-title);
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    [data-theme="light"] .pipe-copy-btn {
+      background: #ffffff;
+      border-color: #cbd5e1;
+    }
+    .pipe-copy-btn:hover {
+      background: #1d4ed8;
+      color: #ffffff;
+      border-color: #1d4ed8;
+    }
+    .pipe-copy-btn.copied {
+      background: #10b981;
+      color: #ffffff;
+      border-color: #10b981;
+    }
+
+    .pipe-term-content {
+      padding: 1.2rem;
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+      font-size: 0.74rem;
+      line-height: 1.7;
+      color: var(--pipe-term-txt);
+      white-space: pre;
+      overflow-x: auto;
+    }
+    .term-node {
+      font-weight: 700;
+      color: var(--pipe-term-node);
+    }
+    .term-path {
+      font-weight: 600;
+      color: var(--pipe-term-path);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .term-branch {
+      color: var(--pipe-term-branch);
+      font-weight: bold;
+    }
+    .term-arrow {
+      color: var(--pipe-term-arrow);
+      font-weight: bold;
+    }
+    .term-note {
+      color: var(--pipe-term-note);
+      font-style: italic;
+    }
+    .term-event {
+      color: var(--pipe-term-event);
+      font-weight: 700;
+    }
+    .term-action {
+      color: var(--pipe-term-action);
+      font-weight: 600;
+    }
+
+    /* REFINAMENTOS GLOBAIS DE TEMA CLARO NA GUIA */
+    [data-theme="light"] .guia-nav {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+    }
+    [data-theme="light"] .guia-tab-btn {
+      color: #475569;
+    }
+    [data-theme="light"] .guia-tab-btn:hover {
+      color: #0f172a;
+      background: rgba(255, 255, 255, 0.7);
+    }
+    [data-theme="light"] .guia-tab-btn.active {
+      background: #1d4ed8;
+      color: #ffffff;
+    }
+    [data-theme="light"] .guia-alert-banner {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }
+    [data-theme="light"] .guia-alert-text {
+      color: #1e3a8a;
+    }
+    [data-theme="light"] .step-circle {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+    [data-theme="light"] .guia-card {
+      background: #ffffff;
+      border-color: #e2e8f0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+    [data-theme="light"] .guia-card-badge {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+    [data-theme="light"] .slide-deck-wrapper {
+      background: #ffffff;
+      border-color: #e2e8f0;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+    [data-theme="light"] .slide-tag {
+      color: #1d4ed8;
+    }
+    [data-theme="light"] .slide-btn {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      color: #1e293b;
+    }
+    [data-theme="light"] .slide-btn:hover:not(:disabled) {
+      background: #eff6ff;
+      border-color: #2563eb;
+      color: #1d4ed8;
+    }
+    [data-theme="light"] .tech-table th {
+      background: #f1f5f9;
+      color: #1e293b;
+      border-bottom: 2px solid #cbd5e1;
+    }
+    [data-theme="light"] .tech-table td {
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+    }
+    [data-theme="light"] .tech-code {
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="fr-page">
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-title-area">
+      <span class="nav-crumb">BQ LANDING</span>
+      <span class="nav-page-title">Guia & Documentação Técnica</span>
+    </div>
+    <div class="nav-links">
+      <a href="performance.html" class="nav-link">Landing</a>
+      <a href="cadastros.html" class="nav-link">Base Landing</a>
+      <a href="guia.html" class="nav-link active">Guia</a>
+    </div>
+    <div class="nav-actions">
+      <!-- Identificação do Usuário -->
+      <div class="user-badge" id="operatorBadge">
+        <span class="user-icon">👤</span>
+        <span id="operatorEmailText">renan.ferreira@grupobimbo.com (Admin)</span>
+      </div>
+
+      <!-- Alternador de Tema Claro / Escuro -->
+      <button class="theme-toggle" onclick="toggleTheme()" title="Alternar tema">
+        <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.5"/>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20">
+          <circle cx="12" cy="12" r="4" fill="#fbbf24"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <div class="fr-content">
+
+    <!-- SUB-BARRA DE NAVEGAÇÃO DA GUIA -->
+    <div class="guia-nav">
+      <button class="guia-tab-btn active" onclick="trocarSubTab('tab-consulta', this)">
+        <span>📖</span> Consulta Rápida
+      </button>
+      <button class="guia-tab-btn" onclick="trocarSubTab('tab-apresentacao', this)">
+        <span>🖥️</span> Apresentação
+      </button>
+      <button class="guia-tab-btn" onclick="trocarSubTab('tab-tecnica', this)">
+        <span>⚙️</span> Documentação Técnica
+      </button>
+    </div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <!-- SUB-TAB 1: CONSULTA RÁPIDA                   -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <div id="tab-consulta" class="guia-tab-pane active">
+      
+      <!-- Banner Informativo -->
+      <div class="guia-alert-banner">
+        <div class="guia-alert-icon">📘</div>
+        <div class="guia-alert-text">
+          <strong>Portal de Acompanhamento BQ Landing</strong><br>
+          Consolidação de análises de Bridge entre Landing vs Budget e Landing vs Forecast, detalhamento das variações sub-canal e justificativas das variáções de landing.
+        </div>
+      </div>
+
+      <!-- Seção 1: Como Acessar -->
+      <div class="guia-section-header">
+        <div class="guia-num-badge">1</div>
+        <h3 class="guia-section-title">Como Acessar</h3>
+      </div>
+      <div class="guia-steps">
+        <div class="guia-step-item">
+          <div class="step-circle">1</div>
+          <div>Abra seu navegador preferencial (Chrome ou Edge corporativo recomendados).</div>
+        </div>
+        <div class="guia-step-item">
+          <div class="step-circle">2</div>
+          <div>Acesse o Databricks App oficial pelo link corporativo ou pelo portal de apps do workspace.</div>
+        </div>
+        <div class="guia-step-item">
+          <div class="step-circle">3</div>
+          <div>Faça login transparente usando sua conta corporativa Microsoft <strong>(@grupobimbo.com)</strong>.</div>
+        </div>
+        <div class="guia-step-item">
+          <div class="step-circle">4</div>
+          <div>Na aba <strong>Landing</strong>, selecione se deseja analisar <strong>Valor (R$)</strong> ou <strong>Volume (ton)</strong>.</div>
+        </div>
+      </div>
+
+      <hr style="border:0;border-top:1px solid var(--fr-border, rgba(100,116,139,.15));margin:1.8rem 0;">
+
+      <!-- Seção 2: Os Fundamentos do BQ Landing -->
+      <div class="guia-section-header">
+        <div class="guia-num-badge">2</div>
+        <h3 class="guia-section-title">O que é o Landing & Rotina Executiva</h3>
+      </div>
+      <div class="guia-grid-cards">
+        <div class="guia-card">
+          <span class="guia-card-badge">ROTINA 2X SEMANA</span>
+          <h4>O que é o Landing?</h4>
+          <p>O processo executivo de Landing é realizado 2 vezes por semana com a liderança para responder com precisão: <em>"Como vamos fechar o mês?"</em>. Ele monitora a evolução das metas em relação ao projetado.</p>
+        </div>
+        <div class="guia-card">
+          <span class="guia-card-badge">ANÁLISE DE BRIDGE</span>
+          <h4>Gráfico de Cascata (Waterfall)</h4>
+          <p>Compara o ponto de partida (Budget/Forecast) com o ponto de chegada (Landing). As colunas intermediárias mostram exatamente quais sub-canais estão puxando o resultado para cima (verde) ou para baixo (vermelho).</p>
+        </div>
+        <div class="guia-card">
+          <span class="guia-card-badge">TOMADA DE DECISÃO</span>
+          <h4>O Valor dos Comentários</h4>
+          <p>Toda variação expressiva traz um comentário registrado pelo gestor da conta. Ao clicar em uma barra da cascata, a tabela explica imediatamente o motivo do desvio (ex: ações comerciais, desabastecimento, antecipações).</p>
+        </div>
+      </div>
+
+      <hr style="border:0;border-top:1px solid var(--fr-border, rgba(100,116,139,.15));margin:1.8rem 0;">
+
+      <!-- Seção 3: Como Usar os Filtros -->
+      <div class="guia-section-header">
+        <div class="guia-num-badge">3</div>
+        <h3 class="guia-section-title">Como Usar os Filtros & Interatividade</h3>
+      </div>
+      <div class="guia-steps">
+        <div class="guia-step-item">
+          <div class="step-circle">•</div>
+          <div><strong>Filtros Principais (Topo):</strong> Ano, Mês, sub-canal, Grupo Clientes e Diretor/Gerente.</div>
+        </div>
+        <div class="guia-step-item">
+          <div class="step-circle">•</div>
+          <div><strong>Botão Mais Filtros:</strong> Clique para expandir a segunda linha contendo Sub-Canal, Setor, Categoria e Sub-Categoria.</div>
+        </div>
+        <div class="guia-step-item">
+          <div class="step-circle">•</div>
+          <div><strong>Seletor Exclusivo:</strong> Alterne entre <em>Valor (R$)</em> e <em>Volume</em> (com unidades de medida abreviadas em Dúzias [Dz], Caixas [Cx] e Unidades [Un]) com um clique. Não é possível selecionar ambos simultaneamente.</div>
+        </div>
+        <div class="guia-step-item">
+          <div class="step-circle">•</div>
+          <div><strong>Clique Interativo na Cascata:</strong> Clique sobre qualquer coluna de variação no gráfico para filtrar na hora a tabela de justificativas abaixo.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <!-- SUB-TAB 2: APRESENTAÇÃO (SLIDE DECK)         -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <div id="tab-apresentacao" class="guia-tab-pane">
+      <div class="slide-deck-wrapper">
+        <div class="slide-content">
+          <span class="slide-tag" id="slideNumber">SLIDE 01 DE 04 • VISÃO GERAL</span>
+          <h2 class="slide-title" id="slideTitle">BQ Landing: Como Fecharemos o Mês?</h2>
+          <div class="slide-body" id="slideBody">
+            <p>O <strong>BQ Landing</strong> é a ferramenta analítica definitiva do Grupo Bimbo para monitoramento da convergência entre a meta orçada (Budget) e a projeção mais atualizada de vendas (Prev. Forecast).</p>
+            <ul>
+              <li><strong>Visibilidade Executiva:</strong> Atualização contínua alinhada à rotina bissemanal liderada por Sucena.</li>
+              <li><strong>Diagnóstico Rápido:</strong> Visão clara de pontes (Bridge) com identificação imediata dos maiores ofensores e alavancas de crescimento.</li>
+              <li><strong>Rastreabilidade de Justificativas:</strong> Comentários qualitativos integrados às variações numéricas.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Controles dos Slides -->
+        <div class="slide-controls">
+          <button class="slide-btn" id="btnSlidePrev" onclick="mudarSlide(-1)" disabled>← Anterior</button>
+          <span style="font-size:.75rem;color:var(--fr-txt-soft);" id="slideIndicator">1 / 4</span>
+          <button class="slide-btn" id="btnSlideNext" onclick="mudarSlide(1)">Próximo →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <!-- SUB-TAB 3: DOCUMENTAÇÃO TÉCNICA             -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <div id="tab-tecnica" class="guia-tab-pane">
+      <div class="fr-chart-card" style="margin-bottom:1.5rem;">
+        <span class="fr-chart-ttl">Arquitetura de Dados & Pipeline de Ingestão</span>
+        <p style="font-size:.75rem;color:var(--fr-txt-soft);margin-top:4px;line-height:1.5;">
+          O fluxo operacional funciona de ponta a ponta de forma automatizada no Databricks Unity Catalog:
+        </p>
+
+        <!-- PIPELINE DE ARQUITETURA INTERATIVO & DE ALTO CONTRASTE -->
+        <div class="pipeline-card">
+          <!-- Top Header com status de automação e botão alternador de visualização -->
+          <div class="pipeline-header">
+            <div class="pipeline-header-info">
+              <div class="pipeline-status-pulse">
+                <span class="pulse-dot"></span>
+                <span class="status-text">Pipeline Ativo & Automatizado</span>
+              </div>
+              <span class="pipeline-sub">Arquitetura Integrada Grupo Bimbo • Databricks Unity Catalog</span>
+            </div>
+            <div class="pipeline-view-toggle">
+              <button type="button" class="pipe-toggle-btn active" id="btnPipeVisual" onclick="switchPipelineView('visual')" title="Exibir fluxo em diagramas visuais">
+                <span>📊</span> Diagrama Visual
+              </button>
+              <button type="button" class="pipe-toggle-btn" id="btnPipeTerminal" onclick="switchPipelineView('terminal')" title="Exibir estrutura em texto monospace">
+                <span>💻</span> Terminal / ASCII
+              </button>
+            </div>
+          </div>
+
+          <!-- VISÃO 1: FLUXOGRAMA VISUAL COM CARDS E CONECTORES -->
+          <div class="pipeline-visual-view" id="pipelineVisualView">
+            
+            <!-- Etapa 1: SharePoint -->
+            <div class="pipe-step">
+              <div class="pipe-node">
+                <div class="pipe-node-icon icon-sharepoint">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                  </svg>
+                </div>
+                <div class="pipe-node-content">
+                  <div class="pipe-node-top">
+                    <span class="pipe-node-tag tag-source">Origem</span>
+                    <span class="pipe-node-meta">Planilha Executiva Microsoft SharePoint</span>
+                  </div>
+                  <div class="pipe-node-title">SharePoint Online</div>
+                  <div class="pipe-node-path"><code>BQ_LANDING/base_landing.xlsx</code></div>
+                  <div class="pipe-node-details">
+                    <span class="pipe-chip">📑 Aba: <strong>Base de Dados</strong></span>
+                    <span class="pipe-chip">👥 Alimentação pela Gestão Comercial</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pipe-connector">
+                <div class="pipe-connector-line"></div>
+                <div class="pipe-connector-badge">
+                  <span class="pipe-badge-icon">⬇</span>
+                  <span>Upload / Sincronização Automática</span>
+                </div>
+                <div class="pipe-connector-line"></div>
+              </div>
+            </div>
+
+            <!-- Etapa 2: Volume Unity Catalog -->
+            <div class="pipe-step">
+              <div class="pipe-node">
+                <div class="pipe-node-icon icon-volume">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                    <path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/>
+                  </svg>
+                </div>
+                <div class="pipe-node-content">
+                  <div class="pipe-node-top">
+                    <span class="pipe-node-tag tag-storage">Armazenamento</span>
+                    <span class="pipe-node-meta">Unity Catalog Volume</span>
+                  </div>
+                  <div class="pipe-node-title">Unity Catalog Volume</div>
+                  <div class="pipe-node-path"><code>/Volumes/cat_dnabb_dv/grobbbqb_sz/dev_bq_landing/</code></div>
+                  <div class="pipe-node-details">
+                    <span class="pipe-chip">🔒 Governança Sem Credenciais Expostas</span>
+                    <span class="pipe-chip">📁 Repositório Seguro Lakehouse</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pipe-connector">
+                <div class="pipe-connector-line"></div>
+                <div class="pipe-connector-badge pulse-badge">
+                  <span class="pipe-badge-icon">⚡</span>
+                  <span>Gatilho de Evento: <strong>file_arrival</strong></span>
+                </div>
+                <div class="pipe-connector-line"></div>
+              </div>
+            </div>
+
+            <!-- Etapa 3: Databricks Job -->
+            <div class="pipe-step">
+              <div class="pipe-node">
+                <div class="pipe-node-icon icon-job">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                    <path d="M12 2L1 21h22L12 2zm0 3.84L19.53 19H4.47L12 5.84zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/>
+                  </svg>
+                </div>
+                <div class="pipe-node-content">
+                  <div class="pipe-node-top">
+                    <span class="pipe-node-tag tag-process">Orquestração</span>
+                    <span class="pipe-node-meta">Databricks Workflows / Spark</span>
+                  </div>
+                  <div class="pipe-node-title">Databricks Job (Ingestão Automática)</div>
+                  <div class="pipe-node-path"><code>job_bq_landing_dev</code></div>
+                  <div class="pipe-node-details">
+                    <span class="pipe-chip">🔄 Modo: <strong>Overwrite</strong></span>
+                    <span class="pipe-chip">🧬 Schema Evolution Ativado</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pipe-connector">
+                <div class="pipe-connector-line"></div>
+                <div class="pipe-connector-badge">
+                  <span class="pipe-badge-icon">⬇</span>
+                  <span>Carga Concluída no Lakehouse</span>
+                </div>
+                <div class="pipe-connector-line"></div>
+              </div>
+            </div>
+
+            <!-- Etapa 4: Delta Table -->
+            <div class="pipe-step">
+              <div class="pipe-node">
+                <div class="pipe-node-icon icon-delta">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                  </svg>
+                </div>
+                <div class="pipe-node-content">
+                  <div class="pipe-node-top">
+                    <span class="pipe-node-tag tag-table">Camada Analítica</span>
+                    <span class="pipe-node-meta">Tabela Governda Unity Catalog</span>
+                  </div>
+                  <div class="pipe-node-title">Delta Table Governed</div>
+                  <div class="pipe-node-path"><code>cat_dnabb_dv.grobbbqb_sz.tbl_bq_landing</code></div>
+                  <div class="pipe-node-details">
+                    <span class="pipe-chip">🛡️ ACID & Versionamento Time-Travel</span>
+                    <span class="pipe-chip">⏱️ Campo <strong>STOREDAY</strong> (Auditoria)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pipe-connector">
+                <div class="pipe-connector-line"></div>
+                <div class="pipe-connector-badge">
+                  <span class="pipe-badge-icon">⬇</span>
+                  <span>Consumo via SQL Warehouse & Python REST API</span>
+                </div>
+                <div class="pipe-connector-line"></div>
+              </div>
+            </div>
+
+            <!-- Etapa 5: Databricks App -->
+            <div class="pipe-step">
+              <div class="pipe-node">
+                <div class="pipe-node-icon icon-app">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                    <path d="M3 3h18v18H3V3zm16 16V5H5v14h14zM7 7h4v4H7V7zm6 0h4v2h-4V7zm0 4h4v2h-4v-2zm-6 4h10v2H7v-2z"/>
+                  </svg>
+                </div>
+                <div class="pipe-node-content">
+                  <div class="pipe-node-top">
+                    <span class="pipe-node-tag tag-app">Interface Web</span>
+                    <span class="pipe-node-meta">Databricks Apps Production</span>
+                  </div>
+                  <div class="pipe-node-title">Databricks App (BQ Landing)</div>
+                  <div class="pipe-node-path"><code>bq_app_landing</code></div>
+                  <div class="pipe-node-details">
+                    <span class="pipe-chip">🐍 Python Flask + Waitress</span>
+                    <span class="pipe-chip">📊 Gráficos Waterfall Dinâmicos</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- VISÃO 2: TERMINAL / ASCII (COM ALTO CONTRASTE E COPIAR) -->
+          <div class="pipeline-terminal-view" id="pipelineTerminalView" style="display:none;">
+            <div class="pipe-term-header">
+              <div class="pipe-term-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+              </div>
+              <span class="pipe-term-title">pipeline_architecture.txt</span>
+              <button type="button" class="pipe-copy-btn" onclick="copiarTextoPipeline(this)" title="Copiar fluxo em formato texto">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span class="copy-text">Copiar</span>
+              </button>
+            </div>
+            <div class="pipe-term-content" id="pipelineAsciiRaw"><span class="term-node">[SharePoint: <span class="term-path">BQ_LANDING/base_landing.xlsx</span>]</span>
+<span class="term-branch">  │ <span class="term-note">(Aba: 'Base de Dados')</span></span>
+<span class="term-arrow">  ▼</span>
+<span class="term-node">[Unity Catalog Volume: <span class="term-path">/Volumes/cat_dnabb_dv/grobbbqb_sz/dev_bq_landing/</span>]</span>
+<span class="term-branch">  │</span>
+<span class="term-arrow">  ▼ <span class="term-event">(Gatilho: file_arrival)</span></span>
+<span class="term-node">[Databricks Job: <span class="term-path">job_bq_landing_dev</span>]</span>
+<span class="term-branch">  │</span>
+<span class="term-arrow">  ▼ <span class="term-action">(Escrita Overwrite Schema Evolution)</span></span>
+<span class="term-node">[Delta Table: <span class="term-path">cat_dnabb_dv.grobbbqb_sz.tbl_bq_landing</span>]</span>
+<span class="term-branch">  │</span>
+<span class="term-arrow">  ▼</span>
+<span class="term-node">[Databricks App: <span class="term-path">bq_app_landing</span> <span class="term-note">(Flask + Waitress + Chart.js)</span>]</span></div>
+          </div>
+        </div>
+
+        <h4 style="font-size:.82rem;font-weight:700;color:var(--fr-txt);margin-top:1.2rem;">Dicionário de Atributos Principais</h4>
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th>Atributo</th>
+              <th>Tipo</th>
+              <th>Origem</th>
+              <th>Descrição</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="tech-code">DATA / ANO / MES</span></td>
+              <td>Date / Int</td>
+              <td>Planilha Excel</td>
+              <td>Competência temporal do faturamento ou projeção.</td>
+            </tr>
+            <tr>
+              <td><span class="tech-code">CANAL / SUB_CANAL</span></td>
+              <td>String</td>
+              <td>Planilha Excel</td>
+              <td>Segmentação comercial (ex: QSR, Indústria, Exportação).</td>
+            </tr>
+            <tr>
+              <td><span class="tech-code">BUDGET (BGT)</span></td>
+              <td>Double</td>
+              <td>Planilha Excel</td>
+              <td>Meta financeira ou volumétrica estabelecida no planejamento anual.</td>
+            </tr>
+            <tr>
+              <td><span class="tech-code">PREV_FORECAST (FCST)</span></td>
+              <td>Double</td>
+              <td>Planilha Excel</td>
+              <td>Projeção consolidada de fechamento da operação.</td>
+            </tr>
+            <tr>
+              <td><span class="tech-code">COMENTARIOS</span></td>
+              <td>String</td>
+              <td>Planilha Excel</td>
+              <td>Justificativa qualitativa do gestor explicando desvios significativos.</td>
+            </tr>
+            <tr>
+              <td><span class="tech-code">STOREDAY</span></td>
+              <td>Timestamp</td>
+              <td>Pipeline Spark</td>
+              <td>Carimbo de data/hora em que a carga foi ingerida no Delta Lake.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <footer style="text-align:center;padding:1.5rem;font-size:.7rem;color:var(--fr-txt-soft);border-top:1px solid var(--fr-border, rgba(100,116,139,.15));margin-top:2rem;">
+    Grupo Bimbo Brasil • Databricks Apps & Unity Catalog • <strong>cat_dnabb_dv.grobbbqb_sz.tbl_bq_landing</strong>
+  </footer>
+
+  <script>
+    // Alternar Tema
+    function toggleTheme() {
+      const html = document.documentElement;
+      const temaAtual = html.getAttribute("data-theme") || "light";
+      const novoTema = temaAtual === "dark" ? "light" : "dark";
+      html.setAttribute("data-theme", novoTema);
+      localStorage.setItem("theme_preference", novoTema);
+      localStorage.setItem("portal_theme", novoTema);
+    }
+    let salvo = localStorage.getItem("theme_preference") || localStorage.getItem("portal_theme");
+    if (!salvo || !localStorage.getItem("theme_initialized_light_v1")) {
+      salvo = "light";
+      localStorage.setItem("theme_preference", "light");
+      localStorage.setItem("portal_theme", "light");
+      localStorage.setItem("theme_initialized_light_v1", "true");
+    }
+    document.documentElement.setAttribute("data-theme", salvo);
+
+    // Navegação entre as 3 sub-abas da Guia
+    function trocarSubTab(tabId, btn) {
+      document.querySelectorAll(".guia-tab-pane").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".guia-tab-btn").forEach(b => b.classList.remove("active"));
+
+      document.getElementById(tabId).classList.add("active");
+      btn.classList.add("active");
+    }
+
+    // Engine dos Slides de Apresentação
+    const slidesData = [
+      {
+        num: "SLIDE 01 DE 04 • VISÃO GERAL",
+        title: "BQ Landing: Como Fecharemos o Mês?",
+        html: `
+          <p>O <strong>BQ Landing</strong> é a ferramenta analítica definitiva do Grupo Bimbo para monitoramento da convergência entre a meta orçada (Budget) e a projeção mais atualizada de vendas (Prev. Forecast).</p>
+          <ul>
+            <li><strong>Visibilidade Executiva:</strong> Atualização contínua alinhada à rotina bissemanal liderada por Sucena.</li>
+            <li><strong>Diagnóstico Rápido:</strong> Visão clara de pontes (Bridge) com identificação imediata dos maiores ofensores e alavancas de crescimento.</li>
+            <li><strong>Rastreabilidade de Justificativas:</strong> Comentários qualitativos integrados às variações numéricas.</li>
+          </ul>
+        `
+      },
+      {
+        num: "SLIDE 02 DE 04 • O GRÁFICO DE CASCATA",
+        title: "Análise de Bridge (BGT x FCST)",
+        html: `
+          <p>O gráfico de cascata (Waterfall) elimina o ruído e foca exclusivamente no <strong>impacto marginal de cada canal</strong>:</p>
+          <ul>
+            <li><strong>Pilar Inicial (Budget):</strong> O compromisso estabelecido no início do ciclo.</li>
+            <li><strong>Barras Flutuantes Intermediárias:</strong> As variações positivas (verde) e negativas (vermelho) de cada segmento (ZAMP, Subway, McDonald's, Indústria, etc.).</li>
+            <li><strong>Pilar Final (Prev. Forecast):</strong> Para onde a empresa está caminhando no fechamento atual.</li>
+          </ul>
+        `
+      },
+      {
+        num: "SLIDE 03 DE 04 • A IMPORTÂNCIA DOS COMENTÁRIOS",
+        title: "Conectando o Número à Realidade",
+        html: `
+          <p>Um número negativo sem contexto gera incerteza. Por isso, a coluna de <strong>Comentários</strong> é o coração analítico do BQ Landing:</p>
+          <ul>
+            <li><strong>Contextualização Imediata:</strong> Por que a ZAMP caiu R$ 20M? Desabastecimento de insumos ou reprogramação de entregas?</li>
+            <li><strong>Planos de Ação Registrados:</strong> Como a equipe pretende recuperar a meta nas semanas seguintes?</li>
+            <li><strong>Alinhamento Único:</strong> Todos os diretores e gerentes falam a mesma linguagem nas reuniões bissemanais.</li>
+          </ul>
+        `
+      },
+      {
+        num: "SLIDE 04 DE 04 • TECNOLOGIA & GOVERNANÇA",
+        title: "Arquitetura Segura no Databricks",
+        html: `
+          <p>Implementado sob as melhores práticas modernas de engenharia e governança de dados:</p>
+          <ul>
+            <li><strong>Unity Catalog Volumes:</strong> Ingestão centralizada sem necessidade de credenciais expostas.</li>
+            <li><strong>Automação via File Arrival:</strong> Assim que a planilha do Landing é depositada, o pipeline atualiza a tabela Delta instantaneamente.</li>
+            <li><strong>Databricks Apps:</strong> Interface web moderna, ultra-rápida, com tema claro/escuro e 100% responsiva.</li>
+          </ul>
+        `
+      }
+    ];
+
+    let slideAtual = 0;
+
+    function renderizarSlide() {
+      const s = slidesData[slideAtual];
+      document.getElementById("slideNumber").textContent = s.num;
+      document.getElementById("slideTitle").textContent = s.title;
+      document.getElementById("slideBody").innerHTML = s.html;
+      document.getElementById("slideIndicator").textContent = `${slideAtual + 1} / ${slidesData.length}`;
+
+      document.getElementById("btnSlidePrev").disabled = (slideAtual === 0);
+      document.getElementById("btnSlideNext").disabled = (slideAtual === slidesData.length - 1);
+    }
+
+    function mudarSlide(delta) {
+      slideAtual = Math.max(0, Math.min(slidesData.length - 1, slideAtual + delta));
+      renderizarSlide();
+    }
+
+    // Alternar Visualização do Pipeline (Visual vs Terminal)
+    function switchPipelineView(mode) {
+      const visualView = document.getElementById("pipelineVisualView");
+      const termView = document.getElementById("pipelineTerminalView");
+      const btnVisual = document.getElementById("btnPipeVisual");
+      const btnTerm = document.getElementById("btnPipeTerminal");
+
+      if (mode === "terminal") {
+        visualView.style.display = "none";
+        termView.style.display = "block";
+        btnVisual.classList.remove("active");
+        btnTerm.classList.add("active");
+      } else {
+        visualView.style.display = "flex";
+        termView.style.display = "none";
+        btnVisual.classList.add("active");
+        btnTerm.classList.remove("active");
+      }
+    }
+
+    // Copiar Texto Raw do Pipeline
+    function copiarTextoPipeline(btn) {
+      const rawText = `[SharePoint: BQ_LANDING/base_landing.xlsx]
+    │ (Aba: 'Base de Dados')
+    ▼
+[Unity Catalog Volume: /Volumes/cat_dnabb_dv/grobbbqb_sz/dev_bq_landing/]
+    │
+    ▼ (Gatilho: file_arrival)
+[Databricks Job: job_bq_landing_dev]
+    │
+    ▼ (Escrita Overwrite Schema Evolution)
+[Delta Table: cat_dnabb_dv.grobbbqb_sz.tbl_bq_landing]
+    │
+    ▼
+[Databricks App: bq_app_landing (Flask + Waitress + Chart.js)]`;
+
+      navigator.clipboard.writeText(rawText).then(() => {
+        const copyText = btn.querySelector(".copy-text");
+        if (copyText) {
+          const original = copyText.textContent;
+          copyText.textContent = "Copiado! ✓";
+          btn.classList.add("copied");
+          setTimeout(() => {
+            copyText.textContent = original;
+            btn.classList.remove("copied");
+          }, 2000);
+        }
+      }).catch(err => {
+        console.error("Falha ao copiar:", err);
+      });
+    }
+
+    // Navegação por setas do teclado nos slides
+    document.addEventListener("keydown", (e) => {
+      const abaApresentacao = document.getElementById("tab-apresentacao");
+      if (abaApresentacao && abaApresentacao.classList.contains("active")) {
+        if (e.key === "ArrowRight") mudarSlide(1);
+        if (e.key === "ArrowLeft") mudarSlide(-1);
+      }
+    });
+
+    (async function initNavbarUser() {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.email) {
+            const badge = document.getElementById('operatorEmailText');
+            if (badge) badge.innerText = `${data.email} ${data.is_admin ? '(Admin)' : ''}`;
+          }
+        }
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

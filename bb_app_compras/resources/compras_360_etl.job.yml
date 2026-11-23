@@ -1,0 +1,27 @@
+# Configuração de recurso Databricks Job para deploy via Declarative Automation Bundles (DABs)
+# Grupo Bimbo Brasil - DNA Analytics
+resources:
+  jobs:
+    compras_360_etl:
+      name: "ETL Compras 360 - Lakebase Daily (${bundle.target})"
+      description: "ETL diário: Oracle Cloud → Lakebase PostgreSQL (blue-green swap). Atualiza notas_ri, ordens_compra e requisicoes para o app compras-360."
+      max_concurrent_runs: 1
+      schedule:
+        quartz_cron_expression: "0 0 6 * * ? *"
+        timezone_id: "America/Sao_Paulo"
+        pause_status: PAUSED
+      email_notifications:
+        no_alert_for_skipped_runs: true
+        on_failure:
+          - renan.ferreira@grupobimbo.com
+      tags:
+        AMBIENTE: ${bundle.target}
+        dev: renan_ferreira
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
+      tasks:
+        - task_key: notebook_task_compras_360_lakebase_etl
+          notebook_task:
+            notebook_path: ../src/dados/compras_360_lakebase_etl.py
+            source: WORKSPACE

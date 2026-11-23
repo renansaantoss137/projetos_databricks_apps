@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão de Acessos – Portal Distribuidores</title>
+  <link rel="stylesheet" href="css/admin_mode.css?v=20261023_v1">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Manrope', 'Segoe UI', Arial, sans-serif; background: #F1F4F9; color: #0F172A; min-height: 100vh; }
+    .ga-header { background: linear-gradient(135deg, #010512 0%, #030C24 40%, #06163D 80%, #010512 100%); color: #FFF; padding: 22px clamp(16px, 4vw, 48px) 26px; }
+    .ga-header-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .ga-header h1 { font-size: 22px; font-weight: 850; letter-spacing: .02em; }
+    .ga-header p { color: #94A3B8; font-size: 13px; margin-top: 4px; }
+    .ga-back { color: #5DF2FF; text-decoration: none; font-weight: 800; font-size: 13px; border: 1px solid rgba(0, 229, 255, .4); padding: 7px 14px; border-radius: 999px; }
+    .ga-back:hover { background: rgba(0, 229, 255, .1); }
+    .ga-main { max-width: 1200px; margin: -14px auto 40px; padding: 0 clamp(12px, 3vw, 32px); }
+    .ga-card { background: #FFF; border: 1px solid #E2E8F0; border-radius: 14px; box-shadow: 0 2px 10px rgba(15, 23, 42, .05); padding: 18px; margin-bottom: 16px; }
+    .ga-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+    .ga-tab { border: 1px solid #CBD5E1; background: #FFF; color: #334155; border-radius: 999px; padding: 7px 16px; font: 800 12.5px 'Manrope', 'Segoe UI', Arial, sans-serif; cursor: pointer; }
+    .ga-tab.active { background: #0C2167; color: #FFF; border-color: #0C2167; }
+    .ga-readonly { display: none; background: #FFFBEB; border: 1px solid #FCD34D; color: #92400E; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600; margin-bottom: 14px; }
+    .ga-form { display: grid; grid-template-columns: minmax(220px, 2fr) 150px minmax(160px, 2fr) auto; gap: 10px; align-items: end; }
+    .ga-form label { display: block; font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 5px; }
+    .ga-form input, .ga-form select, .ga-filter input { width: 100%; border: 1px solid #CBD5E1; border-radius: 8px; padding: 8px 10px; font: 600 13px 'Manrope', 'Segoe UI', Arial, sans-serif; color: #0F172A; background: #FFF; }
+    .ga-form input:focus, .ga-form select:focus, .ga-filter input:focus { outline: none; border-color: #38BDF8; box-shadow: 0 0 0 3px rgba(56, 189, 248, .2); }
+    .ga-btn { border: 0; border-radius: 8px; padding: 9px 16px; font: 800 12.5px 'Manrope', 'Segoe UI', Arial, sans-serif; cursor: pointer; white-space: nowrap; }
+    .ga-btn-primary { background: #0C2167; color: #FFF; }
+    .ga-btn-primary:hover { background: #12308F; }
+    .ga-btn-sm { padding: 5px 10px; font-size: 11.5px; border-radius: 7px; }
+    .ga-btn-outline { background: #FFF; color: #0C2167; border: 1px solid #94A3B8; }
+    .ga-btn-outline:hover { background: #F1F5F9; }
+    .ga-btn-danger { background: #FFF; color: #B91C1C; border: 1px solid #FCA5A5; }
+    .ga-btn-danger:hover { background: #FEF2F2; }
+    .ga-btn:disabled { opacity: .45; cursor: not-allowed; }
+    .ga-hint { font-size: 11.5px; color: #64748B; margin-top: 6px; }
+    .ga-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+    .ga-toolbar h2 { font-size: 15px; font-weight: 850; }
+    .ga-check { font-size: 12.5px; font-weight: 700; color: #334155; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .ga-filter { width: min(320px, 100%); }
+    .ga-table-wrap { overflow-x: auto; }
+    table.ga-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .ga-table th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: #64748B; padding: 8px 10px; border-bottom: 2px solid #E2E8F0; white-space: nowrap; }
+    .ga-table td { padding: 9px 10px; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+    .ga-table tr.inactive td { color: #94A3B8; }
+    .ga-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .ga-you { font-size: 10.5px; font-weight: 800; color: #0369A1; background: #E0F2FE; border-radius: 999px; padding: 1px 7px; margin-left: 6px; }
+    .ga-pill { display: inline-block; border-radius: 999px; padding: 2px 9px; font-size: 10.5px; font-weight: 800; }
+    .ga-pill-on { background: #DCFCE7; color: #166534; }
+    .ga-pill-off { background: #F1F5F9; color: #64748B; }
+    .ga-muted { color: #94A3B8; }
+    .ga-empty { padding: 18px; text-align: center; color: #64748B; }
+    .ga-act { font-weight: 800; }
+    .ga-act-REVOKE, .ga-act-DEMOTE { color: #B91C1C; }
+    .ga-act-GRANT, .ga-act-REACTIVATE, .ga-act-PROMOTE { color: #166534; }
+    .ga-act-SIMULATE_START, .ga-act-SIMULATE_END { color: #B45309; }
+    .ga-toast { position: fixed; right: 18px; bottom: 18px; z-index: 10003; max-width: 420px; padding: 11px 16px; border-radius: 10px; color: #FFF; font-size: 13px; font-weight: 700; box-shadow: 0 10px 30px rgba(0, 0, 0, .25); display: none; }
+    .ga-toast.ok { background: #166534; }
+    .ga-toast.err { background: #B91C1C; }
+    .amb-modal-body label { display: block; font-size: 11px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: .06em; margin: 10px 0 5px; }
+    .amb-modal-body input, .amb-modal-body select { width: 100%; border: 1px solid #CBD5E1; border-radius: 8px; padding: 8px 10px; font: 600 13px 'Manrope', 'Segoe UI', Arial, sans-serif; }
+    .amb-modal-ok.danger { background: #B91C1C; }
+    @media (max-width: 820px) { .ga-form { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <div id="admin-mode-bar" role="status">
+    <div class="amb-left">
+      <span class="amb-badge" id="ga-role-badge">…</span>
+      <span class="amb-title">MODO ADMINISTRADOR</span><span class="amb-sep">·</span>
+      <span class="amb-view">Gestão de Acessos</span>
+    </div>
+    <div class="amb-right"><a class="amb-link" href="/dashboard.html">Voltar ao portal</a></div>
+  </div>
+
+  <header class="ga-header">
+    <div class="ga-header-row">
+      <div>
+        <h1>Gestão de Acessos</h1>
+        <p>Administradores do Portal Distribuidores (tbl_dim_app_admin). Toda alteração fica registrada no histórico.</p>
+      </div>
+      <a class="ga-back" href="/dashboard.html">← Voltar ao portal</a>
+    </div>
+  </header>
+
+  <main class="ga-main">
+    <div class="ga-card">
+      <div class="ga-tabs" role="tablist">
+        <button type="button" class="ga-tab active" data-panel="admins" role="tab">Administradores</button>
+        <button type="button" class="ga-tab" data-panel="historico" role="tab">Histórico</button>
+      </div>
+
+      <div class="ga-readonly" id="ga-readonly">Você tem perfil ADMIN: esta tela é somente leitura. Apenas usuários MASTER podem conceder, alterar ou revogar acessos.</div>
+
+      <!-- Painel: Administradores -->
+      <section id="panel-admins">
+        <form class="ga-form" id="ga-add-form" style="display:none;" autocomplete="off">
+          <div>
+            <label for="ga-email">E-mail</label>
+            <input type="email" id="ga-email" placeholder="nome.sobrenome@grupobimbo.com" required>
+          </div>
+          <div>
+            <label for="ga-role">Papel</label>
+            <select id="ga-role">
+              <option value="ADMIN">ADMIN</option>
+              <option value="MASTER">MASTER</option>
+            </select>
+          </div>
+          <div>
+            <label for="ga-notes">Observação (opcional)</label>
+            <input type="text" id="ga-notes" maxlength="500" placeholder="Ex.: time comercial">
+          </div>
+          <div><button type="submit" class="ga-btn ga-btn-primary">Adicionar</button></div>
+        </form>
+        <p class="ga-hint" id="ga-add-hint" style="display:none;">Somente e-mails @grupobimbo.com. ADMIN vê todos os distribuidores; MASTER também gerencia acessos.</p>
+
+        <div class="ga-toolbar" style="margin-top:16px;">
+          <h2 id="ga-admins-title">Administradores</h2>
+          <label class="ga-check"><input type="checkbox" id="ga-show-revoked"> Mostrar revogados</label>
+        </div>
+        <div class="ga-table-wrap">
+          <table class="ga-table">
+            <thead>
+              <tr><th>E-mail</th><th>Papel</th><th>Status</th><th>Concedido por</th><th>Concedido em</th><th>Revogado</th><th>Observação</th><th>Ações</th></tr>
+            </thead>
+            <tbody id="ga-admins-body"><tr><td colspan="8" class="ga-empty">Carregando…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Painel: Histórico -->
+      <section id="panel-historico" style="display:none;">
+        <div class="ga-toolbar">
+          <h2>Histórico de alterações</h2>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <div class="ga-filter"><input type="search" id="ga-audit-filter" placeholder="Filtrar por e-mail, ação ou detalhe…"></div>
+            <button type="button" class="ga-btn ga-btn-outline ga-btn-sm" id="ga-audit-refresh">Atualizar</button>
+          </div>
+        </div>
+        <div class="ga-table-wrap">
+          <table class="ga-table">
+            <thead>
+              <tr><th>Data/hora (Brasília)</th><th>Quem</th><th>Ação</th><th>Usuário afetado</th><th>Papel</th><th>Detalhes</th><th>Origem</th></tr>
+            </thead>
+            <tbody id="ga-audit-body"><tr><td colspan="7" class="ga-empty">Carregando…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="ga-toast" id="ga-toast" role="alert"></div>
+
+  <script src="js/gestao_acesso.js?v=20261023_v1"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+# Declarative Automation Bundle definition for bq_app_space
+# Grupo Bimbo Brasil - DNA Analytics
+bundle:
+  name: bq_app_space
+
+include:
+  - resources/*.yml
+
+sync:
+  exclude:
+    - "*.tmp"
+    - "~$*"
+    - ".git"
+    - ".vscode"
+    - ".agents"
+    - "__pycache__"
+    - "node_modules"
+    - ".venv"
+
+variables:
+  lakebase_branch:
+    description: Lakebase branch resource name
+    default: projects/bq-space-db/branches/production
+  lakebase_database:
+    description: Lakebase database resource name
+    default: projects/bq-space-db/branches/production/databases/databricks-postgres
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://adb-8674310331778219.19.azuredatabricks.net
+      root_path: /Shared/CONSULTAS_AUTOMATIZADAS/${workspace.current_user.userName}/${bundle.name}/${bundle.target}/
+    variables:
+      lakebase_branch: projects/bq-space-db/branches/dev
+      lakebase_database: projects/bq-space-db/branches/dev/databases/databricks-postgres
+    permissions:
+      - user_name: ${workspace.current_user.userName}
+        level: CAN_MANAGE
+      - group_name: DNA - GB Brasil Leaders
+        level: CAN_MANAGE
+
+  prod:
+    mode: production
+    workspace:
+      host: https://adb-8674310331778219.19.azuredatabricks.net
+      root_path: /Shared/CONSULTAS_AUTOMATIZADAS/${bundle.name}/${bundle.target}
+    variables:
+      lakebase_branch: projects/bq-space-db/branches/production
+      lakebase_database: projects/bq-space-db/branches/production/databases/databricks-postgres
+    permissions:
+      - user_name: ${workspace.current_user.userName}
+        level: CAN_MANAGE
+      - group_name: DNA - GB Brasil Leaders
+        level: CAN_MANAGE

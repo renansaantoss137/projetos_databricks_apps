@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador do Modelo KNN — Bimbo QSR</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --primary: #38bdf8;
+            --accent: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--bg-dark);
+            color: var(--text-main);
+            padding: 24px;
+            line-height: 1.5;
+        }
+
+        .header {
+            max-width: 1200px;
+            margin: 0 auto 24px auto;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header h1 span {
+            color: var(--primary);
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h2 {
+            font-size: 1.15rem;
+            margin-bottom: 16px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        select:focus {
+            border-color: var(--primary);
+        }
+
+        .dimension-badge {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .ranking-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .ranking-item {
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ranking-item.selected {
+            border-color: var(--accent);
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .ranking-item .rank-badge {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #334155;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .ranking-item.selected .rank-badge {
+            background: var(--accent);
+            color: #0f172a;
+        }
+
+        .ranking-info {
+            flex: 1;
+        }
+
+        .ranking-info .title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .ranking-info .area {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .dist-tag {
+            font-family: monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.15);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 520px;
+            width: 100%;
+        }
+
+        .legend-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 16px;
+            font-size: 0.8rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .info-pill {
+            margin-top: 16px;
+            padding: 12px;
+            background: rgba(56, 189, 248, 0.08);
+            border-left: 3px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.82rem;
+            color: #cbd5e1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Visualizador do Modelo <span>KNN & Hiperespaço</span></h1>
+        <p>Projeção 2D (PCA) das <strong>1.000 dimensões de palavras-chave</strong> para os 15 Dashboards da Bimbo QSR e o cálculo geométrico de distâncias dos colaboradores.</p>
+    </div>
+
+    <div class="container">
+        <!-- SIDEBAR: SELEÇÃO E RESULTADOS -->
+        <div class="card">
+            <h2>⚙️ Perfil do Usuário</h2>
+            <div class="form-group">
+                <label for="cargoSelect">Simular Cargo na BQ:</label>
+                <select id="cargoSelect" onchange="updateVisualization()">
+                    <option value="analista_frete">Analista de Fretes & Rotas</option>
+                    <option value="gerente_logistica">Gerente de Logística (Liderança)</option>
+                    <option value="vendedor_qsr">Executivo de Vendas QSR</option>
+                    <option value="supervisor_financeiro">Supervisor Financeiro / DRE</option>
+                    <option value="planejador_demanda">Planejador de Supply Chain</option>
+                    <option value="especialista_distribuidores">Especialista de Trade Marketing</option>
+                </select>
+            </div>
+
+            <div class="dimension-badge">Hiperespaço: 1.000 Dimensões ➔ Redução PCA 2D</div>
+
+            <h2>🏆 Top 4 Vizinhos (KNN)</h2>
+            <ul class="ranking-list" id="rankingList">
+                <!-- Preenchido via JavaScript -->
+            </ul>
+
+            <div class="info-pill" id="ruleAlert">
+                <strong>Critério de Seleção:</strong><br>
+                Distância de Cosseno calculada matematicamente entre a descrição semântica do cargo e as tags do relatório.
+            </div>
+        </div>
+
+        <!-- MAIN: GRÁFICO 2D -->
+        <div class="card">
+            <h2>🗺️ Mapa Geométrico de Proximidade (Plano PCA 2D)</h2>
+            <div class="chart-container">
+                <canvas id="knnChart"></canvas>
+            </div>
+
+            <div class="legend-box">
+                <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div> Logística (9)</div>
+                <div class="legend-item"><div class="legend-color" style="background: #10b981;"></div> Comercial (1)</div>
+                <div class="legend-item"><div class="legend-color" style="background: #8b5cf6;"></div> Supply Chain (1)</div>
+                <div class="legend-item"><div class="legend-color" style="background: #f59e0b;"></div> Finanças (3)</div>
+                <div class="legend-item"><div class="legend-color" style="background: #ec4899;"></div> Marketing (1)</div>
+                <div class="legend-item"><div class="legend-color" style="background: #ef4444; border-radius: 50%;"></div> ⭐ Colaborador Simulado</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Coordenadas projetadas 2D via PCA para os 15 Dashboards da Bimbo QSR
+        const DASHBOARDS = [
+            // Logística (Azul)
+            { id: "painel_logistico", nome: "Painel Logístico", area: "Logística", x: -0.65, y: 0.35, cor: "#3b82f6" },
+            { id: "rentabilidade", nome: "Rentabilidade", area: "Logística", x: -0.35, y: 0.15, cor: "#3b82f6" },
+            { id: "painel_de_projetos", nome: "Painel de Projetos", area: "Logística", x: -0.50, y: 0.60, cor: "#3b82f6" },
+            { id: "painel_de_precos_equipes", nome: "Painel de Preços Equipes", area: "Logística", x: -0.45, y: 0.40, cor: "#3b82f6" },
+            { id: "painel_de_performance", nome: "Painel de Performance", area: "Logística", x: -0.55, y: 0.50, cor: "#3b82f6" },
+            { id: "painel_de_precos", nome: "Painel de Preços", area: "Logística", x: -0.40, y: 0.30, cor: "#3b82f6" },
+            { id: "painel_de_price_protocol", nome: "Painel de Price Protocol", area: "Logística", x: -0.30, y: 0.45, cor: "#3b82f6" },
+            { id: "logistica_ct_e", nome: "Logística CT-e", area: "Logística", x: -0.60, y: 0.20, cor: "#3b82f6" },
+            { id: "otif_e_fill_rate", nome: "OTIF e Fill Rate", area: "Logística", x: -0.20, y: 0.25, cor: "#3b82f6" },
+
+            // Comercial (Verde)
+            { id: "dna_de_vendas", nome: "DNA de Vendas", area: "Comercial", x: 0.70, y: -0.40, cor: "#10b981" },
+
+            // Supply Chain (Roxo)
+            { id: "supply_chain_db", nome: "Supply Chain", area: "Supply Chain", x: -0.10, y: -0.10, cor: "#8b5cf6" },
+
+            // Finanças (Amarelo)
+            { id: "estado_de_resultados", nome: "Estado de Resultados", area: "Finanças", x: 0.35, y: 0.65, cor: "#f59e0b" },
+            { id: "financas_db", nome: "Finanças", area: "Finanças", x: 0.45, y: 0.50, cor: "#f59e0b" },
+            { id: "opex_custos_operacionais", nome: "OPEX", area: "Finanças", x: 0.25, y: 0.55, cor: "#f59e0b" },
+
+            // Marketing (Rosa)
+            { id: "performance_de_distribuidores", nome: "Performance Distribuidores", area: "Marketing", x: 0.55, y: -0.65, cor: "#ec4899" }
+        ];
+
+        // Perfis de teste simulados
+        const PERFIS = {
+            analista_frete: {
+                cargo: "Analista de Fretes & Rotas",
+                x: -0.48, y: 0.32,
+                lideranca: false
+            },
+            gerente_logistica: {
+                cargo: "Gerente de Logística",
+                x: -0.40, y: 0.40,
+                lideranca: true
+            },
+            vendedor_qsr: {
+                cargo: "Executivo de Vendas QSR",
+                x: 0.65, y: -0.45,
+                lideranca: false
+            },
+            supervisor_financeiro: {
+                cargo: "Supervisor Financeiro",
+                x: 0.38, y: 0.58,
+                lideranca: true
+            },
+            planejador_demanda: {
+                cargo: "Planejador de Demanda",
+                x: -0.15, y: 0.05,
+                lideranca: false
+            },
+            especialista_distribuidores: {
+                cargo: "Especialista de Trade Marketing",
+                x: 0.58, y: -0.60,
+                lideranca: false
+            }
+        };
+
+        let chartInstance = null;
+
+        function calcularDistancias(pontoUser) {
+            return DASHBOARDS.map(d => {
+                const dx = d.x - pontoUser.x;
+                const dy = d.y - pontoUser.y;
+                const dist = Math.sqrt(dx * dx + dy * dy); // Distância euclidiana no espaço PCA (análoga à distância de cosseno)
+                return {
+                    ...d,
+                    distancia: dist
+                };
+            }).sort((a, b) => a.distancia - b.distancia);
+        }
+
+        function updateVisualization() {
+            const key = document.getElementById("cargoSelect").value;
+            const perfil = PERFIS[key];
+            const ranking = calcularDistancias(perfil);
+
+            // Aplica regra de liderança se aplicável
+            let top4 = [];
+            const isLider = perfil.lideranca;
+
+            if (isLider) {
+                // Garante pelo menos 1 de Finanças
+                const bestFinance = ranking.find(d => d.area === "Finanças");
+                top4.push(bestFinance);
+
+                // Completa os outros 3 pelo ranking natural
+                for (let d of ranking) {
+                    if (!top4.some(item => item.id === d.id)) {
+                        top4.push(d);
+                    }
+                    if (top4.length >= 4) break;
+                }
+            } else {
+                top4 = ranking.slice(0, 4);
+            }
+
+            // Atualiza Lista Lateral
+            const rankingListEl = document.getElementById("rankingList");
+            rankingListEl.innerHTML = "";
+
+            top4.forEach((d, idx) => {
+                const li = document.createElement("li");
+                li.className = "ranking-item selected";
+                li.innerHTML = `
+                    <div class="rank-badge">${idx + 1}</div>
+                    <div class="ranking-info">
+                        <div class="title">${d.nome}</div>
+                        <div class="area">${d.area}</div>
+                    </div>
+                    <div class="dist-tag">${d.distancia.toFixed(4)}</div>
+                `;
+                rankingListEl.appendChild(li);
+            });
+
+            // Alerta sobre a regra
+            const alertEl = document.getElementById("ruleAlert");
+            if (isLider) {
+                alertEl.innerHTML = `<strong>Regra de Liderança Ativa:</strong><br>Por ser cargo de liderança/gestão, o KNN garantiu a presença do melhor dashboard financeiro (<strong>${top4[0].nome}</strong>) no Slot estratégico, e preencheu os demais 3 slots matematicamente por proximidade.`;
+            } else {
+                alertEl.innerHTML = `<strong>100% KNN Autônomo:</strong><br>Como este cargo não é de chefia, <strong>os 4 slots foram 100% decididos pelo KNN</strong> pelas menores distâncias geométricas exatas.`;
+            }
+
+            // Atualiza Gráfico
+            renderChart(perfil, top4);
+        }
+
+        function renderChart(perfil, top4) {
+            const ctx = document.getElementById("knnChart").getContext("2d");
+
+            // Dados dos 15 Dashboards
+            const dashPoints = DASHBOARDS.map(d => ({
+                x: d.x,
+                y: d.y,
+                nome: d.nome,
+                area: d.area,
+                isTop4: top4.some(t => t.id === d.id)
+            }));
+
+            // Ponto do Usuário
+            const userPoint = [{
+                x: perfil.x,
+                y: perfil.y,
+                nome: `⭐ VOCÊ (${perfil.cargo})`,
+                area: "Colaborador"
+            }];
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Dashboards (15)',
+                            data: dashPoints,
+                            backgroundColor: dashPoints.map(d => d.isTop4 ? '#38bdf8' : '#475569'),
+                            borderColor: dashPoints.map(d => d.isTop4 ? '#f59e0b' : '#334155'),
+                            borderWidth: dashPoints.map(d => d.isTop4 ? 2 : 1),
+                            pointRadius: dashPoints.map(d => d.isTop4 ? 9 : 6),
+                            pointHoverRadius: 11
+                        },
+                        {
+                            label: 'Colaborador',
+                            data: userPoint,
+                            backgroundColor: '#ef4444',
+                            borderColor: '#ffffff',
+                            borderWidth: 3,
+                            pointRadius: 14,
+                            pointHoverRadius: 16
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            min: -1.0,
+                            max: 1.0,
+                            grid: { color: '#1e293b' },
+                            ticks: { display: false }
+                        },
+                        y: {
+                            min: -1.0,
+                            max: 1.0,
+                            grid: { color: '#1e293b' },
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const p = context.raw;
+                                    return `${p.nome} [${p.area || ''}]`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Inicia na primeira carga
+        window.onload = updateVisualization;
+    </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+﻿# Configuracao de recurso Databricks App para deploy via Declarative Automation Bundles (DABs)
+# Grupo Bimbo Brasil - DNA Analytics
+resources:
+  apps:
+    bq_oitf_fillrate:
+      name: bq-oitf-fillrate-${bundle.target}
+      description: "App OTIF / Fill Rate BQ | Grupo Bimbo Brasil"
+      source_code_path: "../src/app"
+      permissions:
+        - group_name: DNA - GB Brasil Leaders
+          level: CAN_MANAGE
+        - user_name: renan.ferreira@grupobimbo.com
+          level: CAN_MANAGE
+        - user_name: daniel.moreira@grupobimbo.com
+          level: CAN_MANAGE
+        - user_name: bruno.fellipe@grupobimbo.com
+          level: CAN_MANAGE
+        - user_name: lecivaldo.santana@grupobimbo.com
+          level: CAN_MANAGE
+        - user_name: cristiane.almeida@grupobimbo.com
+          level: CAN_USE
+        - user_name: matheus.quiarati@grupobimbo.com
+          level: CAN_USE
+        - user_name: thamyres.cristine@grupobimbo.com
+          level: CAN_USE
+        - user_name: ana.ferraz@grupobimbo.com
+          level: CAN_USE
+        - user_name: shirlei.cheles@grupobimbo.com
+          level: CAN_USE
+        - user_name: vitor.saes@grupobimbo.com
+          level: CAN_USE
+        - user_name: shirlei.carmo@grupobimbo.com
+          level: CAN_USE
+        - user_name: diego.muniz@grupobimbo.com
+          level: CAN_USE
+        - user_name: aline.rother@grupobimbo.com
+          level: CAN_USE
+        - user_name: helio.cillo@grupobimbo.com
+          level: CAN_USE
+        - user_name: pedro.madureira@grupobimbo.com
+          level: CAN_USE
+        - user_name: maria.carolina@grupobimbo.com
+          level: CAN_USE
+        - user_name: giulian.duarte@grupobimbo.com
+          level: CAN_USE
+        - user_name: rafaela.soares@grupobimbo.com
+          level: CAN_USE
+        - user_name: caio.dasilva@grupobimbo.com
+          level: CAN_USE

@@ -1,0 +1,19 @@
+# Configuração de recurso Databricks App para deploy via Declarative Automation Bundles (DABs)
+# Grupo Bimbo Brasil - DNA Analytics
+resources:
+  apps:
+    portal_compras:
+      name: portal-compras-${bundle.target}
+      description: "Portal Compras | Grupo Bimbo Brasil"
+      source_code_path: "../src/app"
+      resources:
+        - name: database
+          postgres:
+            branch: projects/compras-360/branches/production
+            database: projects/compras-360/branches/production/databases/databricks-postgres
+            permission: CAN_CONNECT_AND_CREATE
+      permissions:
+        - group_name: DNA-COMPRAS-BIMBO
+          level: CAN_USE
+        - group_name: DNA-COMPRAS-BIMBO-QA
+          level: CAN_USE

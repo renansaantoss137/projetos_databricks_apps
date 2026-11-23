@@ -1,0 +1,11 @@
+# Configuração de recurso Databricks App para deploy via Declarative Automation Bundles (DABs)
+# Grupo Bimbo Brasil - DNA Analytics
+resources:
+  apps:
+    dna_vendas:
+      name: dna-vendas-${bundle.target}
+      description: "App DNA de Vendas | Grupo Bimbo Brasil"
+      source_code_path: "../src/app"
+      permissions:
+        - group_name: DNA - GB Brasil Leaders
+          level: CAN_MANAGE

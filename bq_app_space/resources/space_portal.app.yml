@@ -1,0 +1,27 @@
+# Configuração de recurso Databricks App para deploy via Declarative Automation Bundles (DABs)
+# Grupo Bimbo Brasil - DNA Analytics
+resources:
+  apps:
+    bq_app_space:
+      name: bq-app-space-${bundle.target}
+      description: "Space Portal (BQ) — Portal de Dashboards e Aplicativos Grupo Bimbo Brasil"
+      source_code_path: "../src/app"
+      resources:
+        - name: postgres
+          postgres:
+            branch: ${var.lakebase_branch}
+            database: ${var.lakebase_database}
+            permission: CAN_CONNECT_AND_CREATE
+      permissions:
+        # Administradores e Gestao (CAN_MANAGE)
+        - user_name: ${workspace.current_user.userName}
+          level: CAN_MANAGE
+        - group_name: DNA - GB Brasil Leaders
+          level: CAN_MANAGE
+
+        # Acesso de Uso do App (CAN_USE)
+        - group_name: GRP_BQ_VENDAS
+          level: CAN_USE
+        - group_name: GRP_BB_D&A 
+          level: CAN_USE
+

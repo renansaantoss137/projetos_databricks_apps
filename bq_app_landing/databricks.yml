@@ -1,0 +1,50 @@
+# Declarative Automation Bundle definition for bq_app_landing
+# Grupo Bimbo Brasil - DNA Analytics
+bundle:
+  name: bq_app_landing
+
+include:
+  - resources/*.yml
+
+# Variable declarations
+variables:
+  catalog:
+    description: Catálogo do Unity Catalog
+    default: cat_dnabb_dv
+  schema:
+    description: Schema padrão do Unity Catalog
+    default: grobbbqb_sz
+  volume_name:
+    description: Volume de aterrissagem dos dados BQ
+    default: dev_bq_landing
+  table_name:
+    description: Tabela Delta de destino dos dados BQ
+    default: tbl_bq_landing
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://adb-8674310331778219.19.azuredatabricks.net
+      root_path: /Shared/CONSULTAS_AUTOMATIZADAS/${workspace.current_user.userName}/${bundle.name}/${bundle.target}/
+    variables:
+      volume_name: dev_bq_landing
+    permissions:
+      - user_name: ${workspace.current_user.userName}
+        level: CAN_MANAGE
+      - group_name: DNA - GB Brasil Leaders
+        level: CAN_MANAGE
+
+  prod:
+    mode: production
+    workspace:
+      host: https://adb-8674310331778219.19.azuredatabricks.net
+      root_path: /Shared/CONSULTAS_AUTOMATIZADAS/${bundle.name}/${bundle.target}
+    variables:
+      volume_name: prod_bq_landing
+    permissions:
+      - user_name: ${workspace.current_user.userName}
+        level: CAN_MANAGE
+      - group_name: DNA - GB Brasil Leaders
+        level: CAN_MANAGE

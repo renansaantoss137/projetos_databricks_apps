@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spend & Oportunidades | PORTAL COMPRAS</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.min.js"></script>
+  <script src="i18n.js"></script>
+  <script src="filters-shared.js"></script>
+  <style>
+    body.fr-page { background:var(--fr-bg); color:var(--fr-txt); }
+    .fr-content { max-width:1600px; margin:0 auto; padding:1.5rem 1.75rem 4rem; }
+
+    /* Grid rows */
+    .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:1.5rem; }
+    .card { background:var(--fr-surface,#282f3f); border:1px solid var(--fr-border,rgba(100,116,139,.2)); border-radius:12px; padding:1.1rem 1.3rem; box-shadow:0 2px 12px rgba(0,0,0,.25); display:flex; flex-direction:column; }
+    .card-title { font-size:.78rem; font-weight:800; color:var(--fr-txt,#E8F4FD); margin-bottom:.15rem; }
+    .card-subtitle { font-size:.62rem; color:var(--fr-txt-soft,#7a9dba); margin-bottom:.8rem; }
+
+    /* Horizontal bar list */
+    .hbar-list { display:flex; flex-direction:column; gap:.45rem; flex:1; }
+    .hbar-row { display:grid; grid-template-columns:100px 1fr 65px 45px; align-items:center; gap:6px; }
+    .hbar-label { font-size:.68rem; font-weight:600; color:var(--fr-txt,#E8F4FD); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .hbar-track { height:20px; background:rgba(100,116,139,.12); border-radius:4px; overflow:hidden; }
+    .hbar-fill { height:100%; border-radius:4px; background:linear-gradient(90deg,#1d4ed8,#3b82f6); transition:width .5s; }
+    .hbar-val { font-size:.62rem; font-weight:700; color:var(--fr-txt,#E8F4FD); text-align:right; font-variant-numeric:tabular-nums; }
+    .hbar-pct { font-size:.58rem; font-weight:700; color:var(--fr-txt-soft,#7a9dba); text-align:right; }
+    .hbar-legend { display:flex; gap:1rem; margin-top:.6rem; padding-top:.5rem; border-top:1px solid var(--fr-border,rgba(100,116,139,.2)); }
+    .hbar-legend-item { font-size:.58rem; color:var(--fr-txt-soft); display:flex; align-items:center; gap:4px; }
+    .hbar-legend-dot { width:8px; height:8px; border-radius:2px; }
+
+    /* ABC Table */
+    .abc-table { width:100%; border-collapse:collapse; margin-top:.5rem; }
+    .abc-table th, .abc-table td { padding:.55rem .6rem; font-size:.72rem; }
+    .abc-table th { text-align:left; color:var(--fr-txt-soft); font-weight:600; text-transform:uppercase; letter-spacing:.04em; font-size:.58rem; border-bottom:1px solid var(--fr-border); }
+    .abc-table td { color:var(--fr-txt); border-bottom:1px solid rgba(100,116,139,.08); }
+    .abc-table td:nth-child(2) { text-align:right; font-weight:700; font-variant-numeric:tabular-nums; }
+    .abc-table td:nth-child(3) { text-align:right; font-weight:700; }
+    .abc-table tr.abc-total td { font-weight:800; border-top:2px solid var(--fr-border); }
+    .abc-badge { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:6px; font-weight:800; font-size:.72rem; }
+    .abc-a { background:rgba(29,78,216,.2); color:#60a5fa; }
+    .abc-b { background:rgba(245,158,11,.15); color:#fbbf24; }
+    .abc-c { background:rgba(100,116,139,.15); color:#94a3b8; }
+    .abc-info { font-size:.6rem; color:var(--fr-txt-soft); margin-top:auto; padding-top:.6rem; display:flex; align-items:flex-start; gap:6px; }
+    .abc-info svg { width:14px; height:14px; flex-shrink:0; stroke:#60a5fa; fill:none; }
+
+    /* Spend toggle */
+    .spend-toggle { display:flex; border-radius:8px; overflow:hidden; border:1.5px solid var(--fr-border); }
+    .spend-toggle-btn { padding:.4rem 1rem; font-size:.72rem; font-weight:700; background:transparent; border:none; color:var(--fr-txt-soft); cursor:pointer; transition:all .2s; }
+    .spend-toggle-btn.active { background:#1d4ed8; color:#fff; }
+
+    /* Chart card */
+    .chart-wrap { position:relative; min-height:180px; flex:1; }
+    .chart-wrap canvas { width:100%!important; height:180px!important; }
+
+    /* Cross-filter indicator */
+    .cross-filter-bar { display:none; background:rgba(29,78,216,.12); border:1px solid rgba(59,130,246,.3); border-radius:10px; padding:.5rem 1rem; margin-bottom:1rem; align-items:center; gap:.6rem; }
+    .cross-filter-bar.active { display:flex; }
+    .cross-filter-chip { display:flex; align-items:center; gap:6px; background:rgba(59,130,246,.15); border-radius:6px; padding:.3rem .6rem; }
+    .cross-filter-chip .cf-label { font-size:.6rem; color:#94a3b8; text-transform:uppercase; font-weight:700; letter-spacing:.04em; }
+    .cross-filter-chip .cf-value { font-size:.72rem; color:#60a5fa; font-weight:700; }
+    .cross-filter-chip .cf-clear { background:none; border:none; color:#f87171; font-size:.9rem; cursor:pointer; padding:0 2px; line-height:1; }
+    .cross-filter-chip .cf-clear:hover { color:#fca5a5; }
+    .hbar-row { cursor:pointer; border-radius:4px; padding:2px 0; transition:background .15s; }
+    .hbar-row:hover { background:rgba(59,130,246,.06); }
+    .hbar-row.cf-selected { background:rgba(59,130,246,.12); border-left:3px solid #3b82f6; padding-left:4px; }
+    .hbar-row.cf-dimmed { opacity:.4; }
+
+    /* Category / Tipo toggle */
+    .cat-tipo-toggle { display:flex; border-radius:6px; overflow:hidden; border:1px solid var(--fr-border,rgba(100,116,139,.3)); flex-shrink:0; }
+    .cat-tipo-btn { padding:.25rem .6rem; font-size:.58rem; font-weight:700; background:transparent; border:none; color:var(--fr-txt-soft,#94a3b8); cursor:pointer; transition:all .2s; }
+    .cat-tipo-btn.active { background:#1d4ed8; color:#fff; }
+
+    /* Filter bar extended */
+    .filter-bar { background:var(--fr-surface,#282f3f); border:1px solid var(--fr-border); border-radius:12px; padding:.9rem 1.2rem; margin-bottom:1.5rem; display:flex; flex-wrap:wrap; gap:.7rem; align-items:flex-end; }
+    .fg { display:flex; flex-direction:column; gap:3px; min-width:100px; }
+    .fg label { font-size:.58rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--fr-txt-soft); }
+    .fg select, .fg input { background:var(--fr-input-bg,#282f3f); border:1px solid var(--fr-input-b,rgba(100,116,139,.35)); border-radius:7px; padding:.35rem .6rem; font-size:.78rem; color:var(--fr-txt,#E8F4FD); font-family:inherit; }
+    /* MultiSelect */
+    .ms-dropdown{position:relative;min-width:90px;}
+    .ms-trigger{display:flex;align-items:center;justify-content:space-between;background:var(--fr-input-bg,#282f3f);border:1px solid var(--fr-input-b,rgba(100,116,139,.35));border-radius:7px;padding:.35rem .6rem;cursor:pointer;font-size:.72rem;color:var(--fr-txt);gap:4px;}
+    .ms-arrow{font-size:.5rem;opacity:.5;}
+    .ms-badge{background:#1d4ed8;color:#fff;border-radius:4px;padding:0 4px;font-size:.55rem;margin-left:3px;}
+    .ms-panel{display:none;position:absolute;top:calc(100%+4px);left:0;min-width:160px;max-height:220px;background:var(--fr-surface,#1e2533);border:1px solid var(--fr-border);border-radius:8px;z-index:999;flex-direction:column;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+    .ms-panel.open{display:flex;}
+    .ms-search{margin:6px;padding:5px 8px;border-radius:5px;border:1px solid var(--fr-border);background:var(--fr-input-bg,#282f3f);color:var(--fr-txt);font-size:.7rem;}
+    .ms-actions{display:flex;gap:8px;padding:0 8px 4px;font-size:.6rem;}
+    .ms-actions a{color:#60a5fa;cursor:pointer;font-weight:600;}
+    .ms-options{overflow-y:auto;max-height:150px;padding:0 6px 6px;}
+    .ms-option{display:flex;align-items:center;gap:6px;padding:3px 4px;border-radius:4px;cursor:pointer;font-size:.68rem;color:var(--fr-txt);}
+    .ms-option:hover{background:rgba(96,165,250,.08);}
+    .ms-option.hidden{display:none;}
+    .ms-option input[type=checkbox]{accent-color:#3b82f6;width:14px;height:14px;}
+    .oc-toggle{display:flex;gap:0;border-radius:6px;overflow:hidden;border:1px solid var(--fr-border);}
+  </style>
+</head>
+<body class="fr-page">
+
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo"><img src="logo-dna.png" alt="DNA"></a>
+    <div class="nav-title-area">
+      <span class="nav-crumb">02</span>
+      <span class="nav-page-title">Gastos</span>
+    </div>
+    <div class="nav-links">
+      <a href="performance.html" class="nav-link">Performance</a>
+      <a href="spend.html" class="nav-link active">Gastos</a>
+      <a href="ordens.html" class="nav-link">Ordens</a>
+      <a href="comercial.html" class="nav-link">Comercial</a>
+      <a href="governanca.html" class="nav-link">Governança</a>
+      <a href="relatorios.html" class="nav-link">Relatórios</a>
+    </div>
+    <div class="nav-actions">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Alternar tema">
+        <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.5"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="4" fill="#fbbf24"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </nav>
+
+
+
+  <div class="fr-content">
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="fg"><label>Empresa</label><div class="ms-dropdown" id="fEmpresa" data-key="empresa"></div></div>
+      <div class="fg"><label>Ano</label><div class="ms-dropdown" id="fAno" data-key="ano"></div></div>
+      <div class="fg"><label>Mês</label><div class="ms-dropdown" id="fMes" data-key="mes"></div></div>
+      <div class="fg"><label>Direto/Indireto</label><div class="ms-dropdown" id="fGrupo" data-key="grupo_compras"></div></div>
+      <div class="fg"><label>Fornecedor</label><div class="ms-dropdown" id="fFornecedor" data-key="fornecedor"></div></div>
+
+      <div class="fg"><label>Centralizado</label><div class="ms-dropdown" id="fCentralizado" data-key="centralizado"></div></div>
+      <div style="display:flex;align-items:flex-end;gap:.5rem;margin-left:auto;">
+        <button id="btnAdvFilters" onclick="toggleAdvFilters()" title="Mais filtros" style="padding:.4rem .7rem;font-size:.72rem;font-weight:700;border-radius:8px;border:1px solid rgba(100,116,139,.35);background:rgba(100,116,139,.1);color:#94a3b8;cursor:pointer;display:flex;align-items:center;gap:.35rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>Mais Filtros</button>
+        <button onclick="aplicarFiltros(loadAll)" style="padding:.4rem 1rem;font-size:.72rem;font-weight:700;border-radius:8px;border:1px solid rgba(59,130,246,.45);background:rgba(59,130,246,.15);color:#60a5fa;cursor:pointer;">Aplicar</button>
+        <button onclick="clearAllFilters(loadAll)" style="padding:.4rem 1rem;font-size:.72rem;font-weight:700;border-radius:8px;border:1px solid rgba(100,116,139,.35);background:rgba(100,116,139,.1);color:#94a3b8;cursor:pointer;">Limpar</button>
+      </div>
+    </div>
+    <div class="filter-bar" id="advFiltersBar" style="display:none;margin-top:-0.5rem;">
+      <div class="fg"><label>Categoria</label><div class="ms-dropdown" id="fMacroCategoria" data-key="macro_categoria"></div></div>
+      <div class="fg"><label>Dia</label><div class="ms-dropdown" id="fDia" data-key="dia"></div></div>
+      <div class="fg"><label>Descrição Item</label><div class="ms-dropdown" id="fDescItem" data-key="descricao_item"></div></div>
+      <div class="fg"><label>NF com OC?</label><div class="ms-dropdown" id="fTipoNF" data-key="oc_type"></div></div>
+      <div class="fg"><label>Unidade</label><div class="ms-dropdown" id="fUnidade" data-key="unidade"></div></div>
+      <div class="fg"><label>Status Pagamento</label><div class="ms-dropdown" id="fStatusPgto" data-key="status_pagamento"></div></div>
+      <div class="fg"><label>Tipo NF</label><div class="ms-dropdown" id="fTipoNFAdv" data-key="tipo_nf"></div></div>
+      <div class="fg"><label>Forn. Especial</label><div class="ms-dropdown" id="fFornEspecial" data-key="is_fornecedor_especial"></div></div>
+      <div class="fg"><label>Forn. Negociável</label><div class="ms-dropdown" id="fFornNegociavel" data-key="is_fornecedor_nao_negociavel"></div></div>
+    </div>
+
+    <!-- Cross-filter indicator -->
+    <div class="cross-filter-bar" id="crossFilterBar">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+      <span style="font-size:.65rem;color:#94a3b8;font-weight:600;">Cross-filter ativo:</span>
+      <div class="cross-filter-chip">
+        <span class="cf-label" id="cfLabel">--</span>
+        <span class="cf-value" id="cfValue">--</span>
+        <button class="cf-clear" onclick="clearCrossFilter()" title="Remover filtro">&times;</button>
+      </div>
+    </div>
+
+    <!-- Row 1: 3 cards -->
+    <div class="grid-3">
+      <!-- Top Items -->
+      <div class="card">
+        <div class="card-title" id="ttlItems">Top itens concentram X% do Spend</div>
+        <div class="card-subtitle">Spend por item do pedido</div>
+        <div class="hbar-list" id="barItems"></div>
+        <div class="hbar-legend"><div class="hbar-legend-item"><div class="hbar-legend-dot" style="background:#3b82f6"></div>Spend (R$)</div><div class="hbar-legend-item" style="color:var(--fr-txt-soft)">% var. vs. período anterior</div></div>
+      </div>
+      <!-- Top Fornecedores -->
+      <div class="card">
+        <div class="card-title" id="ttlSuppliers">Top 10 fornecedores concentram X% do Spend</div>
+        <div class="card-subtitle">Spend por fornecedor</div>
+        <div class="hbar-list" id="barSuppliers"></div>
+        <div class="hbar-legend"><div class="hbar-legend-item"><div class="hbar-legend-dot" style="background:#3b82f6"></div>Spend (R$)</div><div class="hbar-legend-item" style="color:var(--fr-txt-soft)">% do spend total</div></div>
+      </div>
+      <!-- ABC Analysis -->
+      <div class="card">
+        <div class="card-title">Análise ABC do Spend Líquido</div>
+        <table class="abc-table">
+          <thead><tr><th></th><th>Valor</th><th>%</th></tr></thead>
+          <tbody id="abcBody"></tbody>
+        </table>
+        <div class="abc-info"><svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span>Itens/fornecedores A representam a maior oportunidade de gestão e negociação.</span></div>
+      </div>
+    </div>
+
+    <!-- Row 2: 3 cards -->
+    <div class="grid-3">
+      <!-- Spend por Planta -->
+      <div class="card">
+        <div class="card-title" id="ttlPlants">Spend por Planta</div>
+        <div class="card-subtitle">Onde o gasto está concentrado?</div>
+        <div class="hbar-list" id="barPlants"></div>
+        <div class="hbar-legend"><div class="hbar-legend-item"><div class="hbar-legend-dot" style="background:#3b82f6"></div>Spend (R$)</div><div class="hbar-legend-item" style="color:var(--fr-txt-soft)">% do spend total</div></div>
+      </div>
+      <!-- Spend por Categoria / Tipo Vendor -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.15rem;">
+          <div class="card-title" id="ttlCategories">Spend por Categoria</div>
+          <div class="cat-tipo-toggle">
+            <button class="cat-tipo-btn active" id="btnMacro" onclick="setCatTipo('macro')">Categoria</button>
+            <button class="cat-tipo-btn" id="btnCat" onclick="setCatTipo('categoria')">Sub-cat</button>
+            <button class="cat-tipo-btn" id="btnTipo" onclick="setCatTipo('tipo')">Tipo</button>
+          </div>
+        </div>
+        <div class="card-subtitle" id="subtCategories">Quais categorias concentram o gasto?</div>
+        <div class="hbar-list" id="barCategories"></div>
+        <div class="hbar-legend"><div class="hbar-legend-item"><div class="hbar-legend-dot" style="background:#3b82f6"></div>Spend (R$)</div><div class="hbar-legend-item" style="color:var(--fr-txt-soft)">% do spend total</div></div>
+      </div>
+      <!-- Spend Líquido vs Empresa -->
+      <div class="card">
+        <div class="card-title" id="ttlEmpresa">Spend Líquido por Empresa</div>
+        <div class="card-subtitle">Comparação BB vs BQ (ignora filtro de empresa)</div>
+        <div id="empresaChart" style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:1rem;padding:.5rem 0"></div>
+      </div>
+    </div>
+  </div>
+
+<!-- ABC Drill-down Modal -->
+<div class="modal-overlay" id="abcModal">
+  <div class="modal-content" style="max-width:750px;">
+    <div class="modal-header">
+      <span class="modal-title" id="abcModalTitle">Itens Classe A</span>
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <button id="btnExportABC" onclick="exportAbcXlsx()" style="background:#1d4ed8;border:none;border-radius:6px;padding:.35rem .7rem;color:#fff;font-size:.62rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;" title="Exportar XLSX">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          XLSX
+        </button>
+        <button class="modal-close" onclick="closeAbcModal()">&times;</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:0;margin-bottom:1rem;border-radius:6px;overflow:hidden;border:1px solid var(--fr-border,rgba(100,116,139,.2));width:fit-content;">
+      <button class="abc-dim-btn active" id="abcBtnItem" onclick="setAbcDim('item')">Item</button>
+      <button class="abc-dim-btn" id="abcBtnCat" onclick="setAbcDim('category')">Categoria</button>
+      <button class="abc-dim-btn" id="abcBtnSup" onclick="setAbcDim('supplier')">Fornecedor</button>
+    </div>
+    <div id="abcModalBody" style="max-height:60vh;overflow-y:auto;"></div>
+  </div>
+</div>
+<style>
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:none;align-items:center;justify-content:center;}
+  .modal-overlay.active{display:flex;}
+  .modal-content{background:var(--fr-surface,#1e2433);border-radius:16px;padding:1.5rem;border:1px solid var(--fr-border,rgba(100,116,139,.2));}
+  .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
+  .modal-title{font-size:1rem;font-weight:800;color:var(--fr-txt,#E8F4FD);}
+  .modal-close{background:none;border:none;color:var(--fr-txt-soft);font-size:1.5rem;cursor:pointer;}
+  .abc-detail-table{width:100%;border-collapse:collapse;font-size:.72rem;}
+  .abc-detail-table thead th{position:sticky;top:0;background:var(--fr-th-bg,#323a4e);color:var(--fr-th-txt,#fff);font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:.5rem .6rem;text-align:left;border-bottom:2px solid var(--fr-border);}
+  .abc-detail-table tbody tr{border-bottom:1px solid rgba(100,116,139,.1);}
+  .abc-detail-table tbody tr:hover{background:rgba(59,130,246,.06);}
+  .abc-detail-table tbody td{padding:.4rem .6rem;color:var(--fr-txt,#E8F4FD);}
+  .abc-detail-table tbody td:nth-child(2),.abc-detail-table tbody td:nth-child(3),.abc-detail-table tbody td:nth-child(4){text-align:right;font-variant-numeric:tabular-nums;}
+  .abc-row-clickable{cursor:pointer;transition:background .15s;}
+  .abc-row-clickable:hover{background:rgba(59,130,246,.08);}
+  .abc-dim-btn{padding:.35rem .8rem;font-size:.68rem;font-weight:700;background:transparent;border:none;color:var(--fr-txt-soft,#94a3b8);cursor:pointer;transition:all .15s;}
+  .abc-dim-btn.active{background:rgba(59,130,246,.15);color:#60a5fa;}
+  .abc-dim-btn:hover{background:rgba(59,130,246,.08);}
+</style>
+
+<script>
+let spendType = 'liquido';
+function setSpendType(t) {
+  spendType = t;
+  document.getElementById('btnLiq').classList.toggle('active', t==='liquido');
+  document.getElementById('btnBruto').classList.toggle('active', t==='bruto');
+  loadAll();
+}
+
+function fmt(v,t='currency'){if(v==null||isNaN(v))return'--';const a=Math.abs(v);if(t==='currency'){if(a>=1e9)return'R$ '+(v/1e9).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'Bi';if(a>=1e6)return'R$ '+(v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'M';if(a>=1e3)return'R$ '+(v/1e3).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'mil';return'R$ '+v.toLocaleString('pt-BR',{maximumFractionDigits:0});}if(t==='pct')return v.toFixed(1)+'%';return v.toLocaleString('pt-BR');}
+
+
+
+// MultiSelect and filters provided by filters-shared.js
+_cascadeEndpoint = '/api/filters/cascading';
+// i18n: override fmt with localized version
+if (typeof fmtI18n !== 'undefined') fmt = fmtI18n;
+document.addEventListener('langChange', function() { if (typeof loadAll === 'function') loadAll(); });
+
+// ═══ Cross-Filter State ═══
+let _crossFilter = null; // {type:'fornecedor', value:'X', source:'suppliers'}
+
+function setCrossFilter(type, value, source) {
+  if (_crossFilter && _crossFilter.type === type && _crossFilter.value === value) {
+    clearCrossFilter(); return;
+  }
+  _crossFilter = { type, value, source };
+  const labels = {fornecedor:'Fornecedor', item_cross:'Item', unidade:'Planta', macro_categoria_cross:'Categoria', categoria_cross:'Sub-categoria', tipo_vendor_cross:'Tipo Vendor'};
+  document.getElementById('cfLabel').textContent = labels[type] || type;
+  document.getElementById('cfValue').textContent = value;
+  document.getElementById('crossFilterBar').classList.add('active');
+  loadAllCrossFiltered();
+}
+
+function clearCrossFilter() {
+  _crossFilter = null;
+  document.getElementById('crossFilterBar').classList.remove('active');
+  loadAll();
+}
+
+function getFiltersWithCross() {
+  let base = getFilters();
+  if (_crossFilter) {
+    const p = new URLSearchParams(base);
+    p.append(_crossFilter.type, _crossFilter.value);
+    return p.toString();
+  }
+  return base;
+}
+
+function loadAllCrossFiltered() {
+  const src = _crossFilter ? _crossFilter.source : null;
+  if (src !== 'items') loadItems();
+  if (src !== 'suppliers') loadSuppliers();
+  if (src !== 'plants') loadPlants();
+  if (src !== 'categories') loadCatOrTipo();
+  loadABC();
+  loadSpendByEmpresa();
+  // Re-render source chart to show selection state
+  if (src === 'items') loadItems();
+  if (src === 'suppliers') loadSuppliers();
+  if (src === 'plants') loadPlants();
+  if (src === 'categories') loadCatOrTipo();
+}
+
+function renderBars(containerId, data, labelKey, valueKey, maxVal, highlightCount=999, overrideTotal=null, crossType=null, crossSource=null) {
+  const sumData = data.reduce((s,d)=>s+(d[valueKey]||0),0);
+  const total = overrideTotal || sumData;
+  const max = maxVal || Math.max(...data.map(d=>d[valueKey]||0));
+  const isSourceChart = _crossFilter && _crossFilter.source === crossSource;
+  document.getElementById(containerId).innerHTML = data.slice(0,8).map((d,i) => {
+    const val = d[valueKey]||0;
+    const pct = total ? ((val/total)*100).toFixed(0) : 0;
+    const barW = max ? Math.max(2, (val/max)*100) : 0;
+    const label = (d[labelKey]||'Outros').substring(0,20);
+    const fullLabel = d[labelKey]||'Outros';
+    const muted = i >= highlightCount;
+    const barBg = muted ? 'background:#64748b !important' : 'background:linear-gradient(90deg,#1d4ed8,#3b82f6) !important';
+    const lblStyle = muted ? 'color:#64748b' : '';
+    const valStyle = muted ? 'color:#64748b' : '';
+    // Cross-filter highlight
+    const isSelected = isSourceChart && _crossFilter.value === fullLabel;
+    const rowClass = isSelected ? 'hbar-row cf-selected' : 'hbar-row';
+    const clickAttr = crossType ? `onclick="setCrossFilter('${crossType}','${fullLabel.replace(/'/g,"\\'").replace(/"/g,'&quot;')}','${crossSource}')"` : '';
+    return `<div class="${rowClass}" ${clickAttr} title="${fullLabel}"><span class="hbar-label" style="${lblStyle}">${label}</span><div class="hbar-track"><div class="hbar-fill" style="width:${barW}%;${barBg}"></div></div><span class="hbar-val" style="${valStyle}">${fmt(val)}</span><span class="hbar-pct" style="${valStyle}">${pct}%</span></div>`;
+  }).join('');
+  return { total: sumData, topPct: sumData ? ((data.slice(0,6).reduce((s,d)=>s+(d[valueKey]||0),0)/sumData)*100).toFixed(0) : 0 };
+}
+
+async function loadItems(){
+  const r = await fetch(`/api/spend/by-item?${getFiltersWithCross()}`).then(res=>res.json());
+  const data = r.rows || (Array.isArray(r) ? r : []);
+  const total = r.total || data.reduce((s,d)=>s+(d.net_spend||0),0);
+  const topSum = data.slice(0,3).reduce((s,d)=>s+(d.net_spend||0),0);
+  const topPct = total ? (topSum/total*100).toFixed(0) : 0;
+  renderBars('barItems', data, 'item', 'net_spend', null, 3, total, 'item_cross', 'items');
+  document.getElementById('ttlItems').textContent = typeof tt !== 'undefined' ? tt('Os {n} maiores itens representam {pct}% do Spend', {n: 3, pct: topPct}) : `Os 3 maiores itens representam ${topPct}% do Spend`;
+}
+
+async function loadSuppliers(){
+  const r = await fetch(`/api/spend/by-supplier?${getFiltersWithCross()}`).then(r=>r.json());
+  const data = r.rows||[];
+  const total = r.total||1;
+
+  // Find the "knee": where the gap between consecutive values is significant
+  let highlightN = 3; // default
+  if (data.length >= 4) {
+    for (let i = 1; i < Math.min(data.length, 6); i++) {
+      const curr = data[i].net_spend || 0;
+      const prev = data[i-1].net_spend || 0;
+      if (curr < prev * 0.4) { highlightN = i; break; } // big drop = natural cutoff
+    }
+  }
+  highlightN = Math.max(2, Math.min(highlightN, 5));
+
+  const topNSum = data.slice(0, highlightN).reduce((s,d) => s + (d.net_spend||0), 0);
+  const topNPct = total ? (topNSum / total * 100).toFixed(0) : 0;
+
+  renderBars('barSuppliers', data, 'fornecedor', 'net_spend', null, highlightN, total, 'fornecedor', 'suppliers');
+  document.getElementById('ttlSuppliers').textContent = typeof tt !== 'undefined' ? tt('Os {n} maiores fornecedores representam {pct}% do Spend', {n: highlightN, pct: topNPct}) : `Os ${highlightN} maiores fornecedores representam ${topNPct}% do Spend`;
+}
+
+async function loadABC(){
+  const data = await fetch(`/api/spend/abc?dimension=item&${getFiltersWithCross()}`).then(r=>r.json());
+  const total = data.reduce((s,d)=>s+(d.class_spend||0),0);
+  const body = document.getElementById('abcBody');
+  body.innerHTML = data.map(d => {
+    const pct = total ? ((d.class_spend/total)*100).toFixed(0) : 0;
+    const cls = d.abc_class==='A'?'abc-a':d.abc_class==='B'?'abc-b':'abc-c';
+    return `<tr class="abc-row-clickable" onclick="drillABC('${d.abc_class}')"><td><span class="abc-badge ${cls}">${d.abc_class}</span></td><td>${fmt(d.class_spend)}</td><td>${pct}%</td></tr>`;
+  }).join('') + `<tr class="abc-total"><td>${t('Total')}</td><td>${fmt(total)}</td><td>100%</td></tr>`;
+  // Title is now fixed: "Análise ABC do Spend Líquido"
+}
+
+let _abcDimension = 'item';
+let _abcCurrentClass = 'A';
+
+function setAbcDim(dim) {
+  _abcDimension = dim;
+  document.getElementById('abcBtnItem').classList.toggle('active', dim==='item');
+  document.getElementById('abcBtnCat').classList.toggle('active', dim==='category');
+  document.getElementById('abcBtnSup').classList.toggle('active', dim==='supplier');
+  drillABC(_abcCurrentClass);
+}
+
+async function drillABC(cls) {
+  _abcCurrentClass = cls;
+  const modal = document.getElementById('abcModal');
+  const classLabels = {A:t('Classe A (80% do Spend)'), B:t('Classe B (80-95%)'), C:t('Classe C (cauda, 95-100%)')};
+  const dimLabels = {item:t('Itens'), category:t('Categorias'), supplier:t('Fornecedores')};
+  document.getElementById('abcModalTitle').textContent = `${dimLabels[_abcDimension]||'Itens'} ${classLabels[cls] || cls}`;
+  document.getElementById('abcModalBody').innerHTML = '<div style="text-align:center;padding:2rem;color:var(--fr-txt-soft)">Carregando...</div>';
+  modal.classList.add('active');
+
+  // When cross-filter is active + dimension is category/supplier, skip ABC class filter (shows all)
+  const filterStr = getFiltersWithCross();
+  const skipClass = _crossFilter && _abcDimension !== 'item';
+  const classParam = skipClass ? '' : `&abc_class=${cls}`;
+  const data = await fetch(`/api/spend/abc-detail?dimension=${_abcDimension}${classParam}&${filterStr}`).then(r=>r.json());
+  _abcExportData = data;
+  _abcExportClass = cls;
+  if (!data.length) {
+    document.getElementById('abcModalBody').innerHTML = '<div style="text-align:center;padding:2rem;color:var(--fr-txt-soft)">Nenhum registro encontrado</div>';
+    return;
+  }
+  const headerMap = {
+    item: `<th>#</th><th>${t('Código')}</th><th>${t('Item')}</th><th>Spend</th><th>% Total</th><th>${t('% Acum')}</th>`,
+    category: `<th>#</th><th>${t('Categoria')}</th><th>Spend</th><th>% Total</th><th>${t('% Acum')}</th>`,
+    supplier: `<th>#</th><th>${t('Fornecedor')}</th><th>Spend</th><th>% Total</th><th>${t('% Acum')}</th>`
+  };
+  let html = `<table class="abc-detail-table"><thead><tr>${headerMap[_abcDimension]}</tr></thead><tbody>`;
+  data.forEach((d, i) => {
+    const crossType = _abcDimension === 'item' ? 'item_cross' : _abcDimension === 'category' ? 'categoria_cross' : 'fornecedor';
+    const crossSource = _abcDimension === 'item' ? 'items' : _abcDimension === 'category' ? 'categories' : 'suppliers';
+    const clickAttr = `onclick="setCrossFilter('${crossType}','${(d.item||'').replace(/'/g,"\\'").replace(/"/g,'&quot;')}','${crossSource}');closeAbcModal();"`;
+    if (_abcDimension === 'item') {
+      html += `<tr class="abc-row-clickable" ${clickAttr}><td style="color:var(--fr-txt-soft)">${i+1}</td><td style="font-size:.65rem;color:var(--fr-txt-soft);white-space:nowrap">${d.codigo_item||'--'}</td><td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.item}">${d.item}</td><td>${fmt(d.net_spend)}</td><td>${d.pct!=null?d.pct.toFixed(1)+'%':'--'}</td><td style="color:var(--fr-txt-soft)">${d.cum_pct!=null?d.cum_pct.toFixed(1)+'%':'--'}</td></tr>`;
+    } else {
+      html += `<tr class="abc-row-clickable" ${clickAttr}><td style="color:var(--fr-txt-soft)">${i+1}</td><td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${d.item}">${d.item}</td><td>${fmt(d.net_spend)}</td><td>${d.pct!=null?d.pct.toFixed(1)+'%':'--'}</td><td style="color:var(--fr-txt-soft)">${d.cum_pct!=null?d.cum_pct.toFixed(1)+'%':'--'}</td></tr>`;
+    }
+  });
+  html += '</tbody></table>';
+  document.getElementById('abcModalBody').innerHTML = html;
+}
+
+let _abcExportData = [];
+let _abcExportClass = '';
+
+function exportAbcXlsx() {
+  if (!_abcExportData.length) return;
+  const dimNames = {item:'Item', category:'Categoria', supplier:'Fornecedor'};
+  const dimName = dimNames[_abcDimension] || 'Item';
+  let rows;
+  if (_abcDimension === 'item') {
+    rows = _abcExportData.map((d, i) => ({
+      '#': i + 1,
+      'C\u00f3digo': d.codigo_item || '--',
+      'Item': d.item,
+      'Spend (R$)': d.net_spend ? Math.round(d.net_spend * 100) / 100 : 0,
+      '% Total': d.pct != null ? Math.round(d.pct * 10) / 10 : null,
+      '% Acumulado': d.cum_pct != null ? Math.round(d.cum_pct * 10) / 10 : null
+    }));
+  } else {
+    rows = _abcExportData.map((d, i) => ({
+      '#': i + 1,
+      [dimName]: d.item,
+      'Spend (R$)': d.net_spend ? Math.round(d.net_spend * 100) / 100 : 0,
+      '% Total': d.pct != null ? Math.round(d.pct * 10) / 10 : null,
+      '% Acumulado': d.cum_pct != null ? Math.round(d.cum_pct * 10) / 10 : null
+    }));
+  }
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = _abcDimension === 'item' ? [{wch:5},{wch:15},{wch:50},{wch:15},{wch:10},{wch:12}] : [{wch:5},{wch:50},{wch:15},{wch:10},{wch:12}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, `${dimName} Classe ${_abcExportClass}`);
+  XLSX.writeFile(wb, `ABC_${dimName}_Classe_${_abcExportClass}_${new Date().toISOString().slice(0,10)}.xlsx`);
+}
+
+function closeAbcModal() { document.getElementById('abcModal').classList.remove('active'); }
+document.getElementById('abcModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeAbcModal(); });
+
+async function loadPlants(){
+  const r = await fetch(`/api/spend/by-plant?${getFiltersWithCross()}`).then(res=>res.json());
+  const data = r.rows || (Array.isArray(r) ? r : []);
+  const total = r.total || data.reduce((s,d)=>s+(d.net_spend||0),0);
+
+  // Knee detection: find natural cutoff (pre-attentive)
+  let highlightN = 3;
+  if (data.length >= 4) {
+    for (let i = 1; i < Math.min(data.length, 6); i++) {
+      const curr = data[i].net_spend || 0;
+      const prev = data[i-1].net_spend || 0;
+      if (curr < prev * 0.4) { highlightN = i; break; }
+    }
+  }
+  highlightN = Math.max(2, Math.min(highlightN, 5));
+
+  const topNSum = data.slice(0, highlightN).reduce((s,d) => s + (d.net_spend||0), 0);
+  const topNPct = total ? (topNSum / total * 100).toFixed(0) : 0;
+
+  renderBars('barPlants', data, 'unidade', 'net_spend', null, highlightN, total, 'unidade', 'plants');
+  document.getElementById('ttlPlants').textContent = tt('As {n} maiores plantas representam {pct}% do Spend', {n: highlightN, pct: topNPct});
+}
+
+let _catTipoMode = 'macro';
+
+function setCatTipo(mode) {
+  _catTipoMode = mode;
+  document.getElementById('btnMacro').classList.toggle('active', mode==='macro');
+  document.getElementById('btnCat').classList.toggle('active', mode==='categoria');
+  document.getElementById('btnTipo').classList.toggle('active', mode==='tipo');
+  loadCatOrTipo();
+}
+
+function loadCatOrTipo() {
+  if (_catTipoMode === 'macro') {
+    loadMacroCategories();
+  } else if (_catTipoMode === 'tipo') {
+    loadTipoVendor();
+  } else {
+    loadCategories();
+  }
+}
+
+async function loadMacroCategories(){
+  const r = await fetch(`/api/spend/by-macro-category?${getFiltersWithCross()}`).then(res=>res.json());
+  const data = Array.isArray(r) ? r : (r.rows || []);
+  const total = r.total || data.reduce((s,d)=>s+(d.net_spend||0),0);
+
+  let highlightN = 2;
+  if (data.length >= 4) {
+    for (let i = 1; i < Math.min(data.length, 6); i++) {
+      if ((data[i].net_spend||0) < (data[i-1].net_spend||0) * 0.4) { highlightN = i; break; }
+    }
+  }
+  highlightN = Math.max(1, Math.min(highlightN, data.length || 1));
+
+  const topNSum = data.slice(0, highlightN).reduce((s,d) => s + (d.net_spend||0), 0);
+  const topNPct = total ? (topNSum / total * 100).toFixed(0) : 0;
+
+  renderBars('barCategories', data, 'macro_categoria', 'net_spend', null, highlightN, total, 'macro_categoria_cross', 'categories');
+  document.getElementById('ttlCategories').textContent = tt('As {n} maiores categorias representam {pct}% do Spend', {n: highlightN, pct: topNPct});
+  document.getElementById('subtCategories').textContent = t('Quais categorias concentram o gasto?');
+}
+
+async function loadCategories(){
+  const r = await fetch(`/api/spend/by-category?${getFiltersWithCross()}`).then(res=>res.json());
+  const data = Array.isArray(r) ? r : (r.rows || []);
+  const total = r.total || data.reduce((s,d)=>s+(d.net_spend||0),0);
+
+  let highlightN = 3;
+  if (data.length >= 4) {
+    for (let i = 1; i < Math.min(data.length, 6); i++) {
+      if ((data[i].net_spend||0) < (data[i-1].net_spend||0) * 0.4) { highlightN = i; break; }
+    }
+  }
+  highlightN = Math.max(2, Math.min(highlightN, 5));
+
+  const topNSum = data.slice(0, highlightN).reduce((s,d) => s + (d.net_spend||0), 0);
+  const topNPct = total ? (topNSum / total * 100).toFixed(0) : 0;
+
+  renderBars('barCategories', data, 'categoria', 'net_spend', null, highlightN, total, 'categoria_cross', 'categories');
+  document.getElementById('ttlCategories').textContent = tt('As {n} maiores sub-categorias representam {pct}% do Spend', {n: highlightN, pct: topNPct});
+  document.getElementById('subtCategories').textContent = t('Quais sub-categorias concentram o gasto?');
+}
+
+async function loadTipoVendor(){
+  const r = await fetch(`/api/spend/by-tipo-vendor?${getFiltersWithCross()}`).then(res=>res.json());
+  const data = Array.isArray(r) ? r : (r.rows || []);
+  const total = data.reduce((s,d)=>s+(d.net_spend||0),0);
+
+  let highlightN = 3;
+  if (data.length >= 4) {
+    for (let i = 1; i < Math.min(data.length, 6); i++) {
+      if ((data[i].net_spend||0) < (data[i-1].net_spend||0) * 0.4) { highlightN = i; break; }
+    }
+  }
+  highlightN = Math.max(2, Math.min(highlightN, 5));
+
+  const topNSum = data.slice(0, highlightN).reduce((s,d) => s + (d.net_spend||0), 0);
+  const topNPct = total ? (topNSum / total * 100).toFixed(0) : 0;
+
+  renderBars('barCategories', data, 'tipo_vendor', 'net_spend', null, highlightN, total, 'tipo_vendor_cross', 'categories');
+  document.getElementById('ttlCategories').textContent = tt('Os {n} maiores tipos representam {pct}% do Spend', {n: highlightN, pct: topNPct});
+  document.getElementById('subtCategories').textContent = t('Spend l\u00edquido por tipo de fornecedor');
+}
+
+async function loadSpendByEmpresa(){
+  const data = await fetch(`/api/spend/by-empresa?${getFiltersWithCross()}`).then(res=>res.json());
+  const container = document.getElementById('empresaChart');
+  if (!data || !data.length) { container.innerHTML = '<div style="text-align:center;color:var(--fr-txt-soft);font-size:.8rem">Sem dados</div>'; return; }
+
+  const rows = data.map(row => { const n = {}; Object.keys(row).forEach(k => n[k.toUpperCase()] = row[k]); return n; });
+  const total = rows.reduce((s,row) => s + (row.NET_SPEND || 0), 0);
+  const colors = { 'BB': '#3b82f6', 'BQ': '#f59e0b' };
+  const gradients = { 'BB': 'linear-gradient(90deg,#1d4ed8,#3b82f6)', 'BQ': 'linear-gradient(90deg,#d97706,#f59e0b)' };
+  const maxVal = Math.max(...rows.map(row => row.NET_SPEND || 0));
+
+  container.innerHTML = rows.map(row => {
+    const val = row.NET_SPEND || 0;
+    const pct = total > 0 ? (val / total * 100).toFixed(1) : '0.0';
+    const barW = maxVal > 0 ? Math.max(3, val / maxVal * 100) : 0;
+    const color = colors[row.EMPRESA] || '#6366f1';
+    return `
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <span style="font-size:.85rem;font-weight:800;color:${color}">${row.EMPRESA}</span>
+          <span style="font-size:.7rem;font-weight:700;color:var(--fr-txt)">${fmt(val)} <span style="color:var(--fr-txt-soft);font-weight:600">(${pct}%)</span></span>
+        </div>
+        <div style="height:28px;background:rgba(100,116,139,.1);border-radius:6px;overflow:hidden">
+          <div style="height:100%;width:${barW}%;background:${gradients[row.EMPRESA] || color};border-radius:6px;transition:width .5s"></div>
+        </div>
+      </div>`;
+  }).join('');
+
+  const bb = rows.find(row=>row.EMPRESA==='BB');
+  document.getElementById('ttlEmpresa').textContent = bb ? tt('{emp} representa {pct}% do Spend L\u00edquido', {emp: 'BB', pct: (bb.NET_SPEND/total*100).toFixed(0)}) : t('Spend L\u00edquido por Empresa');
+}
+
+function toggleAdvFilters(){const b=document.getElementById('advFiltersBar'),btn=document.getElementById('btnAdvFilters');if(b.style.display==='none'){b.style.display='flex';btn.style.borderColor='rgba(59,130,246,.45)';btn.style.color='#60a5fa';}else{b.style.display='none';btn.style.borderColor='rgba(100,116,139,.35)';btn.style.color='#94a3b8';}}
+function resetFilters(){_crossFilter=null;document.getElementById('crossFilterBar').classList.remove('active');Object.values(filters).forEach(ms=>{if(ms.key==='is_fornecedor_nao_negociavel'||(ms.container&&ms.container.id==='fFornNegociavel')){ms.selected=new Set(['NEGOCIAVEL']);}else{ms.selected=new Set(ms.options);}ms.renderOptions();ms.updateLabel();});const cy=String(new Date().getFullYear()),cm=String(new Date().getMonth()+1);if(filters.fEmpresa){filters.fEmpresa.selected=new Set(['BB','BQ']);filters.fEmpresa.renderOptions();filters.fEmpresa.updateLabel();}if(filters.fAno&&filters.fAno.options.includes(cy)){filters.fAno.selected=new Set([cy]);filters.fAno.renderOptions();filters.fAno.updateLabel();}if(filters.fMes&&filters.fMes.options.includes(cm)){filters.fMes.selected=new Set([cm]);filters.fMes.renderOptions();filters.fMes.updateLabel();}if(filters.fTipoNF){filters.fTipoNF.selected=new Set(['com_oc','sem_oc']);filters.fTipoNF.renderOptions();filters.fTipoNF.updateLabel();}if(filters.fFornNegociavel){filters.fFornNegociavel.selected=new Set(['NEGOCIAVEL']);filters.fFornNegociavel.renderOptions();filters.fFornNegociavel.updateLabel();}loadAll();}
+function loadAll(){ return Promise.allSettled([loadItems(), loadSuppliers(), loadABC(), loadPlants(), loadCatOrTipo(), loadSpendByEmpresa()]); }
+function toggleTheme(){const h=document.documentElement;const n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);localStorage.setItem('theme',n);loadAll();}
+const s=localStorage.getItem('theme');if(s)document.documentElement.setAttribute('data-theme',s);
+
+async function initFilters(){
+  const data=await (window.fetchCachedFilterData ? window.fetchCachedFilterData('/api/filters/notas') : fetch('/api/filters/notas').then(r=>r.json()));
+  filters.fEmpresa=new MultiSelect(document.getElementById('fEmpresa'),data.empresas||['BB','BQ']);
+  filters.fEmpresa.selected=new Set(['BB','BQ']); filters.fEmpresa.renderOptions(); filters.fEmpresa.updateLabel();
+  filters.fAno=new MultiSelect(document.getElementById('fAno'),data.anos||[]);
+  const cy=String(new Date().getFullYear()); if(filters.fAno.options.includes(cy)){filters.fAno.selected=new Set([cy]);filters.fAno.renderOptions();filters.fAno.updateLabel();}
+  filters.fMes=new MultiSelect(document.getElementById('fMes'),(data.meses||[]).map(m=>String(m)));
+  filters.fGrupo=new MultiSelect(document.getElementById('fGrupo'),data.grupos||[]);
+  filters.fFornecedor=new MultiSelect(document.getElementById('fFornecedor'),data.fornecedores||[]);
+  filters.fTipoNF=new MultiSelect(document.getElementById('fTipoNF'),['com_oc','sem_oc']);
+  filters.fTipoNF.selected=new Set(['com_oc','sem_oc']); filters.fTipoNF.renderOptions(); filters.fTipoNF.updateLabel();
+  // Pre-select current month
+  const cm=String(new Date().getMonth()+1);if(filters.fMes.options.includes(cm)){filters.fMes.selected=new Set([cm]);filters.fMes.renderOptions();filters.fMes.updateLabel();}
+  if(document.getElementById('fFornNegociavel')) {
+    filters.fFornNegociavel = new MultiSelect(document.getElementById('fFornNegociavel'), ['NEGOCIAVEL', 'NÃO NEGOCIAVEL']);
+  }
+  if (typeof FilterStateStore !== 'undefined') FilterStateStore.restore();
+  loadAll();
+  window._filtersReady=true;
+  // Advanced filters (non-blocking, cached)
+  (window.fetchCachedFilterData ? window.fetchCachedFilterData('/api/filters/advanced') : fetch('/api/filters/advanced').then(r=>r.json())).then(advData=>{
+    const safeMS = (id, opts) => { const el = document.getElementById(id); if (el) return new MultiSelect(el, opts); return null; };
+    filters.fMacroCategoria = safeMS('fMacroCategoria', advData.macro_categoria||[]);
+    filters.fDia = safeMS('fDia', (advData.dias||[]).map(d=>String(d)));
+    filters.fDescItem = safeMS('fDescItem', advData.descricao_item||[]);
+    filters.fCentralizado = safeMS('fCentralizado', advData.centralizado||[]);
+    filters.fUnidade = safeMS('fUnidade', advData.unidade||[]);
+    filters.fStatusPgto = safeMS('fStatusPgto', advData.status_pagamento||[]);
+    filters.fTipoNFAdv = safeMS('fTipoNFAdv', advData.tipo_nf||[]);
+    filters.fFornEspecial = safeMS('fFornEspecial', ['ESPECIAL', 'NÃO ESPECIAL']);
+    if (!filters.fFornNegociavel) filters.fFornNegociavel = safeMS('fFornNegociavel', ['NEGOCIAVEL', 'NÃO NEGOCIAVEL']);
+    if (typeof FilterStateStore !== 'undefined') FilterStateStore.restore();
+  }).catch(()=>{});
+}
+initFilters();
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+[project]
+name = "bq-app-space"
+version = "0.1.0"
+description = "Space Portal (BQ) — Portal de Dashboards e Aplicativos Grupo Bimbo Brasil"
+requires-python = ">=3.10"
+dependencies = [
+    "flask",
+    "gunicorn",
+    "psycopg2-binary",
+    "databricks-sdk>=0.81.0",
+    "requests",
+    "waitress",
+    "python-dotenv",
+]

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guia do Usuário & Arquitetura | DNA de Vendas · Bimbo Brasil</title>
+  <link rel="stylesheet" href="styles.css?v=3.2.5">
+  <style>
+
+    /* SVG Failsafe Dimensioning */
+    svg { box-sizing: border-box; flex-shrink: 0; }
+    .dna-header svg, .dna-nav-tabs svg, .dna-nav-tab svg {
+      width: 16px !important; height: 16px !important; max-width: 16px !important; max-height: 16px !important;
+      display: inline-block !important; vertical-align: middle !important;
+    }
+    .dna-mobile-nav svg, .dna-mobile-nav-item svg {
+      width: 18px !important; height: 18px !important; max-width: 18px !important; max-height: 18px !important;
+      display: inline-block !important;
+    }
+    
+    body.guia-body {
+      background: var(--bg-glow), var(--bg-page);
+      color: var(--text-primary);
+      font-family: Inter, 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .guia-container {
+      max-width: 1100px;
+      width: 100%;
+      margin: 1.5rem auto 3rem;
+      padding: 0 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      flex: 1;
+    }
+
+    .guia-hero {
+      text-align: center;
+      padding: 1.5rem 0 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .guia-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: var(--r-pill);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: var(--primary-soft);
+      border: 1px solid var(--primary);
+      color: var(--primary-strong);
+      margin-bottom: 0.75rem;
+      letter-spacing: .06em;
+    }
+    :root[data-theme="dark"] .guia-badge {
+      color: var(--link);
+      border-color: rgba(96, 165, 250, 0.4);
+    }
+    .guia-title {
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      font-weight: 800;
+      color: var(--text-primary);
+      margin: 0 0 0.5rem 0;
+    }
+    .guia-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 720px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    .guia-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-card);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-card);
+    }
+    .guia-card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+    }
+    .guia-card-title svg { width: 22px; height: 22px; color: var(--primary); }
+    :root[data-theme="dark"] .guia-card-title svg { color: var(--link); }
+
+    .arch-flow {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .flow-step {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--r-control);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: var(--text-on-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 2px;
+    }
+    .step-title { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); }
+    
+    /* R7: Quebra garantida para nomes longos de tabela */
+    .step-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      overflow-wrap: anywhere !important;
+      word-break: break-word !important;
+    }
+
+    .kpi-table-wrap {
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
+    .kpi-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .kpi-table th {
+      background: var(--surface-alt);
+      color: var(--text-primary);
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .kpi-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+    .kpi-table tr:hover { background: var(--surface-hover); }
+
+    /* R7: Código monoespaçado com quebra sem corte */
+    code, .kpi-code {
+      font-family: var(--font-mono, 'Inter', monospace);
+      color: var(--primary-strong);
+      background: var(--primary-soft);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.82em;
+      overflow-wrap: anywhere !important;
+      word-break: break-word !important;
+      white-space: pre-wrap !important;
+    }
+    :root[data-theme="dark"] code, :root[data-theme="dark"] .kpi-code {
+      color: var(--link);
+      background: rgba(59, 130, 246, 0.15);
+    }
+
+    .guia-footer {
+      text-align: center;
+      padding: 1.25rem 1rem;
+      font-size: 13px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      background: var(--bg-header);
+    }
+  </style>
+</head>
+<body class="guia-body">
+  <div class="sp-app-layout">
+  <aside class="sp-sidebar">
+    <a href="/" class="sp-nav-item" title="Início">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Início</span>
+    </a>
+    <a href="vendometro.html" class="sp-nav-item" title="Vendômetro">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      <span>Vendômetro</span>
+    </a>
+    <a href="previsoes.html" class="sp-nav-item" title="Previsões de Invoiced">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+      <span>Previsões</span>
+    </a>
+    <a href="relatorios.html" class="sp-nav-item" title="Report Dinâmico">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      <span>Report</span>
+    </a>
+  </aside>
+    <div class="sp-main">
+
+  <!-- CABEÇALHO UNIFICADO (R1, R2) -->
+  <header class="dna-header">
+    <div class="dna-brand">
+      <a href="/" style="display:flex; align-items:center; text-decoration:none;">
+        <img src="logo_bimbo.png" alt="Grupo Bimbo" class="dna-logo-img" width="32" height="32">
+      </a>
+      <span class="dna-brand-badge">Guia & Arquitetura</span>
+    </div>
+
+    
+
+    <!-- Menu do Usuário estilo Databricks (R1) -->
+    <div class="app-menu-container" id="app-menu-container"></div>
+  </header>
+
+  <!-- NAVEGAÇÃO MOBILE INFERIOR (R2) -->
+  <nav class="dna-mobile-nav" aria-label="Navegação mobile">
+    <a href="/" class="dna-mobile-nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      <span>Home</span>
+    </a>
+    <a href="vendometro.html" class="dna-mobile-nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      <span>Vendômetro</span>
+    </a>
+    <a href="previsoes.html" class="dna-mobile-nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+      <span>Previsões</span>
+    </a>
+    <a href="relatorios.html" class="dna-mobile-nav-item">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+      <span>Report</span>
+    </a>
+  </nav>
+
+  <main class="guia-container">
+
+    <section class="guia-hero">
+      <span class="guia-badge">Documentação & Engenharia de Dados</span>
+      <h1 class="guia-title">Guia do Usuário & Arquitetura</h1>
+      <p class="guia-subtitle">Visão técnica e funcional da aplicação DNA de Vendas desenvolvida sobre Databricks Apps, Databricks Asset Bundles (DAB) e Unity Catalog.</p>
+    </section>
+
+    <!-- ARQUITETURA -->
+    <section class="guia-card">
+      <div class="guia-card-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+        <span>Arquitetura da Solução</span>
+      </div>
+      <p style="font-size:0.88rem; color:var(--text-muted); line-height:1.5; margin:0 0 1rem 0;">
+        A aplicação migra o modelo analítico anteriormente hospedado no Power BI para uma arquitetura nativa em nuvem no Databricks, garantindo governança centralizada no Unity Catalog, performance de escala e independência de licenças locais.
+      </p>
+
+      <div class="arch-flow">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-title">Unity Catalog</div>
+          <div class="step-desc">Tabelas gerenciadas no catálogo <code>cat_dnabb_dv</code>:<br>
+          • <code>opebrapodis_lz.vendas_pedidos_ppto_bq_v2</code><br>
+          • <code>bracatlg_lz.produtos_view</code><br>
+          • <code>bracatlg_lz.grupo_clientes_view</code><br>
+          • <code>bracatlg_lz.calendario_bimbo</code></div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-title">SQL Warehouse</div>
+          <div class="step-desc">Cluster <strong>BBRDNABRCLUS01</strong> executando consultas de agregação otimizadas com Photon Engine para cálculo instantâneo de faturamento e metas.</div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-title">FastAPI Backend (OBO)</div>
+          <div class="step-desc">Serviço Python assíncrono com autenticação On-Behalf-Of (OBO) via <code>x-forwarded-access-token</code>, cache por usuário e isolamento de consultas.</div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-title">DAB Deployment</div>
+          <div class="step-desc">Databricks Asset Bundles (<code>databricks.yml</code>) com targets <strong>dev</strong> e <strong>prod</strong> automatizando permissões e deploy do Databricks App.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CATALOGO DE REGRAS E KPIS -->
+    <section class="guia-card">
+      <div class="guia-card-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>Dicionário de KPIs & Fórmulas Oficiais</span>
+      </div>
+      <div class="kpi-table-wrap">
+        <table class="kpi-table">
+          <thead>
+            <tr>
+              <th>Métrica</th>
+              <th>Descrição & Regra de Negócio</th>
+              <th>Origem / Fórmula SQL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Invoiced (até a data)</strong></td>
+              <td>Faturamento líquido realizado no mês até a data de corte decorrida.</td>
+              <td><span class="kpi-code">sum(VL_CYW_LIQ_VENDIDO)</span></td>
+            </tr>
+            <tr>
+              <td><strong>Open Orders</strong></td>
+              <td>Pedidos em carteira com entrega prevista no mês corrente que ainda aguardam faturamento.</td>
+              <td><span class="kpi-code">sum(VL_LIQ_OPEN_ORDERS)</span></td>
+            </tr>
+            <tr>
+              <td><strong>Invoiced + Open Orders</strong></td>
+              <td>Visão projetada do mês considerando o realizado mais a carteira em aberto.</td>
+              <td><span class="kpi-code">Invoiced + Open Orders</span></td>
+            </tr>
+            <tr>
+              <td><strong>Budget até hoje</strong></td>
+              <td>Meta de faturamento proporcional aos dias úteis decorridos no mês (ex: 13 de 21 dias úteis).</td>
+              <td><span class="kpi-code">Budget_Mês * (Dias_Úteis_Passados / Dias_Úteis_Totais)</span></td>
+            </tr>
+            <tr>
+              <td><strong>Cobertura Budget (%)</strong></td>
+              <td>Percentual de atingimento da meta cheia do mês pela soma de Invoiced + Open Orders.</td>
+              <td><span class="kpi-code">(Invoiced + Open Orders) / Budget_Total</span></td>
+            </tr>
+            <tr>
+              <td><strong>Cobertura Forecast (%)</strong></td>
+              <td>Percentual de atingimento da projeção revisada cheia do mês (Forecast).</td>
+              <td><span class="kpi-code">(Invoiced + Open Orders) / Forecast_Total</span></td>
+            </tr>
+            <tr>
+              <td><strong>Acumulado no Ano (YTD)</strong></td>
+              <td>Faturamento total acumulado desde 01/Jan até o dia de corte comparado ao mesmo período anterior.</td>
+              <td><span class="kpi-code">sum(VL_CYW_LIQ_VENDIDO) [YTD]</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- INSTRUÇÕES DO REPORT DINÂMICO -->
+    <section class="guia-card">
+      <div class="guia-card-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        <span>Recursos do Report Dinâmico</span>
+      </div>
+      <ul style="font-size:0.85rem; color:var(--text-muted); line-height:1.6; padding-left:1.25rem; margin:0;">
+        <li><strong style="color:var(--text-primary);">Redimensionamento de Colunas:</strong> Passe o cursor sobre a divisória entre cabeçalhos de coluna e arraste para alargar ou encurtar a largura conforme desejado.</li>
+        <li><strong style="color:var(--text-primary);">Ordenação:</strong> Clique sobre o título de qualquer coluna ou no ícone ▲ / ▼ para alternar entre ordem crescente e decrescente.</li>
+        <li><strong style="color:var(--text-primary);">Filtro por Coluna:</strong> Clique no ícone de lupa ao lado de qualquer cabeçalho para abrir o campo de busca. Digite o termo e pressione <kbd style="background:var(--surface-alt); border:1px solid var(--border); padding:2px 5px; border-radius:3px; color:var(--text-primary);">Enter</kbd>.</li>
+        <li><strong style="color:var(--text-primary);">Seleção de Campos:</strong> Use a barra lateral esquerda para marcar ou desmarcar dimensões e medidas em tempo real. O layout da tabela é recalculado sob demanda.</li>
+        <li><strong style="color:var(--text-primary);">Exportação XLSX:</strong> O botão "Exportar XLSX" gera um arquivo Excel completo com formatação nativa de moeda e números tabulares diretamente no seu computador.</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <!-- RODAPÉ LEGÍVEL (R10) -->
+  <footer class="guia-footer">
+    Grupo Bimbo Brasil · Data & Analytics · Databricks Apps & Unity Catalog · 2026
+  </footer>
+
+  <script src="app-menu.js?v=3.1.0"></script>
+  <script src="view-scale.js?v=1.0.3"></script>
+</body>
+</html>

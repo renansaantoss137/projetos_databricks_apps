@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPACE - {{ data.title_key | capitalize }}</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=20260814_18">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}?v=20260911_02">
+</head>
+<body class="area-page-body area-page-{{ area_key }} dark-theme">
+    <script>if (localStorage.getItem('theme') === 'light') document.body.classList.remove('dark-theme');</script>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="hamburger-menu" id="hamburger-btn" aria-label="Menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <div class="logo-container">
+                <a href="/" class="logo-link">
+                    <img src="{{ url_for('static', filename='images/space-one-logo.png') }}" alt="SPACE" class="logo-img">
+                </a>
+            </div>
+        </div>
+
+        <div class="topbar-center">
+            <div class="search-container">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" id="search-input" placeholder="Pesquisar Dashboard" autocomplete="off">
+                <ul id="search-suggestions" class="search-suggestions"></ul>
+            </div>
+        </div>
+
+        <div class="topbar-right">
+            {% if local_mode %}
+            <!-- MOCK USER SWITCHER -->
+            <div class="mock-user-switcher-container">
+                <button class="mock-user-btn" id="mock-user-btn" title="Simular Usuário/Grupos">
+                    <i data-lucide="user-cog"></i>
+                    <span class="mock-user-email-badge">{{ user_email }}</span>
+                </button>
+                <div class="mock-user-dropdown" id="mock-user-dropdown">
+                    <form action="/mock-user" method="POST" class="mock-user-form">
+                        <h4>Simular Usuário (Local)</h4>
+                        <div class="form-group">
+                            <label for="mock_email">E-mail</label>
+                            <input type="email" id="mock_email" name="email" value="{{ user_email }}" required>
+                        </div>
+                        <div class="form-group" style="flex-direction: row; align-items: center; gap: 8px; justify-content: flex-start;">
+                            <input type="checkbox" id="mock_is_admin" name="is_admin" value="true" {% if is_admin %}checked{% endif %}>
+                            <label for="mock_is_admin" style="margin: 0; cursor: pointer;">Administrador</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="mock_groups">Grupos AD (separados por vírgula)</label>
+                            <textarea id="mock_groups" name="groups" placeholder="Ex: Grupo-People,Grupo-Commercial">{{ user_groups }}</textarea>
+                        </div>
+                        <button type="submit" class="btn-submit-mock">Aplicar Alterações</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+            <button class="theme-toggle" id="theme-toggle-btn" aria-label="Alternar Tema">
+                <i data-lucide="moon" class="theme-icon-moon" style="display: none;"></i>
+                <i data-lucide="sun" class="theme-icon-sun"></i>
+            </button>
+            <div class="language-selector" id="lang-selector">
+                <span class="lang-badge">EN</span>
+                <i data-lucide="chevron-down" class="chevron-icon"></i>
+                <!-- Idioma Dropdown -->
+                <div class="lang-dropdown" id="lang-dropdown">
+                    <a href="#" data-lang="en" class="active">EN</a>
+                    <a href="#" data-lang="pt">PT</a>
+                    <a href="#" data-lang="es">ES</a>
+                </div>
+            </div>
+            <div class="user-analytics-logo">
+                <span class="data-text">Data</span><span class="analytics-text">&Analytics</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- SIDE DRAWER MENU -->
+    <div class="drawer" id="side-drawer">
+        <div class="drawer-header">
+            <span class="drawer-title" data-i18n="menu_title">Menu</span>
+        </div>
+        <nav class="drawer-content">
+            <a href="/admin" class="drawer-item">
+                <div class="drawer-icon-wrapper">
+                    <i data-lucide="settings" class="drawer-item-icon"></i>
+                </div>
+                <span class="drawer-item-label" data-i18n="admin_panel">Administração</span>
+            </a>
+        </nav>
+    </div>
+    <div class="drawer-overlay" id="drawer-overlay"></div>
+
+    <!-- BREADCRUMBS ROW -->
+    <div class="breadcrumbs-row">
+        <a href="/" class="breadcrumb-back-link">
+            <i data-lucide="arrow-left" class="breadcrumb-arrow-icon"></i>
+            <span data-i18n="home_breadcrumb">Home</span>
+        </a>
+        <span class="breadcrumb-separator">></span>
+        <span class="breadcrumb-current-area" data-i18n="{{ area_key }}">{{ data.title_key | capitalize }}</span>
+    </div>
+
+    <!-- CONTENT WRAPPER -->
+    <div class="content-wrapper subpage-wrapper">
+        
+        <!-- MAIN DASHBOARD CONTENT -->
+        <main class="main-content">
+            <!-- AREA HERO & SHOWCASE SECTION (Custom per Area / DNA Showcase) -->
+            {% set area_tagline = area_tagline if (area_tagline is defined and area_tagline) else (data.tagline if (data and data.tagline) else '') %}
+            {% set area_about = area_about if (area_about is defined and area_about) else (data.about if (data and data.about) else None) %}
+
+            <!-- DYNAMIC LAYOUT: FIXED LEFT SIDEBAR WITH 3 PILLARS + RIGHT DASHBOARDS & APPS -->
+            <div class="area-layout-container{% if area_about or area_key == 'dna' %} has-left-sidebar{% endif %}">
+                
+                {% if area_about or area_key == 'dna' %}
+                <!-- FIXED LEFT SIDEBAR PANEL (3 PILLARS) -->
+                <aside class="area-left-sidebar area-theme-{{ area_key }}{% if area_about and area_about.digital_maturity %} has-digital-maturity{% endif %}">
+                    <div class="sidebar-header">
+                        <div class="sidebar-icon-box">
+                            <i data-lucide="{{ data.icon | default('database') }}"></i>
+                        </div>
+                        <div class="sidebar-title-group">
+                            <span class="area-hero-badge">
+                                <span class="pulse-dot"></span>
+                                <span data-i18n="area_badge_{{ area_key }}">{{ data.title_key | replace('_', ' ') | upper if data.title_key else area_key | upper }}</span>
+                            </span>
+                            <h1 class="sidebar-area-title" data-i18n="area_title_{{ area_key }}">{{ data.title_key | replace('_', ' ') | capitalize if data.title_key else area_key | upper }}</h1>
+                        </div>
+                    </div>
+
+                    {% if area_tagline %}
+                    <p class="sidebar-tagline" data-i18n="area_tagline_{{ area_key }}">{{ area_tagline }}</p>
+                    {% endif %}
+
+                    {% if area_about and area_about.pillars %}
+                    <div class="sidebar-pillars-section">
+                        <span class="sidebar-section-title">
+                            <i data-lucide="layers"></i>
+                            <span data-i18n="pillars_title">3 Pilares Estratégicos</span>
+                        </span>
+                        <div class="sidebar-pillars-list">
+                            {% for pillar in area_about.pillars[:3] %}
+                            <div class="sidebar-pillar-card">
+                                <div class="sp-icon-wrapper">
+                                    <i data-lucide="{{ pillar.icon }}"></i>
+                                </div>
+                                <div class="sp-content">
+                                    <h4 class="sp-title" data-i18n="pillar_title_{{ area_key }}_{{ loop.index }}">{{ pillar.title }}</h4>
+                                    <p class="sp-desc" data-i18n="pillar_desc_{{ area_key }}_{{ loop.index }}">{{ pillar.desc }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if area_about and area_about.digital_maturity %}
+                    {% set dm = area_about.digital_maturity %}
+                    {% set dims = dm.dimensions if (dm and dm.dimensions) else [] %}
+                    
+                    {% set d_map = {} %}
+                    {% for d in dims %}
+                        {% set _ = d_map.update({d.name: d.value}) %}
+                    {% endfor %}
+                    
+                    {% set v0 = (d_map.get('Adoção') if d_map.get('Adoção') is not none else d_map.get('Adocao', 1.0)) | float %}
+                    {% set v1 = (d_map.get('Portfólio') if d_map.get('Portfólio') is not none else d_map.get('Portfolio', 1.0)) | float %}
+                    {% set v2 = (d_map.get('Autonomia') if d_map.get('Autonomia') is not none else 1.0) | float %}
+                    {% set v3 = (d_map.get('Capacitação') if d_map.get('Capacitação') is not none else d_map.get('Capacitacao', 1.0)) | float %}
+                    {% set v4 = (d_map.get('Estratégia') if d_map.get('Estratégia') is not none else d_map.get('Estrategia', 1.0)) | float %}
+
+                    {% set r0 = (v0 / 5.0) * 72 %}
+                    {% set r1 = (v1 / 5.0) * 72 %}
+                    {% set r2 = (v2 / 5.0) * 72 %}
+                    {% set r3 = (v3 / 5.0) * 72 %}
+                    {% set r4 = (v4 / 5.0) * 72 %}
+
+                    {% set p0_x = 145.0 %}
+                    {% set p0_y = 115.0 - r0 %}
+                    
+                    {% set p1_x = 145.0 + (r1 * 0.9511) %}
+                    {% set p1_y = 115.0 - (r1 * 0.3090) %}
+                    
+                    {% set p2_x = 145.0 + (r2 * 0.5878) %}
+                    {% set p2_y = 115.0 + (r2 * 0.8090) %}
+                    
+                    {% set p3_x = 145.0 - (r3 * 0.5878) %}
+                    {% set p3_y = 115.0 + (r3 * 0.8090) %}
+                    
+                    {% set p4_x = 145.0 - (r4 * 0.9511) %}
+                    {% set p4_y = 115.0 - (r4 * 0.3090) %}
+
+                    {% set poly_pts = (p0_x|round(1)) ~ ',' ~ (p0_y|round(1)) ~ ' ' ~ (p1_x|round(1)) ~ ',' ~ (p1_y|round(1)) ~ ' ' ~ (p2_x|round(1)) ~ ',' ~ (p2_y|round(1)) ~ ' ' ~ (p3_x|round(1)) ~ ',' ~ (p3_y|round(1)) ~ ' ' ~ (p4_x|round(1)) ~ ',' ~ (p4_y|round(1)) %}
+                    {% set avg_raw = (v0 + v1 + v2 + v3 + v4) / 5.0 %}
+                    {% set avg_r = avg_raw | round(2) %}
+                    {% set dm_final_score = (avg_r | string) if not (avg_r == avg_r | int) else (avg_r | int | string) ~ '.0' %}
+
+                    {% set target_val = dm.target | default(3.2) | float %}
+                    {% set r_target = (target_val / 5.0) * 72.0 %}
+                    {% set t0_x = 145.0 %}
+                    {% set t0_y = 115.0 - r_target %}
+                    {% set t1_x = 145.0 + (r_target * 0.9511) %}
+                    {% set t1_y = 115.0 - (r_target * 0.3090) %}
+                    {% set t2_x = 145.0 + (r_target * 0.5878) %}
+                    {% set t2_y = 115.0 + (r_target * 0.8090) %}
+                    {% set t3_x = 145.0 - (r_target * 0.5878) %}
+                    {% set t3_y = 115.0 + (r_target * 0.8090) %}
+                    {% set t4_x = 145.0 - (r_target * 0.9511) %}
+                    {% set t4_y = 115.0 - (r_target * 0.3090) %}
+                    {% set target_poly_pts = (t0_x|round(1)) ~ ',' ~ (t0_y|round(1)) ~ ' ' ~ (t1_x|round(1)) ~ ',' ~ (t1_y|round(1)) ~ ' ' ~ (t2_x|round(1)) ~ ',' ~ (t2_y|round(1)) ~ ' ' ~ (t3_x|round(1)) ~ ',' ~ (t3_y|round(1)) ~ ' ' ~ (t4_x|round(1)) ~ ',' ~ (t4_y|round(1)) %}
+
+                    <div class="sidebar-digital-maturity-section">
+                        <div class="dm-header">
+                            <div class="dm-title-row">
+                                <i data-lucide="radar" class="dm-icon"></i>
+                                <h3 class="dm-title">{{ dm.title | default('Digital Maturity') }}</h3>
+                            </div>
+                            <div class="dm-badges-row">
+                                <span class="dm-score-badge">
+                                    <i data-lucide="award"></i>
+                                    <span>Nota Final: <strong>{{ dm_final_score }}</strong></span>
+                                </span>
+                                <span class="dm-target-badge" style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.8rem; font-weight: 600; color: #10b981; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); padding: 3px 12px; border-radius: 14px;" title="Target para todas as áreas">
+                                    <i data-lucide="target" style="width:13px; height:13px; color:#10b981;"></i>
+                                    <span>Target: <strong style="font-size:0.92rem; font-weight:800; margin-left:2px; color:#10b981;">{{ (target_val|string) if not (target_val == target_val|int) else (target_val|int|string) ~ '.0' }}</strong></span>
+                                </span>
+                            </div>
+
+                            {% set bo_raw = dm.business_owners if (dm and dm.business_owners is defined and dm.business_owners is not none) else [] %}
+                            {% set bo_list = bo_raw if (bo_raw is sequence and not bo_raw is string) else (bo_raw.split(',') if bo_raw is string else []) %}
+                            {% set clean_bos = [] %}
+                            {% for b in bo_list %}
+                                {% set b_str = b|string|trim %}
+                                {% if b_str %}
+                                    {% set _ = clean_bos.append(b_str) %}
+                                {% endif %}
+                            {% endfor %}
+
+                            <div class="dm-bo-row">
+                                <span class="dm-bo-label">
+                                    <i data-lucide="user-check"></i>
+                                    <span>{{ 'Business Owner' if clean_bos|length == 1 else 'Business Owners' }}:</span>
+                                </span>
+                                <div class="dm-bo-pills">
+                                    {% if clean_bos|length > 0 %}
+                                        {% for bo_name in clean_bos %}
+                                        <span class="dm-bo-pill" title="Business Owner">
+                                            <i data-lucide="user"></i>
+                                            <span>{{ bo_name }}</span>
+                                        </span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="dm-bo-pill dm-bo-tbd" title="To Be Defined">
+                                            <i data-lucide="help-circle"></i>
+                                            <span>TBD (To be defined)</span>
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dm-chart-wrapper">
+                            <svg class="dm-radar-svg" viewBox="0 0 290 230" preserveAspectRatio="xMidYMid meet">
+                                <defs>
+                                    <linearGradient id="radarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#0284c7" stop-opacity="0.45" />
+                                        <stop offset="100%" stop-color="#00a8cc" stop-opacity="0.2" />
+                                    </linearGradient>
+                                    <linearGradient id="radarDarkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.4" />
+                                        <stop offset="100%" stop-color="#0284c7" stop-opacity="0.2" />
+                                    </linearGradient>
+                                </defs>
+
+                                <!-- Grid concentric pentagons (3 levels: scale 1.67, 3.33, 5.0) -->
+                                <polygon points="145.0,43.0 213.5,92.8 187.3,173.2 102.7,173.2 76.5,92.8" class="radar-grid-outer" />
+                                <polygon points="145.0,67.0 190.7,100.2 173.2,153.8 116.8,153.8 99.3,100.2" class="radar-grid-mid" />
+                                <polygon points="145.0,91.0 167.8,107.6 159.1,134.4 130.9,134.4 122.2,107.6" class="radar-grid-inner" />
+
+                                <!-- Target Pentagon (Na marca de 3.2) -->
+                                <polygon points="{{ target_poly_pts }}" class="radar-target-polygon" style="fill: rgba(16, 185, 129, 0.06); stroke: #10b981; stroke-width: 2.2; stroke-dasharray: 4 3; stroke-linejoin: round; filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.4));" />
+
+                                <!-- Axis Spokes (5 axes) -->
+                                <line x1="145" y1="115" x2="145.0" y2="43.0" class="radar-spoke" />
+                                <line x1="145" y1="115" x2="213.5" y2="92.8" class="radar-spoke" />
+                                <line x1="145" y1="115" x2="187.3" y2="173.2" class="radar-spoke" />
+                                <line x1="145" y1="115" x2="102.7" y2="173.2" class="radar-spoke" />
+                                <line x1="145" y1="115" x2="76.5" y2="92.8" class="radar-spoke" />
+
+                                <!-- Data Polygon -->
+                                <polygon points="{{ poly_pts }}" class="radar-data-polygon" />
+
+                                <!-- Node Dots & Value Labels -->
+                                <circle cx="{{ p0_x|round(1) }}" cy="{{ p0_y|round(1) }}" r="4.5" class="radar-node-dot" />
+                                <text x="145" y="{{ (p0_y - 7)|round(1) }}" class="radar-value-label" text-anchor="middle">{{ v0 }}</text>
+
+                                <circle cx="{{ p1_x|round(1) }}" cy="{{ p1_y|round(1) }}" r="4.5" class="radar-node-dot" />
+                                <text x="{{ (p1_x + 9)|round(1) }}" y="{{ (p1_y - 2)|round(1) }}" class="radar-value-label" text-anchor="start">{{ v1 }}</text>
+
+                                <circle cx="{{ p2_x|round(1) }}" cy="{{ p2_y|round(1) }}" r="4.5" class="radar-node-dot" />
+                                <text x="{{ (p2_x + 8)|round(1) }}" y="{{ (p2_y + 9)|round(1) }}" class="radar-value-label" text-anchor="start">{{ v2 }}</text>
+
+                                <circle cx="{{ p3_x|round(1) }}" cy="{{ p3_y|round(1) }}" r="4.5" class="radar-node-dot" />
+                                <text x="{{ (p3_x - 8)|round(1) }}" y="{{ (p3_y + 9)|round(1) }}" class="radar-value-label" text-anchor="end">{{ v3 }}</text>
+
+                                <circle cx="{{ p4_x|round(1) }}" cy="{{ p4_y|round(1) }}" r="4.5" class="radar-node-dot" />
+                                <text x="{{ (p4_x - 9)|round(1) }}" y="{{ (p4_y - 2)|round(1) }}" class="radar-value-label" text-anchor="end">{{ v4 }}</text>
+
+                                <!-- Outer Axis Text Labels -->
+                                <text x="145" y="25" class="radar-axis-label" text-anchor="middle">Adoção</text>
+                                <text x="223" y="90" class="radar-axis-label" text-anchor="start">Portfólio</text>
+                                <text x="195" y="188" class="radar-axis-label" text-anchor="start">Autonomia</text>
+                                <text x="95" y="188" class="radar-axis-label" text-anchor="end">Capacitação</text>
+                                <text x="67" y="90" class="radar-axis-label" text-anchor="end">Estratégia</text>
+                            </svg>
+                        </div>
+                    </div>
+                    {% elif area_about and area_about.stats %}
+                    <div class="sidebar-stats-row">
+                        {% for stat in area_about.stats[:3] %}
+                        <div class="sidebar-stat-item">
+                            <span class="stat-value">{{ stat.value }}</span>
+                            <span class="stat-label" data-i18n="stat_label_{{ area_key }}_{{ loop.index }}">{{ stat.label }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if area_about and area_about.techs and not area_about.digital_maturity %}
+                    <div class="sidebar-tech-row">
+                        {% for tech in area_about.techs[:5] %}
+                        <span class="tech-tag-pill">{{ tech }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </aside>
+                {% endif %}
+
+                <!-- RIGHT MAIN CONTENT (APPLICATIONS & DASHBOARDS) -->
+                <div class="area-right-content">
+                    <!-- DYNAMIC DUAL COLUMNS GRID -->
+                    <div class="subpage-columns{% if not data.applications or not data.dashboards %} single-column{% endif %}">
+                        
+                        <!-- COLUMN 1: APPLICATIONS -->
+                        {% if data.applications %}
+                        <div class="subpage-column">
+                            <div class="column-header">
+                                <span data-i18n="applications">Applications</span>
+                            </div>
+                            <div class="column-cards-grid">
+                                {% for app in data.applications %}
+                                <a {% if app.has_access and app.link and app.link != '#' %}href="{{ app.link }}" target="_blank"{% else %}href="#"{% endif %} 
+                                   class="card-item area-card app-card-btn" 
+                                   data-title="{{ app.title | lower }}"
+                                   data-label="{{ app.title }}"
+                                   data-has-access="{{ 'true' if app.has_access else 'false' }}"
+                                   data-required-group="{{ app.required_group }}"
+                                   data-area-key="{{ area_key }}"
+                                   onclick="handleAppClick(event, this)">
+                                    <span class="card-fav-btn"
+                                          data-title="{{ app.title }}"
+                                          data-type="application"
+                                          data-area-key="{{ area_key }}"
+                                          data-icon="{{ app.icon }}"
+                                          data-link="{{ app.link }}"
+                                          data-has-access="{{ 'true' if app.has_access else 'false' }}"
+                                          onclick="handleCardFavClick(event, this)"
+                                          role="button"
+                                          title="Favoritar">
+                                        <i data-lucide="star"></i>
+                                    </span>
+                                    <div class="card-icon-wrapper">
+                                        <i data-lucide="{{ app.icon }}" class="card-icon"></i>
+                                    </div>
+                                    <span class="card-label" {% if app.title_key %}data-i18n="{{ app.title_key }}"{% endif %}>{{ app.title }}</span>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- COLUMN 2: DASHBOARDS -->
+                        {% if data.dashboards %}
+                        <div class="subpage-column">
+                            <div class="column-header">
+                                <span data-i18n="dashboards">Dashboards</span>
+                            </div>
+                            <div class="column-cards-grid">
+                                {% for db in data.dashboards %}
+                                <button
+                                    class="card-item area-card db-card-btn"
+                                    data-title="{{ db.title | lower }}"
+                                    data-url="{{ db.link | default('') }}"
+                                    data-url-mobile="{{ db.link_mobile | default('') }}"
+                                    data-label="{{ db.title }}"
+                                    data-has-access="{{ 'true' if db.has_access else 'false' }}"
+                                    data-required-group="{{ db.required_group }}"
+                                    data-area-key="{{ area_key }}"
+                                    type="button"
+                                    onclick="openDashViewer(this)">
+                                    <span class="card-fav-btn"
+                                          data-title="{{ db.title }}"
+                                          data-type="dashboard"
+                                          data-area-key="{{ area_key }}"
+                                          data-icon="{{ db.icon }}"
+                                          data-link="{{ db.link }}"
+                                          data-link-mobile="{{ db.link_mobile }}"
+                                          data-has-access="{{ 'true' if db.has_access else 'false' }}"
+                                          onclick="handleCardFavClick(event, this)"
+                                          role="button"
+                                          title="Favoritar">
+                                        <i data-lucide="star"></i>
+                                    </span>
+                                    <div class="card-icon-wrapper">
+                                        <i data-lucide="{{ db.icon }}" class="card-icon"></i>
+                                    </div>
+                                    <span class="card-label" {% if db.title_key %}data-i18n="{{ db.title_key }}"{% endif %}>{{ db.title }}</span>
+                                </button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- FALLBACK: EMPTY STATE (when neither applications nor dashboards exist) -->
+                        {% if not data.applications and not data.dashboards %}
+                        <div class="subpage-column empty-subpage-column">
+                            <div class="column-header">
+                                <span data-i18n="empty_area_title">Conteúdo</span>
+                            </div>
+                            <div class="empty-column-content">
+                                <i data-lucide="folder-open" class="empty-icon"></i>
+                                <p data-i18n="empty_area_msg">Nenhum aplicativo ou dashboard disponível nesta área.</p>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+    </div>
+
+    <!-- =============================================
+         DASHBOARD IFRAME VIEWER (SLIDE-OVER PANEL)
+         ============================================= -->
+    <div class="dash-viewer-overlay" id="dashViewerOverlay" onclick="closeDashViewer()"></div>
+
+    <div class="dash-viewer-panel" id="dashViewerPanel">
+        <!-- Collapsible Areas Drawer inside Viewer -->
+        <div class="dv-areas-drawer-overlay" id="dvAreasDrawerOverlay" onclick="toggleDvDrawer(event)"></div>
+        <div class="dv-areas-drawer" id="dvAreasDrawer">
+            <div class="dv-areas-drawer-header">
+                <span class="dv-areas-drawer-title">Selecionar Área</span>
+                <button class="dv-areas-drawer-close" onclick="toggleDvDrawer(event)" title="Fechar Menu"><i data-lucide="x"></i></button>
+            </div>
+            <nav class="dv-areas-drawer-content">
+                {% for area in area_options %}
+                <a href="/area/{{ area.key }}" class="dv-areas-drawer-item {% if area.key == area_key %}active{% endif %}" data-area-key="{{ area.key }}">
+                    <div class="dv-areas-drawer-icon-wrapper">
+                        <i data-lucide="{{ area.icon }}"></i>
+                    </div>
+                    <span class="dv-areas-drawer-label">{{ area.title }}</span>
+                </a>
+                {% endfor %}
+            </nav>
+        </div>
+
+        <!-- Panel Header with Breadcrumb -->
+        <div class="dash-viewer-header">
+            <div class="dash-viewer-title-group">
+                <button class="dv-hamburger-btn" id="dvHamburgerBtn" onclick="toggleDvDrawer(event)" title="Menu de Áreas">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+                <div class="dash-viewer-icon">
+                    <i data-lucide="bar-chart-3" id="dashViewerIcon"></i>
+                </div>
+                <nav class="dash-viewer-breadcrumb" aria-label="breadcrumb">
+                    <a href="/" class="dv-bc-link">Home</a>
+                    <span class="dv-bc-sep">›</span>
+                    <a href="/area/{{ area_key }}" class="dv-bc-link" id="dvBcArea">{{ data.title_key | capitalize }}</a>
+                    <span class="dv-bc-sep">›</span>
+                    <span class="dv-bc-current" id="dvBcTitle">Dashboard</span>
+                </nav>
+            </div>
+            <div class="dash-viewer-actions">
+                <button class="dash-viewer-close-btn" onclick="closeDashViewer()" title="Fechar">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Iframe Container -->
+        <div class="dash-viewer-body">
+            <div class="dash-viewer-loading" id="dashViewerLoading">
+                <div class="dash-loader-spinner"></div>
+                <span>Carregando dashboard...</span>
+            </div>
+            <iframe
+                id="dashViewerIframe"
+                src=""
+                frameborder="0"
+                allowfullscreen
+                style="display:none;"
+                onload="onIframeLoad()"
+            ></iframe>
+            <div class="dash-viewer-no-url" id="dashViewerNoUrl" style="display:none;">
+                <i data-lucide="alert-circle"></i>
+                <p>Nenhuma URL configurada para este dashboard.</p>
+                <a href="/admin" class="dash-no-url-link">Configurar no Painel Admin</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        window.ALL_DASHBOARDS = {{ dashboards|tojson }};
+        window.CURRENT_USER_EMAIL = "{{ user_email }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/script.js') }}?v=20261111_02"></script>
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // =============================================
+        // IFRAME DASHBOARD VIEWER CONTROLLER
+        // =============================================
+        const viewerOverlay = document.getElementById('dashViewerOverlay');
+        const viewerPanel   = document.getElementById('dashViewerPanel');
+        const viewerIframe  = document.getElementById('dashViewerIframe');
+        const dvBcTitle     = document.getElementById('dvBcTitle');
+        const viewerLoading = document.getElementById('dashViewerLoading');
+        const viewerNoUrl   = document.getElementById('dashViewerNoUrl');
+
+        function handleAppClick(e, btn) {
+            // All users have access
+        }
+        window.handleAppClick = handleAppClick;
+
+        function openDashViewer(btn) {
+            const urlDesktop = btn.getAttribute('data-url') || '';
+            const urlMobile  = btn.getAttribute('data-url-mobile') || '';
+            const label      = btn.getAttribute('data-label') || 'Dashboard';
+            const areaKey    = btn.getAttribute('data-area-key') || '';
+            const requiredGroup = btn.getAttribute('data-required-group') || '';
+
+            // Track dashboard access
+            fetch('/api/track-dashboard', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({dashboard_name: label, area_key: areaKey})
+            }).catch(function(){});
+
+            // Detect mobile browser
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+            
+            // Choose the correct URL based on device type
+            let url = urlDesktop;
+            if (isMobile && urlMobile && urlMobile !== '#' && urlMobile !== '') {
+                url = urlMobile;
+            }
+
+            // Update breadcrumb title segment
+            if (dvBcTitle) dvBcTitle.textContent = label;
+
+            // Show overlay + panel
+            viewerOverlay.classList.add('active');
+            viewerPanel.classList.add('open');
+            document.body.style.overflow = 'hidden';
+
+            const noAccessDiv = document.getElementById('dashViewerNoAccess');
+            if (noAccessDiv) noAccessDiv.style.display = 'none';
+
+            if (url && url !== '#' && url !== '') {
+                // Show loading, hide others
+                viewerLoading.style.display = 'flex';
+                viewerIframe.style.display  = 'none';
+                viewerNoUrl.style.display   = 'none';
+
+                // Load iframe
+                viewerIframe.src = url;
+            } else {
+                // No URL configured
+                viewerLoading.style.display = 'none';
+                viewerIframe.style.display  = 'none';
+                viewerNoUrl.style.display   = 'flex';
+            }
+        }
+
+        function closeDashViewer() {
+            viewerOverlay.classList.remove('active');
+            viewerPanel.classList.remove('open');
+            
+            // Hide iframe immediately to prevent transition lag and GPU stuttering
+            viewerIframe.style.display = 'none';
+            viewerIframe.src = '';
+            if (viewerLoading) viewerLoading.style.display = 'flex';
+            
+            // Close nested drawer if open
+            const dvDrawer = document.getElementById('dvAreasDrawer');
+            const dvOverlay = document.getElementById('dvAreasDrawerOverlay');
+            const dvHamburger = document.getElementById('dvHamburgerBtn');
+            if (dvDrawer) {
+                dvDrawer.classList.remove('open');
+                dvDrawer.style.display = 'none'; // Force hide immediately to prevent ghosting
+            }
+            if (dvOverlay) dvOverlay.classList.remove('active');
+            if (dvHamburger) {
+                dvHamburger.classList.remove('open');
+                const bars = dvHamburger.querySelectorAll('.bar');
+                if (bars && bars.length >= 3) {
+                    bars[0].style.transform = 'none';
+                    bars[1].style.opacity = '1';
+                    bars[2].style.transform = 'none';
+                }
+            }
+
+            // Restore body scroll only after transition finishes (350ms)
+            setTimeout(() => {
+                document.body.style.overflow = '';
+            }, 350);
+        }
+
+        function onIframeLoad() {
+            viewerLoading.style.display = 'none';
+            viewerIframe.style.display  = 'block';
+        }
+
+        // =============================================
+        // AREA DETAILS MODAL DRAWER ("SABER MAIS")
+        // =============================================
+        function openAreaDetailsModal() {
+            const overlay = document.getElementById('areaDetailsOverlay');
+            const drawer  = document.getElementById('areaDetailsDrawer');
+            if (overlay && drawer) {
+                overlay.classList.add('active');
+                drawer.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        window.openAreaDetailsModal = openAreaDetailsModal;
+
+        function closeAreaDetailsModal() {
+            const overlay = document.getElementById('areaDetailsOverlay');
+            const drawer  = document.getElementById('areaDetailsDrawer');
+            if (overlay && drawer) {
+                overlay.classList.remove('active');
+                drawer.classList.remove('open');
+                setTimeout(() => {
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+        }
+        window.closeAreaDetailsModal = closeAreaDetailsModal;
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeDashViewer();
+        });
+
+        // Toggle Nested Areas Drawer in Viewer
+        function toggleDvDrawer(e) {
+            if (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+            const dvDrawer = document.getElementById('dvAreasDrawer');
+            const dvOverlay = document.getElementById('dvAreasDrawerOverlay');
+            const dvHamburger = document.getElementById('dvHamburgerBtn');
+            
+            if (dvDrawer && dvOverlay) {
+                if (dvDrawer.style.display === 'none') {
+                    dvDrawer.style.display = '';
+                    dvDrawer.offsetHeight; // Force browser layout reflow to register display change before class transition
+                }
+                dvDrawer.classList.toggle('open');
+                dvOverlay.classList.toggle('active');
+            }
+            if (dvHamburger) {
+                dvHamburger.classList.toggle('open');
+                const bars = dvHamburger.querySelectorAll('.bar');
+                if (bars && bars.length >= 3) {
+                    if (dvHamburger.classList.contains('open')) {
+                        bars[0].style.transform = 'rotate(45deg) translate(4px, 4px)';
+                        bars[1].style.opacity = '0';
+                        bars[2].style.transform = 'rotate(-45deg) translate(4px, -4px)';
+                    } else {
+                        bars[0].style.transform = 'none';
+                        bars[1].style.opacity = '1';
+                        bars[2].style.transform = 'none';
+                    }
+                }
+            }
+        }
+        window.toggleDvDrawer = toggleDvDrawer;
+    </script>
+</body>
+</html>

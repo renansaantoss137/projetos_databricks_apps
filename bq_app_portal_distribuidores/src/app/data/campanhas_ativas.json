@@ -1,0 +1,126 @@
+{
+  "versao": "2026.Q4",
+  "ultima_apuracao": "2026-11-17 06:00:00",
+  "tempo_economizado_trimestre_horas": 4.5,
+  "campanhas": [
+    {
+      "id": "CAMP-2026-Q4-01",
+      "nome": "Desafio Crescimento Linha Brioche Q4",
+      "status": "ativa",
+      "tipo_meta": "volume_dz",
+      "categoria_foco": "Brioche & Gourmet",
+      "inicio": "2026-10-01",
+      "fim": "2026-12-31",
+      "dias_restantes": 44,
+      "descricao": "Incentivo comercial focado na aceleração da linha Brioche (SKU 503833). Apuração automática diária com base no faturamento de Sell-out faturado.",
+      "premiacao": "R$ 15.000 em bonificação de estoque para os 3 distribuidores com maior atingimento percentual da meta.",
+      "ranking": [
+        {
+          "posicao": 1,
+          "dist_id": 1,
+          "nome": "Disdal Distribuidora",
+          "meta_dz": 12000,
+          "realizado_dz": 13850,
+          "ating_pct": 115.4,
+          "elegivel": true,
+          "tendencia": "alta"
+        },
+        {
+          "posicao": 2,
+          "dist_id": 4,
+          "nome": "Transpão Logística",
+          "meta_dz": 8500,
+          "realizado_dz": 9120,
+          "ating_pct": 107.3,
+          "elegivel": true,
+          "tendencia": "estavel"
+        },
+        {
+          "posicao": 3,
+          "dist_id": 7,
+          "nome": "PanExpress Distribuição",
+          "meta_dz": 6000,
+          "realizado_dz": 6150,
+          "ating_pct": 102.5,
+          "elegivel": true,
+          "tendencia": "alta"
+        },
+        {
+          "posicao": 4,
+          "dist_id": 2,
+          "nome": "Marfood Alimentos",
+          "meta_dz": 15000,
+          "realizado_dz": 13200,
+          "ating_pct": 88.0,
+          "elegivel": false,
+          "tendencia": "baixa"
+        },
+        {
+          "posicao": 5,
+          "dist_id": 3,
+          "nome": "Jedimix Distribuidora",
+          "meta_dz": 18000,
+          "realizado_dz": 14750,
+          "ating_pct": 81.9,
+          "elegivel": false,
+          "tendencia": "baixa"
+        }
+      ]
+    },
+    {
+      "id": "CAMP-2026-Q4-02",
+      "nome": "Maratona Positivação de Novos Pontos",
+      "status": "ativa",
+      "tipo_meta": "novos_clientes",
+      "categoria_foco": "Geral QSR",
+      "inicio": "2026-11-01",
+      "fim": "2026-11-30",
+      "dias_restantes": 13,
+      "descricao": "Apuração automática de CNPJs de clientes novos com faturamento mínimo de R$ 1.500 no mês. Elimina planilha manual de positivação.",
+      "premiacao": "Reembolso de 50% de material de merchandising para distribuidores que atingirem 100% da cota de novos clientes.",
+      "ranking": [
+        {
+          "posicao": 1,
+          "dist_id": 4,
+          "nome": "Transpão Logística",
+          "meta_novos": 30,
+          "realizado_novos": 34,
+          "ating_pct": 113.3,
+          "elegivel": true,
+          "tendencia": "alta"
+        },
+        {
+          "posicao": 2,
+          "dist_id": 1,
+          "nome": "Disdal Distribuidora",
+          "meta_novos": 45,
+          "realizado_novos": 46,
+          "ating_pct": 102.2,
+          "elegivel": true,
+          "tendencia": "estavel"
+        },
+        {
+          "posicao": 3,
+          "dist_id": 3,
+          "nome": "Jedimix Distribuidora",
+          "meta_novos": 60,
+          "realizado_novos": 48,
+          "ating_pct": 80.0,
+          "elegivel": false,
+          "tendencia": "baixa"
+        }
+      ]
+    }
+  ],
+  "historico_encerradas": [
+    {
+      "id": "CAMP-2026-Q3-01",
+      "nome": "Desafio Dia do Hambúrguer 2026",
+      "status": "encerrada",
+      "periodo": "Maio - Junho 2026",
+      "vencedor": "Disdal Distribuidora (128,4% da Meta)",
+      "total_premiado": "R$ 20.000",
+      "resultado_apuracao_url": "/api/campanhas/CAMP-2026-Q3-01/relatorio"
+    }
+  ]
+}

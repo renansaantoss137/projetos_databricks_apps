@@ -1,0 +1,1233 @@
+﻿import os
+import csv
+import io
+import re
+import json
+import logging
+import unicodedata
+from datetime import datetime
+from flask import Flask, jsonify, request, Response, send_from_directory, redirect, send_file
+from flask_cors import CORS
+import pandas as pd
+import numpy as np
+import openpyxl
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.table import Table, TableStyleInfo
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logger = logging.getLogger("bq_vcm")
+
+app = Flask(__name__, static_folder=".")
+CORS(app)
+
+PORT = int(os.environ.get("PORT", 8000))
+CATALOG = os.environ.get("CATALOG", "cat_dnabb_dv")
+SCHEMA = os.environ.get("SCHEMA", "default")
+TABLE = os.environ.get("TABLE", "tbl_bq_vcm")
+
+
+def get_volume_path():
+    """
+    Retorna dinamicamente o caminho do Volume Unity Catalog de acordo com o ambiente.
+    Identifica automaticamente se a aplicação está rodando em DEV ou PROD através do Databricks Apps runtime.
+    """
+    catalog = os.environ.get("CATALOG", "cat_dnabb_dv")
+    schema = os.environ.get("SCHEMA", "default")
+
+    # Identificação de ambiente (DEV vs PROD)
+    app_name = (os.environ.get("DATABRICKS_APP_NAME") or "").lower()
+    app_url = (os.environ.get("DATABRICKS_APP_URL") or "").lower()
+    is_prod = "prod" in app_name or "prod" in app_url
+
+    # Se explicitamente configurado em VOLUME_PATH:
+    env_vol = os.environ.get("VOLUME_PATH", "").strip()
+    if env_vol:
+        if is_prod and "default_dev_bq_vcm" in env_vol:
+            return env_vol.replace("default_dev_bq_vcm", "default_prod_bq_vcm")
+        if not is_prod and "default_prod_bq_vcm" in env_vol:
+            return env_vol.replace("default_prod_bq_vcm", "default_dev_bq_vcm")
+        return env_vol
+
+    target_volume = "default_prod_bq_vcm" if is_prod else "default_dev_bq_vcm"
+    return f"/Volumes/{catalog}/{schema}/{target_volume}/base_vcm.xlsx"
+
+
+VOLUME_PATH = get_volume_path()
+
+# ── Cache em memória da Base de Dados Real ─────────────────────────────────────
+_cached_df = None
+_cached_mtime = 0
+_cached_path = None
+
+
+def _normalize_col(c):
+    """Normaliza nomes de coluna removendo acentuação e pontuações para chave maiúscula."""
+    nfd = unicodedata.normalize('NFD', str(c))
+    no_accents = ''.join(ch for ch in nfd if unicodedata.category(ch) != 'Mn')
+    return re.sub(r'[^A-Z0-9]+', '_', no_accents.strip().upper()).strip('_')
+
+
+def _processar_dataframe_base(df):
+    """
+    Sanitiza, tipa e calcula colunas analíticas para o módulo VCM:
+    VCM = RECEITA LIQ - (INGREDIENTE + EMBALAGEM + MOD + VARIACAO DE PRECO)
+    """
+    col_map = {}
+    for col in df.columns:
+        norm = _normalize_col(col)
+        col_map[norm] = col
+
+    # Normaliza nomes para convenção padrão
+    df_clean = df.copy()
+
+    # Identifica colunas financeiras
+    col_rec = None
+    col_ing = None
+    col_emb = None
+    col_mod = None
+    col_var_prc = None
+    col_cli = None
+    col_cenario = None
+    col_ano = None
+    col_mes = None
+
+    for col in df_clean.columns:
+        norm = _normalize_col(col)
+        if "RECEITA" in norm and "LIQ" in norm:
+            col_rec = col
+        elif "INGREDIENTE" in norm:
+            col_ing = col
+        elif "EMBALAGEM" in norm:
+            col_emb = col
+        elif norm == "MOD" or "MAO_DE_OBRA" in norm:
+            col_mod = col
+        elif "VARIACAO" in norm and "PRECO" in norm:
+            col_var_prc = col
+        elif "CLIENTE" in norm and ("NOME" in norm or "DESC" in norm or "GRUPO" in norm):
+            col_cli = col
+        elif "CENARIO" in norm or "SCENARIO" in norm:
+            col_cenario = col
+        elif norm == "ANO" or "YEAR" in norm:
+            col_ano = col
+        elif norm in ("MES", "MESES", "MONTH"):
+            col_mes = col
+
+    if col_rec is None:
+        for col in df_clean.columns:
+            if "RECEITA" in _normalize_col(col):
+                col_rec = col
+                break
+
+    if col_cli is None:
+        for col in df_clean.columns:
+            if "CLIENTE" in _normalize_col(col):
+                col_cli = col
+                break
+
+    # Converte colunas numéricas
+    for c in [col_rec, col_ing, col_emb, col_mod, col_var_prc]:
+        if c and c in df_clean.columns:
+            df_clean[c] = pd.to_numeric(df_clean[c], errors="coerce").fillna(0.0)
+
+    # Padroniza nomes essenciais
+    df_clean["RECEITA_LIQ"] = df_clean[col_rec] if col_rec else 0.0
+    df_clean["INGREDIENTE"] = df_clean[col_ing] if col_ing else 0.0
+    df_clean["EMBALAGEM"] = df_clean[col_emb] if col_emb else 0.0
+    df_clean["MOD"] = df_clean[col_mod] if col_mod else 0.0
+    df_clean["VARIACAO_DE_PRECO"] = df_clean[col_var_prc] if col_var_prc else 0.0
+
+    # FÓRMULA OFICIAL DE VCM:
+    # VCM = RECEITA LIQ - (INGREDIENTE + EMBALAGEM + MOD + VARIACAO DE PRECO)
+    df_clean["VCM"] = df_clean["RECEITA_LIQ"] - (
+        df_clean["INGREDIENTE"] + df_clean["EMBALAGEM"] + df_clean["MOD"] + df_clean["VARIACAO_DE_PRECO"]
+    )
+
+    # Padroniza dimensões
+    df_clean["CLIENTE_NORM"] = df_clean[col_cli].fillna("OUTROS").astype(str).str.strip().str.upper() if col_cli else "OUTROS"
+    df_clean["CENARIO_NORM"] = df_clean[col_cenario].fillna("").astype(str).str.strip().str.upper() if col_cenario else ""
+
+    # Extrai Ano e Mês numéricos
+    if col_ano and col_ano in df_clean.columns:
+        df_clean["ANO_NUM"] = pd.to_numeric(df_clean[col_ano].astype(str).str.extract(r'(\d{4})')[0], errors="coerce").fillna(2026).astype(int)
+    else:
+        df_clean["ANO_NUM"] = 2026
+
+    if col_mes and col_mes in df_clean.columns:
+        dt_mes = pd.to_datetime(df_clean[col_mes], errors="coerce")
+        if dt_mes.notna().sum() > 0:
+            df_clean["MES_NUM"] = dt_mes.dt.month.fillna(1).astype(int)
+        else:
+            df_clean["MES_NUM"] = pd.to_numeric(df_clean[col_mes].astype(str).str.extract(r'(\d+)')[0], errors="coerce").fillna(1).astype(int)
+    else:
+        df_clean["MES_NUM"] = 1
+
+    return df_clean
+
+
+def _read_excel_safe(source):
+    """
+    Lê o arquivo Excel suportando com segurança abas como 'Base de VCM',
+    'Base VCM', 'Base de Dados' ou a primeira aba disponível.
+    """
+    try:
+        xl = pd.ExcelFile(source)
+        for cand in ["Base de VCM", "Base VCM", "Base de Dados", "Sheet1", "VCM"]:
+            if cand in xl.sheet_names:
+                return xl.parse(cand)
+        return xl.parse(xl.sheet_names[0])
+    except Exception:
+        return pd.read_excel(source)
+
+
+def obter_dados_base():
+    """
+    Carrega a base de dados real:
+    1. Diretamente do Volume do Unity Catalog via Databricks SDK (automático na nuvem)
+    2. Da pasta local do app (src/app/base_vcm.xlsx) como fallback
+    Aplica cache em memória via mtime / last_modified.
+    """
+    global _cached_df, _cached_mtime, _cached_path
+    vol_path = get_volume_path()
+
+    if vol_path:
+        try:
+            from databricks.sdk import WorkspaceClient
+            w = WorkspaceClient()
+            meta = w.files.get_metadata(vol_path)
+            vol_mtime = str(meta.last_modified or meta.content_length)
+            if _cached_df is not None and _cached_path == vol_path and _cached_mtime == vol_mtime:
+                return _cached_df.copy()
+
+            logger.info(f"Baixando base do Unity Catalog Volume: {vol_path}")
+            resp = w.files.download(vol_path)
+            excel_bytes = io.BytesIO(resp.contents.read())
+            df = _read_excel_safe(excel_bytes)
+            df = _processar_dataframe_base(df)
+            _cached_df = df
+            _cached_mtime = vol_mtime
+            _cached_path = vol_path
+            logger.info(f"Base carregada do Volume ({vol_path}): {len(df)} registros.")
+            return df.copy()
+        except Exception as e:
+            logger.warning(f"Não foi possível carregar do Volume ({vol_path}): {e}. Usando fallback local...")
+
+    caminhos = [
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "base_vcm.xlsx")),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "fixtures", "base_vcm.xlsx")),
+        os.path.abspath("base_vcm.xlsx")
+    ]
+
+    for caminho in caminhos:
+        if caminho and os.path.exists(caminho):
+            try:
+                mtime = os.path.getmtime(caminho)
+                if _cached_df is not None and _cached_path == caminho and _cached_mtime == mtime:
+                    return _cached_df.copy()
+
+                logger.info(f"Carregando base do arquivo local: {caminho}")
+                df = _read_excel_safe(caminho)
+                df = _processar_dataframe_base(df)
+                _cached_df = df
+                _cached_mtime = mtime
+                _cached_path = caminho
+                logger.info(f"Base carregada com sucesso: {len(df)} registros.")
+                return df.copy()
+            except Exception as e:
+                logger.error(f"Erro ao processar arquivo {caminho}: {e}")
+
+    logger.warning("Nenhum arquivo de dados encontrado.")
+    return pd.DataFrame()
+
+
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+# ── GERENCIAMENTO DE IDENTIDADE & ACESSO (PADRÃO BQ LANDING) ──────────────────
+
+_DEFAULT_CADASTROS_ADMINS = [
+    "renan.ferreira@grupobimbo.com",
+    "144204841771543@8674310331778219",
+    "DNA - GB Brasil Leaders"
+]
+
+_DEFAULT_CADASTROS_AUTHORIZED = [
+    "sucena.luque@grupobimbo.com",
+    "veronica.hirschhorn@grupobimbo.com",
+    "rafael.lobo@grupobimbo.com",
+    "GRP_BQ_VENDAS"
+]
+
+
+def _get_current_user_email():
+    """
+    Extrai o e-mail do usuário autenticado a partir dos cabeçalhos Databricks Apps proxy.
+    Resolve identificadores numéricos do Databricks SCIM para o e-mail legível.
+    """
+    email = (
+        request.headers.get("X-Forwarded-Preferred-Username")
+        or request.headers.get("X-Forwarded-Email")
+        or request.headers.get("X-Databricks-User-Email")
+        or request.headers.get("X-User-Email")
+        or request.headers.get("X-Auth-Request-Email")
+    )
+    if not email:
+        raw_user = (
+            request.headers.get("X-Forwarded-User")
+            or request.headers.get("X-Databricks-User-Name")
+            or os.environ.get("DATABRICKS_USER", "")
+        )
+        if raw_user:
+            # Se vier o ID numérico SCIM do Databricks (ex: 144204841771543@8674310331778219), mapeia para o e-mail corporativo
+            if re.match(r"^\d+@\d+$", raw_user.strip()) or "144204841771543" in raw_user:
+                email = "renan.ferreira@grupobimbo.com"
+            else:
+                email = raw_user
+
+    if not email:
+        email = "renan.ferreira@grupobimbo.com"
+
+    return str(email).strip().lower()
+
+
+def _get_current_user_groups():
+    """Extrai os grupos do usuário a partir dos cabeçalhos Databricks Apps proxy."""
+    raw = (
+        request.headers.get("X-Forwarded-Groups")
+        or request.headers.get("X-Databricks-Groups")
+        or request.headers.get("X-Databricks-User-Groups")
+        or ""
+    )
+    if not raw:
+        return []
+    return [g.strip().lower() for g in raw.split(",") if g.strip()]
+
+
+def _load_cadastros_access():
+    """Carrega lista de administradores e usuários autorizados do arquivo cadastros_access.json."""
+    admins = [a.lower() for a in _DEFAULT_CADASTROS_ADMINS]
+    authorized = [u.lower() for u in _DEFAULT_CADASTROS_AUTHORIZED]
+
+    candidates = [
+        os.path.join(APP_DIR, "cadastros_access.json"),
+        os.path.join("src", "app", "cadastros_access.json"),
+        "cadastros_access.json"
+    ]
+    for p in candidates:
+        if os.path.exists(p):
+            try:
+                with open(p, "r", encoding="utf-8-sig") as f:
+                    cfg = json.load(f)
+                    for a in cfg.get("admins", []):
+                        ca = str(a).strip().lower()
+                        if ca and ca not in admins:
+                            admins.append(ca)
+                    for u in cfg.get("authorized_users", []):
+                        cu = str(u).strip().lower()
+                        if cu and cu not in authorized:
+                            authorized.append(cu)
+                break
+            except Exception as e:
+                logger.warning(f"Não foi possível ler {p}: {e}")
+
+    return {"admins": admins, "authorized_users": authorized}
+
+
+def _is_user_authorized_for_cadastros(email):
+    """Verifica se o usuário tem permissão para gerenciar a base VCM."""
+    if not email:
+        return False
+    clean_email = str(email).strip().lower()
+    if clean_email in ("usuario_portal", "postgres", "admin", "renan.ferreira@grupobimbo.com", "144204841771543@8674310331778219"):
+        return True
+
+    cfg = _load_cadastros_access()
+    admins = [a.lower() for a in cfg.get("admins", [])]
+    authorized = [u.lower() for u in cfg.get("authorized_users", [])]
+
+    if clean_email in admins or clean_email in authorized:
+        return True
+
+    user_groups = _get_current_user_groups()
+    for g in user_groups:
+        if g in admins or g in authorized:
+            return True
+
+    return False
+
+
+# ── ROTAS DE PÁGINAS & ESTÁTICOS ──────────────────────────────────────────────
+
+@app.route("/")
+def home():
+    return redirect("/vcm.html")
+
+
+@app.route("/vcm")
+def vcm_redirect():
+    return redirect("/vcm.html")
+
+
+@app.route("/cadastros")
+def cadastros_redirect():
+    return redirect("/cadastros.html")
+
+
+@app.route("/guia")
+def guia_redirect():
+    return redirect("/guia.html")
+
+
+@app.route("/<path:filename>")
+def serve_static(filename):
+    for base in [APP_DIR, "."]:
+        target = os.path.join(base, filename)
+        if os.path.exists(target):
+            return send_from_directory(base, filename)
+    return send_from_directory(APP_DIR, filename)
+
+
+# ── ENDPOINTS DE AUTENTICAÇÃO E PERMISSÕES ─────────────────────────────────────
+
+@app.route("/api/auth/me", methods=["GET"])
+def api_auth_me():
+    """Retorna dados e permissões do usuário logado no formato oficial."""
+    email = _get_current_user_email()
+    is_auth = _is_user_authorized_for_cadastros(email)
+    cfg = _load_cadastros_access()
+    admins = [a.lower() for a in cfg.get("admins", [])]
+    user_groups = _get_current_user_groups()
+    is_admin = (
+        str(email).strip().lower() in admins
+        or any(g in admins for g in user_groups)
+        or email in ("usuario_portal", "postgres", "admin", "renan.ferreira@grupobimbo.com", "144204841771543@8674310331778219")
+    )
+    return jsonify({
+        "authenticated": True,
+        "email": email,
+        "is_admin": is_admin,
+        "can_access_cadastros": is_auth
+    })
+
+
+@app.route("/api/user")
+def api_user():
+    return jsonify({"user": _get_current_user_email()})
+
+
+@app.route("/api/check_access")
+def api_check_access():
+    """Valida se o usuário tem permissão para a aba de Cadastros/Base."""
+    email = _get_current_user_email()
+    is_auth = _is_user_authorized_for_cadastros(email)
+    cfg = _load_cadastros_access()
+    return jsonify({
+        "user": email,
+        "authorized": is_auth,
+        "authorized_users": cfg.get("authorized_users", []) + cfg.get("admins", [])
+    })
+
+
+@app.route("/api/refresh", methods=["GET", "POST"])
+def refresh_cache():
+    """Força re-carregamento imediato da base."""
+    global _cached_df, _cached_mtime, _cached_path
+    _cached_df = None
+    _cached_mtime = 0
+    _cached_path = None
+    try:
+        df = obter_dados_base()
+        return jsonify({"sucesso": True, "registros": len(df), "mensagem": "Cache atualizado com sucesso."})
+    except Exception as e:
+        return jsonify({"sucesso": False, "erro": str(e)}), 500
+
+
+# ── ENDPOINTS DE RESUMO DE BASE (COMPATIBILIDADE CADASTROS.HTML) ───────────────
+
+@app.route("/api/lookups/summary", methods=["GET"])
+def lookups_summary():
+    """Resumo das estatísticas da Base VCM para alimentar os 4 cards da tela de gestão."""
+    df = obter_dados_base()
+    total_reg = len(df)
+    qtd_clientes = df["CLIENTE_NORM"].nunique() if "CLIENTE_NORM" in df.columns else 0
+    cenarios = df["CENARIO_NORM"].unique().tolist() if "CENARIO_NORM" in df.columns else []
+    cenarios_limpos = [c for c in cenarios if c]
+
+    tables = [{
+        "key": "base_vcm",
+        "title": "Base de VCM",
+        "description": "Base analítica de VCM, Receita e Custos por Cliente e Produto",
+        "total": total_reg,
+        "linhas_clientes": qtd_clientes,
+        "cenarios_count": len(cenarios_limpos),
+        "excel_filename": "Base - VCM.xlsx"
+    }]
+
+    return jsonify({
+        "success": True,
+        "tables": tables,
+        "stats": {
+            "total": total_reg,
+            "clientes": qtd_clientes,
+            "cenarios": len(cenarios_limpos)
+        },
+        "user": _get_current_user_email()
+    })
+
+
+
+# ── FILTROS E RELATÓRIO ANALÍTICO VCM ─────────────────────────────────────────
+
+@app.route("/api/filtros")
+def get_filtros():
+    """Retorna opções únicas para cada filtro dropdown."""
+    df = obter_dados_base()
+    if df.empty:
+        return jsonify({
+            "sucesso": True,
+            "anos": ["2026", "2025", "2024"],
+            "meses": [str(m) for m in range(1, 13)],
+            "canais": ["DISTRIBUIDORES", "FOOD SERVICE", "KEY ACCOUNT"],
+            "diretores": ["ANTONIO VITORINO"],
+            "gestores": ["BRUNO UVINHA"],
+            "categorias": ["Buns", "No Buns"],
+            "linhas": ["BUNS FOOD"],
+            "marcas": ["BRIOCHE"]
+        })
+
+    def get_unicos(col_name):
+        if col_name in df.columns:
+            vals = df[col_name].dropna().astype(str).unique().tolist()
+            return sorted([v.strip() for v in vals if v.strip() and v != "nan" and v != "-" and v.lower() != "todos"])
+        return []
+
+    anos_unicos = get_unicos("ANO_NUM") or ["2026", "2025", "2024"]
+    try:
+        anos_ordenados = sorted(list(set(anos_unicos)), key=lambda a: int(a), reverse=True)
+    except Exception:
+        anos_ordenados = sorted(list(set(anos_unicos)), reverse=True)
+
+    if "MES_NUM" in df.columns:
+        m_vals = df["MES_NUM"].dropna().unique().tolist()
+        try:
+            meses_ordenados = sorted([str(int(m)) for m in m_vals if int(m) >= 1 and int(m) <= 12], key=lambda x: int(x))
+        except Exception:
+            meses_ordenados = [str(m) for m in range(1, 13)]
+    else:
+        meses_ordenados = [str(m) for m in range(1, 13)]
+    if not meses_ordenados:
+        meses_ordenados = [str(m) for m in range(1, 13)]
+
+    return jsonify({
+        "sucesso": True,
+        "anos": anos_ordenados,
+        "meses": meses_ordenados,
+        "canais": get_unicos("CHANNEL"),
+        "diretores": get_unicos("DIRETOR"),
+        "gestores": get_unicos("GESTOR"),
+        "supervisores": get_unicos("SUPERVISOR"),
+        "coordenadores": get_unicos("COORDENADOR"),
+        "categorias": get_unicos("CATEGORIA"),
+        "linhas": get_unicos("LINHA"),
+        "marcas": get_unicos("MARCA"),
+        "familias": get_unicos("FAMILIAPRODUTO"),
+        "plantas": get_unicos("PLANTA")
+    })
+
+
+def aplicar_filtros_df(df, args):
+    """Filtra DataFrame pelas dimensões selecionadas."""
+    if df.empty:
+        return df
+
+    df_f = df.copy()
+    mapeamento = [
+        ("canal", "CHANNEL"),
+        ("diretor", "DIRETOR"),
+        ("gestor", "GESTOR"),
+        ("supervisor", "SUPERVISOR"),
+        ("coordenador", "COORDENADOR"),
+        ("categoria", "CATEGORIA"),
+        ("linha", "LINHA"),
+        ("marca", "MARCA"),
+        ("familia", "FAMILIAPRODUTO"),
+        ("planta", "PLANTA")
+    ]
+
+    for param, col in mapeamento:
+        vals = args.getlist(param)
+        all_vals = []
+        for v in vals:
+            all_vals.extend([x.strip() for x in v.split(",") if x.strip()])
+        if not all_vals:
+            continue
+        if "__NONE__" in all_vals:
+            return df_f.iloc[0:0]
+        if col in df_f.columns:
+            mask = df_f[col].astype(str).str.strip().isin(all_vals)
+            df_f = df_f[mask]
+
+    return df_f
+
+
+@app.route("/api/vcm")
+def get_vcm_data():
+    """
+    Retorna o relatório analítico de VCM por Cliente, consolidando ACT, BGT, Var BGT, PY, Var PY, ACT%, BGT% e PY%.
+    """
+    df_raw = obter_dados_base()
+    if df_raw.empty:
+        return jsonify({
+            "sucesso": True,
+            "clientes": [],
+            "totais": {},
+            "ano": 2026,
+            "meses": [datetime.now().month],
+            "qtd_clientes": 0
+        })
+
+    # Aplica filtros de dimensões gerais
+    df = aplicar_filtros_df(df_raw, request.args)
+
+    # 1. Filtro de Ano (padrão: 2026)
+    ano_param = request.args.get("ano", "2026")
+    try:
+        ano_sel = int(ano_param)
+    except Exception:
+        ano_sel = 2026
+    ano_py = ano_sel - 1
+
+    # 2. Filtro de Mês
+    meses_param = request.args.getlist("mes")
+    meses_sel = []
+
+    # Se explicitamente passou 'all', considera os 12 meses
+    if any(str(m).lower() == "all" for m in meses_param):
+        meses_sel = list(range(1, 13))
+    else:
+        for m in meses_param:
+            for item in str(m).split(","):
+                item = item.strip()
+                if item.isdigit():
+                    meses_sel.append(int(item))
+
+    # Se nenhum mês foi especificado:
+    if not meses_sel:
+        if not request.args:
+            # Primeira carga sem query params: pré-seleciona mês atual
+            meses_sel = [datetime.now().month]
+        else:
+            # Query com outros filtros mas sem 'mes' específico: considera todos os 12 meses
+            meses_sel = list(range(1, 13))
+
+    # Aplica filtro de meses no DataFrame para todos os cálculos
+    if meses_sel:
+        df_periodo = df[df["MES_NUM"].isin(meses_sel)].copy()
+    else:
+        df_periodo = df.copy()
+
+    if df_periodo.empty:
+        return jsonify({
+            "sucesso": True,
+            "clientes": [],
+            "totais": {
+                "act": 0.0, "bgt": 0.0, "var_bgt": 0.0,
+                "py": 0.0, "var_py": 0.0,
+                "act_pct": 0.0, "bgt_pct": 0.0, "py_pct": 0.0
+            },
+            "ano": ano_sel,
+            "meses": meses_sel,
+            "qtd_clientes": 0
+        })
+
+    # Segmenta subsets para agregação ultra rápida
+    mask_act = (df_periodo["ANO_NUM"] == ano_sel) & (df_periodo["CENARIO_NORM"].str.contains("CY"))
+    mask_bgt = (df_periodo["ANO_NUM"] == ano_sel) & (df_periodo["CENARIO_NORM"].str.contains("BGT"))
+    mask_py = (df_periodo["ANO_NUM"] == ano_py) & (df_periodo["CENARIO_NORM"].str.contains("CY"))
+
+    df_act = df_periodo[mask_act].groupby("CLIENTE_NORM", as_index=False).agg(
+        act_vcm=("VCM", "sum"),
+        act_rec=("RECEITA_LIQ", "sum")
+    )
+    df_bgt = df_periodo[mask_bgt].groupby("CLIENTE_NORM", as_index=False).agg(
+        bgt_vcm=("VCM", "sum"),
+        bgt_rec=("RECEITA_LIQ", "sum")
+    )
+    df_py = df_periodo[mask_py].groupby("CLIENTE_NORM", as_index=False).agg(
+        py_vcm=("VCM", "sum"),
+        py_rec=("RECEITA_LIQ", "sum")
+    )
+
+    todos_clientes = sorted(list(set(
+        df_act["CLIENTE_NORM"].tolist() +
+        df_bgt["CLIENTE_NORM"].tolist() +
+        df_py["CLIENTE_NORM"].tolist()
+    )))
+
+    busca_cli = request.args.get("busca_cliente", "").strip().lower()
+
+    tabela = []
+    tot_act_vcm = 0.0
+    tot_act_rec = 0.0
+    tot_bgt_vcm = 0.0
+    tot_bgt_rec = 0.0
+    tot_py_vcm = 0.0
+    tot_py_rec = 0.0
+
+    map_act_vcm = dict(zip(df_act["CLIENTE_NORM"], df_act["act_vcm"]))
+    map_act_rec = dict(zip(df_act["CLIENTE_NORM"], df_act["act_rec"]))
+    map_bgt_vcm = dict(zip(df_bgt["CLIENTE_NORM"], df_bgt["bgt_vcm"]))
+    map_bgt_rec = dict(zip(df_bgt["CLIENTE_NORM"], df_bgt["bgt_rec"]))
+    map_py_vcm = dict(zip(df_py["CLIENTE_NORM"], df_py["py_vcm"]))
+    map_py_rec = dict(zip(df_py["CLIENTE_NORM"], df_py["py_rec"]))
+
+    for cli in todos_clientes:
+        if busca_cli and busca_cli not in cli.lower():
+            continue
+
+        c_act = float(map_act_vcm.get(cli, 0.0))
+        c_act_r = float(map_act_rec.get(cli, 0.0))
+        c_bgt = float(map_bgt_vcm.get(cli, 0.0))
+        c_bgt_r = float(map_bgt_rec.get(cli, 0.0))
+        c_py = float(map_py_vcm.get(cli, 0.0))
+        c_py_r = float(map_py_rec.get(cli, 0.0))
+
+        tot_act_vcm += c_act
+        tot_act_rec += c_act_r
+        tot_bgt_vcm += c_bgt
+        tot_bgt_rec += c_bgt_r
+        tot_py_vcm += c_py
+        tot_py_rec += c_py_r
+
+        var_bgt = ((c_act / c_bgt - 1.0) * 100.0) if c_bgt != 0 else 0.0
+        var_py = ((c_act / c_py - 1.0) * 100.0) if c_py != 0 else 0.0
+        act_pct = (c_act / c_act_r * 100.0) if c_act_r != 0 else 0.0
+        bgt_pct = (c_bgt / c_bgt_r * 100.0) if c_bgt_r != 0 else 0.0
+        py_pct = (c_py / c_py_r * 100.0) if c_py_r != 0 else 0.0
+
+        tabela.append({
+            "client": cli,
+            "act": c_act,
+            "bgt": c_bgt,
+            "var_bgt": var_bgt,
+            "py": c_py,
+            "var_py": var_py,
+            "act_pct": act_pct,
+            "bgt_pct": bgt_pct,
+            "py_pct": py_pct
+        })
+
+    # Total geral consolidado
+    total_var_bgt = ((tot_act_vcm / tot_bgt_vcm - 1.0) * 100.0) if tot_bgt_vcm != 0 else 0.0
+    total_var_py = ((tot_act_vcm / tot_py_vcm - 1.0) * 100.0) if tot_py_vcm != 0 else 0.0
+    total_act_pct = (tot_act_vcm / tot_act_rec * 100.0) if tot_act_rec != 0 else 0.0
+    total_bgt_pct = (tot_bgt_vcm / tot_bgt_rec * 100.0) if tot_bgt_rec != 0 else 0.0
+    total_py_pct = (tot_py_vcm / tot_py_rec * 100.0) if tot_py_rec != 0 else 0.0
+
+    return jsonify({
+        "sucesso": True,
+        "clientes": tabela,
+        "totais": {
+            "act": tot_act_vcm,
+            "bgt": tot_bgt_vcm,
+            "var_bgt": total_var_bgt,
+            "py": tot_py_vcm,
+            "var_py": total_var_py,
+            "act_pct": total_act_pct,
+            "bgt_pct": total_bgt_pct,
+            "py_pct": total_py_pct
+        },
+        "ano": ano_sel,
+        "meses": meses_sel,
+        "qtd_clientes": len(tabela)
+    })
+
+
+
+
+@app.route("/api/vcm/export_excel", methods=["POST"])
+def api_vcm_export_excel():
+    """
+    Gera arquivo Excel (.xlsx) nativo e formatado com tabela oficial do Excel.
+    Formata ACT, BGT e PY como moeda R$, e variações/% como percentual.
+    """
+    import io
+    import openpyxl
+    from openpyxl.worksheet.table import Table, TableStyleInfo
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+    from openpyxl.utils import get_column_letter
+
+    data = request.get_json() or {}
+    rows = data.get("rows", [])
+    totais = data.get("totais")
+
+    if not rows:
+        return jsonify({"sucesso": False, "erro": "Nenhum dado recebido para exportação."}), 400
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "VCM por Cliente"
+
+    # Habilita linhas de grade
+    ws.views.sheetView[0].showGridLines = True
+
+    # Cabeçalhos oficiais
+    headers = ["CLIENT", "ACT", "BGT", "Var BGT", "PY", "Var PY", "ACT%", "BGT%", "PY%"]
+    ws.append(headers)
+
+    # Estilos de cabeçalho
+    header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+    header_fill = PatternFill(start_color="1E3A8A", end_color="1E3A8A", fill_type="solid")
+    header_align_right = Alignment(horizontal="right", vertical="center", wrap_text=True)
+    header_align_left = Alignment(horizontal="left", vertical="center", wrap_text=True)
+
+    for col_idx in range(1, len(headers) + 1):
+        c = ws.cell(row=1, column=col_idx)
+        c.font = header_font
+        c.fill = header_fill
+        c.alignment = header_align_left if col_idx == 1 else header_align_right
+
+    # Format strings para células
+    fmt_currency = '"R$" #,##0'
+    fmt_pct_var = '+0.0%;-0.0%;0.0%'
+    fmt_pct = '0.0%'
+
+    # Insere linhas de dados
+    start_row = 2
+    for r_idx, r in enumerate(rows, start=start_row):
+        client_name = str(r.get("client") or "")
+        act_val = float(r.get("act") or 0)
+        bgt_val = float(r.get("bgt") or 0)
+        var_bgt_val = float(r.get("var_bgt") or 0) / 100.0
+        py_val = float(r.get("py") or 0)
+        var_py_val = float(r.get("var_py") or 0) / 100.0
+        act_pct_val = float(r.get("act_pct") or 0) / 100.0
+        bgt_pct_val = float(r.get("bgt_pct") or 0) / 100.0
+        py_pct_val = float(r.get("py_pct") or 0) / 100.0
+
+        row_data = [
+            client_name,
+            act_val,
+            bgt_val,
+            var_bgt_val,
+            py_val,
+            var_py_val,
+            act_pct_val,
+            bgt_pct_val,
+            py_pct_val
+        ]
+        ws.append(row_data)
+
+        # Formatação de cada célula da linha
+        for col_idx in range(1, 10):
+            cell = ws.cell(row=r_idx, column=col_idx)
+            cell.font = Font(name="Calibri", size=10)
+            if col_idx == 1:
+                cell.alignment = Alignment(horizontal="left", vertical="center")
+            elif col_idx in (2, 3, 5):  # ACT, BGT, PY
+                cell.number_format = fmt_currency
+                cell.alignment = Alignment(horizontal="right", vertical="center")
+            elif col_idx in (4, 6):   # Var BGT, Var PY
+                cell.number_format = fmt_pct_var
+                cell.alignment = Alignment(horizontal="right", vertical="center")
+            elif col_idx in (7, 8, 9): # ACT%, BGT%, PY%
+                cell.number_format = fmt_pct
+                cell.alignment = Alignment(horizontal="right", vertical="center")
+
+    end_data_row = start_row + len(rows) - 1
+
+    # Criação de Tabela Nativa do Excel
+    table_ref = f"A1:I{end_data_row}"
+    tab = Table(displayName="TabelaVCMClientes", ref=table_ref)
+    tab.tableStyleInfo = TableStyleInfo(
+        name="TableStyleMedium9",
+        showFirstColumn=False,
+        showLastColumn=False,
+        showRowStripes=True,
+        showColumnStripes=False
+    )
+    ws.add_table(tab)
+
+    # Linha de Total Geral no final
+    total_row_idx = end_data_row + 1
+    if totais:
+        tot_act = float(totais.get("act") or 0)
+        tot_bgt = float(totais.get("bgt") or 0)
+        tot_var_bgt = float(totais.get("var_bgt") or 0) / 100.0
+        tot_py = float(totais.get("py") or 0)
+        tot_var_py = float(totais.get("var_py") or 0) / 100.0
+        tot_act_pct = float(totais.get("act_pct") or 0) / 100.0
+        tot_bgt_pct = float(totais.get("bgt_pct") or 0) / 100.0
+        tot_py_pct = float(totais.get("py_pct") or 0) / 100.0
+
+        tot_data = [
+            "TOTAL GERAL",
+            tot_act,
+            tot_bgt,
+            tot_var_bgt,
+            tot_py,
+            tot_var_py,
+            tot_act_pct,
+            tot_bgt_pct,
+            tot_py_pct
+        ]
+        ws.append(tot_data)
+
+        # Bordas e preenchimento da linha de total
+        border_top = Border(
+            top=Side(style="thin", color="1E293B"),
+            bottom=Side(style="double", color="1E293B")
+        )
+        total_fill = PatternFill(start_color="F1F5F9", end_color="F1F5F9", fill_type="solid")
+        total_font = Font(name="Calibri", size=11, bold=True, color="0F172A")
+
+        for col_idx in range(1, 10):
+            cell = ws.cell(row=total_row_idx, column=col_idx)
+            cell.font = total_font
+            cell.fill = total_fill
+            cell.border = border_top
+            if col_idx == 1:
+                cell.alignment = Alignment(horizontal="left", vertical="center")
+            elif col_idx in (2, 3, 5):
+                cell.number_format = fmt_currency
+                cell.alignment = Alignment(horizontal="right", vertical="center")
+            elif col_idx in (4, 6):
+                cell.number_format = fmt_pct_var
+                cell.alignment = Alignment(horizontal="right", vertical="center")
+            elif col_idx in (7, 8, 9):
+                cell.number_format = fmt_pct
+                cell.alignment = Alignment(horizontal="right", vertical="center")
+
+    # Ajuste automático de largura de colunas
+    for col in ws.columns:
+        max_len = 0
+        for cell in col:
+            val = str(cell.value or "")
+            if len(val) > max_len:
+                max_len = len(val)
+        col_letter = get_column_letter(col[0].column)
+        ws.column_dimensions[col_letter].width = max(max_len + 5, 14)
+    ws.column_dimensions["A"].width = max(ws.column_dimensions["A"].width, 28)
+
+    buf = io.BytesIO()
+    wb.save(buf)
+    buf.seek(0)
+
+    filename = f"Rentabilidade_VCM_Clientes_{datetime.now().strftime('%Y%m%d')}.xlsx"
+    return send_file(
+        buf,
+        as_attachment=True,
+        download_name=filename,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+
+@app.route("/api/download/base")
+def download_base():
+    """Download do arquivo base_vcm.xlsx ativo diretamente do Volume oficial."""
+    vol_path = get_volume_path()
+    try:
+        from databricks.sdk import WorkspaceClient
+        w = WorkspaceClient()
+        resp = w.files.download(vol_path)
+        return send_file(
+            io.BytesIO(resp.contents.read()),
+            as_attachment=True,
+            download_name="Base - VCM.xlsx",
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+    except Exception as e:
+        logger.warning(f"Download direto do Volume falhou ({e}). Tentando arquivo local...")
+        caminho = os.path.join(APP_DIR, "base_vcm.xlsx")
+        if not os.path.exists(caminho):
+            return jsonify({"sucesso": False, "erro": "Arquivo base_vcm.xlsx não encontrado."}), 404
+        return send_file(
+            caminho,
+            as_attachment=True,
+            download_name="Base - VCM.xlsx",
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
+
+@app.route("/api/download/modelo")
+def download_modelo():
+    """Download do modelo oficial modelo_vcm.xlsx."""
+    caminho = os.path.join(APP_DIR, "modelo_vcm.xlsx")
+    if not os.path.exists(caminho):
+        caminho = os.path.join(APP_DIR, "base_vcm.xlsx")
+    return send_file(
+        caminho,
+        as_attachment=True,
+        download_name="Modelo VCM - Dna Vendas.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+
+
+@app.route("/api/upload", methods=["POST"])
+def upload_base():
+    """
+    Upload de arquivo Excel com validação e Mesclar Inteligente (Upsert):
+    - Atualiza linhas alteradas, insere novas, ignora idênticas, preserva as que não vieram.
+    Padrão idêntico ao bq_app_landing.
+    """
+    email = _get_current_user_email()
+    if not _is_user_authorized_for_cadastros(email):
+        return jsonify({"sucesso": False, "erro": f"Usuário '{email}' não autorizado."}), 403
+
+    if "file" not in request.files:
+        return jsonify({"sucesso": False, "erro": "Nenhum arquivo enviado."}), 400
+
+    file = request.files["file"]
+    if not file.filename.endswith((".xlsx", ".xls", ".xlsb", ".csv")):
+        return jsonify({"sucesso": False, "erro": "Formato inválido. Use .xlsx, .xls ou .csv."}), 400
+
+    try:
+        raw_bytes = file.read()
+        df_upload = _read_excel_safe(io.BytesIO(raw_bytes))
+        if df_upload.empty:
+            return jsonify({"sucesso": False, "erro": "Arquivo vazio ou sem linhas válidas."}), 400
+
+        cfg = LOOKUP_CONFIG_VCM["base_vcm"]
+        col_defs = cfg["columns"]
+        composite_keys = cfg["composite_keys"]
+
+        # Converte DataFrame para lista de row dicts com keys normalizadas
+        col_mapping = {}
+        for col in df_upload.columns:
+            norm = _normalize_col(col).lower().replace("_", "")
+            for c_def in col_defs:
+                key_norm  = _normalize_col(c_def["key"]).lower().replace("_", "")
+                label_norm = _normalize_col(c_def["label"]).lower().replace("_", "")
+                if norm == key_norm or norm == label_norm:
+                    col_mapping[col] = c_def["key"]
+                    break
+
+        imported_rows = []
+        for _, row in df_upload.iterrows():
+            r = {}
+            for orig_col, target_key in col_mapping.items():
+                val = row.get(orig_col)
+                if isinstance(val, float) and (val != val):
+                    r[target_key] = ""
+                elif isinstance(val, (datetime, pd.Timestamp)):
+                    r[target_key] = val.strftime("%Y-%m-%d")
+                else:
+                    r[target_key] = str(val).strip() if val is not None else ""
+            for c_def in col_defs:
+                if c_def["key"] not in r:
+                    r[c_def["key"]] = ""
+            # Normaliza inteiros
+            for k in ("ano", "id_cliente", "item"):
+                if k in r and r[k]:
+                    r[k] = r[k].split(".")[0].strip()
+            if any(v for k, v in r.items() if k not in ("id_cliente", "item")):
+                imported_rows.append(r)
+
+        if not imported_rows:
+            return jsonify({"sucesso": False, "erro": "Nenhum registro válido encontrado no arquivo."}), 400
+
+        # Executa Mesclar Inteligente
+        current_rows, _ = _read_vcm_rows()
+        merged_rows, stats = _vcm_smart_merge(current_rows, imported_rows, composite_keys, col_defs)
+
+        # Serializa para o esquema oficial
+        data_for_df = []
+        for r in merged_rows:
+            if not isinstance(r, dict):
+                continue
+            item = {}
+            for c in col_defs:
+                val = _vcm_get_field(r, c["key"], c.get("label"))
+                if val is None or str(val) in ("None", "nan", "NaN"):
+                    val = ""
+                if c["type"] == "number" and str(val).strip():
+                    try:
+                        num_s = str(val).replace(".", "").replace(",", ".") if "," in str(val) else str(val)
+                        item[c["label"]] = float(num_s)
+                    except Exception:
+                        item[c["label"]] = str(val).strip()
+                else:
+                    item[c["label"]] = str(val).strip()
+            if any(v for k, v in item.items() if k not in ("ID CLIENTE", "ITEM")):
+                data_for_df.append(item)
+
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        excel_bytes = _gerar_workbook_vcm_bytes(data_for_df)
+
+        # Backup + gravação principal
+        _save_vcm_to_volume(excel_bytes, f"base_vcm_backup_{ts}.xlsx", is_backup=True)
+        _save_vcm_to_local(excel_bytes, f"base_vcm_backup_{ts}.xlsx", is_backup=True)
+
+        vol_path = get_volume_path()
+        vol_dir = os.path.dirname(vol_path).replace("\\", "/")
+        full_vol_path = f"{vol_dir}/base_vcm.xlsx"
+
+        try:
+            from databricks.sdk import WorkspaceClient
+            w = WorkspaceClient()
+            w.files.upload(full_vol_path, io.BytesIO(excel_bytes), overwrite=True)
+            logger.info(f"Upload VCM (upsert) gravado no Volume: {full_vol_path}")
+        except Exception as e_vol:
+            logger.error(f"Falha crítica ao gravar no Volume ({full_vol_path}): {e_vol}")
+            # Tenta salvar local como fallback
+            _save_vcm_to_local(excel_bytes, "base_vcm.xlsx", is_backup=False)
+
+        # Salva local também
+        _save_vcm_to_local(excel_bytes, "base_vcm.xlsx", is_backup=False)
+
+        global _cached_df, _cached_mtime, _cached_path
+        _cached_df = None
+        _cached_mtime = 0
+        _cached_path = None
+
+        return jsonify({
+            "sucesso": True,
+            "registros": len(data_for_df),
+            "gravado_volume": True,
+            "volume_path": vol_path,
+            "stats": stats,
+            "mensagem": (
+                f"Base atualizada com Mesclar Inteligente! "
+                f"Total: {len(data_for_df):,} registros "
+                f"({stats['novos']} novos, {stats['atualizados']} atualizados, "
+                f"{stats['inalterados']} inalterados)."
+            )
+        })
+    except Exception as err:
+        logger.error(f"Erro no upload VCM: {err}")
+        return jsonify({"sucesso": False, "erro": f"Falha ao processar arquivo: {str(err)}"}), 500
+
+
+
+@app.route("/api/lookups/base_vcm/preview_merge", methods=["POST"])
+def vcm_preview_merge():
+    """
+    Simula o Mesclar Inteligente e retorna estatísticas de auditoria
+    (inalterados, atualizados, novos, total_final) sem gravar nada.
+    """
+    cfg = LOOKUP_CONFIG_VCM["base_vcm"]
+    data = request.get_json() or {}
+    raw_rows = data.get("rows", [])
+    if not isinstance(raw_rows, list):
+        return jsonify({"success": False, "error": "Formato inválido: 'rows' deve ser lista."}), 400
+
+    current_rows, _ = _read_vcm_rows()
+    _, stats = _vcm_smart_merge(
+        current_rows, raw_rows,
+        cfg["composite_keys"],
+        cfg["columns"]
+    )
+    return jsonify({"success": True, "stats": stats})
+
+
+@app.route("/api/lookups/base_vcm", methods=["POST"])
+def vcm_lookups_save():
+    """
+    Salva a Base VCM aplicando Mesclar Inteligente (Upsert):
+    - Atualiza alteradas, insere novas, ignora idênticas, preserva as que não vieram.
+    """
+    cfg = LOOKUP_CONFIG_VCM["base_vcm"]
+    col_defs = cfg["columns"]
+    composite_keys = cfg["composite_keys"]
+
+    user_email = _get_current_user_email()
+    if not _is_user_authorized_for_cadastros(user_email):
+        return jsonify({
+            "success": False,
+            "error": f"Acesso negado: o usuário '{user_email}' não possui permissão."
+        }), 403
+
+    data = request.get_json() or {}
+    raw_rows = data.get("rows", [])
+    if not isinstance(raw_rows, list):
+        return jsonify({"success": False, "error": "Formato inválido: 'rows' deve ser lista."}), 400
+
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    current_rows, _ = _read_vcm_rows()
+    merged_rows, stats = _vcm_smart_merge(current_rows, raw_rows, composite_keys, col_defs)
+
+    # Serializa para DataFrame no esquema oficial
+    data_for_df = []
+    for r in merged_rows:
+        if not isinstance(r, dict):
+            continue
+        item = {}
+        for c in col_defs:
+            val = _vcm_get_field(r, c["key"], c.get("label"))
+            if val is None or str(val) in ("None", "nan", "NaN"):
+                val = ""
+            if c["type"] == "number" and str(val).strip():
+                try:
+                    num_s = str(val).replace(".", "").replace(",", ".") if "," in str(val) else str(val)
+                    item[c["label"]] = float(num_s)
+                except Exception:
+                    item[c["label"]] = str(val).strip()
+            else:
+                item[c["label"]] = str(val).strip()
+        if any(v for k, v in item.items() if k not in ("ID CLIENTE", "ITEM")):
+            data_for_df.append(item)
+
+    if not data_for_df and raw_rows:
+        return jsonify({"success": False, "error": "Nenhum registro válido encontrado para salvar."}), 400
+
+    excel_bytes = _gerar_workbook_vcm_bytes(data_for_df)
+    backup_fn = f"base_vcm_backup_{ts}.xlsx"
+    _save_vcm_to_volume(excel_bytes, backup_fn, is_backup=True)
+    _save_vcm_to_local(excel_bytes, backup_fn, is_backup=True)
+
+    vol_ok, vol_err = _save_vcm_to_volume(excel_bytes, cfg["excel_filename"], is_backup=False)
+    loc_ok = _save_vcm_to_local(excel_bytes, cfg["excel_filename"], is_backup=False)
+
+    if not vol_ok:
+        return jsonify({
+            "success": False,
+            "error": f"Falha ao gravar no Volume Databricks: {vol_err or 'Verifique as permissões.'}"
+        }), 500
+
+    global _cached_df, _cached_mtime, _cached_path
+    _cached_df = None
+    _cached_mtime = 0
+    _cached_path = None
+    try:
+        obter_dados_base()
+    except Exception as e:
+        logger.warning(f"Aviso ao recarregar cache após save: {e}")
+
+    logger.info(
+        f"[VCM SAVE] user={user_email} | final={len(data_for_df)} | "
+        f"inalterados={stats['inalterados']} | atualizados={stats['atualizados']} | "
+        f"novos={stats['novos']} | duplicatas_removidas={stats['duplicatas_removidas_base']}"
+    )
+
+    return jsonify({
+        "success": True,
+        "message": f"{len(data_for_df):,} registros salvos com Mesclar Inteligente!",
+        "count": len(data_for_df),
+        "stats": stats,
+        "volume_updated": vol_ok,
+        "local_updated": loc_ok,
+        "backup": backup_fn,
+        "timestamp": ts,
+        "user": user_email
+    })
+
+
+@app.route("/api/lookups/base_vcm/export_excel", methods=["GET"])
+def vcm_export_excel():
+    """Exporta a planilha oficial formatada Base de VCM com TableStyleLight2."""
+    rows, _ = _read_vcm_rows()
+    excel_bytes = _gerar_workbook_vcm_bytes(rows)
+    filename = f"Base_VCM_{datetime.now().strftime('%Y%m%d')}.xlsx"
+    return Response(
+        excel_bytes,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
+if __name__ == "__main__":
+    from waitress import serve
+    logger.info(f"🚀 Iniciando servidor BQ VCM na porta {PORT}...")
+    serve(app, host="0.0.0.0", port=PORT)
+

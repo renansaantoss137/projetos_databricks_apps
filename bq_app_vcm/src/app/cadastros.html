@@ -1,0 +1,1909 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Gestão da Base VCM | BQ VCM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=11">
+  <script src="nav-shell.js?v=1" defer></script>
+  
+  <!-- SheetJS para validação instantânea de Excel no navegador -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       ESTILOS GLOBAIS E ESTRUTURAIS (PADRÃO OFICIAL BQ LANDING)
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    :root, [data-theme="dark"] {
+      --fr-bg: #1e2433;
+      --fr-surface: #282f3f;
+      --fr-border: rgba(100, 116, 139, 0.2);
+      --fr-txt: #E8F4FD;
+      --fr-txt-soft: #7a9dba;
+      --fr-txt-muted: #5a7791;
+      --cd-primary: #107c41;
+      --cd-primary-hover: #0b5a2f;
+      --cd-accent: #2563eb;
+      --cd-surface-card: #282f3f;
+      --cd-border-subtle: rgba(100, 116, 139, 0.25);
+    }
+
+    [data-theme="light"] {
+      --fr-bg: #f0f4f8;
+      --fr-surface: #ffffff;
+      --fr-border: rgba(38, 53, 118, 0.12);
+      --fr-txt: #1e2433;
+      --fr-txt-soft: #475569;
+      --fr-txt-muted: #64748b;
+      --cd-surface-card: #ffffff;
+      --cd-border-subtle: rgba(38, 53, 118, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--fr-bg);
+      color: var(--fr-txt);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    body.fr-page {
+      background-color: var(--fr-bg);
+      color: var(--fr-txt);
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       CONTEÚDO PRINCIPAL (LAYOUT)
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .fr-content {
+      max-width: 1450px;
+      margin: 0 auto;
+      padding: 1.75rem 2rem 4rem 2rem;
+    }
+
+    /* Hero */
+    .cd-hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.75rem;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .cd-hero-info h1 {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: var(--fr-txt);
+      margin: 0 0 0.4rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .cd-hero-info p {
+      font-size: 0.88rem;
+      color: var(--fr-txt-soft);
+      margin: 0;
+      max-width: 900px;
+      line-height: 1.5;
+    }
+
+    .cd-change-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: rgba(16, 124, 65, 0.16);
+      border: 1px solid rgba(16, 124, 65, 0.45);
+      color: #34d399;
+      letter-spacing: 0.02em;
+    }
+
+    /* KPI Cards */
+    .cd-stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .cd-stat-card {
+      background: var(--cd-surface-card);
+      border: 1px solid var(--cd-border-subtle);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+
+    .cd-stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+    }
+
+    .cd-stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.45rem;
+      flex-shrink: 0;
+    }
+
+    .cd-stat-val {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--fr-txt);
+      line-height: 1.2;
+    }
+
+    .cd-stat-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--fr-txt-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+
+    .cd-stat-desc {
+      font-size: 0.7rem;
+      color: var(--fr-txt-muted);
+    }
+
+    /* Grid de Ações Principais (Exportar / Importar) */
+    .cd-hub-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 960px) {
+      .cd-hub-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .cd-hub-card {
+      background: var(--cd-surface-card);
+      border: 1px solid var(--cd-border-subtle);
+      border-radius: 16px;
+      padding: 1.85rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.16);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .cd-hub-card:hover {
+      border-color: rgba(148, 163, 184, 0.4);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.24);
+    }
+
+    .cd-hub-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .cd-card-export::before {
+      background: linear-gradient(90deg, #107c41, #34d399);
+    }
+
+    .cd-card-import::before {
+      background: linear-gradient(90deg, #2563eb, #60a5fa);
+    }
+
+    .cd-hub-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .cd-hub-icon-wrap {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cd-icon-excel {
+      background: rgba(16, 124, 65, 0.18);
+      border: 1px solid rgba(16, 124, 65, 0.4);
+      color: #34d399;
+    }
+
+    .cd-icon-upload {
+      background: rgba(37, 99, 235, 0.18);
+      border: 1px solid rgba(37, 99, 235, 0.4);
+      color: #60a5fa;
+    }
+
+    .cd-hub-title-box h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--fr-txt);
+      margin: 0 0 0.35rem 0;
+    }
+
+    .cd-hub-title-box p {
+      font-size: 0.82rem;
+      color: var(--fr-txt-soft);
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    /* Lista de Passos / Instruções */
+    .cd-steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin: 1.25rem 0 1.75rem 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .cd-step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      font-size: 0.8rem;
+      color: var(--fr-txt-soft);
+      line-height: 1.4;
+    }
+
+    .cd-step-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--cd-border-subtle);
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--fr-txt);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Botões Principais */
+    .cd-btn-hero {
+      width: 100%;
+      padding: 0.85rem 1.4rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      text-decoration: none;
+    }
+
+    .cd-btn-hero-download {
+      background: #107c41;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(16, 124, 65, 0.3);
+    }
+
+    .cd-btn-hero-download:hover {
+      background: #0b5a2f;
+      box-shadow: 0 6px 20px rgba(16, 124, 65, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .cd-btn-hero-save {
+      background: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+    }
+
+    .cd-btn-hero-save:hover:not(:disabled) {
+      background: #1d4ed8;
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .cd-btn-hero:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* Dropzone */
+    .cd-dropzone {
+      border: 2px dashed rgba(100, 116, 139, 0.35);
+      border-radius: 12px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.02);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 1.25rem;
+    }
+
+    .cd-dropzone:hover, .cd-dropzone.dragover {
+      border-color: #3b82f6;
+      background: rgba(59, 130, 246, 0.06);
+    }
+
+    .cd-dropzone-icon {
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .cd-dropzone-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--fr-txt);
+      margin-bottom: 0.25rem;
+    }
+
+    .cd-dropzone-sub {
+      font-size: 0.72rem;
+      color: var(--fr-txt-muted);
+    }
+
+    /* Painel de Prévia e Modos */
+    .cd-preview-panel {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--cd-border-subtle);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      margin-bottom: 1.25rem;
+      display: none;
+    }
+
+    .cd-preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .cd-file-badge {
+      background: rgba(52, 211, 153, 0.15);
+      color: #34d399;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    /* Rodapé Informativo de Auditoria */
+    .cd-info-footer {
+      background: var(--cd-surface-card);
+      border: 1px solid var(--cd-border-subtle);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .cd-info-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .cd-info-icon {
+      font-size: 1.6rem;
+    }
+
+    .cd-info-text strong {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--fr-txt);
+      margin-bottom: 2px;
+    }
+
+    .cd-info-text span {
+      font-size: 0.75rem;
+      color: var(--fr-txt-soft);
+    }
+
+    /* Modal de Confirmação */
+    .cd-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .cd-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .cd-modal {
+      background: #1e2433;
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      padding: 1.5rem;
+      box-shadow: 0 20px 48px rgba(0,0,0,0.5);
+    }
+
+    .cd-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .cd-modal-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cd-modal-close {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    .cd-modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    /* Toasts */
+    .cd-toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .cd-toast {
+      background: #1e2433;
+      border: 1px solid rgba(100, 116, 139, 0.3);
+      border-radius: 8px;
+      padding: 0.75rem 1.1rem;
+      color: #ffffff;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      min-width: 280px;
+      max-width: 420px;
+    }
+
+    .cd-toast-success { border: 1px solid #10b981; }
+    .cd-toast-error { border: 1px solid #ef4444; }
+    .cd-toast-info { border: 1px solid #3b82f6; }
+
+    /* ── Aviso de Rótulo Obrigatório (Padrão BQ Landing) ── */
+    .cd-sensitivity-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      background: rgba(37, 99, 235, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.28);
+      border-radius: 12px;
+      padding: 0.85rem 1.05rem;
+      margin-bottom: 1.15rem;
+      transition: all 0.25s ease;
+    }
+
+    [data-theme="light"] .cd-sensitivity-notice {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+    }
+
+    .cd-sensitivity-notice-icon {
+      color: #60a5fa;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    [data-theme="light"] .cd-sensitivity-notice-icon {
+      color: #2563eb;
+    }
+
+    .cd-sensitivity-notice-title {
+      font-size: 0.83rem;
+      font-weight: 700;
+      color: var(--fr-txt);
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .cd-tag-public {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      vertical-align: middle;
+    }
+
+    [data-theme="light"] .cd-tag-public {
+      background: #d1fae5;
+      color: #065f46;
+      border-color: #6ee7b7;
+    }
+
+    .cd-sensitivity-notice-text {
+      font-size: 0.77rem;
+      color: var(--fr-txt-soft);
+      line-height: 1.45;
+    }
+
+    /* ── Box de Erro Orientativo de Sensibilidade (Planilha Criptografada) ── */
+    .cd-sensitivity-error {
+      background: rgba(239, 68, 68, 0.10);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      border-radius: 12px;
+      padding: 1.15rem 1.25rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15);
+      animation: slide-up-fade 0.25s ease-out;
+    }
+
+    [data-theme="light"] .cd-sensitivity-error {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      box-shadow: 0 4px 18px rgba(239, 68, 68, 0.08);
+    }
+
+    .cd-sens-err-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .cd-sens-err-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .cd-sens-err-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: rgba(239, 68, 68, 0.22);
+      color: #f87171;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    [data-theme="light"] .cd-sens-err-icon {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .cd-sens-err-title {
+      font-size: 0.94rem;
+      font-weight: 800;
+      color: #f87171;
+      line-height: 1.25;
+    }
+
+    [data-theme="light"] .cd-sens-err-title {
+      color: #b91c1c;
+    }
+
+    .cd-sens-err-close {
+      background: transparent;
+      border: none;
+      color: var(--fr-txt-soft);
+      font-size: 1.45rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 0.35rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .cd-sens-err-close:hover {
+      color: var(--fr-txt);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .cd-sens-err-desc {
+      font-size: 0.81rem;
+      color: var(--fr-txt);
+      line-height: 1.5;
+      margin-bottom: 0.85rem;
+    }
+
+    .cd-sens-steps {
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-radius: 10px;
+      padding: 0.9rem 1.15rem 0.9rem 2.25rem;
+      margin-bottom: 0.85rem;
+      font-size: 0.79rem;
+      color: var(--fr-txt-soft);
+      line-height: 1.65;
+    }
+
+    [data-theme="light"] .cd-sens-steps {
+      background: #ffffff;
+      border: 1px solid #fecaca;
+      color: #334155;
+    }
+
+    .cd-sens-steps li {
+      margin-bottom: 0.35rem;
+    }
+
+    .cd-sens-steps li:last-child {
+      margin-bottom: 0;
+    }
+
+    .cd-sens-steps strong {
+      color: var(--fr-txt);
+      font-weight: 700;
+    }
+
+    [data-theme="light"] .cd-sens-steps strong {
+      color: #0f172a;
+    }
+
+    .cd-sens-steps kbd {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      padding: 0.1rem 0.35rem;
+      font-size: 0.72rem;
+      font-family: inherit;
+    }
+
+    [data-theme="light"] .cd-sens-steps kbd {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #1e293b;
+    }
+
+    .cd-sens-err-tech {
+      font-size: 0.71rem;
+      color: var(--fr-txt-muted);
+      font-family: Consolas, Monaco, monospace;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      word-break: break-all;
+      margin-bottom: 0.85rem;
+    }
+
+    [data-theme="light"] .cd-sens-err-tech {
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    .cd-sens-err-actions {
+      display: flex;
+      gap: 0.65rem;
+    }
+
+    .cd-sens-btn-retry {
+      padding: 0.55rem 1.1rem;
+      background: #dc2626;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+    }
+
+    .cd-sens-btn-retry:hover {
+      background: #b91c1c;
+      transform: translateY(-1px);
+    }
+
+    /* ── Floating Background Progress Task Widget ── */
+    .cd-floating-task {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 99999;
+      width: 380px;
+      max-width: calc(100vw - 2rem);
+      background: var(--fr-surface);
+      border: 1px solid var(--fr-border);
+      border-radius: 14px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+      animation: slide-up-fade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    [data-theme="light"] .cd-floating-task {
+      background: #ffffff;
+      border: 1px solid rgba(38, 53, 118, 0.2);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .cd-floating-task.cd-task-success {
+      border-color: #10b981;
+    }
+
+    .cd-floating-task.cd-task-error {
+      border-color: #ef4444;
+    }
+
+    .cd-floating-task-inner {
+      padding: 1rem 1.2rem;
+    }
+
+    .cd-floating-task-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .cd-floating-task-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .cd-floating-spinner {
+      font-size: 1.3rem;
+      display: inline-block;
+      animation: spin 1.5s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes slide-up-fade {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .cd-floating-task-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--fr-txt);
+      line-height: 1.25;
+    }
+
+    .cd-floating-task-sub {
+      font-size: 0.73rem;
+      color: var(--fr-txt-soft);
+      margin-top: 2px;
+    }
+
+    .cd-floating-close {
+      background: none;
+      border: none;
+      color: var(--fr-txt-soft);
+      font-size: 1.35rem;
+      cursor: pointer;
+      padding: 0 0.25rem;
+      line-height: 1;
+      border-radius: 4px;
+      transition: all 0.15s;
+    }
+
+    .cd-floating-close:hover {
+      color: var(--fr-txt);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .cd-floating-progress-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 0.6rem 0 0.45rem 0;
+    }
+
+    [data-theme="light"] .cd-floating-progress-bar {
+      background: #e2e8f0;
+    }
+
+    .cd-floating-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2563eb, #38bdf8);
+      border-radius: 3px;
+      transition: width 0.35s ease;
+    }
+
+    .cd-task-success .cd-floating-progress-fill {
+      background: linear-gradient(90deg, #059669, #34d399);
+    }
+
+    .cd-task-error .cd-floating-progress-fill {
+      background: #ef4444;
+    }
+
+    .cd-floating-task-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.73rem;
+      color: var(--fr-txt-soft);
+    }
+  </style>
+</head>
+<body class="fr-page has-vertical-shell">
+
+  <!-- ═══════════════════════ V2: Cabeçalho Alinhado ao Portal Distribuidores ═══════════════════════ -->
+  <header class="kpi-header v2-header">
+    <button type="button" class="nav-expand" id="nav-expand" aria-expanded="false" aria-controls="portal-sidebar" aria-label="Expandir menu" title="Expandir menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <div class="hdr-left">
+      <a class="brand" href="vcm.html" aria-label="BQ VCM">
+        <img src="img/logo_distribuidores.png" alt="" class="brand-mark" width="28" height="28">
+        <span class="brand-name">BQ VCM</span>
+      </a>
+      <span class="hdr-sep" aria-hidden="true"></span>
+      <span class="hdr-page-title" id="v2-header-tab-title">Gestão da Base VCM</span>
+    </div>
+
+    <div class="hdr-right">
+      <div class="header-sync-pill" id="header-sync-pill" tabindex="0" role="status" title="Última atualização da base VCM">
+        <span class="sync-dot" aria-hidden="true"></span>
+        <span id="v2-sync-rel">Atualizado: 14/10/2026 às 17:06</span>
+      </div>
+      <img src="img/logo-bimbo-qsr.png" alt="Grupo Bimbo QSR" class="hdr-logo" height="28">
+      <div class="user-menu">
+        <button type="button" class="avatar-btn" id="v2-user-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="v2-user-menu" aria-label="Menu do usuário">
+          <span class="avatar" aria-hidden="true">
+            <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <svg class="ico chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="menu" id="v2-user-menu" role="menu" aria-label="Menu do usuário" hidden>
+          <div class="v2-menu-identity" style="padding: 10px 14px 8px; border-bottom: 1px solid var(--border, #E2E5EA);">
+            <div id="v2-menu-user-email" style="font-size: var(--fs-13, 0.8125rem); font-weight: 600; color: var(--text-strong); word-break: break-all;">Carregando...</div>
+            <div style="font-size: var(--fs-12, 0.75rem); color: var(--text-muted); margin-top: 2px;">Databricks SSO</div>
+          </div>
+          <button type="button" class="mi" id="v2-menu-access-gov" role="menuitem" style="display:none;">
+            <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span class="mi-t">Gestão de Acessos</span>
+          </button>
+          <div class="mi-sep" role="separator"></div>
+          <button type="button" class="mi" id="v2-theme-toggle" role="menuitemcheckbox" aria-checked="false">
+            <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <span class="mi-t">Tema escuro</span>
+            <span class="da-switch" id="v2-theme-switch"><span class="da-switch-thumb"></span></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════ LAYOUT PRINCIPAL (SIDEBAR RAIL + WORKSPACE) ═══════════════════════ -->
+  <div class="portal-layout" id="portal-layout">
+    <aside class="sp-sidebar" id="portal-sidebar" aria-label="Navegação Lateral">
+      <a href="vcm.html#inicio" class="sp-nav-item tab" title="Início">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Início</span>
+        <span class="nav-long">Início</span>
+      </a>
+      <a href="vcm.html#vcm" class="sp-nav-item tab" title="VCM por Cliente">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        <span>VCM</span>
+        <span class="nav-long">VCM por Cliente</span>
+      </a>
+      <a href="cadastros.html" class="sp-nav-item active tab" title="Base VCM" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>
+        <span>Base VCM</span>
+        <span class="nav-long">Base VCM</span>
+      </a>
+      <a href="guia.html" class="sp-nav-item tab" title="Guia Técnico &amp; Docs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span>Guia</span>
+        <span class="nav-long">Guia do Usuário</span>
+      </a>
+    </aside>
+
+    <div class="portal-workspace" id="portal-workspace">
+      <!-- CONTEÚDO PRINCIPAL -->
+      <div class="fr-content">
+
+    <!-- HERO HEADER -->
+    <div class="cd-hero">
+      <div class="cd-hero-info">
+        <h1>
+          <span>Central de Gestão da Base VCM</span>
+        </h1>
+        <p>
+          Gerencie a base de projeções com agilidade e total compatibilidade: baixe a planilha oficial, faça suas edições diretamente no Excel do seu computador (com todos os seus atalhos e fórmulas habituais) e envie o arquivo atualizado para validação e gravação automática.
+        </p>
+      </div>
+    </div>
+
+    <!-- STATS CARDS -->
+    <div class="cd-stats-row">
+      <div class="cd-stat-card">
+        <div class="cd-stat-icon" style="background:rgba(16, 124, 65, 0.16); color:#107c41;">📊</div>
+        <div class="cd-stat-content">
+          <div class="cd-stat-val" id="cnt_base_vcm">16.218</div>
+          <div class="cd-stat-label">Total de Registros</div>
+          <div class="cd-stat-desc">Salvos na base oficial</div>
+        </div>
+      </div>
+
+      <div class="cd-stat-card">
+        <div class="cd-stat-icon" style="background:rgba(16, 185, 129, 0.16); color:#34d399;">👥</div>
+        <div class="cd-stat-content">
+          <div class="cd-stat-val" id="cnt_clientes">79</div>
+          <div class="cd-stat-label">Clientes Únicos</div>
+          <div class="cd-stat-desc">Cadastrados na base</div>
+        </div>
+      </div>
+
+      <div class="cd-stat-card">
+        <div class="cd-stat-icon" style="background:rgba(59, 130, 246, 0.16); color:#60a5fa;">🎯</div>
+        <div class="cd-stat-content">
+          <div class="cd-stat-val" id="cnt_cenarios">4</div>
+          <div class="cd-stat-label">Cenários Ativos</div>
+          <div class="cd-stat-desc">BGT26, CY24, CY25, CY26</div>
+        </div>
+      </div>
+
+      <div class="cd-stat-card" style="cursor:default;">
+        <div class="cd-stat-icon" style="background:rgba(245, 158, 11, 0.16); color:#fbbf24;">⚡</div>
+        <div class="cd-stat-content">
+          <div class="cd-stat-val" style="font-size:1.05rem;" id="lastSavedTime">Sincronizado (16.218 reg.)</div>
+          <div class="cd-stat-label">Status da Sincronização</div>
+          <div class="cd-stat-desc">Volume do Databricks</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRID DE AÇÕES (EXPORTAR & IMPORTAR) -->
+    <div class="cd-hub-grid">
+
+      <!-- CARD 1: EXPORTAR PLANILHA -->
+      <div class="cd-hub-card cd-card-export">
+        <div>
+          <div class="cd-hub-header">
+            <div class="cd-hub-icon-wrap cd-icon-excel">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+            </div>
+            <div class="cd-hub-title-box">
+              <h2>1. Baixar Planilha Atual (.xlsx)</h2>
+              <p>Baixe a versão mais recente no modelo oficial <strong>Base - VCM.xlsx</strong> (25 colunas oficiais com abas e dados preservados).</p>
+            </div>
+          </div>
+
+          <ul class="cd-steps-list">
+            <li class="cd-step-item">
+              <span class="cd-step-num">1</span>
+              <span>Clique no botão abaixo para baixar o arquivo oficial <strong>Base - VCM.xlsx</strong>.</span>
+            </li>
+            <li class="cd-step-item">
+              <span class="cd-step-num">2</span>
+              <span>Abra a planilha no Microsoft Excel instalado no seu computador.</span>
+            </li>
+            <li class="cd-step-item">
+              <span class="cd-step-num">3</span>
+              <span>Atualize ou adicione seus números na aba <strong>Base de VCM</strong> mantendo as colunas oficiais.</span>
+            </li>
+            <li class="cd-step-item">
+              <span class="cd-step-num">4</span>
+              <span>Salve o arquivo no seu computador quando terminar.</span>
+            </li>
+          </ul>
+        </div>
+
+        <button class="cd-btn-hero cd-btn-hero-download" onclick="exportExcel()">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Baixar Planilha Oficial (.xlsx)
+        </button>
+      </div>
+
+      <!-- CARD 2: IMPORTAR PLANILHA -->
+      <div class="cd-hub-card cd-card-import">
+        <div>
+          <div class="cd-hub-header">
+            <div class="cd-hub-icon-wrap cd-icon-upload">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <div class="cd-hub-title-box">
+              <h2>2. Importar Planilha Atualizada</h2>
+              <p>Envie sua planilha preenchida para validação instantânea e atualização direta no Databricks.</p>
+            </div>
+          </div>
+
+          <!-- Aviso Obrigatório de Rótulo PÚBLICO (Padrão BQ Landing) -->
+          <div class="cd-sensitivity-notice">
+            <div class="cd-sensitivity-notice-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="cd-sensitivity-notice-title">
+                Obrigatório: Salvar planilha com rótulo <span class="cd-tag-public">PÚBLICO</span>
+              </div>
+              <div class="cd-sensitivity-notice-text">
+                Para que o sistema consiga ler o arquivo, a planilha deve ser salva no Microsoft Excel com sensibilidade <strong>Público</strong>. Arquivos salvos como <em>Interno</em>, <em>Confidencial</em> ou <em>Restrito</em> são criptografados pelo Microsoft 365 e impedem a leitura.
+              </div>
+            </div>
+          </div>
+
+          <!-- Box de Erro Orientativo de Sensibilidade (Planilha Criptografada) -->
+          <div class="cd-sensitivity-error" id="sensitivityErrorCard" style="display:none;">
+            <div class="cd-sens-err-header">
+              <div class="cd-sens-err-title-wrap">
+                <div class="cd-sens-err-icon">🔐</div>
+                <div>
+                  <div class="cd-sens-err-title">Planilha Bloqueada: Rótulo Não é "Público"</div>
+                  <div style="font-size:0.75rem; color:var(--fr-txt-soft);" id="sensErrorFileName">Base - VCM.xlsx</div>
+                </div>
+              </div>
+              <button class="cd-sens-err-close" onclick="hideSensitivityError()" title="Fechar aviso">&times;</button>
+            </div>
+            <div class="cd-sens-err-desc">
+              Esta planilha não pôde ser processada porque está <strong>protegida por criptografia da Microsoft</strong>. Esse bloqueio acontece quando o arquivo é salvo no Excel com um rótulo de confidencialidade diferente de <strong>PÚBLICO</strong> (por exemplo, <em>Interno</em>, <em>Confidencial</em> ou <em>Restrito</em>).
+            </div>
+            <div style="font-size:0.78rem; font-weight:700; color:var(--fr-txt); margin-bottom:0.4rem;">
+              Como resolver passo a passo no Excel:
+            </div>
+            <ol class="cd-sens-steps">
+              <li>Abra o arquivo no <strong>Microsoft Excel</strong>.</li>
+              <li>Na barra superior do Excel, clique no botão <strong>Sensibilidade</strong> (ou <strong>Confidencialidade / Rótulo</strong>).</li>
+              <li>Selecione a opção <strong>PÚBLICO</strong> (ou Sem Restrição).</li>
+              <li>Salve o arquivo (<kbd>Ctrl + B</kbd> ou <kbd>Ctrl + S</kbd>) e feche o Excel.</li>
+              <li>Arraste ou selecione a planilha salva novamente abaixo.</li>
+            </ol>
+            <div class="cd-sens-err-tech" id="sensErrorDiag">
+              Diagnóstico técnico: ECMA-376 Encrypted file missing /EncryptionInfo
+            </div>
+            <div class="cd-sens-err-actions">
+              <button type="button" class="cd-sens-btn-retry" onclick="document.getElementById('importFileInput').click()">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Selecionar Planilha com Rótulo Público
+              </button>
+            </div>
+          </div>
+
+          <!-- Dropzone -->
+          <div class="cd-dropzone" id="fileDropzone" onclick="document.getElementById('importFileInput').click()">
+            <div class="cd-dropzone-icon">📁</div>
+            <div class="cd-dropzone-title">Clique para selecionar ou arraste o arquivo aqui</div>
+            <div class="cd-dropzone-sub">Suporta arquivos Excel (.xlsx, .xls) ou CSV (.csv) • Requer rótulo PÚBLICO</div>
+            <input type="file" id="importFileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFileSelected(this.files[0])">
+          </div>
+
+          <!-- Painel de Validação e Prévia -->
+          <div class="cd-preview-panel" id="previewPanel">
+            <div class="cd-preview-header">
+              <strong style="font-size:0.85rem; color:var(--fr-txt);" id="previewFileName">nome_arquivo.xlsx</strong>
+              <span class="cd-file-badge" id="previewBadge">0 registros prontos</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--fr-txt-soft); margin-bottom:0.75rem;" id="previewDetails">
+              Validação das colunas oficiais concluída com sucesso.
+            </div>
+
+            <!-- Seletor de Modo: Substituição Completa vs Mesclar Inteligente -->
+            <div style="margin-top:0.75rem; background:rgba(255,255,255,0.03); border:1px solid var(--cd-border-subtle); border-radius:10px; padding:0.75rem;">
+              <div style="font-size:0.75rem; font-weight:700; color:var(--fr-txt); margin-bottom:0.5rem;">Escolha como gravar a planilha:</div>
+              <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                <label style="display:flex; align-items:flex-start; gap:0.6rem; cursor:pointer; font-size:0.75rem; color:var(--fr-txt);">
+                  <input type="radio" name="saveModeRadio" value="replace" checked onchange="onSaveModeChange(this.value)" style="margin-top:0.15rem; accent-color:var(--cd-primary);">
+                  <div>
+                    <strong style="color:#34d399;">Substituir Base Completa (Recomendado)</strong>
+                    <div style="color:var(--fr-txt-soft); font-size:0.7rem;">Substitui todo o Volume pelo arquivo oficial enviado, garantindo 100% de integridade com o novo Excel.</div>
+                  </div>
+                </label>
+                <label style="display:flex; align-items:flex-start; gap:0.6rem; cursor:pointer; font-size:0.75rem; color:var(--fr-txt);">
+                  <input type="radio" name="saveModeRadio" value="merge" onchange="onSaveModeChange(this.value)" style="margin-top:0.15rem; accent-color:#2563eb;">
+                  <div>
+                    <strong style="color:#60a5fa;">Mesclar Inteligente (Upsert)</strong>
+                    <div style="color:var(--fr-txt-soft); font-size:0.7rem;">Atualiza registros alterados, insere novos e preserva linhas da base atual que não constem no arquivo.</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Painel de Auditoria (exibido após preview) -->
+            <div id="auditPanel" style="display:none; margin-top:0.75rem; background:rgba(255,255,255,0.03); border:1px solid var(--cd-border-subtle); border-radius:10px; padding:0.85rem; font-size:0.75rem;">
+              <div style="font-weight:700; color:var(--fr-txt); margin-bottom:0.5rem; font-size:0.8rem;" id="auditTitle">📊 Prévia da Gravação</div>
+              <div style="display:grid; grid-template-columns: repeat(2,1fr); gap:0.4rem;">
+                <div style="background:rgba(16,124,65,0.1); border:1px solid rgba(16,124,65,0.3); border-radius:6px; padding:0.4rem 0.6rem;">
+                  <div style="color:#34d399; font-weight:700; font-size:0.95rem;" id="auditNovos">—</div>
+                  <div style="color:var(--fr-txt-soft);" id="auditNovosLabel">Novas linhas</div>
+                </div>
+                <div style="background:rgba(234,179,8,0.1); border:1px solid rgba(234,179,8,0.3); border-radius:6px; padding:0.4rem 0.6rem;">
+                  <div style="color:#fbbf24; font-weight:700; font-size:0.95rem;" id="auditAtualizados">—</div>
+                  <div style="color:var(--fr-txt-soft);" id="auditAtualizadosLabel">Atualizadas</div>
+                </div>
+                <div style="background:rgba(148,163,184,0.08); border:1px solid rgba(148,163,184,0.2); border-radius:6px; padding:0.4rem 0.6rem;">
+                  <div style="color:#94a3b8; font-weight:700; font-size:0.95rem;" id="auditInalterados">—</div>
+                  <div style="color:var(--fr-txt-soft);" id="auditInalteradosLabel">Sem alteração</div>
+                </div>
+                <div style="background:rgba(37,99,235,0.1); border:1px solid rgba(37,99,235,0.3); border-radius:6px; padding:0.4rem 0.6rem;">
+                  <div style="color:#60a5fa; font-weight:700; font-size:0.95rem;" id="auditTotal">—</div>
+                  <div style="color:var(--fr-txt-soft);">Total final</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="cd-btn-hero cd-btn-hero-save" id="btnConfirmSave" onclick="openSaveModal()" disabled>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Gravar no Volume do Databricks
+        </button>
+      </div>
+
+    </div>
+
+    <!-- INFORMAÇÕES DE SEGURANÇA & BACKUP -->
+    <div class="cd-info-footer">
+      <div class="cd-info-left">
+        <div class="cd-info-icon">🛡️</div>
+        <div class="cd-info-text">
+          <strong>Segurança & Auditoria Automática</strong>
+          <span>A cada gravação, uma cópia de segurança com carimbo de data/hora (ex: <code>base_vcm_backup_YYYYMMDD.xlsx</code>) é criada automaticamente no Volume do Databricks.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL DE CONFIRMAÇÃO -->
+  <div class="cd-modal-overlay" id="saveModal">
+    <div class="cd-modal">
+      <div class="cd-modal-header">
+        <div class="cd-modal-title">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Confirmar Gravação da Base VCM
+        </div>
+        <button class="cd-modal-close" onclick="closeSaveModal()">&times;</button>
+      </div>
+      <div class="cd-modal-body">
+        <p style="font-size:0.85rem; color:var(--fr-txt); margin-top:0;">
+          Você está prestes a persistir a planilha importada diretamente no Volume oficial do Databricks:
+        </p>
+        <div style="background:rgba(255,255,255,0.04); border:1px solid var(--cd-border-subtle); border-radius:10px; padding:1rem; margin:1rem 0;">
+          <div style="font-size:0.8rem; margin-bottom:0.4rem; color:#f8fafc;">
+            • <strong>Arquivo selecionado:</strong> <span id="modalFileName">--</span>
+          </div>
+          <div style="font-size:0.8rem; margin-bottom:0.4rem; color:#34d399;">
+            • <strong>Total de registros identificados:</strong> <span id="modalRowCount">0</span>
+          </div>
+          <div style="font-size:0.8rem; color:#60a5fa;">
+            • <strong>Modo selecionado:</strong> <span id="modalMode">Substituir Base Completa</span>
+          </div>
+        </div>
+        <p style="font-size:0.75rem; color:#94a3b8; line-height:1.4;">
+          🛡️ <em>A planilha será sincronizada com o Unity Catalog Volume e o cache das telas analíticas será renovado imediatamente.</em>
+        </p>
+      </div>
+      <div class="cd-modal-footer">
+        <button class="cd-btn-hero" style="width:auto; padding:0.6rem 1.2rem; background:rgba(255,255,255,0.08); color:#fff;" onclick="closeSaveModal()">Voltar e Revisar</button>
+        <button class="cd-btn-hero cd-btn-hero-save" style="width:auto; padding:0.6rem 1.5rem;" id="btnExecuteSave" onclick="executeSave()">
+          Confirmar e Gravar Agora
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WIDGET FLUTUANTE DE GRAVAÇÃO EM SEGUNDO PLANO -->
+  <div class="cd-floating-task" id="vcmTaskFloatingWidget" style="display:none;">
+    <div class="cd-floating-task-inner">
+      <div class="cd-floating-task-header">
+        <div class="cd-floating-task-title-wrap">
+          <span class="cd-floating-spinner" id="vcmTaskSpinner">⏳</span>
+          <div>
+            <div class="cd-floating-task-title" id="vcmTaskTitle">Gravando Base VCM...</div>
+            <div class="cd-floating-task-sub" id="vcmTaskSub">Volume Databricks</div>
+          </div>
+        </div>
+        <button class="cd-floating-close" onclick="dismissFloatingTask()" title="Fechar painel">&times;</button>
+      </div>
+      <div class="cd-floating-progress-bar">
+        <div class="cd-floating-progress-fill" id="vcmTaskProgressBar" style="width: 15%;"></div>
+      </div>
+      <div class="cd-floating-task-footer">
+        <span id="vcmTaskStatusText">Iniciando gravação...</span>
+        <strong id="vcmTaskPercentText" style="color:var(--fr-txt);">15%</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container de Toasts -->
+  <div class="cd-toast-container" id="toastContainer"></div>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    let selectedFileObj = null;
+    let parsedRowCount = 0;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      inicializarTema();
+      await loadUserInfo();
+      await loadSummary();
+      setupDropzone();
+      await checkActiveBackgroundTask();
+    });
+
+    async function loadUserInfo() {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.email) {
+            const badge = document.getElementById('operatorEmailText');
+            if (badge) {
+              badge.innerText = `${data.email} ${data.is_admin ? '(Admin)' : ''}`;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Credenciais do usuário:', e);
+      }
+    }
+
+    async function loadSummary() {
+      try {
+        const res = await fetch('/api/lookups/summary');
+        const data = await res.json();
+        if (data.success && data.stats) {
+          document.getElementById('cnt_base_vcm').innerText = (data.stats.total || 0).toLocaleString('pt-BR');
+          document.getElementById('cnt_clientes').innerText = (data.stats.clientes || 0).toLocaleString('pt-BR');
+          document.getElementById('cnt_cenarios').innerText = (data.stats.cenarios || 0).toLocaleString('pt-BR');
+          document.getElementById('lastSavedTime').innerText = `Sincronizado (${(data.stats.total || 0).toLocaleString('pt-BR')} reg.)`;
+        }
+      } catch (e) {
+        console.warn('Erro ao carregar resumo:', e);
+      }
+    }
+
+    function exportExcel() {
+      showToast('Baixando planilha oficial Base de VCM (.xlsx)...', 'info');
+      window.location.href = '/api/lookups/base_vcm/export_excel';
+    }
+
+    function setupDropzone() {
+      const dropzone = document.getElementById('fileDropzone');
+      if (!dropzone) return;
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.add('dragover');
+        }, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.remove('dragover');
+        }, false);
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files && files.length > 0) {
+          handleFileSelected(files[0]);
+        }
+      });
+    }
+
+    function isEncryptionOrLabelError(err, data, ext) {
+      const isOleCompound = data && data.length >= 4 &&
+        data[0] === 0xD0 && data[1] === 0xCF && data[2] === 0x11 && data[3] === 0xE0;
+      if (ext === 'xlsx' && isOleCompound) return true;
+      if (!err) return false;
+      const msg = (err.message || String(err)).toLowerCase();
+      return isOleCompound ||
+        msg.includes('password') ||
+        msg.includes('encrypted') ||
+        msg.includes('encryptioninfo') ||
+        msg.includes('ecma-376') ||
+        msg.includes('cfb') ||
+        msg.includes('compound file');
+    }
+
+    function showSensitivityError(fileName, diagMsg) {
+      const card = document.getElementById('sensitivityErrorCard');
+      const fnEl = document.getElementById('sensErrorFileName');
+      const diagEl = document.getElementById('sensErrorDiag');
+      if (fnEl) fnEl.innerText = fileName || 'Base - VCM.xlsx';
+      if (diagEl) diagEl.innerText = 'Diagnóstico técnico: ' + (diagMsg || 'ECMA-376 Encrypted file missing /EncryptionInfo');
+      if (card) {
+        card.style.display = 'block';
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      showToast('⚠️ Planilha Bloqueada: O arquivo precisa estar com rótulo PÚBLICO no Excel. Veja as orientações na tela.', 'error');
+    }
+
+    function hideSensitivityError() {
+      const card = document.getElementById('sensitivityErrorCard');
+      if (card) card.style.display = 'none';
+    }
+
+    async function handleFileSelected(file) {
+      if (!file) return;
+      hideSensitivityError();
+
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (!['xlsx', 'xls', 'csv'].includes(ext)) {
+        showToast('Formato não suportado. Por favor, use arquivos .xlsx, .xls ou .csv', 'error');
+        return;
+      }
+
+      selectedFileObj = file;
+      showToast(`Validando arquivo "${file.name}"...`, 'info');
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        let rawData = null;
+        try {
+          rawData = new Uint8Array(e.target.result);
+
+          // Validação de criptografia RMS do Microsoft Purview (Selo 'Interno', 'Confidencial', etc.)
+          // Arquivos .xlsx válidos são ZIPs (iniciam com PK 0x50, 0x4B)
+          // Arquivos com criptografia do Microsoft 365 começam com OLE (0xD0, 0xCF, 0x11, 0xE0)
+          const isOleCompound = rawData.length >= 4 &&
+            rawData[0] === 0xD0 && rawData[1] === 0xCF && rawData[2] === 0x11 && rawData[3] === 0xE0;
+
+          if (ext === 'xlsx' && isOleCompound) {
+            throw new Error("ECMA-376 Encrypted file missing /EncryptionInfo (Microsoft Information Protection)");
+          }
+
+          let workbook;
+          try {
+            workbook = XLSX.read(rawData, { type: 'array', cellDates: true });
+          } catch (xlsxErr) {
+            if (isEncryptionOrLabelError(xlsxErr, rawData, ext)) {
+              throw new Error(xlsxErr.message || "ECMA-376 Encrypted file missing /EncryptionInfo");
+            }
+            throw xlsxErr;
+          }
+
+          const sheetName = workbook.SheetNames.includes('Base de VCM')
+            ? 'Base de VCM'
+            : (workbook.SheetNames.includes('Base VCM') ? 'Base VCM' : workbook.SheetNames[0]);
+          const worksheet = workbook.Sheets[sheetName];
+          const jsonRows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+          parsedRowCount = Math.max(0, jsonRows.length - 1);
+
+          document.getElementById('previewFileName').innerText = file.name;
+          document.getElementById('previewBadge').innerText = `${parsedRowCount.toLocaleString('pt-BR')} registros`;
+          document.getElementById('previewDetails').innerHTML =
+            `Arquivo validado: <strong>Aba '${sheetName}'</strong> com ${parsedRowCount.toLocaleString('pt-BR')} linhas prontas para gravação.`;
+          document.getElementById('previewPanel').style.display = 'block';
+          document.getElementById('btnConfirmSave').disabled = false;
+
+          showToast(`Planilha validada com sucesso! ${parsedRowCount.toLocaleString('pt-BR')} linhas identificadas.`, 'success');
+
+          // Processamento e mapeamento dos registros com normalização de datas e chaves
+          try {
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+            _parsedRowsForUpload = jsonData.map(r => {
+              const mapped = {};
+              Object.keys(r).forEach(k => {
+                const val = r[k];
+                let strVal = '';
+                if (val instanceof Date) {
+                  const y = val.getFullYear();
+                  const m = String(val.getMonth() + 1).padStart(2, '0');
+                  const d = String(val.getDate()).padStart(2, '0');
+                  strVal = `${y}-${m}-${d}`;
+                } else if (val !== undefined && val !== null) {
+                  strVal = String(val).trim();
+                }
+                mapped[k.trim()] = strVal;
+              });
+              return mapped;
+            });
+
+            await updateAuditPreview();
+          } catch(previewErr) {
+            console.warn('Erro ao processar prévia dos dados:', previewErr);
+          }
+        } catch (err) {
+          // Verifica se o erro foi de rótulo / criptografia do Microsoft 365
+          if (isEncryptionOrLabelError(err, rawData, ext)) {
+            selectedFileObj = null;
+            _parsedRowsForUpload = [];
+            document.getElementById('previewPanel').style.display = 'none';
+            document.getElementById('btnConfirmSave').disabled = true;
+            document.getElementById('importFileInput').value = '';
+            showSensitivityError(file.name, err.message);
+          } else {
+            showToast('Falha ao validar a planilha: ' + err.message, 'error');
+          }
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    let _parsedRowsForUpload = [];
+    let currentSaveMode = 'replace';
+
+    function onSaveModeChange(val) {
+      currentSaveMode = val;
+      updateAuditPreview();
+    }
+
+    async function updateAuditPreview() {
+      if (!_parsedRowsForUpload || _parsedRowsForUpload.length === 0) return;
+      const auditPanel = document.getElementById('auditPanel');
+      const auditTitle = document.getElementById('auditTitle');
+      if (currentSaveMode === 'replace') {
+        auditTitle.innerText = '📊 Prévia: Substituição Completa';
+        document.getElementById('auditNovos').innerText = _parsedRowsForUpload.length.toLocaleString('pt-BR');
+        document.getElementById('auditNovosLabel').innerText = 'Total substituído';
+        document.getElementById('auditAtualizados').innerText = '0';
+        document.getElementById('auditAtualizadosLabel').innerText = 'Sobrescritos';
+        document.getElementById('auditInalterados').innerText = '0';
+        document.getElementById('auditInalteradosLabel').innerText = 'Anteriores removidos';
+        document.getElementById('auditTotal').innerText = _parsedRowsForUpload.length.toLocaleString('pt-BR');
+        auditPanel.style.display = 'block';
+        return;
+      }
+
+      auditTitle.innerText = '📊 Prévia: Mesclar Inteligente';
+      try {
+        const previewRes = await fetch('/api/lookups/base_vcm/preview_merge', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rows: _parsedRowsForUpload, mode: 'merge' })
+        });
+        if (previewRes.ok) {
+          const previewData = await previewRes.json();
+          if (previewData.success && previewData.stats) {
+            const s = previewData.stats;
+            document.getElementById('auditNovos').innerText = (s.novos || 0).toLocaleString('pt-BR');
+            document.getElementById('auditNovosLabel').innerText = 'Novas linhas';
+            document.getElementById('auditAtualizados').innerText = (s.atualizados || 0).toLocaleString('pt-BR');
+            document.getElementById('auditAtualizadosLabel').innerText = 'Atualizadas';
+            document.getElementById('auditInalterados').innerText = (s.inalterados || 0).toLocaleString('pt-BR');
+            document.getElementById('auditInalteradosLabel').innerText = 'Sem alteração';
+            document.getElementById('auditTotal').innerText = (s.total_final || 0).toLocaleString('pt-BR');
+            auditPanel.style.display = 'block';
+          }
+        }
+      } catch(previewErr) {
+        console.warn('Preview merge não disponível:', previewErr);
+      }
+    }
+
+    async function openSaveModal() {
+      if (!selectedFileObj && (!_parsedRowsForUpload || _parsedRowsForUpload.length === 0)) return;
+
+      const fileName = document.getElementById('previewFileName').innerText || 'Base - VCM.xlsx';
+      document.getElementById('modalFileName').innerText = fileName;
+      document.getElementById('modalRowCount').innerText = parsedRowCount.toLocaleString('pt-BR');
+      document.getElementById('modalMode').innerText = currentSaveMode === 'replace'
+        ? 'Substituir Base Completa'
+        : 'Mesclar Inteligente (Upsert)';
+      document.getElementById('saveModal').classList.add('active');
+    }
+
+    function closeSaveModal() {
+      document.getElementById('saveModal').classList.remove('active');
+    }
+
+    async function executeSave() {
+      const fileName = (selectedFileObj && selectedFileObj.name) || document.getElementById('previewFileName').innerText || 'Base - VCM.xlsx';
+      const rowsToSend = _parsedRowsForUpload;
+      const saveMode = currentSaveMode;
+      const totalCount = parsedRowCount || rowsToSend.length;
+
+      // Fecha o modal imediatamente para desocupar a tela do usuário
+      closeSaveModal();
+
+      // Solicita permissão para notificações nativas se ainda não tiver solicitado
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().catch(() => {});
+      }
+
+      // Limpa os campos da tela imediatamente para que o usuário possa continuar trabalhando
+      selectedFileObj = null;
+      _parsedRowsForUpload = [];
+      document.getElementById('previewPanel').style.display = 'none';
+      document.getElementById('auditPanel').style.display = 'none';
+      document.getElementById('btnConfirmSave').disabled = true;
+      document.getElementById('importFileInput').value = '';
+
+      // Mostra o widget flutuante de progresso de imediato
+      showFloatingTask(fileName, totalCount, saveMode, 15, 'Enviando dados para o servidor...');
+
+      try {
+        if (!rowsToSend || rowsToSend.length === 0) {
+          showToast('Nenhum registro para gravar.', 'error');
+          dismissFloatingTask();
+          return;
+        }
+
+        const res = await fetch('/api/lookups/base_vcm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rows: rowsToSend, mode: saveMode })
+        });
+
+        const data = await res.json();
+        if (data.async && data.task_id) {
+          // Gravação iniciada em segundo plano com sucesso
+          showToast('Gravação iniciada em segundo plano! Você pode continuar navegando normalmente.', 'info');
+          trackBackgroundTask(data.task_id, fileName, totalCount, saveMode);
+        } else if (data.success) {
+          // Gravação síncrona finalizada
+          onTaskCompleted({ row_count: data.count || totalCount, message: data.message }, fileName);
+        } else {
+          onTaskFailed({ error: data.error || 'Erro desconhecido ao processar planilha' }, fileName);
+        }
+      } catch (err) {
+        onTaskFailed({ error: 'Falha de rede ao conectar com o servidor: ' + err.message }, fileName);
+      }
+    }
+
+    // ── GESTÃO DE TAREFAS EM SEGUNDO PLANO & NOTIFICAÇÕES ──
+    let _taskPollInterval = null;
+
+    function trackBackgroundTask(taskId, fileName, rowCount, mode) {
+      if (!taskId) return;
+      if (_taskPollInterval) clearInterval(_taskPollInterval);
+
+      // Salva no localStorage para persistir mesmo se o usuário trocar de aba ou página
+      const taskMeta = { taskId, fileName, rowCount, mode, startTime: Date.now() };
+      localStorage.setItem('vcm_active_task', JSON.stringify(taskMeta));
+
+      showFloatingTask(fileName, rowCount, mode, 25, 'Processando no Databricks em segundo plano...');
+
+      _taskPollInterval = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/lookups/base_vcm/task/${taskId}`);
+          if (!res.ok) return;
+          const data = await res.json();
+          if (!data.success || !data.task) return;
+
+          const task = data.task;
+          updateFloatingTask(task);
+
+          if (task.status === 'completed') {
+            clearInterval(_taskPollInterval);
+            _taskPollInterval = null;
+            localStorage.removeItem('vcm_active_task');
+            onTaskCompleted(task, fileName);
+          } else if (task.status === 'error') {
+            clearInterval(_taskPollInterval);
+            _taskPollInterval = null;
+            localStorage.removeItem('vcm_active_task');
+            onTaskFailed(task, fileName);
+          }
+        } catch (e) {
+          console.warn('Erro ao consultar status da gravação:', e);
+        }
+      }, 1500);
+    }
+
+    function showFloatingTask(fileName, rowCount, mode, progress, message) {
+      const widget = document.getElementById('vcmTaskFloatingWidget');
+      if (!widget) return;
+      widget.classList.remove('cd-task-success', 'cd-task-error');
+      widget.style.display = 'block';
+
+      const spinner = document.getElementById('vcmTaskSpinner');
+      if (spinner) {
+        spinner.innerText = '⏳';
+        spinner.style.animation = 'spin 1.5s linear infinite';
+      }
+
+      const title = document.getElementById('vcmTaskTitle');
+      if (title) {
+        title.innerText = mode === 'replace'
+          ? 'Substituindo Base no Volume...'
+          : 'Mesclando Base no Volume...';
+      }
+
+      const sub = document.getElementById('vcmTaskSub');
+      if (sub) {
+        sub.innerText = `${fileName || 'Base - VCM.xlsx'} • ${(rowCount || 0).toLocaleString('pt-BR')} linhas`;
+      }
+
+      const bar = document.getElementById('vcmTaskProgressBar');
+      if (bar) bar.style.width = `${progress || 15}%`;
+
+      const pct = document.getElementById('vcmTaskPercentText');
+      if (pct) pct.innerText = `${progress || 15}%`;
+
+      const status = document.getElementById('vcmTaskStatusText');
+      if (status) status.innerText = message || 'Processando em segundo plano...';
+    }
+
+    function updateFloatingTask(task) {
+      const progress = task.progress || 20;
+      const bar = document.getElementById('vcmTaskProgressBar');
+      const pct = document.getElementById('vcmTaskPercentText');
+      const status = document.getElementById('vcmTaskStatusText');
+      if (bar) bar.style.width = `${progress}%`;
+      if (pct) pct.innerText = `${progress}%`;
+      if (status && task.message) status.innerText = task.message;
+    }
+
+    function playNotificationSound() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        // Três notas ascendentes harmônicas (C5 -> E5 -> G5)
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(659.25, now + 0.12);
+        osc.frequency.setValueAtTime(783.99, now + 0.24);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.75);
+        osc.start(now);
+        osc.stop(now + 0.8);
+      } catch (e) {
+        console.warn('Audio chime indisponível:', e);
+      }
+    }
+
+    function onTaskCompleted(task, fileName) {
+      const widget = document.getElementById('vcmTaskFloatingWidget');
+      if (widget) {
+        widget.classList.add('cd-task-success');
+        const spinner = document.getElementById('vcmTaskSpinner');
+        if (spinner) {
+          spinner.innerText = '✅';
+          spinner.style.animation = 'none';
+        }
+        const title = document.getElementById('vcmTaskTitle');
+        if (title) title.innerText = 'Base VCM Gravada com Sucesso!';
+
+        const bar = document.getElementById('vcmTaskProgressBar');
+        if (bar) bar.style.width = '100%';
+
+        const pct = document.getElementById('vcmTaskPercentText');
+        if (pct) pct.innerText = '100%';
+
+        const status = document.getElementById('vcmTaskStatusText');
+        if (status) status.innerText = task.message || 'Sincronizado no Volume e cache renovado.';
+      }
+
+      playNotificationSound();
+
+      const totalCount = (task.row_count || 0).toLocaleString('pt-BR');
+      const notifTitle = '✅ Base VCM Gravada com Sucesso!';
+      const notifBody = `O arquivo ${fileName || 'Base - VCM.xlsx'} (${totalCount} linhas) foi sincronizado no Volume do Databricks.`;
+
+      // Dispara notificação nativa do sistema operacional / navegador
+      if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+          new Notification(notifTitle, {
+            body: notifBody,
+            icon: '/logo-dna.png',
+            tag: 'vcm-upload-success'
+          });
+        } catch (e) {
+          console.warn('Erro ao disparar notificação desktop:', e);
+        }
+      }
+
+      showToast(`Base VCM gravada com sucesso! ${totalCount} registros sincronizados.`, 'success');
+      loadSummary();
+
+      setTimeout(() => {
+        dismissFloatingTask();
+      }, 12000);
+    }
+
+    function onTaskFailed(task, fileName) {
+      const widget = document.getElementById('vcmTaskFloatingWidget');
+      if (widget) {
+        widget.classList.add('cd-task-error');
+        const spinner = document.getElementById('vcmTaskSpinner');
+        if (spinner) {
+          spinner.innerText = '❌';
+          spinner.style.animation = 'none';
+        }
+        const title = document.getElementById('vcmTaskTitle');
+        if (title) title.innerText = 'Falha ao Gravar Base VCM';
+
+        const status = document.getElementById('vcmTaskStatusText');
+        if (status) status.innerText = task.error || 'Erro desconhecido na gravação.';
+      }
+
+      const notifTitle = '❌ Falha na Gravação da Base VCM';
+      const notifBody = task.error || 'Ocorreu um erro ao persistir os dados no Volume Databricks.';
+
+      if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+          new Notification(notifTitle, {
+            body: notifBody,
+            icon: '/logo-dna.png',
+            tag: 'vcm-upload-error'
+          });
+        } catch (e) {
+          console.warn('Erro ao disparar notificação desktop:', e);
+        }
+      }
+
+      showToast(`Erro ao gravar base: ${task.error}`, 'error');
+    }
+
+    function dismissFloatingTask() {
+      const widget = document.getElementById('vcmTaskFloatingWidget');
+      if (widget) widget.style.display = 'none';
+    }
+
+    async function checkActiveBackgroundTask() {
+      try {
+        let taskMeta = null;
+        const stored = localStorage.getItem('vcm_active_task');
+        if (stored) {
+          try { taskMeta = JSON.parse(stored); } catch (e) {}
+        }
+
+        // Valida no backend se há tarefa em execução
+        const res = await fetch('/api/lookups/base_vcm/active_task');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.active_task) {
+            const at = data.active_task;
+            trackBackgroundTask(at.task_id, (taskMeta && taskMeta.fileName) || 'Base - VCM.xlsx', at.row_count, at.mode);
+            return;
+          }
+        }
+
+        if (taskMeta && taskMeta.taskId) {
+          trackBackgroundTask(taskMeta.taskId, taskMeta.fileName, taskMeta.rowCount, taskMeta.mode);
+        }
+      } catch (e) {
+        console.warn('Erro ao verificar tarefa ativa:', e);
+      }
+    }
+
+    function showToast(msg, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `cd-toast cd-toast-${type}`;
+
+      let icon = 'ℹ️';
+      if (type === 'success') icon = '✓';
+      if (type === 'error') icon = '⚠️';
+
+      toast.innerHTML = `<span>${icon}</span> <span>${escapeHtml(msg)}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 4500);
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const atual = html.getAttribute('data-theme') || 'dark';
+      const novo = atual === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', novo);
+      localStorage.setItem('theme_preference', novo);
+      localStorage.setItem('portal_theme', novo);
+    }
+
+    function inicializarTema() {
+      const salvo = localStorage.getItem('theme_preference') || localStorage.getItem('portal_theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', salvo);
+    }
+  </script>
+    </div><!-- #portal-workspace -->
+  </div><!-- #portal-layout -->
+
+  <div class="v2-scrim" id="v2-scrim" hidden></div>
+  <nav class="mobile-bottom-nav" aria-label="Navegação rápida mobile">
+    <a href="vcm.html" class="mobile-bottom-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      <span>VCM</span>
+    </a>
+    <a href="cadastros.html" class="mobile-bottom-link active" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>
+      <span>Base VCM</span>
+    </a>
+    <a href="guia.html" class="mobile-bottom-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <span>Guia</span>
+    </a>
+  </nav>
+</body>
+</html>

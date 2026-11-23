@@ -1,0 +1,2076 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <script>
+    (function () {
+      const saved = localStorage.getItem("theme_preference") || localStorage.getItem("portal_theme") || "light";
+      document.documentElement.setAttribute("data-theme", saved);
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão da Base Landing | BQ LANDING</title>
+  <link rel="stylesheet" href="styles.css?v=5">
+  
+  <!-- SheetJS para validação instantânea de Excel no navegador -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       ESTILOS GLOBAIS E ESTRUTURAIS (PADRÃO OFICIAL BQ LANDING)
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    :root, [data-theme="dark"] {
+      --fr-bg: #1e2433;
+      --fr-surface: #282f3f;
+      --fr-border: rgba(100, 116, 139, 0.2);
+      --fr-txt: #E8F4FD;
+      --fr-txt-soft: #7a9dba;
+      --fr-txt-muted: #5a7791;
+      --cd-primary: #107c41;
+      --cd-primary-hover: #0b5a2f;
+      --cd-accent: #2563eb;
+      --cd-surface-card: #282f3f;
+      --cd-border-subtle: rgba(100, 116, 139, 0.25);
+    }
+
+    [data-theme="light"] {
+      --fr-bg: #f0f4f8;
+      --fr-surface: #ffffff;
+      --fr-border: rgba(38, 53, 118, 0.12);
+      --fr-txt: #1e2433;
+      --fr-txt-soft: #475569;
+      --fr-txt-muted: #64748b;
+      --cd-surface-card: #ffffff;
+      --cd-border-subtle: rgba(38, 53, 118, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--fr-bg);
+      color: var(--fr-txt);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    body.fr-page {
+      background-color: var(--fr-bg);
+      color: var(--fr-txt);
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       NAVBAR OFICIAL (CONSISTENTE COM PERFORMANCE & GUIA)
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      height: 88px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #1e2433;
+      border-bottom: 1px solid rgba(100, 116, 139, 0.18);
+      box-shadow: 0 2px 24px rgba(0, 0, 0, 0.28);
+      padding: 0 2rem;
+      position: relative;
+      transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    [data-theme="light"] .navbar {
+      background-color: #ffffff !important;
+      border-bottom: 1px solid rgba(38, 53, 118, 0.10);
+      box-shadow: 0 2px 16px rgba(38, 53, 118, 0.06);
+    }
+
+    .nav-title-area {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+      margin: 0;
+      flex-shrink: 0;
+      z-index: 2;
+    }
+
+    .nav-title-area .nav-crumb {
+      font-size: 0.62rem;
+      color: rgba(255, 255, 255, 0.45);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      line-height: 1.1;
+      transition: color 0.25s ease;
+    }
+
+    [data-theme="light"] .nav-title-area .nav-crumb {
+      color: #64748b;
+    }
+
+    .nav-title-area .nav-page-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      transition: color 0.25s ease;
+    }
+
+    [data-theme="light"] .nav-title-area .nav-page-title {
+      color: #1e2433;
+    }
+
+    .nav-links {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      z-index: 5;
+    }
+
+    .nav-links .nav-link,
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.75);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 0.55rem 1.4rem;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      display: inline-block;
+      line-height: 1.4;
+      letter-spacing: 0.01em;
+    }
+
+    [data-theme="light"] .nav-links .nav-link,
+    [data-theme="light"] .nav-links a {
+      color: #475569;
+    }
+
+    .nav-links .nav-link:hover,
+    .nav-links a:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+    }
+
+    [data-theme="light"] .nav-links .nav-link:hover,
+    [data-theme="light"] .nav-links a:hover {
+      background: rgba(38, 53, 118, 0.05);
+      border-color: rgba(38, 53, 118, 0.10);
+      color: #1e2433;
+    }
+
+    .nav-links .nav-link.active,
+    .nav-links a.active {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    [data-theme="light"] .nav-links .nav-link.active,
+    [data-theme="light"] .nav-links a.active {
+      background: rgba(38, 53, 118, 0.08);
+      border: 1px solid rgba(38, 53, 118, 0.18);
+      color: #263576;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(38, 53, 118, 0.06);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.85rem;
+      margin-left: auto;
+      padding-right: 0;
+      z-index: 2;
+    }
+
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      color: #d1e2f2;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+    }
+
+    [data-theme="light"] .user-badge {
+      background: #f1f5f9;
+      border: 1px solid rgba(38, 53, 118, 0.14);
+      color: #334155;
+    }
+
+    .user-badge .user-icon {
+      font-size: 0.85rem;
+    }
+
+    .theme-toggle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(100, 116, 139, 0.3);
+      background: rgba(30, 36, 51, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      padding: 0;
+    }
+
+    .theme-toggle:hover {
+      border-color: rgba(251, 191, 36, 0.6);
+      background: rgba(30, 36, 51, 0.95);
+    }
+
+    [data-theme="light"] .theme-toggle {
+      background: #f1f5f9;
+      border-color: rgba(38, 53, 118, 0.18);
+    }
+
+    [data-theme="light"] .theme-toggle:hover {
+      background: #e2e8f0;
+      border-color: rgba(245, 158, 11, 0.6);
+    }
+
+    .theme-toggle .icon-moon { display: block; }
+    .theme-toggle .icon-sun { display: none; }
+    [data-theme="light"] .theme-toggle .icon-moon { display: none; }
+    [data-theme="light"] .theme-toggle .icon-sun { display: block; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       CONTEÚDO PRINCIPAL (LAYOUT)
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .fr-content {
+      max-width: 1450px;
+      margin: 0 auto;
+      padding: 1.75rem 2rem 4rem 2rem;
+    }
+
+    /* Hero */
+    .cd-hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.75rem;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .cd-hero-info h1 {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: var(--fr-txt);
+      margin: 0 0 0.4rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .cd-hero-info p {
+      font-size: 0.88rem;
+      color: var(--fr-txt-soft);
+      margin: 0;
+      max-width: 900px;
+      line-height: 1.5;
+    }
+
+    .cd-change-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: rgba(16, 124, 65, 0.16);
+      border: 1px solid rgba(16, 124, 65, 0.45);
+      color: #34d399;
+      letter-spacing: 0.02em;
+    }
+
+    /* KPI Cards */
+    .cd-stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .cd-stat-card {
+      background: var(--cd-surface-card);
+      border: 1px solid var(--cd-border-subtle);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+
+    .cd-stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+    }
+
+    .cd-stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.45rem;
+      flex-shrink: 0;
+    }
+
+    .cd-stat-val {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--fr-txt);
+      line-height: 1.2;
+    }
+
+    .cd-stat-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--fr-txt-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+
+    .cd-stat-desc {
+      font-size: 0.7rem;
+      color: var(--fr-txt-muted);
+    }
+
+    /* Grid de Ações Principais (Exportar / Importar) */
+    .cd-hub-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 960px) {
+      .cd-hub-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .cd-hub-card {
+      background: var(--cd-surface-card);
+      border: 1px solid var(--cd-border-subtle);
+      border-radius: 16px;
+      padding: 1.85rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.16);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .cd-hub-card:hover {
+      border-color: rgba(148, 163, 184, 0.4);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.24);
+    }
+
+    .cd-hub-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .cd-card-export::before {
+      background: linear-gradient(90deg, #107c41, #34d399);
+    }
+
+    .cd-card-import::before {
+      background: linear-gradient(90deg, #2563eb, #60a5fa);
+    }
+
+    .cd-hub-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .cd-hub-icon-wrap {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cd-icon-excel {
+      background: rgba(16, 124, 65, 0.18);
+      border: 1px solid rgba(16, 124, 65, 0.4);
+      color: #34d399;
+    }
+
+    .cd-icon-upload {
+      background: rgba(37, 99, 235, 0.18);
+      border: 1px solid rgba(37, 99, 235, 0.4);
+      color: #60a5fa;
+    }
+
+    .cd-hub-title-box h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--fr-txt);
+      margin: 0 0 0.35rem 0;
+    }
+
+    .cd-hub-title-box p {
+      font-size: 0.82rem;
+      color: var(--fr-txt-soft);
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    /* Lista de Passos / Instruções */
+    .cd-steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin: 1.25rem 0 1.75rem 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .cd-step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      font-size: 0.8rem;
+      color: var(--fr-txt-soft);
+      line-height: 1.4;
+    }
+
+    .cd-step-num {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--fr-txt);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Botões Grandes de Ação */
+    .cd-btn-hero {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 0.9rem 1.5rem;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      outline: none;
+      width: 100%;
+      text-decoration: none;
+    }
+
+    .cd-btn-hero-export {
+      background: #107c41;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(16, 124, 65, 0.35);
+    }
+
+    .cd-btn-hero-export:hover {
+      background: #0b5a2f;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 124, 65, 0.5);
+    }
+
+    .cd-btn-hero-save {
+      background: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    }
+
+    .cd-btn-hero-save:hover:not(:disabled) {
+      background: #1d4ed8;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+    }
+
+    .cd-btn-hero-save:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+      background: #475569;
+    }
+
+    /* Dropzone */
+    .cd-dropzone {
+      border: 2px dashed rgba(59, 130, 246, 0.4);
+      border-radius: 14px;
+      background: rgba(59, 130, 246, 0.05);
+      padding: 1.75rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 1.25rem;
+    }
+
+    .cd-dropzone:hover, .cd-dropzone.dragover {
+      border-color: #3b82f6;
+      background: rgba(59, 130, 246, 0.12);
+      transform: scale(1.01);
+    }
+
+    .cd-dropzone-icon {
+      font-size: 2.2rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .cd-dropzone-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--fr-txt);
+      margin-bottom: 0.25rem;
+    }
+
+    .cd-dropzone-sub {
+      font-size: 0.74rem;
+      color: var(--fr-txt-soft);
+    }
+
+    /* Painel de Validação / Preview */
+    .cd-preview-panel {
+      display: none;
+      background: rgba(0, 0, 0, 0.18);
+      border: 1px solid var(--cd-border-subtle);
+      border-radius: 12px;
+      padding: 1rem 1.15rem;
+      margin-bottom: 1.25rem;
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+    }
+
+    [data-theme="light"] .cd-preview-panel {
+      background: #f8fafc;
+      border: 1px solid rgba(38, 53, 118, 0.14);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .cd-preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .cd-file-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.16);
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      transition: all 0.25s ease;
+    }
+
+    [data-theme="light"] .cd-file-badge {
+      color: #047857;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+    }
+
+    .cd-upsert-hint {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      border-top: 1px solid var(--cd-border-subtle);
+      padding-top: 0.6rem;
+      color: var(--fr-txt-soft);
+      transition: border-color 0.25s ease, color 0.25s ease;
+    }
+
+    [data-theme="light"] .cd-upsert-hint {
+      color: #334155;
+    }
+
+    .cd-upsert-check {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(52, 211, 153, 0.15);
+      color: #34d399;
+      font-size: 0.7rem;
+      flex-shrink: 0;
+      font-weight: 700;
+      transition: all 0.25s ease;
+    }
+
+    [data-theme="light"] .cd-upsert-check {
+      background: rgba(16, 185, 129, 0.15);
+      color: #059669;
+    }
+
+    /* Box de Auditoria da Mesclagem */
+    .cd-audit-container {
+      margin-top: 0.75rem;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--cd-border-subtle);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    [data-theme="light"] .cd-audit-container {
+      background: #ffffff;
+      border: 1px solid rgba(38, 53, 118, 0.16);
+      box-shadow: 0 2px 10px rgba(38, 53, 118, 0.05);
+    }
+
+    .cd-audit-header {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--fr-txt);
+      margin-bottom: 0.45rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cd-audit-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #34d399;
+      background: rgba(52, 211, 153, 0.12);
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid rgba(52, 211, 153, 0.25);
+      transition: all 0.25s ease;
+    }
+
+    [data-theme="light"] .cd-audit-badge {
+      color: #047857;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+    }
+
+    .cd-audit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 0.45rem;
+      text-align: center;
+    }
+
+    .cd-stat-card {
+      background: rgba(255, 255, 255, 0.035);
+      padding: 0.45rem 0.35rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    [data-theme="light"] .cd-stat-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    .cd-stat-label {
+      font-size: 0.65rem;
+      color: #94a3b8;
+      font-weight: 500;
+      margin-bottom: 0.15rem;
+      transition: color 0.25s ease;
+    }
+
+    [data-theme="light"] .cd-stat-label {
+      color: #475569;
+      font-weight: 600;
+    }
+
+    .cd-stat-value {
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.2;
+      transition: color 0.25s ease;
+    }
+
+    /* Cores das métricas com contraste calibrado */
+    .cd-stat-val-identical {
+      color: #38bdf8;
+    }
+    [data-theme="light"] .cd-stat-val-identical {
+      color: #0284c7; /* Sky 600 - Alto contraste em fundo claro */
+    }
+
+    .cd-stat-val-modified {
+      color: #fbbf24;
+    }
+    [data-theme="light"] .cd-stat-val-modified {
+      color: #d97706; /* Amber 600 - Nítido e contrastante */
+    }
+
+    .cd-stat-val-new {
+      color: #34d399;
+    }
+    [data-theme="light"] .cd-stat-val-new {
+      color: #059669; /* Emerald 600 - Verde corporativo de alto contraste */
+    }
+
+    .cd-stat-val-final {
+      color: #a78bfa;
+    }
+    [data-theme="light"] .cd-stat-val-final {
+      color: #7c3aed; /* Violet 600 - Roxo elegante e legível */
+    }
+
+    .cd-audit-warning {
+      margin-top: 0.55rem;
+      font-size: 0.73rem;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      border-radius: 6px;
+      padding: 0.45rem 0.65rem;
+      line-height: 1.45;
+      transition: all 0.25s ease;
+    }
+
+    [data-theme="light"] .cd-audit-warning {
+      color: #0369a1; /* Sky 800 - Azul escuro de leitura imediata */
+      background: #f0f9ff; /* Sky 50 */
+      border: 1px solid #bae6fd; /* Sky 200 */
+    }
+
+    .cd-audit-warning strong {
+      font-weight: 700;
+    }
+
+    [data-theme="light"] .cd-audit-warning strong {
+      color: #075985; /* Sky 900 */
+    }
+
+    .cd-change-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(59, 130, 246, 0.12);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      transition: all 0.25s ease;
+    }
+
+    [data-theme="light"] .cd-change-tag {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+
+    /* Card Informativo de Backup */
+    .cd-info-footer {
+      background: var(--cd-surface-card);
+      border: 1px solid var(--cd-border-subtle);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    .cd-info-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .cd-info-icon {
+      font-size: 1.8rem;
+    }
+
+    .cd-info-text strong {
+      display: block;
+      font-size: 0.86rem;
+      color: var(--fr-txt);
+      margin-bottom: 0.15rem;
+    }
+
+    .cd-info-text span {
+      font-size: 0.76rem;
+      color: var(--fr-txt-soft);
+    }
+
+    /* Modais */
+    .cd-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .cd-modal-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .cd-modal {
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 16px;
+      width: 90%;
+      max-width: 560px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+    }
+
+    .cd-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .cd-modal-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .cd-modal-close {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+
+    .cd-modal-close:hover {
+      color: #fff;
+    }
+
+    .cd-modal-body {
+      padding: 1.5rem;
+      color: #cbd5e1;
+    }
+
+    .cd-modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      padding: 1.25rem 1.5rem;
+      background: rgba(0, 0, 0, 0.25);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Toasts */
+    .cd-toast-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      z-index: 10001;
+    }
+
+    .cd-toast {
+      background: #1e293b;
+      border: 1px solid var(--cd-border-subtle);
+      padding: 0.8rem 1.25rem;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      animation: toast-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes toast-in {
+      from { transform: translateY(15px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .cd-toast-success { border-left: 4px solid #10b981; }
+    .cd-toast-error { border-left: 4px solid #ef4444; }
+    .cd-toast-info { border-left: 4px solid #3b82f6; }
+
+    /* ── Aviso Prévio & Rótulo de Sensibilidade (Público vs Criptografado) ── */
+    .cd-tag-public {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      vertical-align: middle;
+    }
+
+    [data-theme="light"] .cd-tag-public {
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+
+    .cd-sensitivity-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      background: rgba(37, 99, 235, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.28);
+      border-left: 4px solid #3b82f6;
+      border-radius: 12px;
+      padding: 0.85rem 1.05rem;
+      margin-bottom: 1.15rem;
+      transition: all 0.25s ease;
+    }
+
+    [data-theme="light"] .cd-sensitivity-notice {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-left: 4px solid #2563eb;
+    }
+
+    .cd-sensitivity-notice-icon {
+      color: #60a5fa;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    [data-theme="light"] .cd-sensitivity-notice-icon {
+      color: #2563eb;
+    }
+
+    .cd-sensitivity-notice-title {
+      font-size: 0.83rem;
+      font-weight: 700;
+      color: var(--fr-txt);
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .cd-sensitivity-notice-text {
+      font-size: 0.77rem;
+      color: var(--fr-txt-soft);
+      line-height: 1.45;
+    }
+
+    /* ── Box de Erro Orientativo de Sensibilidade (Exibido quando arquivo for criptografado) ── */
+    .cd-sensitivity-error {
+      background: rgba(239, 68, 68, 0.10);
+      border: 1.5px solid rgba(239, 68, 68, 0.45);
+      border-left: 5px solid #ef4444;
+      border-radius: 12px;
+      padding: 1.15rem 1.25rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15);
+      animation: toast-in 0.25s ease-out;
+    }
+
+    [data-theme="light"] .cd-sensitivity-error {
+      background: #fef2f2;
+      border: 1.5px solid #fca5a5;
+      border-left: 5px solid #dc2626;
+      box-shadow: 0 4px 18px rgba(239, 68, 68, 0.08);
+    }
+
+    .cd-sens-err-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .cd-sens-err-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .cd-sens-err-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: rgba(239, 68, 68, 0.22);
+      color: #f87171;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    [data-theme="light"] .cd-sens-err-icon {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .cd-sens-err-title {
+      font-size: 0.94rem;
+      font-weight: 800;
+      color: #f87171;
+      line-height: 1.25;
+    }
+
+    [data-theme="light"] .cd-sens-err-title {
+      color: #b91c1c;
+    }
+
+    .cd-sens-err-close {
+      background: transparent;
+      border: none;
+      color: var(--fr-txt-soft);
+      font-size: 1.45rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 0.35rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .cd-sens-err-close:hover {
+      color: var(--fr-txt);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .cd-sens-err-desc {
+      font-size: 0.81rem;
+      color: var(--fr-txt);
+      line-height: 1.5;
+      margin-bottom: 0.85rem;
+    }
+
+    .cd-sens-steps {
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-radius: 10px;
+      padding: 0.9rem 1.15rem 0.9rem 2.25rem;
+      margin-bottom: 0.85rem;
+      font-size: 0.79rem;
+      color: var(--fr-txt-soft);
+      line-height: 1.65;
+    }
+
+    [data-theme="light"] .cd-sens-steps {
+      background: #ffffff;
+      border: 1px solid #fecaca;
+      color: #334155;
+    }
+
+    .cd-sens-steps li {
+      margin-bottom: 0.35rem;
+    }
+
+    .cd-sens-steps li:last-child {
+      margin-bottom: 0;
+    }
+
+    .cd-sens-steps strong {
+      color: var(--fr-txt);
+      font-weight: 700;
+    }
+
+    [data-theme="light"] .cd-sens-steps strong {
+      color: #0f172a;
+    }
+
+    .cd-sens-steps kbd {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      padding: 0.1rem 0.35rem;
+      font-size: 0.72rem;
+      font-family: inherit;
+    }
+
+    [data-theme="light"] .cd-sens-steps kbd {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #1e293b;
+    }
+
+    .cd-sens-err-tech {
+      font-size: 0.71rem;
+      color: var(--fr-txt-muted);
+      font-family: Consolas, Monaco, monospace;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      word-break: break-all;
+      margin-bottom: 0.85rem;
+    }
+
+    [data-theme="light"] .cd-sens-err-tech {
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    .cd-sens-err-actions {
+      display: flex;
+      gap: 0.65rem;
+    }
+
+    .cd-sens-btn-retry {
+      padding: 0.55rem 1.1rem;
+      background: #dc2626;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+    }
+
+    .cd-sens-btn-retry:hover {
+      background: #b91c1c;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body class="fr-page">
+
+  <!-- NAVBAR PADRÃO OFICIAL BQ LANDING -->
+  <nav class="navbar">
+    <div class="nav-title-area">
+      <span class="nav-crumb">BQ LANDING</span>
+      <span class="nav-page-title">Gestão da Base Landing</span>
+    </div>
+
+    <div class="nav-links">
+      <a href="performance.html" class="nav-link">Landing</a>
+      <a href="cadastros.html" class="nav-link active">Base Landing</a>
+      <a href="guia.html" class="nav-link">Guia</a>
+    </div>
+
+    <div class="nav-actions">
+      <!-- Identificação do Usuário -->
+      <div class="user-badge" id="operatorBadge">
+        <span class="user-icon">👤</span>
+        <span id="operatorEmailText">renan.ferreira@grupobimbo.com (Admin)</span>
+      </div>
+
+      <!-- Alternador de Tema Claro / Escuro -->
+      <button class="theme-toggle" onclick="toggleTheme()" title="Alternar tema">
+        <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.5" />
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20">
+          <circle cx="12" cy="12" r="4" fill="#fbbf24" />
+          <path
+            d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+            stroke="#f59e0b" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- CONTEÚDO PRINCIPAL -->
+  <div class="fr-content">
+
+    <!-- HERO HEADER -->
+    <div class="cd-hero">
+      <div class="cd-hero-info">
+        <h1>
+          <span>Central de Gestão da Base Landing</span>
+          <span class="cd-change-tag">✓ Volume Databricks Sincronizado</span>
+        </h1>
+        <p>
+          Gerencie a base de projeções com agilidade e total compatibilidade: baixe a planilha oficial, faça suas edições diretamente no Excel do seu computador (com todos os seus atalhos e fórmulas habituais) e envie o arquivo atualizado para validação e gravação automática.
+        </p>
+      </div>
+    </div>
+
+    <!-- STATS CARDS -->
+    <div class="cd-stats-row">
+      <div class="cd-stat-card">
+        <div class="cd-stat-icon" style="background:rgba(16, 124, 65, 0.16); color:#107c41;">📊</div>
+        <div class="cd-stat-content">
+          <div class="cd-stat-val" id="cnt_base_landing">--</div>
+          <div class="cd-stat-label">Total de Registros</div>
+          <div class="cd-stat-desc">Salvos na base oficial</div>
+        </div>
+      </div>
+
+      <div class="cd-stat-card">
+        <div class="cd-stat-icon" style="background:rgba(16, 185, 129, 0.16); color:#34d399;">💰</div>
+        <div class="cd-stat-content">
+          <div class="cd-stat-val" id="cnt_receita">--</div>
+          <div class="cd-stat-label">Registros de Receita</div>
+          <div class="cd-stat-desc">Projeções em R$</div>
+        </div>
+      </div>
+
+      <div class="cd-stat-card">
+        <div class="cd-stat-icon" style="background:rgba(59, 130, 246, 0.16); color:#60a5fa;">📦</div>
+        <div class="cd-stat-content">
+          <div class="cd-stat-val" id="cnt_volume">--</div>
+          <div class="cd-stat-label">Registros de Volume</div>
+          <div class="cd-stat-desc">Projeções em Dúzias, Caixas e Unidades</div>
+        </div>
+      </div>
+
+      <div class="cd-stat-card" style="cursor:default;">
+        <div class="cd-stat-icon" style="background:rgba(245, 158, 11, 0.16); color:#fbbf24;">⚡</div>
+        <div class="cd-stat-content">
+          <div class="cd-stat-val" style="font-size:1.05rem;" id="lastSavedTime">Carregando...</div>
+          <div class="cd-stat-label">Status da Sincronização</div>
+          <div class="cd-stat-desc">Volume do Databricks</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRID DE AÇÕES (EXPORTAR & IMPORTAR) -->
+    <div class="cd-hub-grid">
+
+      <!-- CARD 1: EXPORTAR PLANILHA -->
+      <div class="cd-hub-card cd-card-export">
+        <div>
+          <div class="cd-hub-header">
+            <div class="cd-hub-icon-wrap cd-icon-excel">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+            </div>
+            <div class="cd-hub-title-box">
+              <h2>1. Baixar Planilha Atual (.xlsx)</h2>
+              <p>Baixe a versão mais recente no modelo oficial <strong>BQ LANDING.xlsx</strong> (20 colunas oficiais com abas De_Para, Base de Landing, Total QSR, Total Categoria e Resumo preservadas).</p>
+            </div>
+          </div>
+
+          <ul class="cd-steps-list">
+            <li class="cd-step-item">
+              <span class="cd-step-num">1</span>
+              <span>Clique no botão abaixo para baixar o arquivo <strong>BQ LANDING.xlsx</strong>.</span>
+            </li>
+            <li class="cd-step-item">
+              <span class="cd-step-num">2</span>
+              <span>Abra a planilha no Microsoft Excel instalado no seu computador.</span>
+            </li>
+            <li class="cd-step-item">
+              <span class="cd-step-num">3</span>
+              <span>Atualize ou adicione seus números na aba <strong>Base de Landing</strong> com as colunas Ano e Mês separadas.</span>
+            </li>
+            <li class="cd-step-item">
+              <span class="cd-step-num">4</span>
+              <span><strong>Muito Importante:</strong> Ao salvar no Excel, certifique-se de manter o rótulo de sensibilidade como <span class="cd-tag-public">PÚBLICO</span> (evita bloqueio por criptografia do Microsoft 365).</span>
+            </li>
+            <li class="cd-step-item">
+              <span class="cd-step-num">5</span>
+              <span>Envie o arquivo atualizado no quadro ao lado para validação e gravação direta no Databricks.</span>
+            </li>
+          </ul>
+        </div>
+
+        <button class="cd-btn-hero cd-btn-hero-export" onclick="exportExcel()">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Baixar Planilha Oficial (.xlsx)
+        </button>
+      </div>
+
+      <!-- CARD 2: IMPORTAR PLANILHA -->
+      <div class="cd-hub-card cd-card-import">
+        <div>
+          <div class="cd-hub-header">
+            <div class="cd-hub-icon-wrap cd-icon-upload">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <div class="cd-hub-title-box">
+              <h2>2. Importar Planilha Atualizada</h2>
+              <p>Envie sua planilha preenchida para validação instantânea e atualização direta no Databricks.</p>
+            </div>
+          </div>
+
+          <!-- AVISO DE ORIENTAÇÃO PRÉVIA: RÓTULO PÚBLICO OBRIGATÓRIO -->
+          <div class="cd-sensitivity-notice">
+            <div class="cd-sensitivity-notice-icon">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div class="cd-sensitivity-notice-content">
+              <div class="cd-sensitivity-notice-title">
+                <span>Obrigatório: Salvar planilha com rótulo</span>
+                <span class="cd-tag-public">PÚBLICO</span>
+              </div>
+              <div class="cd-sensitivity-notice-text">
+                Para que o sistema consiga ler o arquivo, a planilha deve ser salva no Microsoft Excel com sensibilidade <strong>Público</strong>. Arquivos salvos como <em>Interno</em>, <em>Confidencial</em> ou <em>Restrito</em> são criptografados pelo Microsoft 365 e impedem a leitura.
+              </div>
+            </div>
+          </div>
+
+          <!-- ALERTA DE ERRO GUIADO (EXIBIDO CASO A PLANILHA NÃO SEJA PÚBLICA / ESTEJA CRIPTOGRAFADA) -->
+          <div class="cd-sensitivity-error" id="sensitivityErrorBox" style="display:none;">
+            <div class="cd-sens-err-header">
+              <div class="cd-sens-err-title-wrap">
+                <div class="cd-sens-err-icon">🔒</div>
+                <div>
+                  <div class="cd-sens-err-title">Planilha Bloqueada: Rótulo Não é "Público"</div>
+                  <span style="font-size:0.75rem; color:var(--fr-txt-soft);" id="sensErrFileName">arquivo.xlsx</span>
+                </div>
+              </div>
+              <button type="button" class="cd-sens-err-close" onclick="hideSensitivityError()" title="Fechar aviso">&times;</button>
+            </div>
+
+            <div class="cd-sens-err-desc">
+              Esta planilha não pôde ser processada porque está <strong>protegida por criptografia da Microsoft</strong>. Esse bloqueio acontece quando o arquivo é salvo no Excel com um rótulo de confidencialidade diferente de <strong>PÚBLICO</strong> (por exemplo, <em>Interno</em>, <em>Confidencial</em> ou <em>Restrito</em>).
+            </div>
+
+            <div style="font-size:0.78rem; font-weight:700; color:var(--fr-txt); margin-bottom:0.45rem;">
+              Como resolver passo a passo no Excel:
+            </div>
+            <ol class="cd-sens-steps">
+              <li>Abra o arquivo no <strong>Microsoft Excel</strong>.</li>
+              <li>Na barra superior do Excel, clique no botão <strong>Sensibilidade</strong> (ou <strong>Confidencialidade / Rótulo</strong>).</li>
+              <li>Selecione a opção <strong>PÚBLICO</strong> (ou Sem Restrição).</li>
+              <li>Salve o arquivo (<kbd>Ctrl + B</kbd> ou <kbd>Ctrl + S</kbd>) e feche o Excel.</li>
+              <li>Arraste ou selecione a planilha salva novamente abaixo.</li>
+            </ol>
+
+            <div class="cd-sens-err-tech" id="sensErrTech">
+              Diagnóstico técnico: ECMA-376 Encrypted file missing /EncryptionInfo
+            </div>
+
+            <div class="cd-sens-err-actions">
+              <button type="button" class="cd-sens-btn-retry" onclick="document.getElementById('importFileInput').click()">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                Selecionar Planilha Novamente
+              </button>
+            </div>
+          </div>
+
+          <!-- Dropzone -->
+          <div class="cd-dropzone" id="fileDropzone" onclick="document.getElementById('importFileInput').click()">
+            <div class="cd-dropzone-icon">📁</div>
+            <div class="cd-dropzone-title">Clique para selecionar ou arraste o arquivo aqui</div>
+            <div class="cd-dropzone-sub">Suporta arquivos Excel (.xlsx, .xls) ou CSV (.csv) • Requer rótulo PÚBLICO</div>
+            <input type="file" id="importFileInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFileSelected(this.files[0])">
+          </div>
+
+          <!-- Painel de Validação e Prévia -->
+          <div class="cd-preview-panel" id="previewPanel">
+            <div class="cd-preview-header">
+              <strong style="font-size:0.85rem; color:var(--fr-txt);" id="previewFileName">nome_arquivo.xlsx</strong>
+              <span class="cd-file-badge" id="previewBadge">0 registros prontos</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--fr-txt-soft); margin-bottom:0.75rem;" id="previewDetails">
+              Validação das colunas oficiais concluída com sucesso.
+            </div>
+
+            <div class="cd-upsert-hint">
+              <span class="cd-upsert-check">✓</span>
+              <span><strong>Mesclar Inteligente / Upsert</strong> — atualiza alteradas, insere novas e ignora idênticas sem duplicar</span>
+            </div>
+
+            <!-- Box de Auditoria da Mesclagem -->
+            <div id="previewStatsContainer" class="cd-audit-container" style="display:none;">
+              <div class="cd-audit-header">
+                <span>Auditoria da Mesclagem</span>
+                <span id="previewStatsBadge" class="cd-audit-badge">✓ Calculado</span>
+              </div>
+              <div class="cd-audit-grid">
+                <div class="cd-stat-card">
+                  <div class="cd-stat-label">Idênticas (Intactas)</div>
+                  <div class="cd-stat-value cd-stat-val-identical" id="statIdentical">--</div>
+                </div>
+                <div class="cd-stat-card">
+                  <div class="cd-stat-label">Modificadas</div>
+                  <div class="cd-stat-value cd-stat-val-modified" id="statModified">--</div>
+                </div>
+                <div class="cd-stat-card">
+                  <div class="cd-stat-label">Novas</div>
+                  <div class="cd-stat-value cd-stat-val-new" id="statNew">--</div>
+                </div>
+                <div class="cd-stat-card">
+                  <div class="cd-stat-label">Total Final Base</div>
+                  <div class="cd-stat-value cd-stat-val-final" id="statFinal">--</div>
+                </div>
+              </div>
+              <div id="previewWarning" class="cd-audit-warning" style="display:none;">
+                🛡️ Linhas idênticas detectadas: nenhuma duplicação ocorrerá.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="cd-btn-hero cd-btn-hero-save" id="btnConfirmSave" onclick="openSaveModal()" disabled>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Gravar no Volume do Databricks
+        </button>
+      </div>
+
+    </div>
+
+    <!-- INFORMAÇÕES DE SEGURANÇA & BACKUP -->
+    <div class="cd-info-footer">
+      <div class="cd-info-left">
+        <div class="cd-info-icon">🛡️</div>
+        <div class="cd-info-text">
+          <strong>Segurança & Auditoria Automática</strong>
+          <span>A cada gravação, uma cópia de segurança com carimbo de data/hora (ex: <code>base_landing_backup_YYYYMMDD.xlsx</code>) é criada automaticamente no Volume do Databricks.</span>
+        </div>
+      </div>
+      <div>
+        <span class="cd-change-tag">
+          Arquitetura 100% Nativa Databricks
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL DE CONFIRMAÇÃO -->
+  <div class="cd-modal-overlay" id="saveModal">
+    <div class="cd-modal">
+      <div class="cd-modal-header">
+        <div class="cd-modal-title">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Confirmar Gravação da Base Landing
+        </div>
+        <button class="cd-modal-close" onclick="closeSaveModal()">&times;</button>
+      </div>
+      <div class="cd-modal-body">
+        <p style="font-size:0.85rem; color:var(--fr-txt); margin-top:0;">
+          Você está prestes a persistir a planilha importada diretamente no Volume oficial do Databricks:
+        </p>
+        <div style="background:rgba(255,255,255,0.04); border:1px solid var(--cd-border-subtle); border-radius:10px; padding:1rem; margin:1rem 0;">
+          <div style="font-size:0.8rem; margin-bottom:0.4rem; color:#f8fafc;">
+            • <strong>Arquivo selecionado:</strong> <span id="modalFileName">--</span>
+          </div>
+          <div style="font-size:0.8rem; margin-bottom:0.4rem; color:#38bdf8;">
+            • <strong>Registros na planilha:</strong> <span id="modalRowCount">0</span>
+          </div>
+          <div style="font-size:0.8rem; color:#60a5fa;">
+            • <strong>Modo selecionado:</strong> <span id="modalMode">Mesclar Inteligente (Upsert)</span>
+          </div>
+          <div id="modalStatsBox" style="margin-top:0.6rem; border-top:1px dashed var(--cd-border-subtle); padding-top:0.6rem; font-size:0.75rem; color:#e2e8f0;">
+            <!-- preenchido dinamicamente via JS -->
+          </div>
+        </div>
+        <p style="font-size:0.75rem; color:#94a3b8; line-height:1.4;">
+          🛡️ <em>Um backup completo será criado automaticamente antes de salvar. O cache analítico das telas de Performance e Waterfall será atualizado na hora.</em>
+        </p>
+      </div>
+      <div class="cd-modal-footer">
+        <button class="cd-btn-hero" style="width:auto; padding:0.6rem 1.2rem; background:rgba(255,255,255,0.08); color:#fff;" onclick="closeSaveModal()">Voltar e Revisar</button>
+        <button class="cd-btn-hero cd-btn-hero-save" style="width:auto; padding:0.6rem 1.5rem;" id="btnExecuteSave" onclick="executeSave()">
+          Confirmar e Gravar Agora
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="cd-toast-container" id="toastContainer"></div>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    const STATE = {
+      currentTableKey: 'base_landing',
+      columns: [],
+      currentRows: [],
+      importedRows: null,
+      currentUser: null
+    };
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      inicializarTema();
+      await loadUserInfo();
+      await loadSummary();
+      await loadCurrentData();
+      setupDropzone();
+    });
+
+    async function loadUserInfo() {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          const data = await res.json();
+          STATE.currentUser = data;
+          if (data.email) {
+            const badge = document.getElementById('operatorEmailText');
+            if (badge) {
+              badge.innerText = `${data.email} ${data.is_admin ? '(Admin)' : ''}`;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Credenciais do usuário:', e);
+      }
+    }
+
+    async function loadSummary() {
+      try {
+        const res = await fetch('/api/lookups/summary');
+        const data = await res.json();
+        if (data.success && data.tables) {
+          const b = data.tables.find(t => t.key === 'base_landing');
+          if (b) {
+            document.getElementById('cnt_base_landing').innerText = b.total.toLocaleString('pt-BR');
+            document.getElementById('cnt_receita').innerText = (b.linhas_receita || 0).toLocaleString('pt-BR');
+            document.getElementById('cnt_volume').innerText = (b.linhas_volume || 0).toLocaleString('pt-BR');
+            document.getElementById('lastSavedTime').innerText = `Sincronizado (${b.total} reg.)`;
+          }
+        }
+      } catch (e) {
+        console.warn('Erro ao carregar resumo:', e);
+      }
+    }
+
+    async function loadCurrentData() {
+      try {
+        const res = await fetch(`/api/lookups/${STATE.currentTableKey}`);
+        const data = await res.json();
+        if (data.success) {
+          STATE.columns = data.columns || [];
+          STATE.currentRows = data.rows || [];
+        }
+      } catch (e) {
+        console.warn('Erro ao carregar dados atuais:', e);
+      }
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       EXPORTAÇÃO (.XLSX) COM ABA ÚNICA
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function exportExcel() {
+      showToast('Baixando planilha oficial Base de Landing (.xlsx)...', 'info');
+      window.location.href = `/api/lookups/${STATE.currentTableKey}/export_excel`;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       IMPORTAÇÃO & DRAG AND DROP
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function setupDropzone() {
+      const dropzone = document.getElementById('fileDropzone');
+      if (!dropzone) return;
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.add('dragover');
+        }, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropzone.classList.remove('dragover');
+        }, false);
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files && files.length > 0) {
+          handleFileSelected(files[0]);
+        }
+      });
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       TRATAMENTO DE SENSIBILIDADE / CRIPTOGRAFIA DO EXCEL
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function isEncryptionOrLabelError(err) {
+      if (!err) return false;
+      const msg = String(err.message || err || '').toLowerCase();
+      return (
+        msg.includes('encrypted') ||
+        msg.includes('encryptioninfo') ||
+        msg.includes('password') ||
+        msg.includes('ecma-376') ||
+        msg.includes('cfb') ||
+        msg.includes('ole file is encrypted') ||
+        msg.includes('bad password')
+      );
+    }
+
+    function showSensitivityError(fileName, techMessage) {
+      const box = document.getElementById('sensitivityErrorBox');
+      const fileLabel = document.getElementById('sensErrFileName');
+      const techLabel = document.getElementById('sensErrTech');
+      const previewPanel = document.getElementById('previewPanel');
+
+      if (previewPanel) previewPanel.style.display = 'none';
+      const btnSave = document.getElementById('btnConfirmSave');
+      if (btnSave) btnSave.disabled = true;
+
+      // Reseta o input para permitir selecionar o mesmo arquivo novamente após correção
+      const fileInput = document.getElementById('importFileInput');
+      if (fileInput) fileInput.value = '';
+
+      if (fileLabel) fileLabel.innerText = fileName || 'Planilha selecionada';
+      if (techLabel) techLabel.innerText = 'Diagnóstico técnico: ' + (techMessage || 'Criptografia detectada');
+      if (box) {
+        box.style.display = 'block';
+        box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function hideSensitivityError() {
+      const box = document.getElementById('sensitivityErrorBox');
+      if (box) box.style.display = 'none';
+    }
+
+    function handleFileSelected(file) {
+      if (!file) return;
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (!['xlsx', 'xls', 'csv'].includes(ext)) {
+        showToast('Formato não suportado. Por favor, use arquivos .xlsx, .xls ou .csv', 'error');
+        return;
+      }
+
+      // Oculta erro de sensibilidade prévio ao iniciar nova tentativa
+      hideSensitivityError();
+
+      showToast(`Lendo e validando arquivo "${file.name}"...`, 'info');
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const data = new Uint8Array(e.target.result);
+          let parsedRows = [];
+
+          if (typeof XLSX === 'undefined') {
+            throw new Error('Biblioteca de leitura de planilhas não carregada.');
+          }
+
+          const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+          const sheetName = workbook.SheetNames.includes('Base de Landing')
+            ? 'Base de Landing'
+            : (workbook.SheetNames.includes('Base de Dados') ? 'Base de Dados' : workbook.SheetNames[0]);
+          const worksheet = workbook.Sheets[sheetName];
+          parsedRows = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+          await processParsedRows(parsedRows, file.name);
+        } catch (err) {
+          // Reseta o input para liberar nova seleção mesmo se for o mesmo arquivo
+          const fileInput = document.getElementById('importFileInput');
+          if (fileInput) fileInput.value = '';
+
+          if (isEncryptionOrLabelError(err)) {
+            showSensitivityError(file.name, err.message);
+            showToast('⚠️ Planilha Bloqueada: O arquivo precisa estar com rótulo PÚBLICO no Excel. Veja as orientações na tela.', 'error', 8000);
+          } else {
+            showToast('Falha ao processar a planilha: ' + err.message, 'error');
+          }
+        }
+      };
+
+      reader.readAsArrayBuffer(file);
+    }
+
+    function cleanNorm(str) {
+      return String(str || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '');
+    }
+
+    async function processParsedRows(rawRows, fileName) {
+      hideSensitivityError();
+      if (!rawRows || rawRows.length === 0) {
+        showToast('Nenhum registro encontrado no arquivo selecionado.', 'error');
+        return;
+      }
+
+      const normalizedList = [];
+      const colMap = {};
+      const sampleRow = rawRows[0];
+      const fileHeaders = Object.keys(sampleRow);
+
+      // Mapeamento robusto e inequívoco dos cabeçalhos do arquivo para as colunas oficiais
+      const claimedKeys = new Set();
+
+      // Passo 1: Correspondência Exata por key ou label normalizado (com remoção de acentos)
+      fileHeaders.forEach(fh => {
+        const norm = cleanNorm(fh);
+        STATE.columns.forEach(col => {
+          if (claimedKeys.has(col.key)) return;
+          const colNorm = cleanNorm(col.key);
+          const labelNorm = cleanNorm(col.label);
+          if (norm === colNorm || norm === labelNorm) {
+            colMap[fh] = col.key;
+            claimedKeys.add(col.key);
+          }
+        });
+      });
+
+      // Passo 2: Dicionário de Sinônimos/Aliases Exatos para cabeçalhos comuns
+      const aliases = {
+        'ano': 'ano',
+        'year': 'ano',
+        'mes': 'mes',
+        'month': 'mes',
+        'data': 'data',
+        'mesano': 'data',
+        'competencia': 'data',
+        'grupodeclientes': 'grupo_de_clientes',
+        'grupocliente': 'grupo_de_clientes',
+        'grupoclientes': 'grupo_de_clientes',
+        'codgrcliente': 'cod_gr_cliente',
+        'codcliente': 'cod_gr_cliente',
+        'diretor': 'diretor',
+        'gerente': 'gerente',
+        'canal': 'canal',
+        'subcanal': 'sub_canal',
+        'setor': 'setor',
+        'categoria': 'categoria',
+        'subcategoria': 'sub_categoria',
+        'unidadedemedida': 'unidade_de_medida',
+        'unidademedida': 'unidade_de_medida',
+        'unidade': 'unidade_de_medida',
+        'um': 'unidade_de_medida',
+        'receitavolume': 'receita_volume',
+        'receita': 'receita_volume',
+        'volume': 'receita_volume',
+        'bgt': 'bgt',
+        'budget': 'bgt',
+        'fcst': 'fcst',
+        'forecast': 'fcst',
+        'landing': 'landing',
+        'fechamento': 'landing',
+        'difbgt': 'dif_bgt',
+        'variacaobgt': 'dif_bgt',
+        'diffcst': 'dif_fcst',
+        'variacaofcst': 'dif_fcst',
+        'realizado': 'realizado',
+        'comentarios': 'comentarios',
+        'comentario': 'comentarios',
+        'justificativa': 'comentarios'
+      };
+
+      fileHeaders.forEach(fh => {
+        if (colMap[fh]) return;
+        const norm = cleanNorm(fh);
+        const target = aliases[norm];
+        if (target && !claimedKeys.has(target)) {
+          colMap[fh] = target;
+          claimedKeys.add(target);
+        }
+      });
+
+      // Validação obrigatória da nova coluna Unidade de Medida
+      if (!claimedKeys.has('unidade_de_medida')) {
+        showToast('A coluna obrigatória "Unidade de Medida" não foi encontrada na planilha importada. Por favor, utilize o novo modelo oficial com as 20 colunas.', 'error');
+        const pPanel = document.getElementById('previewPanel');
+        if (pPanel) pPanel.style.display = 'none';
+        const btnSave = document.getElementById('btnConfirmSave');
+        if (btnSave) btnSave.disabled = true;
+        return;
+      }
+
+      rawRows.forEach(r => {
+        const item = {};
+        STATE.columns.forEach(c => { item[c.key] = ''; });
+
+        Object.keys(r).forEach(k => {
+          const targetKey = colMap[k];
+          if (targetKey) {
+            let v = r[k];
+            if (v instanceof Date) {
+              v = v.toISOString().slice(0, 10);
+            }
+            item[targetKey] = String(v !== undefined && v !== null ? v : '').trim();
+          }
+        });
+
+        // 1. Ignora linhas de rodapé/totalizador ("Total", "TOTAL", etc.)
+        if (item.ano && String(item.ano).toLowerCase().trim() === 'total') {
+          return;
+        }
+
+        // 2. Limpeza de formatação numérica em identificadores
+        if (item.ano) item.ano = item.ano.split('.')[0].trim();
+        if (item.mes) item.mes = item.mes.split('.')[0].trim();
+        if (item.cod_gr_cliente) item.cod_gr_cliente = item.cod_gr_cliente.split('.')[0].trim();
+
+        // 3. Conversão inteligente: Converte Ano + Mês em Data (YYYY-MM-01) ou Data em Ano + Mês
+        if (item.ano && item.mes && !isNaN(Number(item.ano)) && !isNaN(Number(item.mes))) {
+          const mm = String(item.mes).padStart(2, '0');
+          item.data = `${item.ano}-${mm}-01`;
+        } else if (item.data && (!item.ano || !item.mes)) {
+          const dtParts = String(item.data).split('-');
+          if (dtParts.length >= 2) {
+            item.ano = dtParts[0];
+            item.mes = String(parseInt(dtParts[1], 10));
+          }
+        }
+
+        if (item.ano || item.data || item.grupo_de_clientes || item.sub_canal || item.landing || item.bgt) {
+          normalizedList.push(item);
+        }
+      });
+
+      if (normalizedList.length === 0) {
+        showToast('Nenhuma linha com dados válidos identificada. Verifique os cabeçalhos.', 'error');
+        return;
+      }
+
+      STATE.importedRows = normalizedList;
+
+      // Exibe painel de preview
+      document.getElementById('previewFileName').innerText = fileName;
+      document.getElementById('previewBadge').innerText = `${normalizedList.length} registros válidos`;
+      document.getElementById('previewDetails').innerHTML =
+        `Arquivo validado: <strong>${Object.values(colMap).length} de ${STATE.columns.length} colunas</strong> mapeadas com sucesso.`;
+      document.getElementById('previewPanel').style.display = 'block';
+      document.getElementById('btnConfirmSave').disabled = false;
+
+      // Executa auditoria automática da mesclagem contra a base atual
+      await updatePreviewStats();
+
+      showToast(`Planilha pronta! ${normalizedList.length} registros analisados.`, 'success');
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       AUDITORIA & PREVIEW DE MESCLAGEM INTELIGENTE
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    async function updatePreviewStats() {
+      if (!STATE.importedRows || STATE.importedRows.length === 0) return;
+
+      const container = document.getElementById('previewStatsContainer');
+      const warningEl = document.getElementById('previewWarning');
+
+      if (container) container.style.display = 'block';
+
+      try {
+        const res = await fetch(`/api/lookups/${STATE.currentTableKey}/preview_merge`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            rows: STATE.importedRows,
+            mode: 'merge'
+          })
+        });
+        const data = await res.json();
+        if (data.success && data.stats) {
+          STATE.previewStats = data.stats;
+          const s = data.stats;
+          document.getElementById('statIdentical').innerText = (s.inalterados || 0).toLocaleString('pt-BR');
+          document.getElementById('statModified').innerText = (s.atualizados || 0).toLocaleString('pt-BR');
+          document.getElementById('statNew').innerText = (s.novos || 0).toLocaleString('pt-BR');
+          document.getElementById('statFinal').innerText = (s.total_final || 0).toLocaleString('pt-BR');
+
+          if (warningEl) {
+            if (s.inalterados > 0 && s.atualizados === 0 && s.novos === 0) {
+              warningEl.innerHTML = `🛡️ <strong>${s.inalterados} registros idênticos</strong> detectados: nenhuma duplicação ocorrerá. A base permanecerá com <strong>${s.total_final}</strong> registros.`;
+              warningEl.style.display = 'block';
+            } else if (s.duplicatas_removidas_base > 0) {
+              warningEl.innerHTML = `✨ <strong>${s.duplicatas_removidas_base} duplicatas pré-existentes na base</strong> serão consolidadas automaticamente!`;
+              warningEl.style.display = 'block';
+            } else {
+              warningEl.style.display = 'none';
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Falha no preview de merge:', err);
+      }
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       CONFIRMAÇÃO & GRAVAÇÃO NO DATABRICKS
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function openSaveModal() {
+      if (!STATE.importedRows || STATE.importedRows.length === 0) return;
+
+      const fileName = document.getElementById('previewFileName').innerText;
+      const stats = STATE.previewStats || {};
+
+      document.getElementById('modalFileName').innerText = fileName;
+      document.getElementById('modalRowCount').innerText = STATE.importedRows.length.toLocaleString('pt-BR');
+      document.getElementById('modalMode').innerText = 'Mesclar Inteligente (Upsert)';
+
+      const statsBox = document.getElementById('modalStatsBox');
+      if (statsBox) {
+        statsBox.innerHTML = `
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.4rem;">
+            <span>• Idênticas (sem duplicar): <strong>${(stats.inalterados || 0).toLocaleString('pt-BR')}</strong></span>
+            <span style="color:#fbbf24;">• Modificadas: <strong>${(stats.atualizados || 0).toLocaleString('pt-BR')}</strong></span>
+            <span style="color:#34d399;">• Novas: <strong>${(stats.novos || 0).toLocaleString('pt-BR')}</strong></span>
+            <span style="color:#a78bfa;">• Base Resultante: <strong>${(stats.total_final || STATE.importedRows.length).toLocaleString('pt-BR')}</strong> reg.</span>
+          </div>
+        `;
+      }
+
+      document.getElementById('saveModal').classList.add('active');
+    }
+
+    function closeSaveModal() {
+      document.getElementById('saveModal').classList.remove('active');
+    }
+
+    async function executeSave() {
+      const btn = document.getElementById('btnExecuteSave');
+      btn.disabled = true;
+      btn.innerText = 'Gravando no Volume do Databricks...';
+
+      try {
+        // Envia as linhas importadas diretamente para o backend aplicar o Smart Merge (Upsert)
+        const res = await fetch(`/api/lookups/${STATE.currentTableKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            rows: STATE.importedRows,
+            mode: 'merge'
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          closeSaveModal();
+          const s = data.stats || {};
+          const msg = `Base atualizada! ${data.count} registros salvos no Databricks (${s.inalterados || 0} idênticos preservados, ${s.atualizados || 0} atualizados, ${s.novos || 0} novos).`;
+
+          showToast(msg, 'success');
+
+          // Limpa preview
+          STATE.importedRows = null;
+          STATE.previewStats = null;
+          document.getElementById('previewPanel').style.display = 'none';
+          document.getElementById('btnConfirmSave').disabled = true;
+          document.getElementById('importFileInput').value = '';
+
+          // Atualiza dados e resumo
+          await loadSummary();
+          await loadCurrentData();
+        } else {
+          showToast('Erro ao salvar: ' + (data.error || 'Erro desconhecido'), 'error');
+        }
+      } catch (err) {
+        showToast('Falha na comunicação com o servidor: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Confirmar e Gravar Agora';
+      }
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       TOASTS & TEMA (COMPATIBILIDADE TOTAL)
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function showToast(msg, type = 'info', duration = 4500) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `cd-toast cd-toast-${type}`;
+
+      let icon = 'ℹ️';
+      if (type === 'success') icon = '✓';
+      if (type === 'error') icon = '⚠️';
+
+      toast.innerHTML = `<span>${icon}</span> <span>${escapeHtml(msg)}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, duration);
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const atual = html.getAttribute('data-theme') || 'light';
+      const novo = atual === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', novo);
+      localStorage.setItem('theme_preference', novo);
+      localStorage.setItem('portal_theme', novo);
+    }
+
+    function inicializarTema() {
+      let salvo = localStorage.getItem('theme_preference') || localStorage.getItem('portal_theme');
+      if (!salvo || !localStorage.getItem('theme_initialized_light_v1')) {
+        salvo = 'light';
+        localStorage.setItem('theme_preference', 'light');
+        localStorage.setItem('portal_theme', 'light');
+        localStorage.setItem('theme_initialized_light_v1', 'true');
+      }
+      document.documentElement.setAttribute('data-theme', salvo);
+    }
+  </script>
+</body>
+</html>

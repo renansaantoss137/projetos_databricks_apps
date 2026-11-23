@@ -1,0 +1,33 @@
+command:
+  - "python"
+  - "app.py"
+
+env:
+  - name: MY_DATABRICKS_HOST
+    value: "adb-8674310331778219.19.azuredatabricks.net"
+  - name: MY_DATABRICKS_PATH
+    value: "/sql/1.0/warehouses/f4a2e26b8410f1e3"
+  - name: MY_DATABRICKS_TOKEN
+    value: ""
+  - name: DATABRICKS_CATALOG
+    value: "cat_dnabb_dv"
+  - name: DATABRICKS_SCHEMA
+    value: "opebrapodis_sz"
+
+user_api_scopes:
+  - sql
+
+# E-mail automático ao conceder acesso a distribuidor (opcional; sem SMTP_HOST o envio é ignorado).
+# Descomente e ajuste. A senha deve vir de um secret do app (resource "smtp-password"), nunca em texto.
+#  - name: SMTP_HOST
+#    value: "smtp.office365.com"
+#  - name: SMTP_PORT
+#    value: "587"
+#  - name: SMTP_USER
+#    value: "portal.distribuidores@grupobimbo.com"
+#  - name: SMTP_PASSWORD
+#    valueFrom: "smtp-password"
+#  - name: SMTP_FROM
+#    value: "portal.distribuidores@grupobimbo.com"
+#  - name: APP_PUBLIC_URL
+#    value: "https://portal-distribuidores-v2-8674310331778219.19.azure.databricksapps.com"

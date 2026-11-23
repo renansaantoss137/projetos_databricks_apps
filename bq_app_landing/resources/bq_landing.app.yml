@@ -1,0 +1,12 @@
+# Configuração de recurso Databricks App para deploy via Declarative Automation Bundles (DABs)
+resources:
+  apps:
+    bq_landing:
+      name: bq-landing-${bundle.target}
+      description: "Aplicação Web BQ Landing | Grupo Bimbo Brasil"
+      source_code_path: "../src/app"
+      permissions:
+        - group_name: GRP_BQ_VENDAS
+          level: CAN_USE
+        - group_name: DNA - GB Brasil Leaders
+          level: CAN_MANAGE

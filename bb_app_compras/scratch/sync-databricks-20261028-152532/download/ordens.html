@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão de Ordens | PORTAL COMPRAS</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <script src="i18n.js"></script>
+  <script src="filters-shared.js"></script>
+  <script src="filters-component.js"></script>
+  <script src="app-menu.js"></script>
+  <script src="view-scale.js"></script>
+  <script src="mobile-nav.js"></script>
+  <style>
+    body.fr-page { background:var(--fr-bg); color:var(--fr-txt); }
+    .fr-content { max-width:1600px; margin:0 auto; padding:1.5rem 1.75rem 4rem; }
+
+    /* KPI Row — Standard Module 1 */
+    .fr-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:.8rem; margin-bottom:1.5rem; }
+    .fr-kpi-card {
+      background: linear-gradient(#282f3f,#232a38) padding-box, var(--kpi-border-grad) border-box;
+      border:1.5px solid transparent; border-radius:12px;
+      padding:.6rem .7rem .5rem; position:relative; overflow:hidden;
+      box-shadow:0 2px 16px rgba(0,0,0,.4), 0 0 0 0 var(--kpi-glow);
+      transition:transform .2s,box-shadow .25s;
+      display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-start; gap:.1rem; min-height:100px;
+      --kpi-border-grad: linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.04));
+      --kpi-glow: rgba(255,255,255,0);
+    }
+    .fr-kpi-card:hover { transform:translateY(-3px); box-shadow:0 6px 28px rgba(0,0,0,.5), 0 0 18px 2px var(--kpi-glow); }
+    .k-green { --kpi-border-grad: linear-gradient(135deg,#059669,#34d399,#047857); --kpi-glow: rgba(16,185,129,.4); }
+    .k-blue  { --kpi-border-grad: linear-gradient(135deg,#1d4ed8,#60a5fa,#1e40af); --kpi-glow: rgba(59,130,246,.3); }
+    .k-amber { --kpi-border-grad: linear-gradient(135deg,#d97706,#fbbf24,#b45309); --kpi-glow: rgba(245,158,11,.4); }
+    .k-red   { --kpi-border-grad: linear-gradient(135deg,#dc2626,#f87171,#b91c1c); --kpi-glow: rgba(239,68,68,.35); }
+    .k-purple{ --kpi-border-grad: linear-gradient(135deg,#7c3aed,#a78bfa,#6d28d9); --kpi-glow: rgba(139,92,246,.35); }
+    .kpi-head { display:flex; flex-direction:column; align-items:flex-start; width:100%; gap:4px; }
+    .kpi-badge { width:22px; height:22px; border-radius:6px; background:rgba(255,255,255,.07); display:flex; align-items:center; justify-content:center; position:absolute; right:10px; top:10px; }
+    .kpi-badge svg { width:12px; height:12px; }
+    .fr-kpi-lbl { font-size:.58rem; text-transform:uppercase; letter-spacing:.07em; font-weight:800; color:#ffffff; }
+    .kpi-val-row { display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; min-height:44px; margin:.05rem 0; text-align:center; }
+    .kpi-val-row .fr-kpi-val.big { text-align:center; font-size:clamp(1rem, 2.5vw, 1.35rem); font-weight:900; color:#E8F4FD; font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+    .kpi-month-delta { font-size:.54rem; font-weight:700; display:flex; align-items:center; justify-content:center; gap:2px; width:100%; color:rgba(168,204,223,.72); margin-top:auto; }
+    .kpi-month-delta.up { color:#22c55e; } .kpi-month-delta.down { color:#ef4444; }
+
+    /* Grid layouts */
+    .row-2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem; }
+    .card { background:var(--fr-surface,#282f3f); border:1px solid var(--fr-border,rgba(100,116,139,.2)); border-radius:12px; padding:1rem 1.3rem; box-shadow:0 2px 12px rgba(0,0,0,.25); display:flex; flex-direction:column; }
+    .card-title { font-size:.78rem; font-weight:800; color:#E8F4FD; margin-bottom:.1rem; }
+    .card-subtitle { font-size:.6rem; color:rgba(168,204,223,.7); margin-bottom:.8rem; }
+    .chart-body { position:relative; flex:1; min-height:0; }
+    .chart-body canvas { position:absolute; inset:0; width:100%!important; height:100%!important; }
+
+    /* Previsto x Realizado - HTML bars */
+    .pvr-list { display:flex; flex-direction:column; gap:.3rem; flex:1; }
+    .pvr-header { display:grid; grid-template-columns:38px 1fr 62px 1fr 62px; gap:6px; margin-bottom:.4rem; padding-bottom:.3rem; border-bottom:1px solid rgba(100,116,139,.15); }
+    .pvr-header span { font-size:.52rem; text-transform:uppercase; letter-spacing:.04em; color:rgba(168,204,223,.6); font-weight:700; }
+    .pvr-row { display:grid; grid-template-columns:38px 1fr 62px 1fr 62px; align-items:center; gap:6px; }
+    .pvr-month { font-size:.68rem; font-weight:700; color:#E8F4FD; }
+    .pvr-track { height:18px; background:rgba(100,116,139,.1); border-radius:3px; overflow:hidden; }
+    .pvr-fill-prev { height:100%; border-radius:3px; background:linear-gradient(90deg,#1e40af,#2563eb); }
+    .pvr-fill-real { height:100%; border-radius:3px; background:linear-gradient(90deg,#3b82f6,#93c5fd); }
+    .pvr-val { font-size:.6rem; font-weight:700; color:#E8F4FD; text-align:right; font-variant-numeric:tabular-nums; }
+    .pvr-legend { display:flex; gap:1.2rem; margin-top:.6rem; padding-top:.5rem; border-top:1px solid rgba(100,116,139,.15); }
+    .pvr-legend-item { font-size:.6rem; color:rgba(168,204,223,.8); display:flex; align-items:center; gap:5px; font-weight:600; }
+    .pvr-legend-dot { width:10px; height:10px; border-radius:2px; }
+
+    /* Overdue supplier bars */
+    .overdue-list { display:flex; flex-direction:column; gap:.3rem; flex:1; }
+    .overdue-row { display:grid; grid-template-columns:110px 1fr 65px 50px; align-items:center; gap:6px; }
+    .overdue-lbl { font-size:.65rem; font-weight:600; color:#E8F4FD; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .overdue-track { height:18px; background:rgba(100,116,139,.1); border-radius:3px; overflow:hidden; position:relative; }
+    .overdue-qty { position:absolute; left:6px; top:50%; transform:translateY(-50%); font-size:.52rem; font-weight:800; color:#fff; z-index:1; text-shadow:0 1px 2px rgba(0,0,0,.5); }
+    .overdue-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,#1e40af,#3b82f6); }
+    .overdue-val { font-size:.6rem; font-weight:700; color:#E8F4FD; text-align:right; }
+    .overdue-days { font-size:.6rem; font-weight:800; color:#f87171; text-align:center; }
+    .overdue-header { display:grid; grid-template-columns:110px 1fr 65px 50px; gap:6px; margin-bottom:.4rem; padding-bottom:.3rem; border-bottom:1px solid rgba(100,116,139,.15); }
+    .overdue-header span { font-size:.52rem; text-transform:uppercase; letter-spacing:.04em; color:rgba(168,204,223,.6); font-weight:700; }
+
+    /* Alert banner */
+    .alert-banner { background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.25); border-radius:10px; padding:.7rem 1.2rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:.6rem; }
+    .alert-banner-icon { width:20px; height:20px; flex-shrink:0; }
+    .alert-banner-text { font-size:.78rem; font-weight:700; color:#f87171; }
+
+    /* Delay buckets */
+    .bucket-list { display:flex; flex-direction:column; gap:.7rem; flex:1; justify-content:flex-end; }
+    .bucket-row { display:grid; grid-template-columns:100px 1fr 70px 45px; align-items:center; gap:8px; }
+    .bucket-label { font-size:.68rem; font-weight:700; color:#E8F4FD; }
+    .bucket-track { height:38px; background:rgba(100,116,139,.08); border-radius:5px; overflow:hidden; position:relative; }
+    .bucket-qty { position:absolute; left:8px; top:50%; transform:translateY(-50%); font-size:.6rem; font-weight:800; color:#fff; z-index:1; text-shadow:0 1px 2px rgba(0,0,0,.4); }
+    .bucket-fill { height:100%; border-radius:5px; transition:width .5s; }
+    .bucket-fill.green { background:linear-gradient(90deg,#16a34a,#22c55e); }
+    .bucket-fill.yellow { background:linear-gradient(90deg,#ca8a04,#eab308); }
+    .bucket-fill.orange { background:linear-gradient(90deg,#d97706,#f59e0b); }
+    .bucket-fill.red { background:linear-gradient(90deg,#dc2626,#ef4444); }
+    .bucket-fill.darkred { background:linear-gradient(90deg,#7f1d1d,#991b1b); }
+    .bucket-fill.crimson { background:linear-gradient(90deg,#450a0a,#7f1d1d); }
+    .bucket-val { font-size:.6rem; font-weight:700; color:#E8F4FD; text-align:right; }
+    .bucket-pct { font-size:.56rem; font-weight:700; color:rgba(168,204,223,.7); text-align:right; }
+    .attention-box { background:rgba(239,68,68,.06); border:1px solid rgba(239,68,68,.2); border-radius:10px; padding:.8rem 1rem; margin-top:.8rem; text-align:center; }
+    .attention-title { font-size:.72rem; font-weight:900; color:#f87171; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.5rem; }
+    .attention-value { font-size:.82rem; font-weight:600; color:#E8F4FD; line-height:1.7; }
+    .attention-desc { font-size:.6rem; color:rgba(168,204,223,.7); margin-top:.2rem; }
+
+    /* Table */
+    .orders-tbl { width:100%; border-collapse:collapse; table-layout:fixed; }
+    .orders-tbl col:nth-child(1){width:110px;} .orders-tbl col:nth-child(2){width:140px;} .orders-tbl col:nth-child(3){width:115px;} .orders-tbl col:nth-child(4){width:130px;} .orders-tbl col:nth-child(5){width:120px;} .orders-tbl col:nth-child(6){width:130px;}
+    .orders-tbl th { font-size:.6rem; text-transform:uppercase; letter-spacing:.04em; color:rgba(168,204,223,.6); font-weight:700; text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--fr-border,rgba(100,116,139,.2)); cursor:pointer; user-select:none; white-space:nowrap; position:sticky; top:0; background:var(--fr-surface,#282f3f); z-index:2; position:relative; }
+    .orders-tbl th:hover { color:#60a5fa; }
+    .orders-tbl th .sort-arrow { font-size:.55rem; margin-left:3px; opacity:.5; }
+    .orders-tbl th.sorted .sort-arrow { opacity:1; color:#60a5fa; }
+    .orders-tbl th .col-resizer { position:absolute; right:0; top:0; bottom:0; width:5px; cursor:col-resize; background:transparent; z-index:5; }
+    .orders-tbl th .col-resizer:hover, .orders-tbl th .col-resizer.active { background:rgba(59,130,246,.5); }
+    .orders-tbl td { font-size:.72rem; color:#E8F4FD; padding:.5rem .6rem; border-bottom:1px solid rgba(100,116,139,.08); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .orders-tbl td:nth-child(4) { font-weight:700; font-variant-numeric:tabular-nums; }
+    .days-badge { font-weight:800; padding:2px 8px; border-radius:4px; font-size:.7rem; }
+    .tbl-scroll { overflow-y:auto; overflow-x:auto; flex:1; min-height:0; max-height:380px; }
+    .tbl-scroll::-webkit-scrollbar { width:5px; }
+    .tbl-scroll::-webkit-scrollbar-track { background:rgba(100,116,139,.08); border-radius:4px; }
+    .tbl-scroll::-webkit-scrollbar-thumb { background:rgba(100,116,139,.3); border-radius:4px; }
+    .tbl-header-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:.6rem; }
+    .btn-export { display:inline-flex; align-items:center; gap:5px; background:rgba(59,130,246,.12); border:1px solid rgba(59,130,246,.3); color:#60a5fa; font-size:.62rem; font-weight:700; padding:.35rem .7rem; border-radius:6px; cursor:pointer; transition:all .2s; }
+    .btn-export:hover { background:rgba(59,130,246,.22); border-color:#3b82f6; }
+    .btn-export svg { width:12px; height:12px; }
+
+    /* Filter bar */
+    .filter-bar { background:var(--fr-surface,#282f3f); border:1px solid var(--fr-border); border-radius:12px; padding:.8rem 1.2rem; margin-bottom:1.5rem; display:flex; flex-wrap:wrap; gap:.7rem; align-items:flex-end; }
+    .fg { display:flex; flex-direction:column; gap:3px; min-width:100px; }
+    .fg label { font-size:.56rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:rgba(168,204,223,.7); }
+    .fg select { background:#282f3f; border:1px solid rgba(100,116,139,.35); border-radius:7px; padding:.35rem .6rem; font-size:.75rem; color:#E8F4FD; font-family:inherit; }
+    .ms-dropdown{position:relative;min-width:90px;}
+    .ms-trigger{display:flex;align-items:center;justify-content:space-between;background:#282f3f;border:1px solid rgba(100,116,139,.35);border-radius:7px;padding:.35rem .6rem;cursor:pointer;font-size:.72rem;color:#E8F4FD;gap:4px;}
+    .ms-arrow{font-size:.5rem;opacity:.5;}
+    .ms-badge{background:#1d4ed8;color:#fff;border-radius:4px;padding:0 4px;font-size:.55rem;margin-left:3px;}
+    .ms-panel{display:none;position:absolute;top:calc(100%+4px);left:0;min-width:160px;max-height:220px;background:var(--fr-surface,#1e2533);border:1px solid var(--fr-border);border-radius:8px;z-index:999;flex-direction:column;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+    .ms-panel.open{display:flex;}
+    .ms-search{margin:6px;padding:5px 8px;border-radius:5px;border:1px solid var(--fr-border);background:#282f3f;color:#E8F4FD;font-size:.7rem;}
+    .ms-actions{display:flex;gap:8px;padding:0 8px 4px;font-size:.6rem;}
+    .ms-actions a{color:#60a5fa;cursor:pointer;font-weight:600;}
+    .ms-options{overflow-y:auto;max-height:300px;padding:0 6px 6px;}
+    .ms-option{display:flex;align-items:center;gap:6px;padding:3px 4px;border-radius:4px;cursor:pointer;font-size:.68rem;color:#E8F4FD;}
+    .ms-option:hover{background:rgba(96,165,250,.08);}
+    .ms-option.hidden{display:none;}
+    .ms-option input[type=checkbox]{accent-color:#3b82f6;width:14px;height:14px;}
+
+    /* ── Light theme overrides ── */
+    [data-theme="light"] .filter-bar { background:#ffffff; border-color:rgba(38,53,118,.12); }
+    [data-theme="light"] .fg label { color:#374151; }
+    [data-theme="light"] .ms-trigger { background:#f6f9fc; border-color:rgba(38,53,118,.18); color:#1e2433; }
+    [data-theme="light"] .ms-trigger:hover { border-color:rgba(38,53,118,.35); }
+    [data-theme="light"] .ms-arrow { color:#475569; }
+    [data-theme="light"] .ms-panel { background:#ffffff; border-color:rgba(38,53,118,.15); box-shadow:0 8px 24px rgba(0,0,0,.1); }
+    [data-theme="light"] .ms-search { background:#f6f9fc; border-color:rgba(38,53,118,.15); color:#1e2433; }
+    [data-theme="light"] .ms-option { color:#1e2433; }
+    [data-theme="light"] .ms-option:hover { background:rgba(59,130,246,.06); }
+    [data-theme="light"] .ms-actions a { color:#1d4ed8; }
+    [data-theme="light"] .card { background:#ffffff; border-color:rgba(38,53,118,.1); box-shadow:0 2px 8px rgba(0,0,0,.06); }
+    [data-theme="light"] .card-title { color:#1e2433; }
+    [data-theme="light"] .card-subtitle { color:#475569; }
+    [data-theme="light"] .pvr-month { color:#1e2433; }
+    [data-theme="light"] .pvr-val { color:#1e2433; }
+    [data-theme="light"] .pvr-header span { color:#475569; }
+    [data-theme="light"] .pvr-legend-item { color:#334155; }
+    [data-theme="light"] .overdue-lbl { color:#1e2433; }
+    [data-theme="light"] .overdue-val { color:#1e2433; }
+    [data-theme="light"] .overdue-header span { color:#475569; }
+    [data-theme="light"] .bucket-label { color:#1e2433; }
+    [data-theme="light"] .bucket-val { color:#1e2433; }
+    [data-theme="light"] .bucket-pct { color:#475569; }
+    [data-theme="light"] .attention-value { color:#1e2433; }
+    [data-theme="light"] .attention-desc { color:#475569; }
+    [data-theme="light"] .orders-tbl th { color:#475569; background:#f6f9fc; border-bottom-color:rgba(38,53,118,.15); }
+    [data-theme="light"] .orders-tbl td { color:#1e2433; border-bottom-color:rgba(38,53,118,.06); }
+    [data-theme="light"] .fr-kpi-card { background:linear-gradient(#ffffff,#f8fafc) padding-box, var(--kpi-border-grad) border-box; box-shadow:0 2px 8px rgba(0,0,0,.06), 0 0 0 0 var(--kpi-glow); }
+    [data-theme="light"] .fr-kpi-lbl { color:#334155; }
+    [data-theme="light"] .kpi-val-row .fr-kpi-val.big { color:#1e2433; }
+    [data-theme="light"] .kpi-month-delta { color:#475569; }
+    [data-theme="light"] .kpi-badge { background:rgba(0,0,0,.05); }
+    [data-theme="light"] .tbl-header-row .card-title { color:#1e2433; }
+
+    @media (max-width: 768px) {
+      .fr-content { padding: 1rem 0.75rem 5rem !important; }
+      .fr-kpi-row { grid-template-columns: 1fr !important; gap: .6rem !important; margin-bottom: 1rem !important; }
+      .row-2 { display: flex !important; flex-direction: column !important; width: 100% !important; gap: 1rem !important; }
+      .bucket-row { grid-template-columns: 80px 1fr 60px 35px !important; gap: 4px !important; }
+      .overdue-row { grid-template-columns: 90px 1fr 55px 40px !important; gap: 4px !important; }
+      .pvr-header, .pvr-row { grid-template-columns: 32px 1fr 50px 1fr 50px !important; gap: 4px !important; }
+    }
+    @media (min-width: 481px) and (max-width: 768px) {
+      .fr-kpi-row { grid-template-columns: repeat(2, 1fr) !important; }
+    }
+  </style>
+  <link rel="stylesheet" href="responsive.css">
+</head>
+<body class="fr-page">
+
+  <div class="sp-app-layout">
+    <!-- TRILHO VERTICAL À ESQUERDA (80px - A2) -->
+    <aside class="sp-sidebar" aria-label="Navegação principal">
+      <a href="index.html" class="sp-nav-item" title="Início">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <span>Início</span>
+      </a>
+      <a href="performance.html" class="sp-nav-item" title="Performance">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        <span>Performance</span>
+      </a>
+      <a href="spend.html" class="sp-nav-item" title="Gastos">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>Gastos</span>
+      </a>
+      <a href="ordens.html" class="sp-nav-item active" aria-current="page" title="Ordens">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4"/></svg>
+        <span>Ordens</span>
+      </a>
+      <a href="comercial.html" class="sp-nav-item" title="Comercial">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <span>Comercial</span>
+      </a>
+      <a href="governanca.html" class="sp-nav-item" title="Governança">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Governança</span>
+      </a>
+      <a href="relatorios.html" class="sp-nav-item" title="Relatórios">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        <span>Relatórios</span>
+      </a>
+    </aside>
+
+    <div class="sp-main">
+      <!-- CABEÇALHO UNIFICADO (64px - A8, A4) -->
+      <header class="dna-header">
+        <div class="dna-brand">
+          <div class="sp-header-info">
+            <span class="dna-brand-badge">PORTAL COMPRAS</span>
+            <span class="sp-mod-crumb">03</span>
+            <h1 class="sp-page-title">Gestão de Ordens</h1>
+          </div>
+        </div>
+        <div class="header-right">
+          <div id="app-menu-container"></div>
+        </div>
+      </header>
+
+      <!-- NAVEGAÇÃO MOBILE INFERIOR (<=640px - A2) -->
+      <nav class="dna-mobile-nav" aria-label="Navegação mobile">
+        <a href="index.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+          <span>Início</span>
+        </a>
+        <a href="performance.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          <span>Performance</span>
+        </a>
+        <a href="spend.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span>Gastos</span>
+        </a>
+        <a href="ordens.html" class="dna-mobile-nav-item active" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          <span>Ordens</span>
+        </a>
+        <a href="comercial.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+          <span>Comercial</span>
+        </a>
+      </nav>
+
+      <!-- LAYOUT COM PAINEL RETRÁTIL À DIREITA (A5) -->
+      <div class="layout" id="appLayout" data-filtros="recolhido">
+        <main class="conteudo">
+          <!-- Linha de resumo no topo com chips removíveis (F5) -->
+          <div class="fp-resumo" id="fpResumo">
+            <button class="btn btn-secundario" id="fpAbrirGaveta" type="button" aria-haspopup="dialog">Filtros</button>
+            <div class="fp-chips" id="fpChips" aria-label="Filtros aplicados"></div>
+            <button class="fp-btn-limpar" id="fpLimparTudo" type="button" hidden>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+              <span>Limpar tudo</span>
+            </button>
+          </div>
+
+          <div style="width:100%;font-size:.72rem;color:var(--text-muted);display:flex;align-items:center;gap:6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span>Período baseado na Data Prometida (dt_promessa) de Ordens de Compra em aberto</span>
+          </div>
+
+    <!-- KPI Row -->
+    <div class="fr-kpi-row">
+      <div class="fr-kpi-card k-blue">
+        <div class="kpi-head">
+          <span class="fr-kpi-lbl">Valor em Aberto</span>
+          <div class="kpi-badge" style="background:rgba(59,130,246,.15)"><svg viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        </div>
+        <div class="kpi-val-row"><span class="fr-kpi-val big" id="vOpen" style="color:#3b82f6">--</span></div>
+        <div class="kpi-month-delta" id="dOpen" style="flex-direction:column;gap:1px;"></div>
+      </div>
+      <div class="fr-kpi-card k-blue">
+        <div class="kpi-head">
+          <span class="fr-kpi-lbl">Pedidos em Aberto</span>
+          <div class="kpi-badge" style="background:rgba(59,130,246,.15)"><svg viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div>
+        </div>
+        <div class="kpi-val-row"><span class="fr-kpi-val big" id="vOpenQty" style="color:#3b82f6">--</span></div>
+        <div class="kpi-month-delta" id="dOpenQty"></div>
+      </div>
+      <div class="fr-kpi-card k-red">
+        <div class="kpi-head">
+          <span class="fr-kpi-lbl">Pedidos Atrasados</span>
+          <div class="kpi-badge" style="background:rgba(239,68,68,.12)"><svg viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        </div>
+        <div class="kpi-val-row"><span class="fr-kpi-val big" id="vLate" style="color:#f87171">--</span></div>
+        <div class="kpi-month-delta" id="dLate"></div>
+      </div>
+      <div class="fr-kpi-card k-amber">
+        <div class="kpi-head">
+          <span class="fr-kpi-lbl">Atraso Médio (Dias)</span>
+          <div class="kpi-badge" style="background:rgba(245,158,11,.15)"><svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        </div>
+        <div class="kpi-val-row"><span class="fr-kpi-val big" id="vAvgDelay" style="color:#fbbf24">--</span></div>
+        <div class="kpi-month-delta" id="dAvgDelay"></div>
+      </div>
+    </div>
+
+    <!-- Row 2: Previsto vs Realizado + Valor Atrasado por Fornecedor -->
+    <div class="row-2">
+      <div class="card">
+        <div class="card-title">Spend Previsto x Realizado por Mês</div>
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.4rem;">
+          <div style="display:flex;align-items:center;gap:4px;"><div style="width:10px;height:10px;border-radius:2px;background:#93c5fd;"></div><span class="i18n-text" style="font-size:.58rem;color:var(--fr-txt-soft,rgba(168,204,223,.7));font-weight:600;">Realizado (Recebido/Faturado)</span></div>
+          <div style="display:flex;align-items:center;gap:4px;"><div style="width:10px;height:10px;border-radius:2px;background:rgba(30,64,175,0.45);"></div><span class="i18n-text" style="font-size:.58rem;color:var(--fr-txt-soft,rgba(168,204,223,.7));font-weight:600;">A Realizar (Restante)</span></div>
+          <div style="display:flex;align-items:center;gap:4px;"><div style="width:10px;height:10px;border-radius:2px;background:#fbbf24;"></div><span class="i18n-text" style="font-size:.58rem;color:var(--fr-txt-soft,rgba(168,204,223,.7));font-weight:600;">% Realizado vs Previsto</span></div>
+        </div>
+        <div class="chart-body" style="min-height:280px"><canvas id="chartPlanned" style="height:280px!important"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title" id="ttlOverdue">Valor Atrasado por Fornecedor</div>
+        <div class="card-subtitle">Considera pedidos com data prometida vencida</div>
+        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.15rem;">
+          <div style="display:flex;align-items:center;gap:4px;"><div style="width:10px;height:10px;border-radius:2px;background:linear-gradient(90deg,#1e40af,#3b82f6)"></div><span class="i18n-text" style="font-size:.55rem;color:var(--fr-txt-soft,rgba(168,204,223,.7));font-weight:600;">Spend líquido atrasado</span></div>
+          <div style="display:flex;align-items:center;gap:4px;"><div style="background:#1e40af;border-radius:2px;padding:0 4px;font-size:.5rem;font-weight:800;color:#fff;line-height:1.4;">N</div><span class="i18n-text" style="font-size:.55rem;color:var(--fr-txt-soft,rgba(168,204,223,.7));font-weight:600;">Qtd pedidos</span></div>
+        </div>
+        <div class="overdue-header" style="margin-bottom:0;padding-bottom:.05rem;"><span></span><span>Qtd pedidos</span><span style="text-align:right">Valor (R$)</span><span style="text-align:center"><span class="i18n-text">Média dias</span><br><span class="i18n-text">atraso</span></span></div>
+        <div class="overdue-list" id="overdueList"></div>
+        <div style="font-size:.58rem;color:var(--fr-txt-soft,rgba(168,204,223,.6));margin-top:.6rem;padding-top:.5rem;border-top:1px solid rgba(100,116,139,.15)" id="overdueNote"></div>
+      </div>
+    </div>
+
+    <!-- Row 3: Faixa de Atraso + Tabela Prioritários -->
+    <div class="row-2" style="grid-template-columns:1fr 1fr;grid-template-rows:minmax(auto,auto);align-items:stretch">
+      <div class="card" style="overflow:hidden">
+        <div class="card-title">Pedidos em Aberto por Faixa de Atraso</div>
+        <div style="display:grid;grid-template-columns:100px 1fr 70px 45px;gap:8px;margin-bottom:0;padding-bottom:.05rem;border-bottom:1px solid rgba(100,116,139,.15);">
+          <span></span>
+          <span class="i18n-text" style="font-size:.52rem;text-transform:uppercase;letter-spacing:.04em;color:var(--fr-txt-soft,rgba(168,204,223,.6));font-weight:700;">Qtd pedidos</span>
+          <span class="i18n-text" style="font-size:.52rem;text-transform:uppercase;letter-spacing:.04em;color:var(--fr-txt-soft,rgba(168,204,223,.6));font-weight:700;text-align:right;">Valor (R$)</span>
+          <span style="font-size:.52rem;text-transform:uppercase;letter-spacing:.04em;color:var(--fr-txt-soft,rgba(168,204,223,.6));font-weight:700;text-align:right;">%</span>
+        </div>
+        <div class="bucket-list" id="bucketList"></div>
+        <div class="attention-box" id="attentionBox">
+          <div class="attention-title">ATENÇÃO</div>
+          <div class="attention-value" id="attVal" style="font-size:.82rem;line-height:1.6">--</div>
+          <div class="attention-desc" id="attDesc"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tbl-header-row">
+          <div class="card-title" style="margin-bottom:0">Pedidos em Aberto – Prioritários para Ação</div>
+          <button class="btn-xlsx" onclick="exportTable()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            XLSX
+          </button>
+        </div>
+        <div class="tbl-scroll">
+          <table class="orders-tbl" id="ordersTbl">
+            <colgroup><col><col><col><col><col><col></colgroup>
+            <thead><tr>
+              <th data-col="numero_oc" onclick="sortTable('numero_oc')">OC <span class="sort-arrow">▲▼</span><div class="col-resizer"></div></th>
+              <th data-col="fornecedor" onclick="sortTable('fornecedor')">Fornecedor <span class="sort-arrow">▲▼</span><div class="col-resizer"></div></th>
+              <th data-col="comprador" onclick="sortTable('comprador')">Comprador <span class="sort-arrow">▲▼</span><div class="col-resizer"></div></th>
+              <th data-col="open_value" onclick="sortTable('open_value')">R$ em Aberto <span class="sort-arrow">▲▼</span><div class="col-resizer"></div></th>
+              <th data-col="promised_date" onclick="sortTable('promised_date')">Dt Prometida <span class="sort-arrow">▲▼</span><div class="col-resizer"></div></th>
+              <th data-col="days_late" onclick="sortTable('days_late')" class="sorted">Atraso (dias) <span class="sort-arrow">▼</span></th>
+            </tr></thead>
+            <tbody id="tblBody"></tbody>
+          </table>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .2rem 0;border-top:1px solid rgba(100,116,139,.12);margin-top:.4rem;flex-shrink:0;">
+          <span style="font-size:.6rem;color:var(--fr-txt-soft,rgba(168,204,223,.6));font-weight:600;" id="tblPageInfo">--</span>
+          <div style="display:flex;gap:.4rem;">
+            <button onclick="tblPrevPage()" id="btnPrev" style="padding:.3rem .7rem;font-size:.65rem;font-weight:700;border-radius:6px;border:1px solid rgba(100,116,139,.3);background:rgba(100,116,139,.08);color:#94a3b8;cursor:pointer;">← Anterior</button>
+            <button onclick="tblNextPage()" id="btnNext" style="padding:.3rem .7rem;font-size:.65rem;font-weight:700;border-radius:6px;border:1px solid rgba(59,130,246,.4);background:rgba(59,130,246,.1);color:#60a5fa;cursor:pointer;">Próxima →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+        </main>
+
+        <!-- PAINEL LATERAL DE FILTROS RETRÁTIL À DIREITA (F1 a F11) -->
+        <aside class="fp-lateral" id="fpLateral" aria-label="Filtros">
+          <!-- Trilho recolhido (48px) -->
+          <button class="fp-trilho" id="fpExpandir" type="button" aria-expanded="false" aria-controls="fpAberto">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+            <span class="contador" id="fpTrilhoContador" hidden></span>
+            <span class="vertical" id="fpTrilhoTexto">FILTROS</span>
+          </button>
+
+          <!-- Painel aberto (320px) -->
+          <div class="fp-aberto" id="fpAberto">
+            <div class="fp-topo">
+              <h2>
+                <span id="fpTituloLateral">Filtros</span>
+                <span class="contador" id="fpLateralContador" hidden></span>
+              </h2>
+              <button class="btn-icone" id="fpRecolher" type="button" aria-expanded="true" aria-controls="fpAberto">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+              </button>
+            </div>
+            <div class="fp-corpo" id="fpCorpoLateral"></div>
+            <div class="fp-rodape">
+              <button class="btn btn-secundario" id="fpLimpar" type="button">Limpar</button>
+              <button class="btn btn-primario" id="fpAplicar" type="button" disabled>Aplicar</button>
+            </div>
+          </div>
+        </aside>
+      </div><!-- /.layout -->
+
+    </div><!-- /.sp-main -->
+  </div><!-- /.sp-app-layout -->
+
+  <!-- GAVETA MODAL PARA CELULAR E TABLET (F10) -->
+  <dialog class="fp-gaveta" id="fpGaveta" aria-labelledby="fpTituloGaveta">
+    <div class="fp-topo">
+      <h2 id="fpTituloGaveta">Filtros</h2>
+      <button class="btn-icone" id="fpFecharGaveta" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="fp-corpo" id="fpCorpoGaveta"></div>
+    <div class="fp-rodape">
+      <button class="btn btn-secundario" id="fpGavetaLimpar" type="button">Limpar</button>
+      <button class="btn btn-primario" id="fpGavetaAplicar" type="button">Aplicar</button>
+    </div>
+  </dialog>
+
+<script>
+let cPlanned;
+function fmt(v,t='currency'){if(v==null||isNaN(v))return'--';const a=Math.abs(v);if(t==='currency'){if(a>=1e9)return'R$ '+(v/1e9).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' Bi';if(a>=1e6)return'R$ '+(v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' mi';if(a>=1e3)return'R$ '+(v/1e3).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' mil';return'R$ '+v.toLocaleString('pt-BR',{maximumFractionDigits:0});}return v.toLocaleString('pt-BR');}
+
+// MultiSelect and filters provided by filters-shared.js
+// Use ordens_compra cascading endpoint
+_cascadeEndpoint = '/api/filters/cascading-ordens';
+// i18n: override fmt with localized version
+if (typeof fmtI18n !== 'undefined') fmt = fmtI18n;
+document.addEventListener('langChange', function() { if (typeof loadAll === 'function') loadAll(); });
+
+function _soft(){ return document.documentElement.getAttribute('data-theme')==='light' ? '#475569' : 'rgba(168,204,223,.55)'; }
+async function loadKPIs(){
+  const d=(await fetch('/api/orders/kpis?'+getFilters()).then(r=>r.json()))[0]||{};
+  document.getElementById('vOpen').textContent = fmt(d.open_value);
+  document.getElementById('vOpenQty').textContent = d.open_pos!=null ? d.open_pos.toLocaleString('pt-BR') : '--';
+  document.getElementById('vLate').textContent = d.late_pos!=null ? d.late_pos.toLocaleString('pt-BR') : '--';
+  document.getElementById('vAvgDelay').textContent = d.avg_delay!=null ? Math.round(d.avg_delay) : '--';
+  const sc = _soft();
+  // Late value + % in Valor em Aberto card
+  if(d.late_value!=null && d.open_value) {
+    const latePct = (d.late_value / d.open_value * 100).toFixed(0);
+    document.getElementById('dOpen').innerHTML=`<span style="font-size:.56rem;font-weight:700;color:#f87171">${fmt(d.late_value)} ${t('em atraso')}</span><span style="font-size:.5rem;color:${sc}">(${latePct}% ${t('do valor em aberto')})</span>`;
+  }
+  // Late % of total open (pedidos)
+  if(d.late_pos!=null && d.open_pos) { const latePct = (d.late_pos / d.open_pos * 100).toFixed(1); document.getElementById('dLate').innerHTML=`<span style="font-size:.6rem;font-weight:700;color:#f87171">${latePct}%</span> <span style="font-size:.5rem;color:${sc}">${t('do total em aberto')}</span>`; }
+}
+
+async function loadPlanned(){
+  const data = await fetch(`/api/orders/planned-vs-realized?${getFilters()}`).then(r=>r.json());
+  const labels = data.map(d => {
+    if(!d.mes) return '';
+    const parts = d.mes.split('-');
+    const mNames = typeof getMonths !== 'undefined' ? getMonths() : ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    return mNames[parseInt(parts[1]||parts[0])-1] || d.mes.substring(5);
+  });
+  if(cPlanned) cPlanned.destroy();
+  const ctx = document.getElementById('chartPlanned').getContext('2d');
+  const h = ctx.canvas.parentElement.offsetHeight || 220;
+  const gPrev = ctx.createLinearGradient(0, 0, 0, h);
+  gPrev.addColorStop(0, '#2563eb'); gPrev.addColorStop(1, '#1e40af');
+  const gReal = ctx.createLinearGradient(0, 0, 0, h);
+  gReal.addColorStop(0, '#93c5fd'); gReal.addColorStop(1, '#3b82f6');
+  // Dados: Realizado (todas OCs) + A Realizar (OCs abertas: original - utilizado)
+  const restanteData = data.map(d => d.remaining || 0);
+  // % Realizado vs Total (Realizado + A Realizar)
+  const pctData = data.map(d => {
+    const total = (d.realized||0) + (d.remaining||0);
+    return total > 0 ? Math.round((d.realized / total) * 1000) / 10 : null;
+  });
+
+  cPlanned = new Chart(ctx,{
+    type:'bar',
+    plugins:[ChartDataLabels],
+    data:{ labels, datasets:[
+      {label:t('Realizado (Recebido/Faturado)'), data:data.map(d=>d.realized), backgroundColor:gReal, borderRadius:{topLeft:0, topRight:0, bottomLeft:6, bottomRight:6}, borderSkipped:false, barPercentage:.7, categoryPercentage:.75,
+        datalabels:{display:false}},
+      {label:t('A Realizar (Restante)'), data:restanteData, backgroundColor:'rgba(30,64,175,0.45)', borderRadius:{topLeft:6, topRight:6, bottomLeft:0, bottomRight:0}, borderSkipped:false, barPercentage:.7, categoryPercentage:.75,
+        datalabels:{
+          display: (ctx2) => pctData[ctx2.dataIndex] != null && pctData[ctx2.dataIndex] > 0,
+          formatter: (val, ctx2) => pctData[ctx2.dataIndex] != null ? pctData[ctx2.dataIndex] + '%' : '',
+          color: '#fbbf24',
+          anchor: 'end',
+          align: 'end',
+          offset: 2,
+          font: {size: 10, weight: '800'}
+        }},
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{backgroundColor:'#1e2433', borderColor:'rgba(100,116,139,.3)', borderWidth:1, titleColor:'#E8F4FD', bodyColor:'#E8F4FD', padding:12, cornerRadius:8, titleFont:{size:12,weight:'700'}, bodyFont:{size:11,weight:'600'}, callbacks:{label:item=> `  ${item.dataset.label}: ${fmt(item.raw)}`}},
+        datalabels:{}
+      },
+      scales:{
+        x:{stacked:true, grid:{display:false}, border:{display:false}, ticks:{color:getComputedStyle(document.documentElement).getPropertyValue('--fr-tick')||'rgba(168,204,223,.85)', font:{size:12, weight:'700'}, padding:10}},
+        y:{stacked:true, title:{display:false}, grid:{display:false}, border:{display:false}, ticks:{color:getComputedStyle(document.documentElement).getPropertyValue('--fr-tick')||'rgba(168,204,223,.7)', font:{size:9}, maxTicksLimit:5, callback:v=>fmt(v)}}
+      },
+      layout:{padding:{top:24, bottom:4, left:4, right:4}}
+    }
+  });
+}
+
+async function loadOverdue(){
+  const data = await fetch('/api/orders/overdue-by-supplier?'+getFilters()).then(r=>r.json());
+  const max = Math.max(...data.map(d=>d.open_value||0));
+  const total = data.reduce((s,d)=>s+(d.open_value||0),0);
+  const top5 = data.slice(0,5).reduce((s,d)=>s+(d.open_value||0),0);
+  document.getElementById('ttlOverdue').textContent = tt('Os 5 maiores fornecedores concentram {pct}% do valor atrasado', {pct: total?((top5/total)*100).toFixed(0):0});
+  document.getElementById('overdueNote').textContent = '';
+  document.getElementById('overdueList').innerHTML = data.slice(0,10).map((d, i) => {
+    const w = max ? ((d.open_value||0)/max*100) : 0;
+    const isTop = i < 5;
+    const barBg = isTop ? 'linear-gradient(90deg,#1e40af,#3b82f6)' : 'linear-gradient(90deg,rgba(100,116,139,.3),rgba(100,116,139,.2))';
+    const lblStyle = isTop ? 'color:var(--fr-txt,#E8F4FD)' : 'color:var(--fr-txt-soft,rgba(168,204,223,.45))';
+    const valStyle = isTop ? 'color:var(--fr-txt,#E8F4FD)' : 'color:var(--fr-txt-soft,rgba(168,204,223,.45))';
+    const daysColor = isTop ? 'color:#f87171' : 'color:var(--fr-txt-soft,rgba(168,204,223,.4))';
+    return `<div class="overdue-row"><span class="overdue-lbl" style="${lblStyle}">${(d.fornecedor||'').substring(0,18)}</span><div class="overdue-track"><div class="overdue-fill" style="width:${w}%;background:${barBg}"></div><span class="overdue-qty">${(d.qty||0).toLocaleString('pt-BR')}</span></div><span class="overdue-val" style="${valStyle}">${fmt(d.open_value)}</span><span class="overdue-days" style="${daysColor}">${d.avg_days_late||0}</span></div>`;
+  }).join('');
+}
+
+async function loadBuckets(){
+  const data = await fetch('/api/orders/delay-buckets?'+getFilters()).then(r=>r.json());
+  const order = [{b:'No prazo',d:t('No prazo'),c:'green'},{b:'1-30 dias',d:t('1-30 dias'),c:'yellow'},{b:'31-60 dias',d:t('31-60 dias'),c:'orange'},{b:'61-90 dias',d:t('61-90 dias'),c:'red'},{b:'91-120 dias',d:t('91-120 dias'),c:'darkred'},{b:'>120 dias',d:t('>120 dias'),c:'crimson'}];
+  const total = data.reduce((s,d)=>s+(d.valor||0),0);
+  const max = Math.max(...data.map(d=>d.valor||0));
+  let late90val = 0, late90qty = 0;
+  document.getElementById('bucketList').innerHTML = order.map(({b,d:dl,c}) => {
+    const row = data.find(d=>d.bucket===b) || {bucket:b, valor:0, qty:0};
+    const pct = total ? ((row.valor/total)*100).toFixed(1) : 0;
+    const w = max ? ((row.valor/max)*100) : 0;
+    if(b==='91-120 dias' || b==='>120 dias') { late90val += (row.valor||0); late90qty += (row.qty||0); }
+    return `<div class="bucket-row"><span class="bucket-label">${dl}</span><div class="bucket-track"><div class="bucket-fill ${c}" style="width:${w}%"></div><span class="bucket-qty">${(row.qty||0).toLocaleString(_getLocale())}</span></div><span class="bucket-val">${fmt(row.valor)}</span><span class="bucket-pct">${pct}%</span></div>`;
+  }).join('');
+
+  const attBox = document.getElementById('attentionBox');
+  if (late90qty > 0) {
+    if (attBox) {
+      attBox.style.background = 'rgba(239,68,68,.06)';
+      attBox.style.borderColor = 'rgba(239,68,68,.25)';
+      const attTitle = attBox.querySelector('.attention-title');
+      if (attTitle) { attTitle.textContent = 'ATENÇÃO'; attTitle.style.color = '#f87171'; }
+    }
+    document.getElementById('attVal').innerHTML = tt('Temos {qty} pedidos em aberto com mais de {days} dias de atraso, somando {val} entre eles.', {
+      qty: `<span style="color:#f87171;font-size:1.2rem;font-weight:900">${late90qty.toLocaleString(_getLocale())}</span>`,
+      days: `<span style="color:#fbbf24;font-weight:900">90</span>`,
+      val: `<span style="color:#f87171;font-size:1.2rem;font-weight:900">${fmt(late90val)}</span>`
+    });
+  } else {
+    if (attBox) {
+      attBox.style.background = 'var(--surface-alt)';
+      attBox.style.borderColor = 'var(--border)';
+      const attTitle = attBox.querySelector('.attention-title');
+      if (attTitle) { attTitle.textContent = 'STATUS REGULAR'; attTitle.style.color = 'var(--text-muted)'; }
+    }
+    document.getElementById('attVal').innerHTML = `<span style="color:var(--text-primary);font-size:0.85rem;font-weight:600">${t('Nenhum pedido em aberto com mais de 90 dias de atraso.')}</span>`;
+  }
+  document.getElementById('attDesc').textContent = '';
+  document.getElementById('subtPlanned').textContent = `${fmt(total-((data.find(d=>d.bucket==='No prazo')||{}).valor||0))} previstos ainda não foram recebidos no prazo.`;
+}
+
+let _tableData = [];
+let _sortedData = [];
+let _sortCol = 'days_late';
+let _sortDir = 'desc';
+let _currentPage = 1;
+const _pageSize = 20;
+let _ordersHeaderFilters = JSON.parse(localStorage.getItem('tbl_filter_ord_orders') || '{}');
+
+const _ORDERS_COLS = [
+  { key: 'numero_oc', label: 'OC' },
+  { key: 'fornecedor', label: 'Fornecedor' },
+  { key: 'comprador', label: 'Comprador' },
+  { key: 'open_value', label: 'R$ em Aberto' },
+  { key: 'promised_date', label: 'Dt Prometida' },
+  { key: 'days_late', label: 'Atraso (dias)' }
+];
+
+function getFilteredOrdersData() {
+  return TableColumnFilter.filterData(_tableData, _ordersHeaderFilters, (item, k) => {
+    if (k === 'numero_oc') return item.NUMERO_OC || item.numero_oc || '';
+    if (k === 'fornecedor') return item.FORNECEDOR || item.fornecedor || '';
+    if (k === 'open_value') return item.open_value;
+    if (k === 'days_late') return item.days_late;
+    return item[k];
+  });
+}
+
+function _buildOrdersHead() {
+  const thead = document.querySelector('#ordersTbl thead');
+  if (!thead) return;
+  thead.innerHTML = '<tr>' + _ORDERS_COLS.map(c => {
+    const isFiltered = !!(_ordersHeaderFilters[c.key] && _ordersHeaderFilters[c.key].val);
+    const thClass = (isFiltered ? 'th-filtered ' : '') + (_sortCol === c.key ? 'sorted' : '');
+    const arrow = _sortCol === c.key ? (_sortDir === 'desc' ? '\u25BC' : '\u25B2') : '\u25B2\u25BC';
+    const filterBtn = TableColumnFilter.renderBtn(c.key, c.label, isFiltered, `openOrdersFilter(event, '${c.key}', '${c.label.replace(/'/g, "\\'")}')`);
+    return `<th class="${thClass}" data-col="${c.key}" style="user-select:none;white-space:nowrap;padding:.4rem .6rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:4px;">
+        <span style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;flex:1;overflow:hidden;text-overflow:ellipsis;" onclick="sortTable('${c.key}')" title="Clique para ordenar">
+          <span>${t(c.label)}</span>
+          <span class="sort-arrow">${arrow}</span>
+        </span>
+        ${filterBtn}
+      </div>
+      <div class="col-resizer"></div>
+    </th>`;
+  }).join('') + '</tr>';
+}
+
+function openOrdersFilter(e, colKey, colLabel) {
+  TableColumnFilter.open(e, colKey, colLabel, _ordersHeaderFilters[colKey], (col, cfg) => {
+    if (cfg && cfg.val) { _ordersHeaderFilters[col] = cfg; }
+    else { delete _ordersHeaderFilters[col]; }
+    try { localStorage.setItem('tbl_filter_ord_orders', JSON.stringify(_ordersHeaderFilters)); } catch(e){}
+    _currentPage = 1;
+    applyOrdersSortAndFilter();
+  });
+}
+window.openOrdersFilter = openOrdersFilter;
+
+function applyOrdersSortAndFilter() {
+  const filtered = getFilteredOrdersData();
+  _sortedData = [...filtered].sort((a, b) => {
+    let va = a[_sortCol] || a[_sortCol.toUpperCase()] || '';
+    let vb = b[_sortCol] || b[_sortCol.toUpperCase()] || '';
+    if (_sortCol === 'numero_oc') { va = a.NUMERO_OC || a.numero_oc || ''; vb = b.NUMERO_OC || b.numero_oc || ''; }
+    if (_sortCol === 'fornecedor') { va = a.FORNECEDOR || a.fornecedor || ''; vb = b.FORNECEDOR || b.fornecedor || ''; }
+    if (typeof va === 'number' && typeof vb === 'number') return _sortDir === 'asc' ? va - vb : vb - va;
+    return _sortDir === 'asc' ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
+  });
+  _buildOrdersHead();
+  renderTablePage();
+}
+
+function _getTotalPages(){ return Math.max(1, Math.ceil(_sortedData.length / _pageSize)); }
+
+function renderTablePage() {
+  const start = (_currentPage - 1) * _pageSize;
+  const pageData = _sortedData.slice(start, start + _pageSize);
+  document.getElementById('tblBody').innerHTML = pageData.map(d => {
+    const delay = d.days_late || 0;
+    const color = delay <= 0 ? 'var(--text-muted)' : delay > 30 ? 'var(--danger)' : 'var(--warning)';
+    return `<tr><td>${d.NUMERO_OC||d.numero_oc||''}</td><td>${(d.FORNECEDOR||d.fornecedor||'').substring(0,22)}</td><td>${d.comprador||''}</td><td>${fmt(d.open_value)}</td><td>${d.promised_date||''}</td><td><span class="days-badge" style="color:${color}">${delay}</span></td></tr>`;
+  }).join('');
+  const total = _sortedData.length;
+  const totalPages = _getTotalPages();
+  document.getElementById('tblPageInfo').textContent = tt('{total} registros \u2014 Página {page} de {pages}', {total: total.toLocaleString('pt-BR'), page: _currentPage, pages: totalPages});
+  document.getElementById('btnPrev').disabled = _currentPage<=1;
+  document.getElementById('btnPrev').style.opacity = _currentPage<=1?'.4':'1';
+  document.getElementById('btnNext').disabled = _currentPage>=totalPages;
+  document.getElementById('btnNext').style.opacity = _currentPage>=totalPages?'.4':'1';
+}
+function tblPrevPage(){ if(_currentPage>1){_currentPage--;renderTablePage();}}
+function tblNextPage(){ if(_currentPage<_getTotalPages()){_currentPage++;renderTablePage();}}
+
+function renderTableRows(data) {
+  _tableData = data || [];
+  _currentPage = 1;
+  applyOrdersSortAndFilter();
+}
+
+function sortTable(col) {
+  if (_sortCol === col) { _sortDir = _sortDir === 'asc' ? 'desc' : 'asc'; }
+  else { _sortCol = col; _sortDir = (col === 'open_value' || col === 'days_late') ? 'desc' : 'asc'; }
+  _currentPage = 1;
+  applyOrdersSortAndFilter();
+}
+
+function exportTable() {
+  if (!_sortedData.length) return;
+  const wsData = [['OC', 'Fornecedor', 'Comprador', 'Valor em Aberto (R$)', 'Data Prometida', 'Dias de Atraso']];
+  _sortedData.forEach(d => {
+    wsData.push([
+      d.NUMERO_OC || d.numero_oc || '',
+      d.FORNECEDOR || d.fornecedor || '',
+      d.comprador || '',
+      d.open_value || 0,
+      d.promised_date || '',
+      d.days_late || 0
+    ]);
+  });
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  ws['!cols'] = [{wch:16},{wch:28},{wch:22},{wch:20},{wch:14},{wch:14}];
+  ws['!autofilter'] = {ref: XLSX.utils.encode_range({s:{r:0,c:0},e:{r:wsData.length-1,c:5}})};
+  XLSX.utils.book_append_sheet(wb, ws, 'Pedidos em Atraso');
+  XLSX.writeFile(wb, 'pedidos_em_atraso.xlsx');
+}
+
+async function loadTable(){
+  const r = await fetch('/api/orders/open-table?per_page=10000&'+getFilters()).then(r=>r.json());
+  _tableData = r.rows || [];
+  _sortCol = 'days_late'; _sortDir = 'desc';
+  _currentPage = 1;
+  applyOrdersSortAndFilter();
+}
+
+function toggleAdvFilters(){const b=document.getElementById('advFiltersBar'),btn=document.getElementById('btnAdvFilters');if(b&&b.style.display==='none'){b.style.display='flex';btn.style.borderColor='rgba(59,130,246,.45)';btn.style.color='#60a5fa';}else if(b){b.style.display='none';btn.style.borderColor='rgba(100,116,139,.35)';btn.style.color='#94a3b8';}}
+function loadAll(){ return Promise.allSettled([loadKPIs(), loadPlanned(), loadOverdue(), loadBuckets(), loadTable()]); }
+
+// ─── Column Resize ───
+(function(){
+  const tbl = document.getElementById('ordersTbl');
+  if(!tbl) return;
+  const cols = tbl.querySelectorAll('colgroup col');
+  tbl.querySelectorAll('.col-resizer').forEach((handle, idx) => {
+    let startX, startW;
+    handle.addEventListener('mousedown', e => {
+      e.stopPropagation(); e.preventDefault();
+      handle.classList.add('active');
+      startX = e.pageX;
+      startW = cols[idx].offsetWidth || handle.parentElement.offsetWidth;
+      const onMove = ev => { const diff = (ev.pageX - startX) / (window.dnaScale ? window.dnaScale() : 1); cols[idx].style.width = Math.max(40, startW + diff) + 'px'; };
+      const onUp = () => { handle.classList.remove('active'); document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
+  });
+})();
+function resetFilters(){
+  _filtersReady=false;
+  Object.values(filters).forEach(ms=>{
+    if (ms.key === 'is_fornecedor_nao_negociavel' || (ms.container && ms.container.id === 'fFornNegociavel')) {
+      ms.selected = new Set(['NEGOCIAVEL']);
+    } else {
+      ms.selected = new Set(ms.options);
+    }
+    ms.renderOptions();
+    ms.updateLabel();
+  });
+  // Default: empresa = BB, BQ
+  if(filters.fEmpresa){filters.fEmpresa.selected=new Set(['BB','BQ']);filters.fEmpresa.renderOptions();filters.fEmpresa.updateLabel();}
+  // Default: current year
+  const cy=String(new Date().getFullYear());if(filters.fAno&&filters.fAno.options.includes(cy)){filters.fAno.selected=new Set([cy]);filters.fAno.renderOptions();filters.fAno.updateLabel();}
+  // Default: all months
+  if(filters.fMes){filters.fMes.selected=new Set(filters.fMes.options);filters.fMes.renderOptions();filters.fMes.updateLabel();}
+  if(filters.fFornNegociavel){filters.fFornNegociavel.selected=new Set(['NEGOCIAVEL']);filters.fFornNegociavel.renderOptions();filters.fFornNegociavel.updateLabel();}if(filters.fFornSemOC){filters.fFornSemOC.selected=new Set(['COM ATUAÇÃO']);filters.fFornSemOC.renderOptions();filters.fFornSemOC.updateLabel();}
+  _filtersReady=true;
+  loadAll();
+}
+function toggleTheme(){const h=document.documentElement;const n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);localStorage.setItem('theme',n);loadAll();}
+const s=localStorage.getItem('theme');if(s)document.documentElement.setAttribute('data-theme',s);
+
+let filtersPanel = null;
+function initFilters(){
+  const cy = String(new Date().getFullYear());
+  const cm = String(new Date().getMonth() + 1);
+
+  const MESES_OPCOES = [
+    { v: '1', t: '01 - Jan' },
+    { v: '2', t: '02 - Fev' },
+    { v: '3', t: '03 - Mar' },
+    { v: '4', t: '04 - Abr' },
+    { v: '5', t: '05 - Mai' },
+    { v: '6', t: '06 - Jun' },
+    { v: '7', t: '07 - Jul' },
+    { v: '8', t: '08 - Ago' },
+    { v: '9', t: '09 - Set' },
+    { v: '10', t: '10 - Out' },
+    { v: '11', t: '11 - Nov' },
+    { v: '12', t: '12 - Dez' }
+  ];
+
+  const defs = [
+    { id: 'fEmpresa', key: 'empresa', rotulo: 'Empresa', tipo: 'multi', opcoes: ['BB','BQ'], padrao: ['BB','BQ'] },
+    { id: 'fAno', key: 'ano', rotulo: 'Ano', tipo: 'unico', opcoes: [cy, String(Number(cy)-1)], padrao: cy },
+    { id: 'fMes', key: 'mes', rotulo: 'Mês', tipo: 'multi', opcoes: MESES_OPCOES, padrao: [cm] },
+    { id: 'fGrupo', key: 'grupo_compras', rotulo: 'Direto/Indireto', tipo: 'multi', opcoes: [] },
+    { id: 'fFornecedor', key: 'fornecedor', rotulo: 'Fornecedor', tipo: 'multi', opcoes: [] },
+    { id: 'fComprador', key: 'comprador', rotulo: 'Comprador', tipo: 'multi', opcoes: [] },
+    { id: 'fMacroCategoria', key: 'macro_categoria', rotulo: 'Categoria', tipo: 'multi', opcoes: [] },
+    { id: 'fUnidade', key: 'unidade', rotulo: 'Unidade', tipo: 'multi', opcoes: [] },
+    { id: 'fCategoria', key: 'categoria_item', rotulo: 'Sub-categoria', tipo: 'multi', opcoes: [] },
+    { id: 'fTipoOC', key: 'tipo_oc', rotulo: 'Tipo OC', tipo: 'multi', opcoes: [] },
+    { id: 'fStatusFech', key: 'status_fechamento', rotulo: 'Status Fechamento', tipo: 'multi', opcoes: [] },
+    { id: 'fFornEspecial', key: 'is_fornecedor_especial', rotulo: 'Forn. Especial', tipo: 'multi', opcoes: ['ESPECIAL','NÃO ESPECIAL'] },
+    { id: 'fFornNegociavel', key: 'is_fornecedor_nao_negociavel', rotulo: 'Forn. Negociável', tipo: 'multi', opcoes: ['NEGOCIAVEL','NÃO NEGOCIAVEL'], padrao: ['NEGOCIAVEL'] },
+    { id: 'fFornSemOC', key: 'is_fornecedor_sem_oc', rotulo: 'Forn. sem OC', tipo: 'multi', opcoes: ['COM ATUAÇÃO', 'SEM OC'], padrao: ['COM ATUAÇÃO'] }
+  ];
+
+  filtersPanel = new DNAFiltersPanel({
+    layoutId: 'appLayout',
+    resumoId: 'fpResumo',
+    chipsId: 'fpChips',
+    limparTudoId: 'fpLimparTudo',
+    abrirGavetaId: 'fpAbrirGaveta',
+    lateralId: 'fpLateral',
+    trilhoId: 'fpExpandir',
+    trilhoContadorId: 'fpTrilhoContador',
+    trilhoTextoId: 'fpTrilhoTexto',
+    abertoId: 'fpAberto',
+    tituloLateralId: 'fpTituloLateral',
+    lateralContadorId: 'fpLateralContador',
+    recolherId: 'fpRecolher',
+    corpoLateralId: 'fpCorpoLateral',
+    limparId: 'fpLimpar',
+    aplicarId: 'fpAplicar',
+    gavetaId: 'fpGaveta',
+    tituloGavetaId: 'fpTituloGaveta',
+    fecharGavetaId: 'fpFecharGaveta',
+    corpoGavetaId: 'fpCorpoGaveta',
+    gavetaLimparId: 'fpGavetaLimpar',
+    gavetaAplicarId: 'fpGavetaAplicar',
+    estadoInicial: 'recolhido',
+    filtros: defs,
+    onApply: () => aplicarFiltros(loadAll)
+  });
+
+  _filtersReady = true;
+  aplicarFiltros(loadAll);
+
+  const fetchCasc = window.fetchCachedFilterData ? window.fetchCachedFilterData('/api/filters/cascading-ordens') : fetch('/api/filters/cascading-ordens').then(r=>r.json());
+  fetchCasc.then(data => {
+    if (!data || data.error) return;
+    const updates = [];
+    if (data.empresas && data.empresas.length) updates.push({ id: 'fEmpresa', opcoes: data.empresas });
+    if (data.anos && data.anos.length) updates.push({ id: 'fAno', opcoes: data.anos.map(String) });
+    if (data.grupos && data.grupos.length) updates.push({ id: 'fGrupo', opcoes: data.grupos });
+    if (data.fornecedores && data.fornecedores.length) updates.push({ id: 'fFornecedor', opcoes: data.fornecedores });
+    if (data.compradores && data.compradores.length) updates.push({ id: 'fComprador', opcoes: data.compradores });
+    if (data.macro_categorias && data.macro_categorias.length) updates.push({ id: 'fMacroCategoria', opcoes: data.macro_categorias });
+    if (data.unidades && data.unidades.length) updates.push({ id: 'fUnidade', opcoes: data.unidades });
+    if (data.categorias && data.categorias.length) updates.push({ id: 'fCategoria', opcoes: data.categorias });
+    if (data.tipo_oc && data.tipo_oc.length) updates.push({ id: 'fTipoOC', opcoes: data.tipo_oc });
+    if (data.status && data.status.length) updates.push({ id: 'fStatusFech', opcoes: data.status });
+    if (updates.length && filtersPanel) filtersPanel.updateDefinitions(updates);
+  }).catch(e => console.warn('Erro ao carregar /api/filters/cascading-ordens:', e));
+}
+window.addEventListener('themeChanged', () => {
+  if (typeof loadPlanned === 'function') loadPlanned();
+});
+initFilters();
+</script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso Negado — SPACE</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=20260814_11">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}?v=20260911_02">
+    <style>
+        .error-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 70px);
+            padding: 24px;
+            box-sizing: border-box;
+        }
+        .error-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color-card);
+            border-radius: var(--border-radius-section);
+            box-shadow: var(--shadow-soft);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            transition: var(--transition-smooth);
+        }
+        .error-icon-wrapper {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px auto;
+        }
+        .dark-theme .error-icon-wrapper {
+            background-color: rgba(239, 68, 68, 0.2);
+        }
+        .error-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--color-text-main);
+        }
+        .error-message {
+            font-size: 16px;
+            color: var(--color-text-muted);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        .user-info {
+            background-color: var(--bg-card-inner);
+            border-radius: var(--border-radius-card);
+            padding: 12px 16px;
+            font-size: 14px;
+            color: var(--color-text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color-section);
+        }
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: #0f3d6c;
+            color: #ffffff;
+            border: none;
+            border-radius: var(--border-radius-card);
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .btn-back:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        .dark-theme .btn-back {
+            background-color: #60a5fa;
+            color: #080710;
+        }
+    </style>
+</head>
+<body class="dark-theme">
+    <script>if (localStorage.getItem('theme') === 'light') document.body.classList.remove('dark-theme');</script>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <div class="logo-container">
+                <a href="/" class="logo-link">
+                    <img src="{{ url_for('static', filename='images/space-logo.png') }}" alt="SPACE" class="logo-img">
+                </a>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <button class="theme-toggle" id="theme-toggle-btn" aria-label="Alternar Tema">
+                <i data-lucide="moon" class="theme-icon-moon" style="display: none;"></i>
+                <i data-lucide="sun" class="theme-icon-sun"></i>
+            </button>
+            <div class="user-analytics-logo">
+                <span class="data-text">Data</span><span class="analytics-text">&Analytics</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENT -->
+    <div class="error-container">
+        <div class="error-card">
+            <div class="error-icon-wrapper">
+                <i data-lucide="shield-alert" style="width: 40px; height: 40px;"></i>
+            </div>
+            <h1 class="error-title">Acesso Restrito</h1>
+            <p class="error-message">
+                Você não possui permissão para acessar a área administrativa. Esta página é exclusiva para membros do grupo de administradores no Azure AD.
+            </p>
+            <div class="user-info">
+                <i data-lucide="user" style="width: 16px; height: 16px; color: var(--color-icon);"></i>
+                <span>Logado como: <strong>{{ user_email }}</strong></span>
+            </div>
+            <a href="/" class="btn-back">
+                <i data-lucide="arrow-left" style="width: 18px; height: 18px;"></i>
+                Voltar para o Início
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Theme Toggle Logic to match main page
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        const moonIcon = document.querySelector('.theme-icon-moon');
+        const sunIcon = document.querySelector('.theme-icon-sun');
+
+        // Check active theme (default to dark)
+        const savedTheme = localStorage.getItem('theme');
+        const isDark = savedTheme ? (savedTheme === 'dark') : true;
+        if (isDark) {
+            document.body.classList.add('dark-theme');
+            if (moonIcon) moonIcon.style.display = 'none';
+            if (sunIcon) sunIcon.style.display = 'inline-block';
+        } else {
+            document.body.classList.remove('dark-theme');
+            if (moonIcon) moonIcon.style.display = 'inline-block';
+            if (sunIcon) sunIcon.style.display = 'none';
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            let theme = 'light';
+            if (document.body.classList.contains('dark-theme')) {
+                theme = 'dark';
+                if (moonIcon) moonIcon.style.display = 'none';
+                if (sunIcon) sunIcon.style.display = 'inline-block';
+            } else {
+                if (moonIcon) moonIcon.style.display = 'inline-block';
+                if (sunIcon) sunIcon.style.display = 'none';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

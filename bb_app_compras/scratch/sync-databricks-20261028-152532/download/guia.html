@@ -1,0 +1,3209 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guia do Usuário | PORTAL COMPRAS</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="i18n.js"></script>
+  <script src="app-menu.js"></script>
+  <script src="view-scale.js"></script>
+  <script src="mobile-nav.js"></script>
+  <script src="filters-shared.js"></script>
+  <style>
+    body.fr-page {
+      background: var(--fr-bg);
+      color: var(--fr-txt);
+    }
+
+    .fr-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem 4rem;
+    }
+
+    /* ═══ TAB SWITCHER ═══ */
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      margin-bottom: 1.8rem;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1.5px solid var(--fr-border);
+      background: var(--fr-surface);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: .7rem 1.2rem;
+      font-size: .82rem;
+      font-weight: 700;
+      background: transparent;
+      border: none;
+      color: var(--fr-txt-soft);
+      cursor: pointer;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+    }
+
+    .tab-btn:hover {
+      background: rgba(59, 130, 246, .06);
+      color: var(--fr-txt);
+    }
+
+    .tab-btn.active {
+      background: rgba(29, 78, 216, .15);
+      color: #60a5fa;
+      border-bottom: 2px solid #3b82f6;
+    }
+
+    .tab-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    [data-theme="light"] .tab-btn.active {
+      background: rgba(29, 78, 216, .08);
+      color: #1d4ed8;
+    }
+
+    /* ═══ TECH DOC STYLES ═══ */
+    .tech-section {
+      margin-bottom: 2rem;
+    }
+
+    .tech-section h2 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--fr-txt);
+      border-bottom: 2px solid rgba(139, 92, 246, .3);
+      padding-bottom: .4rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .tech-section h2 .sec-num {
+      background: #7c3aed;
+      color: #fff;
+      font-size: .65rem;
+      font-weight: 800;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .tech-section h3 {
+      font-size: .85rem;
+      font-weight: 700;
+      color: var(--fr-txt);
+      margin: 1rem 0 .5rem;
+      padding-left: .5rem;
+      border-left: 3px solid #7c3aed;
+    }
+
+    .tech-section p,
+    .tech-section li {
+      font-size: .8rem;
+      color: var(--fr-txt-soft);
+      line-height: 1.7;
+      margin-bottom: .3rem;
+    }
+
+    .tech-section ul {
+      padding-left: 1.5rem;
+      margin-bottom: .8rem;
+    }
+
+    .tech-section strong {
+      color: var(--fr-txt);
+    }
+
+    .tech-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: .6rem 0 1rem;
+      font-size: .75rem;
+    }
+
+    .tech-table th {
+      text-align: left;
+      padding: .5rem .6rem;
+      font-size: .65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--fr-th-txt, #fff);
+      background: var(--fr-th-bg, #323a4e);
+    }
+
+    .tech-table th:first-child {
+      border-radius: 6px 0 0 0;
+    }
+
+    .tech-table th:last-child {
+      border-radius: 0 6px 0 0;
+    }
+
+    .tech-table td {
+      padding: .5rem .6rem;
+      color: var(--fr-txt-soft);
+      border-bottom: 1px solid var(--fr-border);
+    }
+
+    .tech-table td strong {
+      color: var(--fr-txt);
+    }
+
+    .tech-table code {
+      background: rgba(139, 92, 246, .1);
+      color: #a78bfa;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: .72rem;
+      font-family: 'Fira Code', monospace;
+    }
+
+    [data-theme="light"] .tech-table th {
+      background: #e8edf4 !important;
+      color: #1e293b !important;
+      border-bottom: 2px solid rgba(38, 53, 118, .15);
+    }
+
+    [data-theme="light"] .tech-table td {
+      color: #334155;
+      border-bottom: 1px solid rgba(38, 53, 118, .08);
+    }
+
+    [data-theme="light"] .tech-table td strong {
+      color: #0f172a;
+    }
+
+    [data-theme="light"] .tech-table code {
+      background: rgba(139, 92, 246, .08);
+      color: #6d28d9;
+    }
+
+    [data-theme="light"] .metric-module-card {
+      background: #ffffff;
+      border-color: rgba(38, 53, 118, .12);
+      box-shadow: 0 4px 16px rgba(38, 53, 118, .05);
+    }
+
+    [data-theme="light"] .metric-module-header {
+      background: linear-gradient(135deg, rgba(37, 99, 235, .06), rgba(124, 58, 237, .04));
+      border-bottom-color: rgba(38, 53, 118, .12);
+    }
+
+    .tech-alert {
+      background: rgba(251, 191, 36, .06);
+      border: 1px solid rgba(251, 191, 36, .2);
+      border-radius: 10px;
+      padding: .7rem 1rem;
+      margin: .6rem 0;
+      font-size: .78rem;
+      color: var(--fr-txt-soft);
+      display: flex;
+      align-items: flex-start;
+      gap: .5rem;
+    }
+
+    .tech-alert strong {
+      color: var(--fr-txt);
+    }
+
+    .tech-diagram {
+      background: rgba(139, 92, 246, .05);
+      border: 1px solid rgba(139, 92, 246, .15);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      margin: .8rem 0;
+      font-family: 'Fira Code', monospace;
+      font-size: .72rem;
+      color: var(--fr-txt-soft);
+      line-height: 1.8;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    /* ═══ MANUAL DE MÉTRICAS E FÓRMULAS POR ABA ═══ */
+    .metric-module-card {
+      background: var(--fr-surface);
+      border: 1px solid var(--fr-border);
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .06);
+    }
+
+    .metric-module-header {
+      padding: .9rem 1.3rem;
+      background: linear-gradient(135deg, rgba(59, 130, 246, .08), rgba(124, 58, 237, .06));
+      border-bottom: 1px solid var(--fr-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: .75rem;
+    }
+
+    .metric-module-title {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      font-size: .95rem;
+      font-weight: 800;
+      color: var(--fr-txt);
+      margin: 0;
+    }
+
+    .metric-module-badge {
+      font-size: .65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      padding: 3px 9px;
+      border-radius: 20px;
+      background: #7c3aed;
+      color: #fff;
+    }
+
+    .metric-module-body {
+      padding: 1.1rem 1.3rem;
+    }
+
+    .metric-quick-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-bottom: 1.5rem;
+      padding: .8rem 1rem;
+      background: var(--fr-surface);
+      border: 1px solid var(--fr-border);
+      border-radius: 10px;
+    }
+
+    .metric-nav-pill {
+      font-size: .75rem;
+      font-weight: 700;
+      color: var(--fr-txt-soft);
+      text-decoration: none;
+      padding: .35rem .75rem;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--fr-border);
+      transition: all .15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+    }
+
+    .metric-nav-pill:hover {
+      color: #60a5fa;
+      background: rgba(59, 130, 246, .1);
+      border-color: rgba(59, 130, 246, .3);
+      transform: translateY(-1px);
+    }
+
+    .badge-date-anchor {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: .7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 5px;
+      background: rgba(16, 185, 129, .12);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, .25);
+      white-space: nowrap;
+    }
+
+    .badge-date-oc {
+      background: rgba(59, 130, 246, .12);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, .25);
+    }
+
+    .badge-date-req {
+      background: rgba(245, 158, 11, .12);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, .25);
+    }
+
+    [data-theme="light"] .badge-date-anchor {
+      background: #ecfdf5;
+      color: #047857;
+      border-color: #a7f3d0;
+    }
+
+    [data-theme="light"] .badge-date-oc {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+    }
+
+    [data-theme="light"] .badge-date-req {
+      background: #fffbeb;
+      color: #b45309;
+      border-color: #fde68a;
+    }
+
+    .metric-formula-box {
+      font-family: 'Fira Code', monospace;
+      font-size: .72rem;
+      padding: 3px 6px;
+      background: rgba(0, 0, 0, .25);
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 5px;
+      color: #93c5fd;
+      display: inline-block;
+      max-width: 100%;
+      word-break: break-all;
+    }
+
+    [data-theme="light"] .metric-formula-box {
+      background: #f1f5f9;
+      color: #1e40af;
+      border-color: #cbd5e1;
+    }
+
+    .metric-tag {
+      display: inline-block;
+      font-size: .63rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 2px;
+    }
+
+    .tag-kpi { background: rgba(59, 130, 246, .15); color: #93c5fd; border: 1px solid rgba(59, 130, 246, .3); }
+    .tag-chart { background: rgba(139, 92, 246, .15); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, .3); }
+    .tag-table { background: rgba(16, 185, 129, .15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, .3); }
+    .tag-alert { background: rgba(239, 68, 68, .15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, .3); }
+
+    [data-theme="light"] .tag-kpi { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+    [data-theme="light"] .tag-chart { background: #f5f3ff; color: #6d28d9; border-color: #ddd6fe; }
+    [data-theme="light"] .tag-table { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+    [data-theme="light"] .tag-alert { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+
+    /* ═══ GUIDE SECTIONS (Consulta Rápida) ═══ */
+    .guide-section {
+      margin-bottom: 2rem;
+    }
+
+    .guide-section h2 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--fr-txt);
+      border-bottom: 2px solid rgba(59, 130, 246, .3);
+      padding-bottom: .4rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .guide-section h2 .sec-num {
+      background: #1d4ed8;
+      color: #fff;
+      font-size: .65rem;
+      font-weight: 800;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .guide-section h3 {
+      font-size: .85rem;
+      font-weight: 700;
+      color: var(--fr-txt);
+      margin: 1rem 0 .5rem;
+      padding-left: .5rem;
+      border-left: 3px solid #3b82f6;
+    }
+
+    .guide-section p,
+    .guide-section li {
+      font-size: .82rem;
+      color: var(--fr-txt-soft);
+      line-height: 1.7;
+      margin-bottom: .4rem;
+    }
+
+    .guide-section ul,
+    .guide-section ol {
+      padding-left: 1.5rem;
+      margin-bottom: .8rem;
+    }
+
+    .guide-section strong {
+      color: var(--fr-txt);
+    }
+
+    .guide-intro {
+      background: linear-gradient(135deg, rgba(29, 78, 216, .12), rgba(59, 130, 246, .06));
+      border: 1px solid rgba(59, 130, 246, .2);
+      border-radius: 14px;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .guide-intro-icon {
+      font-size: 2rem;
+      flex-shrink: 0;
+    }
+
+    .guide-intro p {
+      font-size: .88rem;
+      color: var(--fr-txt);
+      margin: 0;
+      line-height: 1.6;
+      font-weight: 500;
+    }
+
+    .steps {
+      counter-reset: step;
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .steps li {
+      counter-increment: step;
+      position: relative;
+      padding-left: 2.5rem;
+      margin-bottom: .8rem;
+      font-size: .82rem;
+      color: var(--fr-txt-soft);
+      line-height: 1.6;
+    }
+
+    .steps li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #1d4ed8;
+      color: #fff;
+      font-size: .7rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .q-card {
+      background: var(--fr-surface);
+      border: 1px solid var(--fr-border);
+      border-radius: 10px;
+      padding: .8rem 1rem;
+      margin-bottom: .6rem;
+      transition: border-color .2s;
+    }
+
+    .q-card:hover {
+      border-color: rgba(59, 130, 246, .4);
+    }
+
+    .q-card .q-text {
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--fr-txt);
+      display: flex;
+      align-items: flex-start;
+      gap: .5rem;
+    }
+
+    .q-card .q-text::before {
+      content: "\1F4AC";
+      flex-shrink: 0;
+    }
+
+    .q-card .q-answer {
+      font-size: .72rem;
+      color: var(--fr-txt-soft);
+      margin-top: .3rem;
+      padding-left: 1.6rem;
+      line-height: 1.5;
+    }
+
+    .mod-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: .8rem;
+      margin-bottom: 1rem;
+    }
+
+    .mod-card {
+      background: var(--fr-surface);
+      border: 1px solid var(--fr-border);
+      border-radius: 10px;
+      padding: .8rem 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: .6rem;
+    }
+
+    .mod-num {
+      background: #1d4ed8;
+      color: #fff;
+      font-size: .6rem;
+      font-weight: 800;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .mod-info .mod-name {
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--fr-txt);
+    }
+
+    .mod-info .mod-desc {
+      font-size: .68rem;
+      color: var(--fr-txt-soft);
+      line-height: 1.5;
+      margin-top: .15rem;
+    }
+
+    .limit-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .6rem;
+      background: var(--fr-surface);
+      border: 1px solid var(--fr-border);
+      border-radius: 8px;
+      padding: .6rem .8rem;
+      margin-bottom: .5rem;
+      font-size: .78rem;
+    }
+
+    .limit-row .limit-no {
+      color: #f87171;
+      font-weight: 600;
+    }
+
+    .limit-row .limit-alt {
+      color: var(--fr-txt-soft);
+    }
+
+    .faq-item {
+      margin-bottom: 1rem;
+    }
+
+    .faq-q {
+      font-size: .82rem;
+      font-weight: 700;
+      color: var(--fr-txt);
+      display: flex;
+      align-items: flex-start;
+      gap: .4rem;
+    }
+
+    .faq-q::before {
+      content: "\2753";
+      flex-shrink: 0;
+      font-size: .75rem;
+    }
+
+    .faq-a {
+      font-size: .78rem;
+      color: var(--fr-txt-soft);
+      line-height: 1.6;
+      margin-top: .3rem;
+      padding: .6rem .8rem .6rem 1.4rem;
+      background: rgba(59, 130, 246, .04);
+      border-radius: 8px;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .6rem;
+    }
+
+    .contact-card {
+      background: var(--fr-surface);
+      border: 1px solid var(--fr-border);
+      border-radius: 10px;
+      padding: .8rem 1rem;
+    }
+
+    .contact-card .cc-subject {
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--fr-txt);
+      margin-bottom: .2rem;
+    }
+
+    .contact-card .cc-who {
+      font-size: .72rem;
+      color: var(--fr-txt-soft);
+    }
+
+    .contact-card .cc-who a {
+      color: #60a5fa;
+      text-decoration: none;
+    }
+
+    [data-theme="light"] .guide-intro {
+      background: linear-gradient(135deg, rgba(29, 78, 216, .06), rgba(59, 130, 246, .03));
+    }
+
+    [data-theme="light"] .q-card,
+    [data-theme="light"] .mod-card,
+    [data-theme="light"] .limit-row,
+    [data-theme="light"] .contact-card {
+      background: #fff;
+      border-color: rgba(38, 53, 118, .1);
+    }
+
+    [data-theme="light"] .faq-a {
+      background: rgba(59, 130, 246, .03);
+    }
+
+    /* ═══ PRESENTATION MODE ═══ */
+    .pres-container {
+      position: relative;
+    }
+
+    .pres-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .pres-controls .pres-counter {
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--fr-txt-soft);
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .pres-nav-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid var(--fr-border);
+      background: var(--fr-surface);
+      color: var(--fr-txt);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s;
+    }
+
+    .pres-nav-btn:hover {
+      background: rgba(59, 130, 246, .15);
+      border-color: #3b82f6;
+    }
+
+    .pres-nav-btn:disabled {
+      opacity: .3;
+      cursor: not-allowed;
+    }
+
+    .pres-nav-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .pres-fullscreen-btn {
+      padding: .4rem .9rem;
+      border-radius: 8px;
+      border: 1px solid rgba(59, 130, 246, .3);
+      background: rgba(59, 130, 246, .1);
+      color: #60a5fa;
+      font-size: .72rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      transition: all .2s;
+    }
+
+    .pres-fullscreen-btn:hover {
+      background: rgba(59, 130, 246, .2);
+    }
+
+    .pres-fullscreen-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .pres-progress {
+      height: 3px;
+      background: var(--fr-border);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .pres-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #1d4ed8, #3b82f6);
+      transition: width .4s ease;
+      border-radius: 3px;
+    }
+
+    /* Slides */
+    .slide {
+      display: none;
+      animation: slideFadeIn .4s ease;
+    }
+
+    .slide.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @keyframes slideFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .slide-inner {
+      background: var(--fr-surface);
+      border: 1px solid var(--fr-border);
+      border-radius: 16px;
+      padding: 2.5rem 3rem;
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .2);
+    }
+
+    .slide-tag {
+      font-size: .6rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: #3b82f6;
+      margin-bottom: .6rem;
+    }
+
+    .slide-title {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--fr-txt);
+      line-height: 1.2;
+      margin-bottom: .8rem;
+    }
+
+    .slide-subtitle {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--fr-txt-soft);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      max-width: 700px;
+    }
+
+    .slide-body {
+      font-size: .88rem;
+      color: var(--fr-txt-soft);
+      line-height: 1.8;
+    }
+
+    .slide-body strong {
+      color: var(--fr-txt);
+    }
+
+    .slide-body ul {
+      padding-left: 1.2rem;
+      margin: .6rem 0;
+    }
+
+    .slide-body li {
+      margin-bottom: .5rem;
+    }
+
+    /* Slide special layouts */
+    .slide-hero {
+      text-align: center;
+      align-items: center;
+    }
+
+    .slide-hero .slide-title {
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, #60a5fa, #3b82f6, #1d4ed8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .slide-hero .slide-subtitle {
+      font-size: 1.1rem;
+      max-width: 600px;
+    }
+
+    .slide-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .slide-split .split-left {}
+
+    .slide-split .split-right {}
+
+    .slide-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .8rem;
+      margin-top: 1rem;
+    }
+
+    .slide-kpi {
+      background: rgba(29, 78, 216, .08);
+      border: 1px solid rgba(59, 130, 246, .2);
+      border-radius: 10px;
+      padding: .8rem;
+      text-align: center;
+    }
+
+    .slide-kpi .sk-val {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: #60a5fa;
+    }
+
+    .slide-kpi .sk-lbl {
+      font-size: .62rem;
+      font-weight: 700;
+      color: var(--fr-txt-soft);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-top: .2rem;
+    }
+
+    .slide-mod-list {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+      margin-top: .8rem;
+    }
+
+    .slide-mod {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      background: rgba(29, 78, 216, .06);
+      border: 1px solid rgba(59, 130, 246, .15);
+      border-radius: 8px;
+      padding: .6rem .8rem;
+    }
+
+    .slide-mod .sm-num {
+      background: #1d4ed8;
+      color: #fff;
+      font-size: .6rem;
+      font-weight: 800;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .slide-mod .sm-name {
+      font-size: .82rem;
+      font-weight: 700;
+      color: var(--fr-txt);
+    }
+
+    .slide-mod .sm-desc {
+      font-size: .68rem;
+      color: var(--fr-txt-soft);
+    }
+
+    .slide-benefit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .8rem;
+      margin-top: 1rem;
+    }
+
+    .slide-benefit {
+      background: rgba(16, 185, 129, .06);
+      border: 1px solid rgba(16, 185, 129, .2);
+      border-radius: 10px;
+      padding: .8rem 1rem;
+    }
+
+    .slide-benefit .sb-icon {
+      font-size: 1.2rem;
+      margin-bottom: .3rem;
+    }
+
+    .slide-benefit .sb-title {
+      font-size: .82rem;
+      font-weight: 700;
+      color: var(--fr-txt);
+    }
+
+    .slide-benefit .sb-desc {
+      font-size: .72rem;
+      color: var(--fr-txt-soft);
+      line-height: 1.5;
+      margin-top: .2rem;
+    }
+
+    /* Fullscreen mode */
+    .pres-container.fullscreen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: var(--fr-bg);
+      padding: 1.5rem 3rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pres-container.fullscreen .slide-inner {
+      min-height: calc(100vh - 140px);
+      padding: 3rem 4rem;
+    }
+
+    .pres-container.fullscreen .slide-hero .slide-title {
+      font-size: 3.2rem;
+    }
+
+    .pres-container.fullscreen .slide-title {
+      font-size: 2.2rem;
+    }
+
+    .pres-container.fullscreen .slide-subtitle {
+      font-size: 1.15rem;
+    }
+
+    .pres-container.fullscreen .slide-body {
+      font-size: .95rem;
+    }
+
+    .pres-container.fullscreen .slide-kpi .sk-val {
+      font-size: 1.8rem;
+    }
+
+    [data-theme="light"] .slide-inner {
+      background: #fff;
+      border-color: rgba(38, 53, 118, .1);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .06);
+    }
+
+    [data-theme="light"] .slide-kpi {
+      background: rgba(29, 78, 216, .04);
+    }
+
+    [data-theme="light"] .slide-mod {
+      background: rgba(29, 78, 216, .03);
+    }
+
+    [data-theme="light"] .slide-benefit {
+      background: rgba(16, 185, 129, .03);
+    }
+
+    [data-theme="light"] .pres-container.fullscreen {
+      background: #f0f4f8;
+    }
+  </style>
+  <link rel="stylesheet" href="responsive.css">
+</head>
+
+<body class="fr-page">
+
+  <div class="sp-app-layout">
+    <!-- TRILHO VERTICAL À ESQUERDA (80px - Padrão D&A Unificado) -->
+    <aside class="sp-sidebar" aria-label="Navegação principal">
+      <a href="index.html" class="sp-nav-item" title="Início">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <span>Início</span>
+      </a>
+      <a href="performance.html" class="sp-nav-item" title="Performance">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        <span>Performance</span>
+      </a>
+      <a href="spend.html" class="sp-nav-item" title="Gastos">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>Gastos</span>
+      </a>
+      <a href="ordens.html" class="sp-nav-item" title="Ordens">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4"/></svg>
+        <span>Ordens</span>
+      </a>
+      <a href="comercial.html" class="sp-nav-item" title="Comercial">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <span>Comercial</span>
+      </a>
+      <a href="governanca.html" class="sp-nav-item" title="Governança">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Governança</span>
+      </a>
+      <a href="relatorios.html" class="sp-nav-item" title="Relatórios">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        <span>Relatórios</span>
+      </a>
+    </aside>
+
+    <div class="sp-main">
+      <!-- CABEÇALHO UNIFICADO (64px - A8, A4) -->
+      <header class="dna-header">
+        <div class="dna-brand">
+          <div class="sp-header-info">
+            <span class="dna-brand-badge">PORTAL COMPRAS</span>
+            <h1 class="sp-page-title">Guia do Usuário</h1>
+          </div>
+        </div>
+        <div class="header-right">
+          <div id="app-menu-container"></div>
+        </div>
+      </header>
+
+      <!-- NAVEGAÇÃO MOBILE INFERIOR (<=640px - A2) -->
+      <nav class="dna-mobile-nav" aria-label="Navegação mobile">
+        <a href="index.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+          <span>Início</span>
+        </a>
+        <a href="performance.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          <span>Performance</span>
+        </a>
+        <a href="spend.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><path d="M12 18V6"/></svg>
+          <span>Gastos</span>
+        </a>
+        <a href="ordens.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          <span>Ordens</span>
+        </a>
+        <a href="comercial.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+          <span>Comercial</span>
+        </a>
+        <a href="governanca.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Governança</span>
+        </a>
+        <a href="relatorios.html" class="dna-mobile-nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          <span>Relatórios</span>
+        </a>
+      </nav>
+
+      <div class="fr-content">
+
+    <!-- ═══ TAB SWITCHER ═══ -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('ref')" id="tab-ref">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
+          <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+        </svg>
+        Consulta Rápida
+      </button>
+      <button class="tab-btn" onclick="switchTab('pres')" id="tab-pres">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+        </svg>
+        Apresentação
+      </button>
+      <button class="tab-btn" onclick="switchTab('tech')" id="tab-tech">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+        </svg>
+        Documentação Técnica
+      </button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TAB 1: CONSULTA RÁPIDA (current guide content)        -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="tab-content active" id="content-ref">
+
+      <div class="guide-intro">
+        <div class="guide-intro-icon">📘</div>
+        <p data-i18n="guide_intro">Portal de inteligência de compras da Bimbo Brasil. Dados de notas fiscais, ordens de
+          compra e requisições do Oracle Cloud em um só lugar — gráficos, KPIs e tabelas exportáveis.</p>
+      </div>
+
+      <div class="guide-section">
+        <h2 data-i18n="guide_s1_title"><span class="sec-num">1</span> Como Acessar</h2>
+        <ol class="steps">
+          <li data-i18n="guide_s1_step1">Abra o navegador <strong>(Chrome ou Edge recomendado)</strong></li>
+          <li data-i18n="guide_s1_step2">Acesse:
+            <strong>https://compras-360-8674310331778219.19.azure.databricksapps.com</strong></li>
+          <li data-i18n="guide_s1_step3">Faça login com seu e-mail corporativo <strong>(@grupobimbo.com)</strong></li>
+          <li data-i18n="guide_s1_step4">Escolha um dos 6 módulos na tela inicial</li>
+        </ol>
+      </div>
+
+      <div class="guide-section">
+        <h2 data-i18n="guide_s2_title"><span class="sec-num">2</span> Os 6 Módulos</h2>
+        <div class="mod-grid">
+          <div class="mod-card"><span class="mod-num">01</span>
+            <div class="mod-info">
+              <div class="mod-name" data-i18n="guide_mod1_name">Performance de Compras</div>
+              <div class="mod-desc" data-i18n="guide_mod1_desc">Quanto gastamos, quanto economizamos, prazo de pagamento
+                e tempo de processamento</div>
+            </div>
+          </div>
+          <div class="mod-card"><span class="mod-num">02</span>
+            <div class="mod-info">
+              <div class="mod-name" data-i18n="guide_mod2_name">Análise de Gastos</div>
+              <div class="mod-desc" data-i18n="guide_mod2_desc">Onde o dinheiro está concentrado: por item, fornecedor,
+                planta e classificação ABC</div>
+            </div>
+          </div>
+          <div class="mod-card"><span class="mod-num">03</span>
+            <div class="mod-info">
+              <div class="mod-name" data-i18n="guide_mod3_name">Gestão de Ordens</div>
+              <div class="mod-desc" data-i18n="guide_mod3_desc">Ordens abertas, atrasadas e comparação entre previsto e
+                realizado</div>
+            </div>
+          </div>
+          <div class="mod-card"><span class="mod-num">04</span>
+            <div class="mod-info">
+              <div class="mod-name" data-i18n="guide_mod4_name">Condições Comerciais</div>
+              <div class="mod-desc" data-i18n="guide_mod4_desc">Prazos de pagamento, savings por fornecedor e
+                oportunidades de renegociação</div>
+            </div>
+          </div>
+          <div class="mod-card"><span class="mod-num">05</span>
+            <div class="mod-info">
+              <div class="mod-name" data-i18n="guide_mod5_name">Governança</div>
+              <div class="mod-desc" data-i18n="guide_mod5_desc">Exceções: OC pós-fatura, OCs sucessivas (fracionamento), emergenciais, notas sem OC,
+                compras descentralizadas &gt; R$ 30 mil e acordos inativos</div>
+            </div>
+          </div>
+          <div class="mod-card"><span class="mod-num">06</span>
+            <div class="mod-info">
+              <div class="mod-name" data-i18n="guide_mod6_name">Relatórios</div>
+              <div class="mod-desc" data-i18n="guide_mod6_desc">Exploração detalhada com busca, filtros avançados e
+                exportação para Excel</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="guide-section">
+        <h2 data-i18n="guide_s3_title"><span class="sec-num">3</span> Como Usar os Filtros</h2>
+        <p data-i18n="guide_s3_intro">Todos os módulos possuem uma <strong>barra de filtros</strong> no topo. Os filtros
+          são <strong>cascateados</strong>: ao selecionar um valor, os demais mostram apenas opções compatíveis.</p>
+        <ul>
+          <li data-i18n="guide_s3_f1"><strong>Ano / Mês</strong> — período da análise</li>
+          <li data-i18n="guide_s3_f2"><strong>Empresa</strong> — BB (Bimbo Brasil) ou BQ (Bimbo QSR)</li>
+          <li data-i18n="guide_s3_f3"><strong>Grupo de Compras</strong> — DIRETOS ou INDIRETOS</li>
+          <li data-i18n="guide_s3_f4"><strong>Fornecedor</strong> — busca por nome</li>
+          <li data-i18n="guide_s3_f5"><strong>Unidade / Planta</strong> — filtre por localidade</li>
+          <li><strong>Macro Categoria</strong> — primeira opção em "Mais Filtros" (Commodities & Ingredients, Packaging,
+            Comercial, Indiretos)</li>
+          <li><strong>Sub-categoria</strong> — detalhamento da categoria do item</li>
+        </ul>
+        <p data-i18n="guide_s3_tip">💡 <strong>Dica:</strong> Clique em "Limpar" para remover todos os filtros. No
+          módulo Relatórios, use a busca textual para encontrar uma nota ou OC específica.</p>
+      </div>
+
+      <div class="guide-section">
+        <h2 data-i18n="guide_s4_title"><span class="sec-num">4</span> Exemplos de Perguntas</h2>
+        <h3 data-i18n="guide_s4_h_perf">Performance (Módulo 01)</h3>
+        <div class="q-card">
+          <div class="q-text" data-i18n="guide_s4_q1">Quanto gastamos em 2026 vs. 2025?</div>
+          <div class="q-answer" data-i18n="guide_s4_a1">→ KPI "Net Spend" + gráfico "Spend YoY" no módulo Performance
+          </div>
+        </div>
+        <div class="q-card">
+          <div class="q-text" data-i18n="guide_s4_q2">Qual o saving acumulado de 2026?</div>
+          <div class="q-answer" data-i18n="guide_s4_a2">→ KPI "Savings" no módulo Performance. Filtre o ano desejado.
+          </div>
+        </div>
+        <div class="q-card">
+          <div class="q-text" data-i18n="guide_s4_q3">Quanto tempo leva da requisição até a nota fiscal?</div>
+          <div class="q-answer" data-i18n="guide_s4_a3">→ Painel "Lead Time" com as 3 etapas no módulo Performance</div>
+        </div>
+        <h3 data-i18n="guide_s4_h_spend">Gastos (Módulo 02)</h3>
+        <div class="q-card">
+          <div class="q-text" data-i18n="guide_s4_q4">Quais são os 10 itens com maior gasto?</div>
+          <div class="q-answer" data-i18n="guide_s4_a4">→ Card "Top Itens" no módulo Gastos</div>
+        </div>
+        <div class="q-card">
+          <div class="q-text" data-i18n="guide_s4_q5">Quais fornecedores concentram 80% do gasto?</div>
+          <div class="q-answer" data-i18n="guide_s4_a5">→ Tabela "Curva ABC" — classe A ≈ 80% do valor</div>
+        </div>
+        <h3 data-i18n="guide_s4_h_orders">Ordens (Módulo 03)</h3>
+        <div class="q-card">
+          <div class="q-text" data-i18n="guide_s4_q6">Quantas OCs estão atrasadas?</div>
+          <div class="q-answer" data-i18n="guide_s4_a6">→ KPI "OCs Atrasadas" + tabela detalhada no módulo Ordens</div>
+        </div>
+        <h3 data-i18n="guide_s4_h_gov">Governança (Módulo 05)</h3>
+        <div class="q-card">
+          <div class="q-text" data-i18n="guide_s4_q7">Quanto temos de compra descentralizada acima de R$ 30 mil?</div>
+          <div class="q-answer" data-i18n="guide_s4_a7">→ Selecione "OC Descentralizada > 30K" no módulo Governança
+          </div>
+        </div>
+        <div class="q-card">
+          <div class="q-text">Como identificar compras fracionadas que podem estar burlando alçadas de aprovação?</div>
+          <div class="q-answer">→ Aba "OCs Sucessivas" no módulo Governança — agrupa pedidos por fornecedor, item e mês civil, identificando casos com códigos de grupo (#GRP-001...), métrica de dispersão de valor e filtros para valores idênticos ou próximos (±10%).</div>
+        </div>
+        <h3 data-i18n="guide_s4_h_reports">Relatórios (Módulo 06)</h3>
+        <div class="q-card">
+          <div class="q-text" data-i18n="guide_s4_q8">Preciso de todas as notas do fornecedor X em janeiro/2026</div>
+          <div class="q-answer" data-i18n="guide_s4_a8">→ Dataset "Notas Fiscais", filtre Fornecedor e Mês, exporte para
+            Excel</div>
+        </div>
+      </div>
+
+      <div class="guide-section">
+        <h2 data-i18n="guide_s5_title"><span class="sec-num">5</span> FAQ</h2>
+        <div class="faq-item">
+          <div class="faq-q" data-i18n="guide_faq1_q">Com que frequência os dados são atualizados?</div>
+          <div class="faq-a" data-i18n="guide_faq1_a">Os dados vêm do Oracle Cloud via ETL (idealmente diário). Se
+            parecem antigos, peça à equipe de dados.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" data-i18n="guide_faq2_q">Por que o saving aparece como zero para alguns fornecedores?</div>
+          <div class="faq-a" data-i18n="guide_faq2_a">Se não há preço anterior ou o percentual está fora de 0–100%, o
+            sistema desconsidera.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" data-i18n="guide_faq3_q">O que significa "Nota sem OC"?</div>
+          <div class="faq-a" data-i18n="guide_faq3_a">Notas fiscais lançadas sem ordem de compra vinculada — pode ser
+            compra emergencial.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q">O que são "OCs Sucessivas" e como funciona o "ID Grupo"?</div>
+          <div class="faq-a">São ordens de compra emitidas para o mesmo fornecedor e mesmo item aquisição dentro do mesmo mês civil. Indicam potencial fracionamento de compras para contornar limites de alçada hierárquica. O painel contabiliza o número de <strong>grupos/casos</strong> no card principal, exibe o percentual financeiro sobre o Valor Total de OCs do Período (âncora <code>data_oc</code>), e atribui um código (#GRP-001, #GRP-002...) ordenado por materialidade financeira.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" data-i18n="guide_faq4_q">Posso exportar para Excel?</div>
+          <div class="faq-a" data-i18n="guide_faq4_a">Sim! No módulo Relatórios use o botão de download. Outros módulos
+            também têm exportação nas tabelas.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" data-i18n="guide_faq5_q">O que é "Centralizado" vs. "Descentralizado"?</div>
+          <div class="faq-a" data-i18n="guide_faq5_a"><strong>Centralizado</strong> = compra via área de Compras
+            (acordo, OC ≥ R$ 30K ou comprador funcional). <strong>Descentralizado</strong> = compra direta pela unidade.
+          </div>
+        </div>
+      </div>
+
+      <div class="guide-section">
+        <h2 data-i18n="guide_s6_title"><span class="sec-num">6</span> A Quem Recorrer</h2>
+        <div class="contact-grid">
+          <div class="contact-card">
+            <div class="cc-subject" data-i18n="guide_c1_subj">Problemas técnicos no app</div>
+            <div class="cc-who"><a href="mailto:renan.ferreira@grupobimbo.com">Renan Ferreira</a></div>
+          </div>
+          <div class="contact-card">
+            <div class="cc-subject" data-i18n="guide_c2_subj">Dados incorretos ou desatualizados</div>
+            <div class="cc-who"><a href="mailto:renan.ferreira@grupobimbo.com">Renan Ferreira</a></div>
+          </div>
+          <div class="contact-card">
+            <div class="cc-subject" data-i18n="guide_c3_subj">Regras de negócio</div>
+            <div class="cc-who" data-i18n="guide_c3_who">Área de Compras / Gestão de Fornecedores</div>
+          </div>
+          <div class="contact-card">
+            <div class="cc-subject" data-i18n="guide_c4_subj">Dados Oracle Cloud (fonte)</div>
+            <div class="cc-who" data-i18n="guide_c4_who">Equipe Oracle Cloud / TI</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TAB 2: APRESENTAÇÃO (slide deck)                      -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="tab-content" id="content-pres">
+      <div class="pres-container" id="presContainer">
+
+        <!-- Controls -->
+        <div class="pres-controls">
+          <button class="pres-nav-btn" onclick="presNav(-1)" id="presBack" title="Anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+          <span class="pres-counter" id="presCounter">1 / 8</span>
+          <button class="pres-nav-btn" onclick="presNav(1)" id="presNext" title="Próximo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+          <button class="pres-fullscreen-btn" onclick="toggleFullscreen()" id="presFS" title="Tela cheia" data-i18n="pres_fs_btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 3 21 3 21 9" />
+              <polyline points="9 21 3 21 3 15" />
+              <line x1="21" y1="3" x2="14" y2="10" />
+              <line x1="3" y1="21" x2="10" y2="14" />
+            </svg>
+            Tela cheia
+          </button>
+        </div>
+        <div class="pres-progress">
+          <div class="pres-progress-fill" id="presProgress" style="width:12.5%"></div>
+        </div>
+
+        <!-- SLIDE 1: Title -->
+        <div class="slide active" data-slide="1">
+          <div class="slide-inner slide-hero">
+            <div class="slide-tag" data-i18n="pres_s1_tag">Bimbo Brasil — DNA</div>
+            <div class="slide-title" data-i18n="pres_s1_ttl">PORTAL COMPRAS</div>
+            <div class="slide-subtitle" data-i18n="pres_s1_sub">Toda a inteligência de compras centralizada em um único portal interativo.</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 2: O Problema -->
+        <div class="slide" data-slide="2">
+          <div class="slide-inner">
+            <div class="slide-tag" data-i18n="pres_s2_tag">Contexto</div>
+            <div class="slide-title" data-i18n="pres_s2_title">Por que precisamos disso?</div>
+            <div
+              data-i18n="pres_s2_banner" style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:10px;padding:.7rem 1rem;margin-top:.6rem;margin-bottom:.8rem;font-size:.82rem;color:var(--fr-txt);font-weight:600;text-align:center">
+              Exceções de processo que, sem este portal, simplesmente não são rastreadas.</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div
+                style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:1.2rem;display:flex;gap:.8rem;align-items:flex-start">
+                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#f87171" stroke-width="2"
+                  style="flex-shrink:0">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                  <path d="M14 2v6h6" />
+                  <line x1="9" y1="15" x2="15" y2="15" />
+                </svg>
+                <div>
+                  <div style="font-weight:800;color:var(--fr-txt);font-size:.85rem" data-i18n="pres_s2_c1_ttl">Dados Fragmentados</div>
+                  <div style="font-size:.75rem;color:var(--fr-txt-soft);margin-top:.2rem" data-i18n="pres_s2_c1_desc"><strong style="color:var(--fr-txt)">Múltiplas fontes isoladas</strong> — cruzar notas fiscais com ordens de compra exige trabalho manual</div>
+                </div>
+              </div>
+              <div
+                style="background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:1.2rem;display:flex;gap:.8rem;align-items:flex-start">
+                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#fbbf24" stroke-width="2"
+                  style="flex-shrink:0">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  <line x1="8" y1="11" x2="14" y2="11" />
+                </svg>
+                <div>
+                  <div style="font-weight:800;color:var(--fr-txt);font-size:.85rem" data-i18n="pres_s2_c2_ttl">Sem Visão Consolidada</div>
+                  <div style="font-size:.75rem;color:var(--fr-txt-soft);margin-top:.2rem" data-i18n="pres_s2_c2_desc"><strong style="color:var(--fr-txt)">Milhares de fornecedores, dezenas de plantas</strong> — cada pergunta sobre gasto gera um novo relatório manual</div>
+                </div>
+              </div>
+              <div
+                style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:1.2rem;display:flex;gap:.8rem;align-items:flex-start">
+                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#a78bfa" stroke-width="2"
+                  style="flex-shrink:0">
+                  <path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+                </svg>
+                <div>
+                  <div style="font-weight:800;color:var(--fr-txt);font-size:.85rem" data-i18n="pres_s2_c3_ttl">Savings Sem Controle</div>
+                  <div style="font-size:.75rem;color:var(--fr-txt-soft);margin-top:.2rem" data-i18n="pres_s2_c3_desc">Sem medição contínua e padronizada, as oportunidades de economia passam despercebidas</div>
+                </div>
+              </div>
+              <div
+                style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:1.2rem;display:flex;gap:.8rem;align-items:flex-start">
+                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#60a5fa" stroke-width="2"
+                  style="flex-shrink:0">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                <div>
+                  <div style="font-weight:800;color:var(--fr-txt);font-size:.85rem" data-i18n="pres_s2_c4_ttl">Exceções Invisíveis</div>
+                  <div style="font-size:.75rem;color:var(--fr-txt-soft);margin-top:.2rem" data-i18n="pres_s2_c4_desc"><strong style="color:var(--fr-txt)">OCs pós-fatura, notas sem OC, compras descentralizadas</strong> — desvios de processo sem rastreamento</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 3: A Solução -->
+        <div class="slide" data-slide="3">
+          <div class="slide-inner">
+            <div class="slide-tag" data-i18n="pres_s3_tag">Solução</div>
+            <div class="slide-title" data-i18n="pres_s3_title">O que é o Portal Compras</div>
+            <div class="slide-body">
+              <p data-i18n="pres_s3_p1">Um <strong>portal web interativo</strong> que consolida automaticamente os dados do Oracle Cloud e apresenta em painéis visuais prontos para uso.</p>
+              <div class="slide-kpi-grid">
+                <div class="slide-kpi">
+                  <div class="sk-val">📄</div>
+                  <div class="sk-lbl" data-i18n="pres_s3_k1">Notas Fiscais</div>
+                </div>
+                <div class="slide-kpi">
+                  <div class="sk-val">📋</div>
+                  <div class="sk-lbl" data-i18n="pres_s3_k2">Ordens de Compra</div>
+                </div>
+                <div class="slide-kpi">
+                  <div class="sk-val">📝</div>
+                  <div class="sk-lbl" data-i18n="pres_s3_k3">Requisições</div>
+                </div>
+              </div>
+              <p style="margin-top:1.2rem;" data-i18n="pres_s3_p2">Dados atualizados automaticamente via ETL diário. Acesso por qualquer navegador, sem instalação.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 4: Módulos -->
+        <div class="slide" data-slide="4">
+          <div class="slide-inner">
+            <div class="slide-tag" data-i18n="pres_s4_tag">Funcionalidades</div>
+            <div class="slide-title" data-i18n="pres_s4_title">6 Módulos Especializados</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;margin-top:1rem">
+              <div
+                style="background:rgba(59,130,246,.12);border:2px solid rgba(59,130,246,.4);border-radius:12px;padding:1rem;text-align:center;box-shadow:0 2px 8px rgba(59,130,246,.12)">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#60a5fa" stroke-width="2"
+                  style="margin-bottom:.5rem">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+                <div style="font-weight:800;color:#60a5fa;font-size:.85rem" data-i18n="pres_s4_m1_ttl">★ Performance</div>
+                <div style="font-size:.68rem;color:var(--fr-txt-soft);margin-top:.2rem" data-i18n="pres_s4_m1_desc">KPIs de gasto, centralização e comparação YoY</div>
+              </div>
+              <div
+                style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:12px;padding:1rem;text-align:center">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#34d399" stroke-width="2"
+                  style="margin-bottom:.5rem">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 6v6l4 2" />
+                </svg>
+                <div style="font-weight:800;color:var(--fr-txt);font-size:.82rem" data-i18n="pres_s4_m2_ttl">Gastos</div>
+                <div style="font-size:.68rem;color:var(--fr-txt-soft);margin-top:.2rem" data-i18n="pres_s4_m2_desc">Curva ABC, top itens e fornecedores, cross-filter</div>
+              </div>
+              <div
+                style="background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:1rem;text-align:center">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#fbbf24" stroke-width="2"
+                  style="margin-bottom:.5rem">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <path d="M9 3v18M3 9h18" />
+                </svg>
+                <div style="font-weight:800;color:var(--fr-txt);font-size:.82rem" data-i18n="pres_s4_m3_ttl">Ordens</div>
+                <div style="font-size:.68rem;color:var(--fr-txt-soft);margin-top:.2rem" data-i18n="pres_s4_m3_desc">Valor aberto, OCs atrasadas, previsto vs. realizado</div>
+              </div>
+              <div
+                style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:1rem;text-align:center">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#a78bfa" stroke-width="2"
+                  style="margin-bottom:.5rem">
+                  <path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+                </svg>
+                <div style="font-weight:800;color:var(--fr-txt);font-size:.82rem" data-i18n="pres_s4_m4_ttl">Comercial</div>
+                <div style="font-size:.68rem;color:var(--fr-txt-soft);margin-top:.2rem" data-i18n="pres_s4_m4_desc">Prazos de pagamento e oportunidades de renegociação</div>
+              </div>
+              <div
+                style="background:rgba(239,68,68,.12);border:2px solid rgba(239,68,68,.4);border-radius:12px;padding:1rem;text-align:center;box-shadow:0 2px 8px rgba(239,68,68,.12)">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#f87171" stroke-width="2"
+                  style="margin-bottom:.5rem">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                <div style="font-weight:800;color:#f87171;font-size:.85rem" data-i18n="pres_s4_m5_ttl">★ Governança</div>
+                <div style="font-size:.68rem;color:var(--fr-txt-soft);margin-top:.2rem" data-i18n="pres_s4_m5_desc">Exceções de processo rastreadas automaticamente</div>
+              </div>
+              <div
+                style="background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.2);border-radius:12px;padding:1rem;text-align:center">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#f472b6" stroke-width="2"
+                  style="margin-bottom:.5rem">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+                <div style="font-weight:800;color:var(--fr-txt);font-size:.82rem" data-i18n="pres_s4_m6_ttl">Relatórios</div>
+                <div style="font-size:.68rem;color:var(--fr-txt-soft);margin-top:.2rem" data-i18n="pres_s4_m6_desc">Busca livre, exportação Excel</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 5: Filtros e Interatividade -->
+        <div class="slide" data-slide="5">
+          <div class="slide-inner">
+            <div class="slide-tag" data-i18n="pres_s5_tag">Experiência</div>
+            <div class="slide-title" data-i18n="pres_s5_title">Filtros Inteligentes</div>
+            <div style="font-size:.88rem;color:var(--fr-txt-soft);margin-bottom:1rem" data-i18n="pres_s5_sub">Filtros cascateados entre <strong style="color:var(--fr-txt)">todos os fornecedores</strong> e <strong style="color:var(--fr-txt)">todas as plantas</strong> — ao selecionar um valor, todos os painéis se ajustam.</div>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem">
+              <div
+                style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:.8rem;text-align:center">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#60a5fa" stroke-width="2"
+                  style="margin-bottom:.4rem">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                <div style="font-weight:800;font-size:.75rem;color:var(--fr-txt)" data-i18n="pres_s5_f1_lbl">Ano / Mês</div>
+                <div style="font-size:.6rem;color:var(--fr-txt-soft);margin-top:.15rem" data-i18n="pres_s5_f1_sub">Período flexível</div>
+              </div>
+              <div
+                style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:.8rem;text-align:center">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#34d399" stroke-width="2"
+                  style="margin-bottom:.4rem">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                <div style="font-weight:800;font-size:.75rem;color:var(--fr-txt)" data-i18n="pres_s5_f2_lbl">Empresa</div>
+                <div style="font-size:.6rem;color:var(--fr-txt-soft);margin-top:.15rem" data-i18n="pres_s5_f2_sub">BB ou BQ</div>
+              </div>
+              <div
+                style="background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:.8rem;text-align:center">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fbbf24" stroke-width="2"
+                  style="margin-bottom:.4rem">
+                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                  <path d="M16 3.13a4 4 0 010 7.75" />
+                </svg>
+                <div style="font-weight:800;font-size:.75rem;color:var(--fr-txt)" data-i18n="pres_s5_f3_lbl">Grupo</div>
+                <div style="font-size:.6rem;color:var(--fr-txt-soft);margin-top:.15rem" data-i18n="pres_s5_f3_sub">Direto / Indireto</div>
+              </div>
+              <div
+                style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:10px;padding:.8rem;text-align:center">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#a78bfa" stroke-width="2"
+                  style="margin-bottom:.4rem">
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <div style="font-weight:800;font-size:.75rem;color:var(--fr-txt)" data-i18n="pres_s5_f4_lbl">Fornecedor</div>
+                <div style="font-size:.6rem;color:var(--fr-txt-soft);margin-top:.15rem" data-i18n="pres_s5_f4_sub">Busca por nome</div>
+              </div>
+              <div
+                style="background:rgba(244,114,182,.08);border:1px solid rgba(244,114,182,.2);border-radius:10px;padding:.8rem;text-align:center">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#f472b6" stroke-width="2"
+                  style="margin-bottom:.4rem">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                <div style="font-weight:800;font-size:.75rem;color:var(--fr-txt)" data-i18n="pres_s5_f5_lbl">Unidade</div>
+                <div style="font-size:.6rem;color:var(--fr-txt-soft);margin-top:.15rem" data-i18n="pres_s5_f5_sub">Planta / Localidade</div>
+              </div>
+            </div>
+            <div
+              style="margin-top:1.2rem;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:10px;padding:.8rem 1rem;display:flex;align-items:center;gap:.8rem">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#60a5fa" stroke-width="2"
+                style="flex-shrink:0">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="16" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+              </svg>
+              <div style="font-size:.78rem;color:var(--fr-txt-soft)" data-i18n="pres_s5_tip">Um clique nos filtros e todos os 6 módulos se ajustam instantaneamente — <strong style="color:var(--fr-txt)">múltiplas fontes, zero retrabalho</strong>. Clique nas barras dos gráficos para cross-filter.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 6: Governança -->
+        <div class="slide" data-slide="6">
+          <div class="slide-inner">
+            <div class="slide-tag" data-i18n="pres_s6_tag">Controle</div>
+            <div class="slide-title" data-i18n="pres_s6_title">Governança e Visibilidade</div>
+            <div style="font-size:.88rem;color:var(--fr-txt-soft);margin-bottom:1rem" data-i18n="pres_s6_sub">Todas as exceções de processo rastreadas automaticamente</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem">
+              <div
+                style="background:rgba(239,68,68,.12);border:2px solid rgba(239,68,68,.4);border-radius:12px;padding:1rem;display:flex;gap:.8rem;align-items:center;box-shadow:0 2px 8px rgba(239,68,68,.1)">
+                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#f87171" stroke-width="2"
+                  style="flex-shrink:0">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                  <path d="M14 2v6h6" />
+                  <line x1="12" y1="18" x2="12" y2="12" />
+                  <line x1="12" y1="9" x2="12.01" y2="9" />
+                </svg>
+                <div>
+                  <div style="font-weight:800;color:#f87171;font-size:.85rem" data-i18n="pres_s6_c1_ttl">OC Pós-Fatura</div>
+                  <div style="font-size:.72rem;color:var(--fr-txt);font-weight:700;margin-top:.15rem" data-i18n="pres_s6_c1_sub">Quantidade e valor de OCs criadas após a fatura</div>
+                </div>
+              </div>
+              <div
+                style="background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:12px;padding:1rem;display:flex;gap:.8rem;align-items:center">
+                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#fbbf24" stroke-width="2"
+                  style="flex-shrink:0">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+                <div>
+                  <div style="font-weight:800;color:#fbbf24;font-size:.85rem" data-i18n="pres_s6_c2_ttl">Emergencial</div>
+                  <div style="font-size:.72rem;color:var(--fr-txt-soft);margin-top:.15rem" data-i18n="pres_s6_c2_sub">Compras de urgência fora do processo padrão</div>
+                </div>
+              </div>
+              <div
+                style="background:rgba(59,130,246,.12);border:2px solid rgba(59,130,246,.4);border-radius:12px;padding:1rem;display:flex;gap:.8rem;align-items:center;box-shadow:0 2px 8px rgba(59,130,246,.1)">
+                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#60a5fa" stroke-width="2"
+                  style="flex-shrink:0">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+                <div>
+                  <div style="font-weight:800;color:#60a5fa;font-size:.85rem" data-i18n="pres_s6_c3_ttl">Nota sem OC</div>
+                  <div style="font-size:.72rem;color:var(--fr-txt);font-weight:700;margin-top:.15rem" data-i18n="pres_s6_c3_sub">Notas fiscais lançadas sem ordem de compra vinculada</div>
+                </div>
+              </div>
+              <div
+                style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:1rem;display:flex;gap:.8rem;align-items:center">
+                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#a78bfa" stroke-width="2"
+                  style="flex-shrink:0">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+                <div>
+                  <div style="font-weight:800;color:#a78bfa;font-size:.85rem" data-i18n="pres_s6_c4_ttl">Descentralizada &gt;30K</div>
+                  <div style="font-size:.72rem;color:var(--fr-txt-soft);margin-top:.15rem" data-i18n="pres_s6_c4_sub">OCs acima de R$ 30 mil feitas fora da área de Compras</div>
+                </div>
+              </div>
+              <div
+                style="background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);border-radius:12px;padding:1rem;display:flex;gap:.8rem;align-items:center">
+                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#f97316" stroke-width="2"
+                  style="flex-shrink:0">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <path d="M9 3v18M3 9h18" />
+                </svg>
+                <div>
+                  <div style="font-weight:800;color:#f97316;font-size:.85rem" data-i18n="pres_s6_c5_ttl">OCs Abertas &gt;90 dias</div>
+                  <div style="font-size:.72rem;color:var(--fr-txt-soft);margin-top:.15rem" data-i18n="pres_s6_c5_sub">OCs com recebimento pendente há mais de 90 dias</div>
+                </div>
+              </div>
+              <div
+                style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:12px;padding:1rem;display:flex;gap:.8rem;align-items:center">
+                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#34d399" stroke-width="2"
+                  style="flex-shrink:0">
+                  <path d="M12 8v4l3 3" />
+                  <circle cx="12" cy="12" r="10" />
+                </svg>
+                <div>
+                  <div style="font-weight:800;color:#34d399;font-size:.85rem" data-i18n="pres_s6_c6_ttl">Acordos de Compra &gt;180 dias</div>
+                  <div style="font-size:.72rem;color:var(--fr-txt-soft);margin-top:.15rem" data-i18n="pres_s6_c6_sub">Acordos de compra sem renovação ou revisão recente</div>
+                </div>
+              </div>
+              <div
+                style="background:rgba(251,146,60,.12);border:2px solid rgba(251,146,60,.4);border-radius:12px;padding:1rem;display:flex;gap:.8rem;align-items:center;box-shadow:0 2px 8px rgba(251,146,60,.1)">
+                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#fb923c" stroke-width="2"
+                  style="flex-shrink:0">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <div>
+                  <div style="font-weight:800;color:#fb923c;font-size:.85rem">OCs Sucessivas</div>
+                  <div style="font-size:.72rem;color:var(--fr-txt);font-weight:700;margin-top:.15rem">Fracionamento: 2+ OCs no mês para mesmo fornecedor e item (#GRP)</div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:1rem;font-size:.78rem;color:var(--fr-txt-soft);text-align:center" data-i18n="pres_s6_foot">Cada exceção mostra valor, fornecedor, concentração por comprador e tabela exportável</div>
+          </div>
+        </div>
+
+        <!-- SLIDE 7: Benefícios -->
+        <div class="slide" data-slide="7">
+          <div class="slide-inner">
+            <div class="slide-tag" data-i18n="pres_s7_tag">Resultado</div>
+            <div class="slide-title" data-i18n="pres_s7_title">O que Ganhamos com Isso</div>
+            <div
+              data-i18n="pres_s7_banner" style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:10px;padding:.7rem 1rem;margin-bottom:.8rem;font-size:.82rem;color:var(--fr-txt);font-weight:600;text-align:center">
+              As exceções que antes eram invisíveis agora têm nome, valor e dono.</div>
+            <div class="slide-benefit-grid">
+              <div class="slide-benefit">
+                <div class="sb-icon">⏱️</div>
+                <div class="sb-title" data-i18n="pres_s7_b1_ttl">Economia de Tempo</div>
+                <div class="sb-desc" data-i18n="pres_s7_b1_desc"><strong style="color:var(--fr-txt)">6 módulos</strong> prontos substituem a extração manual de múltiplas fontes — atualização automática diária</div>
+              </div>
+              <div class="slide-benefit">
+                <div class="sb-icon">🔍</div>
+                <div class="sb-title" data-i18n="pres_s7_b2_ttl">Visibilidade Total</div>
+                <div class="sb-desc" data-i18n="pres_s7_b2_desc">100% do spend consolidado de múltiplas fontes, monitorado em um único portal com atualização diária</div>
+              </div>
+              <div class="slide-benefit">
+                <div class="sb-icon">🎯</div>
+                <div class="sb-title" data-i18n="pres_s7_b3_ttl">Ação Direcionada</div>
+                <div class="sb-desc" data-i18n="pres_s7_b3_desc">Identifique os principais fornecedores e compradores em cada tipo de exceção — <strong style="color:var(--fr-txt)">ação direcionada com dados reais</strong></div>
+              </div>
+              <div class="slide-benefit">
+                <div class="sb-icon">📊</div>
+                <div class="sb-title" data-i18n="pres_s7_b4_ttl">Decisão Baseada em Dados</div>
+                <div class="sb-desc" data-i18n="pres_s7_b4_desc">Compare gastos entre períodos com <strong style="color:var(--fr-txt)">comparação YoY automática</strong> — sempre na mesma base temporal</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 8: Próximos Passos -->
+        <div class="slide" data-slide="8">
+          <div class="slide-inner slide-hero">
+            <div class="slide-tag" data-i18n="pres_s8_tag">Próximos Passos</div>
+            <div class="slide-title" data-i18n="pres_s8_title">Comece a Usar Agora</div>
+            <div class="slide-subtitle" data-i18n="pres_s8_sub">
+              Acesse pelo navegador, explore os módulos e traga suas perguntas.<br>
+              O guia completo está disponível dentro do próprio app — aba "Guia".
+            </div>
+            <div style="margin-top:1.5rem; font-size:.88rem; color:var(--fr-txt-soft);" data-i18n="pres_s8_contact">
+              <strong style="color:var(--fr-txt);">Dúvidas?</strong> → <a href="mailto:renan.ferreira@grupobimbo.com" style="color:#60a5fa;">renan.ferreira@grupobimbo.com</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- TAB 3: DOCUMENTAÇÃO TÉCNICA                            -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div class="tab-content" id="content-tech">
+
+      <!-- 1. VISÃO GERAL -->
+      <div class="tech-section">
+        <h2 data-i18n="tech_s1_ttl"><span class="sec-num">1</span> Visão Geral</h2>
+        <p data-i18n="tech_s1_p">O <strong>PORTAL DE COMPRAS</strong> consolida dados de notas fiscais, ordens de compra e requisições do
+          Oracle Cloud em um portal web interativo. Backend em Flask + Lakebase PostgreSQL, frontend em HTML/JS com
+          Chart.js.</p>
+      </div>
+
+      <!-- 2. MANUAL DETALHADO DE MÉTRICAS, FÓRMULAS E SEGMENTAÇÕES POR ABA -->
+      <div class="tech-section" id="sec-manual-formulas">
+        <h2 data-i18n="tech_s2_ttl"><span class="sec-num">2</span> Manual de Métricas, Fórmulas e Segmentações por Aba</h2>
+        <p>Este manual técnico fornece o detalhamento exaustivo de <strong>cada indicador, gráfico e tabela analítica</strong> do Portal de Compras. Para cada elemento, são documentadas a fórmula matemática, a coluna de data filtrada pelos seletores de período (segmentação temporal), as tabelas de origem e as regras de negócio ou exclusões corporativas aplicadas.</p>
+
+        <!-- ALERTA DE ÂNCORAS TEMPORAIS -->
+        <div class="tech-alert" style="background: rgba(59, 130, 246, .08); border-color: rgba(59, 130, 246, .3);">
+          <span style="font-size: 1.1rem; line-height: 1;">ℹ️</span>
+          <div>
+            <strong style="color: #60a5fa;">Como a Segmentação de Datas Opera no Sistema:</strong><br>
+            Os filtros do cabeçalho superior (<strong>Ano</strong>, <strong>Mês</strong>, <strong>Dia</strong> e <strong>Período Personalizado De/Até</strong>) incidem sobre campos de data distintos conforme o módulo:
+            <ul style="margin: .4rem 0 .2rem; padding-left: 1.2rem;">
+              <li><strong>Performance, Gastos, Comercial e Governança</strong>: a segmentação atua sobre <span class="badge-date-anchor">notas_ri.DATA_LANCAMENTO</span> (data contábil da nota fiscal de recebimento), com exceção das <strong>OCs Pós-Fatura</strong> (que utilizam <span class="badge-date-anchor">notas_ri.DATA_PAGAMENTO</span> como fato gerador da liquidação financeira).</li>
+              <li><strong>Gestão de Ordens</strong>: a segmentação atua estritamente sobre <span class="badge-date-anchor badge-date-oc">ordens_compra.DATA_OC</span> (data oficial de criação/emissão da ordem de compra).</li>
+              <li><strong>Funil de Processo & Lead Time (Performance)</strong>: a âncora temporal atua unificadamente sobre <span class="badge-date-anchor">notas_ri.DATA_LANCAMENTO</span> para todos os escopos (<strong>Diretos</strong>, <strong>Indiretos</strong> e <strong>Todos</strong>). O funil rastreia a coorte de ordens de compra e requisições originárias associadas às notas fiscais lançadas no período selecionado, alinhando o spend e o volume do processo com os demais indicadores contábeis da página.</li>
+              <li><strong>Relatórios</strong>: o filtro acompanha dinamicamente a <strong>Fonte</strong> selecionada pelo usuário no menu.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- QUICK NAV PILLS -->
+        <div class="metric-quick-nav">
+          <span style="font-size: .75rem; font-weight: 800; color: var(--fr-txt); display: flex; align-items: center; margin-right: .4rem;">Navegação Rápida:</span>
+          <a href="#mod-perf" class="metric-nav-pill">01. Performance</a>
+          <a href="#mod-spend" class="metric-nav-pill">02. Gastos (Spend)</a>
+          <a href="#mod-ordens" class="metric-nav-pill">03. Gestão de Ordens</a>
+          <a href="#mod-comercial" class="metric-nav-pill">04. Condições Comerciais</a>
+          <a href="#mod-gov" class="metric-nav-pill">05. Governança</a>
+          <a href="#mod-relat" class="metric-nav-pill">06. Relatórios</a>
+          <a href="#mod-cad" class="metric-nav-pill">07. Cadastros de Apoio</a>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- MÓDULO 01: PERFORMANCE DE COMPRAS                        -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <div class="metric-module-card" id="mod-perf">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num" style="background:#2563eb; width:22px; height:22px; font-size:.65rem;">01</span>
+              Módulo 01 — Performance de Compras (<code>performance.html</code>)
+            </h3>
+            <span class="metric-module-badge" style="background:#2563eb;">Tabela Base: notas_ri</span>
+          </div>
+          <div class="metric-module-body">
+            <p>Painel executivo com a visão consolidada dos gastos, prazos médios de pagamento, aderência à centralização, alertas operacionais prioritários e lead time ponta a ponta.</p>
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 18%;">Visual / Card</th>
+                  <th style="width: 27%;">Métrica & Fórmula de Cálculo</th>
+                  <th style="width: 17%;">Tabelas & Colunas</th>
+                  <th style="width: 16%;">Âncora de Data</th>
+                  <th style="width: 22%;">Regras de Negócio & Filtros</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card</span><br>
+                    <strong>Spend Líquido</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">SUM(valor_liquido_brl)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      <strong>Comparativo YoY / MoM:</strong><br>
+                      • Se Ano + Mês: vs. mês anterior até o mesmo dia.<br>
+                      • Se só Ano: YTD vs. YTD ano anterior (mesmo dia).<br>
+                      <span class="metric-formula-box">((Spend_Atual - Spend_Ant) / Spend_Ant) * 100</span>
+                    </div>
+                  </td>
+                  <td><code>notas_ri.valor_liquido_brl</code></td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Exclusão permanente de <code>grupo_compras = 'COMERCIAL'</code>. Converte moedas internacionais para BRL via taxa PTAX oficial do Oracle Cloud.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card</span><br>
+                    <strong>Prazo Médio de Pagamento</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">SUM(pgto_x_valor) / SUM(valor_liquido_brl)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Prazo médio ponderado pelo montante financeiro da nota fiscal em dias corridos.
+                    </div>
+                  </td>
+                  <td>
+                    <code>notas_ri.pgto_x_valor</code><br>
+                    <code>notas_ri.valor_liquido_brl</code>
+                  </td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>O produto <code>prazo_pgto * valor_liquido_brl</code> é pré-calculado no ETL para permitir agregação aditiva instantânea em consultas SQL de alta performance.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card</span><br>
+                    <strong>Centralização (%)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">(SUM(CASE WHEN centralizado = 'CENTRALIZADO' THEN valor_liquido_brl ELSE 0 END) / SUM(valor_liquido_brl)) * 100</div>
+                  </td>
+                  <td>
+                    <code>notas_ri.centralizado</code><br>
+                    <code>notas_ri.valor_liquido_brl</code>
+                  </td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Classificado como <strong>CENTRALIZADO</strong> se: OC tipo Blanket; OC Standard ≥ R$ 30K de compradores de Compras; OC vinculada a Acordo BPA; ou comprador em <code>compradores_funcionais.area = 'Compras'</code>.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-chart">Gráfico</span><br>
+                    <strong>Spend Líquido vs Ano Anterior (YoY Mensal)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">SUM(valor_liquido_brl)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Agrupado mensalmente: <code>SUBSTRING(data_lancamento, 6, 2)</code> para o ano selecionado ($Y$) e ano anterior ($Y-1$).
+                    </div>
+                  </td>
+                  <td><code>notas_ri.valor_liquido_brl</code></td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Exibe a sazonalidade e taxa de expansão orçamentária mês a mês. Ignora notas com valores nulos ou cancelados.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-table">Tabela / Gráfico</span><br>
+                    <strong>Aumento de Preço Acumulado / Descontos</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">Impacto = SUM(saving_total)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      <code>Δ Preço = preco_unit_atual - preco_unit_ant</code><br>
+                      Toggle executivo: alternância entre visualização em Tabela detalhada e Gráfico por fornecedor/item.
+                    </div>
+                  </td>
+                  <td>
+                    <code>notas_ri.saving_total</code><br>
+                    <code>notas_ri.valor_liquido_brl</code>
+                  </td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Filtro de sanidade descarta distorções cadastrais: apenas variações onde o percentual está estritamente entre 0% e 100% são computadas.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-chart">Funil</span><br>
+                    <strong>Funil de Processo & Lead Time</strong><br>
+                    <span style="font-size:.65rem; color:var(--fr-txt-soft);">Marcos de Faturamento Progressivo</span>
+                  </td>
+                  <td>
+                    <div style="font-size:.70rem; color:var(--fr-txt-soft); line-height:1.45;">
+                      <strong style="color:var(--fr-txt,#E8F4FD);">Taxa de Avanço (Avanço Qtd — Funil Cumulativo):</strong><br>
+                      Calculada <strong>100% sobre a quantidade física de documentos</strong> (não sobre Spend monetário):<br>
+                      <div class="metric-formula-box">Avanço (Qtd) = (Qtd Documentos na Etapa / Qtd na Etapa Inicial Base 100%) × 100</div>
+                      <em>Garante uma progressão estritamente decrescente ao longo do afunilamento das barras.</em><br><br>
+                      <strong style="color:var(--fr-txt,#E8F4FD);">No Hover (Detalhamento Passo a Passo):</strong><br>
+                      <div class="metric-formula-box">Avanço vs Anterior = (Qtd Etapa Atual / Qtd Etapa Anterior) × 100</div>
+                      <strong style="color:var(--fr-txt,#E8F4FD);">Prazos Médios (Lead Times):</strong><br>
+                      • <em>Req → Pedido:</em> <code>AVG(d_oc - req_dt)</code><br>
+                      • <em>Pedido → Aprovação:</em> <code>AVG(d_aprov - d_oc)</code><br>
+                      • <em>Aprovação → 1ª NF:</em> <code>AVG(first_nf_date - d_aprov)</code><br>
+                      • <em>1ª NF → Conclusão Faturamento:</em> <code>AVG(last_nf_date - first_nf_date)</code>
+                    </div>
+                  </td>
+                  <td>
+                    <code>requisicoes</code> (requisicao, dt_aprovacao, dt_criacao, valor_requisicao)<br>
+                    <code>ordens_compra</code> (numero_oc, chave_oc_linha, valor_original_brl, data_oc, dt_aprovacao, status_aprovacao, status_fechamento)<br>
+                    <code>notas_ri</code> (chave_oc_linha, nota_fiscal, valor_liquido_brl, data_lancamento)
+                  </td>
+                  <td>
+                    <div style="font-size:.70rem; line-height:1.4;">
+                      <span class="badge-date-anchor">notas_ri.DATA_LANCAMENTO</span><br>
+                      <span style="font-size:.65rem; color:var(--fr-txt-soft);">(Unificada para Diretos, Indiretos e Todos)</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div style="font-size:.70rem; line-height:1.4;">
+                      • <strong>Coorte Unificada por Faturamento:</strong> Os filtros de data incidem sobre <code>notas_ri.DATA_LANCAMENTO</code> em todos os escopos, alinhando o funil com os demais KPIs de Performance.<br>
+                      • <strong>Rastreamento Upstream:</strong> O funil busca as ordens de compra correspondentes às notas fiscais do período (e requisições vinculadas para Indiretos), computando o avanço e lead time entre cada marco.<br>
+                      • <strong>Faturamento Iniciado:</strong> Pedidos com ≥ 1 NF lançada no período selecionado.<br>
+                      • <strong>Totalmente Concluído:</strong> Pedidos 100% faturados (status fechado no Oracle/SAP ou faturamento acumulado ≥ 98%). Exibe tag de pedidos parciais remanescentes.<br>
+                      • <strong>Auto-Fit Responsivo:</strong> Textos e valores escalam dinamicamente dentro das barras mais estreitas para evitar qualquer vazamento visual.
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-chart">Gráfico</span><br>
+                    <strong>Desvios de Processo</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">SUM(valor_liquido_brl)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Quebra percentual e em reais por: <em>OC Pós-Fatura</em> (data_oc &gt; data_lancamento), <em>Descentralizadas</em> (centralizado = 'DESCENTRALIZADO') e <em>Notas sem OC</em> (numero_oc = 'Nota sem OC').
+                    </div>
+                  </td>
+                  <td>
+                    <code>notas_ri.data_lancamento</code><br>
+                    <code>notas_ri.data_oc</code><br>
+                    <code>notas_ri.centralizado</code>
+                  </td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Mapeia o nível de vazamento de valor e não conformidade operacional da organização de compras.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-alert">Alerta</span><br>
+                    <strong>O que exige atenção agora</strong>
+                  </td>
+                  <td>
+                    <div style="font-size:.7rem; color:var(--fr-txt-soft);">
+                      Exibe <strong>Qtd</strong>, <strong>% Qtd</strong>, <strong>Valor (R$)</strong> e <strong>% Valor</strong>:<br>
+                      <strong>1. OCs aprovadas após fatura:</strong> <code>oc_pos_fatura = 'SIM'</code> (âncora em data_pagamento)<br>
+                      <strong>2. Descentralizadas &gt; R$ 30K:</strong> <code>centralizado = 'DESCENTRALIZADO' AND valor ≥ 30000</code> (excluindo compradores da área Compras)<br>
+                      <strong>3. Reqs pendentes aprovação:</strong> <code>status</code> pendente / <code>dt_aprovacao IS NULL</code><br>
+                      <strong>4. OCs aprovadas sem NF &gt; 90 dias:</strong> <code>status_aprovacao = 'APPROVED'</code> sem NF após 90d
+                    </div>
+                  </td>
+                  <td>
+                    <code>notas_ri</code><br>
+                    <code>requisicoes</code><br>
+                    <code>ordens_compra</code><br>
+                    <code>compradores_funcionais</code>
+                  </td>
+                  <td>
+                    <div style="font-size:.7rem;">
+                      • Linha 1 (OCs pós-fatura): <span class="badge-date-anchor">notas_ri.data_pagamento</span><br>
+                      • Linha 2 (Descentralizadas): <span class="badge-date-anchor">notas_ri.data_lancamento</span><br>
+                      • Linha 3: <span class="badge-date-anchor badge-date-req">requisicoes.dt_criacao</span><br>
+                      • Linha 4: <span class="badge-date-anchor badge-date-oc">ordens_compra.dt_aprovacao</span>
+                    </div>
+                  </td>
+                  <td>Cruza com a tabela <code>compradores_funcionais</code> (área = 'Compras') para não apontar indevidamente compras feitas por compradores de compras como exceções descentralizadas.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- MÓDULO 02: ANÁLISE DE GASTOS (SPEND)                    -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <div class="metric-module-card" id="mod-spend">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num" style="background:#059669; width:22px; height:22px; font-size:.65rem;">02</span>
+              Módulo 02 — Análise de Gastos / Spend (<code>spend.html</code>)
+            </h3>
+            <span class="metric-module-badge" style="background:#059669;">Tabela Base: notas_ri</span>
+          </div>
+          <div class="metric-module-body">
+            <p>Módulo de inteligência de gastos categorizados, Pareto orçamentário (Curva ABC), desdobramentos por fornecedor, planta fabril, macro categoria e cross-filters dinâmicos.</p>
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 18%;">Visual / Card</th>
+                  <th style="width: 27%;">Métrica & Fórmula de Cálculo</th>
+                  <th style="width: 17%;">Tabelas & Colunas</th>
+                  <th style="width: 16%;">Âncora de Data</th>
+                  <th style="width: 22%;">Regras de Negócio & Filtros</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-chart">Gráfico</span><br>
+                    <strong>Spend por Empresa</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">SUM(valor_liquido_brl)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Agrupado por BU: <code>empresa</code> ('BB' = Bimbo Brasil, 'BQ' = Bimbo QSR).
+                    </div>
+                  </td>
+                  <td>
+                    <code>notas_ri.empresa</code><br>
+                    <code>notas_ri.valor_liquido_brl</code>
+                  </td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Mapeamento Oracle: BU <code>300000002033035</code> → BB; BU <code>300000002033048</code> → BQ.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-chart">Gráfico / Ranking</span><br>
+                    <strong>Top Fornecedores & Top Itens</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">SUM(valor_liquido_brl) ORDER BY 1 DESC LIMIT N</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Top $N$ parceiros comerciais e códigos de materiais com maior volume liquidado.
+                    </div>
+                  </td>
+                  <td>
+                    <code>notas_ri.nome_fornecedor</code><br>
+                    <code>notas_ri.descricao_item</code><br>
+                    <code>notas_ri.codigo_item</code>
+                  </td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Permite cross-filtering ao clicar nas barras para refinar todos os demais visuais da página no item ou fornecedor clicado.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-chart">Gráfico</span><br>
+                    <strong>Spend por Macro Categoria & Categoria</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">SUM(valor_liquido_brl) GROUP BY COALESCE(macro_categoria, 'Indiretos')</div>
+                  </td>
+                  <td>
+                    <code>notas_ri.macro_categoria</code><br>
+                    <code>notas_ri.categoria_item</code>
+                  </td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Se a macro categoria for nula no cadastro Oracle, o sistema classifica preventivamente como 'Indiretos'.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-chart">Gráfico / Mapa</span><br>
+                    <strong>Spend por Planta Fabril / Unidade</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">SUM(valor_liquido_brl) GROUP BY planta</div>
+                  </td>
+                  <td><code>notas_ri.planta</code></td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Desagrega o gasto pelas fábricas do grupo (ex: Mogi, Campinas, Rio de Janeiro, Brasília, Jaboatão, etc.).</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-table">Curva ABC</span><br>
+                    <strong>Curva ABC Dinâmica de Itens / Fornecedores</strong>
+                  </td>
+                  <td>
+                    <div style="font-size:.7rem; color:var(--fr-txt-soft);">
+                      Cálculo de percentual cumulativo ordenado decrescente:<br>
+                      • <strong>Classe A:</strong> 0% a 80% do spend total (poucos itens/fornecedores críticos).<br>
+                      • <strong>Classe B:</strong> 80% a 95% do spend total (intermediários, 15% do total).<br>
+                      • <strong>Classe C:</strong> 95% a 100% do spend total (cauda longa, 5% do total).
+                    </div>
+                  </td>
+                  <td>
+                    <code>notas_ri.nome_fornecedor</code><br>
+                    <code>notas_ri.codigo_item</code><br>
+                    <code>notas_ri.valor_liquido_brl</code>
+                  </td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Recalculada dinamicamente via Window Function SQL (<code>SUM(...) OVER (ORDER BY ...)</code>) conforme os filtros aplicados.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-table">Tabela</span><br>
+                    <strong>Matriz de Centralização por Categoria</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">% Cent = Spend_Centralizado / Spend_Total * 100</div>
+                  </td>
+                  <td>
+                    <code>notas_ri.macro_categoria</code><br>
+                    <code>notas_ri.centralizado</code>
+                  </td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Identifica quais famílias de suprimentos possuem alto índice de compras descentralizadas fora do padrão corporativo.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- MÓDULO 03: GESTÃO DE ORDENS                             -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <div class="metric-module-card" id="mod-ordens">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num" style="background:#d97706; width:22px; height:22px; font-size:.65rem;">03</span>
+              Módulo 03 — Gestão de Ordens (<code>ordens.html</code>)
+            </h3>
+            <span class="metric-module-badge" style="background:#d97706;">Tabela Base: ordens_compra</span>
+          </div>
+          <div class="metric-module-body">
+            <p>Controle do backlog de pedidos emitidos, compromissos financeiros futuros em aberto, ordens de compra em atraso físico e aging de entregas.</p>
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 18%;">Visual / Card</th>
+                  <th style="width: 27%;">Métrica & Fórmula de Cálculo</th>
+                  <th style="width: 17%;">Tabelas & Colunas</th>
+                  <th style="width: 16%;">Âncora de Data</th>
+                  <th style="width: 22%;">Regras de Negócio & Filtros</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card</span><br>
+                    <strong>Total de Ordens Emitidas</strong>
+                  </td>
+                  <td><div class="metric-formula-box">COUNT(DISTINCT numero_oc)</div></td>
+                  <td><code>ordens_compra.numero_oc</code></td>
+                  <td><span class="badge-date-anchor badge-date-oc">ordens_compra.data_oc</span></td>
+                  <td>Conta pedidos únicos emitidos no período da segmentação, independente de serem Standard ou Blanket.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card</span><br>
+                    <strong>Valor Total Emitido</strong>
+                  </td>
+                  <td><div class="metric-formula-box">SUM(valor_original_brl)</div></td>
+                  <td><code>ordens_compra.valor_original_brl</code></td>
+                  <td><span class="badge-date-anchor badge-date-oc">ordens_compra.data_oc</span></td>
+                  <td>Montante contratado total das linhas das ordens de compra emitidas.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card</span><br>
+                    <strong>Saldo em Aberto (R$)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">SUM(valor_original_brl - COALESCE(valor_utilizado_brl, 0))</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Filtro estrito: <code>status_fechamento = 'ABERTA'</code>.
+                    </div>
+                  </td>
+                  <td>
+                    <code>ordens_compra.valor_original_brl</code><br>
+                    <code>ordens_compra.valor_utilizado_brl</code><br>
+                    <code>ordens_compra.status_fechamento</code>
+                  </td>
+                  <td><span class="badge-date-anchor badge-date-oc">ordens_compra.data_oc</span></td>
+                  <td>Representa o passivo compromissado pendente de faturamento físico/financeiro.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-alert">KPI Card</span><br>
+                    <strong>OCs em Atraso (Qtd & Valor)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">COUNT(DISTINCT numero_oc) & SUM(saldo_aberto)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Condição: <code>status_fechamento = 'ABERTA' AND CURRENT_DATE &gt; COALESCE(dt_prometida, dt_necessidade)</code>.
+                    </div>
+                  </td>
+                  <td>
+                    <code>ordens_compra.dt_prometida</code><br>
+                    <code>ordens_compra.dt_necessidade</code><br>
+                    <code>ordens_compra.status_fechamento</code>
+                  </td>
+                  <td><span class="badge-date-anchor badge-date-oc">ordens_compra.data_oc</span></td>
+                  <td>Identifica pedidos que já deveriam ter sido entregues na planta pelo fornecedor e que continuam com saldo em aberto no ERP.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-chart">Gráfico</span><br>
+                    <strong>Previsto vs. Realizado</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">Previsto = SUM(valor_original_brl)</div>
+                    <div class="metric-formula-box">Realizado = SUM(valor_utilizado_brl)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Agrupado por mês de emissão da OC: <code>SUBSTRING(data_oc, 1, 7)</code>.
+                    </div>
+                  </td>
+                  <td>
+                    <code>ordens_compra.valor_original_brl</code><br>
+                    <code>ordens_compra.valor_utilizado_brl</code>
+                  </td>
+                  <td><span class="badge-date-anchor badge-date-oc">ordens_compra.data_oc</span></td>
+                  <td>Compara o volume orçado emitido contra o consumo efetivamente liquidado pelas unidades.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-chart">Gráfico</span><br>
+                    <strong>Faixas de Atraso (Aging Buckets)</strong>
+                  </td>
+                  <td>
+                    <div style="font-size:.7rem; color:var(--fr-txt-soft);">
+                      <code>Dias Atraso = CURRENT_DATE - dt_prometida::date</code><br>
+                      • <strong>&lt; 15 dias</strong>: atraso operacional recente.<br>
+                      • <strong>15 a 30 dias</strong>: atenção moderada.<br>
+                      • <strong>31 a 60 dias</strong>: atraso crítico de fornecimento.<br>
+                      • <strong>&gt; 60 dias</strong>: risco de ruptura ou pedido zumbi para cancelamento.
+                    </div>
+                  </td>
+                  <td><code>ordens_compra.dt_prometida</code></td>
+                  <td><span class="badge-date-anchor badge-date-oc">ordens_compra.data_oc</span></td>
+                  <td>Permite identificar ordens antigas que precisam de saneamento cadastral (encerramento forçado).</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-table">Tabela</span><br>
+                    <strong>Tabela de Ordens em Aberto</strong>
+                  </td>
+                  <td>Grid analítico com paginação, busca e ordenação por dias de atraso, fornecedor, comprador e valor em aberto.</td>
+                  <td><code>ordens_compra</code></td>
+                  <td><span class="badge-date-anchor badge-date-oc">ordens_compra.data_oc</span></td>
+                  <td>Permite ao comprador filtrar suas ordens diretamente pelo seu nome de usuário.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- MÓDULO 04: CONDIÇÕES COMERCIAIS                         -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <div class="metric-module-card" id="mod-comercial">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num" style="background:#7c3aed; width:22px; height:22px; font-size:.65rem;">04</span>
+              Módulo 04 — Condições Comerciais (<code>comercial.html</code>)
+            </h3>
+            <span class="metric-module-badge" style="background:#7c3aed;">Tabela Base: notas_ri</span>
+          </div>
+          <div class="metric-module-body">
+            <p>Análise de prazos médios de pagamento concedidos pelos fornecedores, distribuição por faixas de vencimento e oportunidades de liberação de Working Capital.</p>
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 18%;">Visual / Card</th>
+                  <th style="width: 27%;">Métrica & Fórmula de Cálculo</th>
+                  <th style="width: 17%;">Tabelas & Colunas</th>
+                  <th style="width: 16%;">Âncora de Data</th>
+                  <th style="width: 22%;">Regras de Negócio & Filtros</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card</span><br>
+                    <strong>Prazo Médio Ponderado Geral</strong>
+                  </td>
+                  <td><div class="metric-formula-box">SUM(pgto_x_valor) / SUM(valor_liquido_brl)</div></td>
+                  <td>
+                    <code>notas_ri.pgto_x_valor</code><br>
+                    <code>notas_ri.valor_liquido_brl</code>
+                  </td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Pondera cada prazo pela liquidez monetária da transação.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card</span><br>
+                    <strong>% Spend em Prazo Longo (≥ 60 dias)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">(SUM(CASE WHEN prazo_pgto &gt;= 60 THEN valor_liquido_brl ELSE 0 END) / SUM(valor_liquido_brl)) * 100</div>
+                  </td>
+                  <td>
+                    <code>notas_ri.prazo_pgto</code><br>
+                    <code>notas_ri.valor_liquido_brl</code>
+                  </td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Mede a aderência à meta corporativa de prazos estendidos (DPO).</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card</span><br>
+                    <strong>Fornecedores Críticos (&lt; 60 dias)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">COUNT(DISTINCT nome_fornecedor) WHERE prazo_medio_forn &lt; 60</div>
+                  </td>
+                  <td>
+                    <code>notas_ri.nome_fornecedor</code><br>
+                    <code>notas_ri.prazo_pgto</code>
+                  </td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Fornecedores que operam abaixo do target e configuram alvo imediato para renegociação comercial.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-chart">Gráfico</span><br>
+                    <strong>Evolução Mensal do Prazo Médio</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">SUM(pgto_x_valor) / SUM(valor_liquido_brl)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Média ponderada agrupada por mês de escrituração (<code>data_lancamento</code>).
+                    </div>
+                  </td>
+                  <td><code>notas_ri</code></td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Monitorea se a curva de prazos da companhia está em trajetória de expansão ou encurtamento.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-chart">Gráfico</span><br>
+                    <strong>Distribuição de Spend por Faixa de Prazo</strong>
+                  </td>
+                  <td>
+                    <div style="font-size:.7rem; color:var(--fr-txt-soft);">
+                      Agrupamento do Spend nas faixas:<br>
+                      • <em>À Vista</em> (0 dias)<br>
+                      • <em>1 a 30 dias</em><br>
+                      • <em>31 a 60 dias</em><br>
+                      • <em>61 a 90 dias</em><br>
+                      • <em>&gt; 90 dias</em>
+                    </div>
+                  </td>
+                  <td><code>notas_ri.prazo_pgto</code></td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Permite identificar concentração de pagamentos em prazos curtos que pressionam o fluxo de caixa.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-table">Tabela</span><br>
+                    <strong>Oportunidades de Renegociação (Working Capital)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">Potencial = (60 - Prazo_Atual) * (Spend_Anual / 360)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Calcula a liberação financeira estimada no caixa caso o fornecedor atinja o patamar de 60 dias.
+                    </div>
+                  </td>
+                  <td>
+                    <code>notas_ri.nome_fornecedor</code><br>
+                    <code>notas_ri.prazo_pgto</code><br>
+                    <code>notas_ri.valor_liquido_brl</code>
+                  </td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Apenas fornecedores com prazo médio ponderado inferior a 60 dias e com spend representativo são exibidos.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- MÓDULO 05: GOVERNANÇA                                   -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <div class="metric-module-card" id="mod-gov">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num" style="background:#dc2626; width:22px; height:22px; font-size:.65rem;">05</span>
+              Módulo 05 — Governança (<code>governanca.html</code>)
+            </h3>
+            <span class="metric-module-badge" style="background:#dc2626;">Tabela Base: notas_ri + lookups</span>
+          </div>
+          <div class="metric-module-body">
+            <p>Auditoria contínua de desvios de processo, fatos consumados (OC pós-fatura), compras sem pedido formal e violações de alçada de descentralização.</p>
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 18%;">Visual / Card</th>
+                  <th style="width: 27%;">Métrica & Fórmula de Cálculo</th>
+                  <th style="width: 17%;">Tabelas & Colunas</th>
+                  <th style="width: 16%;">Âncora de Data</th>
+                  <th style="width: 22%;">Regras de Negócio & Filtros</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card (Vermelho)</span><br>
+                    <strong>OC Pós-Fatura (Fato Consumado)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">COUNT(DISTINCT nota_fiscal) & SUM(valor_liquido_brl)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      <strong>Subtítulo:</strong> <code>(pos_fatura_qty / total_nfs_pgto) × 100</code> % (qtd) do total de NFs.<br>
+                      <strong>Critério:</strong> <code>COALESCE(dt_nota, data_lancamento) &lt; dt_aprovacao</code> da OC vinculada.<br>
+                      <strong>Expurgo:</strong> Fornecedores especiais são excluídos do numerador (<code>is_fornecedor_especial = 'NÃO ESPECIAL'</code>).
+                    </div>
+                  </td>
+                  <td>
+                    <code>notas_ri nf</code><br>
+                    <code>ordens_compra oc</code> (via <code>chave_oc_linha</code>)
+                  </td>
+                  <td><span class="badge-date-anchor">notas_ri.data_pagamento</span></td>
+                  <td>Fato consumado: mercadoria/fatura emitida antes da aprovação eletrônica do pedido de compra. A âncora de filtro do período segue a <strong>data de pagamento</strong> da fatura, e o denominador reflete o total de NFs pagas no período selecionado.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card (Roxo)</span><br>
+                    <strong>OCs Descentr. &gt; 30K</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">COUNT(DISTINCT numero_oc) & SUM(valor_oc)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      <strong>Subtítulo:</strong> <code>(decentral_qty / total_oc_decentral) × 100</code> % (qtd) das OCs descentralizadas.<br>
+                      <strong>Critério:</strong> <code>centralizado = 'DESCENTRALIZADO' AND SUM(valor_original_brl) &gt; 30000</code> agrupado por OC, sem contrato guarda-chuva (<code>numero_acordo IS NULL</code>).<br>
+                      <strong>Expurgo:</strong> Compradores da área corporativa de Compras (<code>compradores_funcionais</code> e <code>colaboradores</code>).
+                    </div>
+                  </td>
+                  <td>
+                    <code>ordens_compra oc</code><br>
+                    <code>compradores_funcionais</code><br>
+                    <code>colaboradores</code>
+                  </td>
+                  <td><span class="badge-date-anchor badge-date-oc">ordens_compra.data_oc</span></td>
+                  <td>Auditoria de alçada de compra: pedidos emitidos descentralizadamente pelas plantas/áreas sem gestão central cujo montante supera R$ 30 mil. O denominador computa o total de OCs descentralizadas emitidas no período.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card (Azul)</span><br>
+                    <strong>Nota sem OC</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">COUNT(DISTINCT nota_fiscal) & SUM(valor_liquido_brl)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      <strong>Subtítulo:</strong> <code>(sem_oc_val / total_spend) × 100</code> % (R$) do Spend Líquido Total.<br>
+                      <strong>Critério:</strong> <code>numero_oc = 'Nota sem OC'</code>.<br>
+                      <strong>Filtro Ativo Padrão:</strong> <code>is_fornecedor_nao_negociavel = 'NEGOCIAVEL'</code>.
+                    </div>
+                  </td>
+                  <td><code>notas_ri</code></td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Notas fiscais lançadas no recebimento fiscal sem vínculo a qualquer ordem de compra formal. Por padrão, concessionárias públicas (energia, saneamento, tributos e taxas) são filtradas via cadastro de fornecedores não negociáveis, isolando desvios comerciais genuínos.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card (Verde)</span><br>
+                    <strong>Acordos de Compra &gt; 180 Dias</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">COUNT(DISTINCT numero_acordo) & SUM(acordo_valor_total)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      <strong>Subtítulo:</strong> <code>(blanket_old_qty / total_oc_faturadas) × 100</code> % (qtd) das OCs faturadas.<br>
+                      <strong>Critério:</strong> Contratos guarda-chuva (BPA) com <code>acordo_status = 'OPEN'</code> criados há mais de 180 dias (<code>CURRENT_DATE - acordo_dt_criacao &gt; 180</code>) sem valor liberado (<code>acordo_valor_liberado = 0</code>).
+                    </div>
+                  </td>
+                  <td><code>ordens_compra</code></td>
+                  <td><span class="badge-date-anchor badge-date-oc">ordens_compra.acordo_dt_criacao</span></td>
+                  <td>Identifica contratos abertos que nunca geraram pedidos de compra após 6 meses de criação. Segue filtros de entidade (Empresa e Grupo de Compras).</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi" style="background:#0891b2">KPI Card (Ciano)</span><br>
+                    <strong>OCs Abertas &gt; 90 Dias</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">COUNT(DISTINCT numero_oc) & SUM(valor_original_brl)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      <strong>Subtítulo:</strong> <code>(oc90_qty / total_oc_abertas) × 100</code> % (qtd) das OCs abertas &middot; Valor total em R$.<br>
+                      <strong>Critério:</strong> <code>status_fechamento = 'ABERTA' AND dias_aberto &gt; 90</code>.<br>
+                      <strong>Regra de Filtros:</strong> Não responde aos filtros de datas (reflete a posição acumulada de pedidos abertos), mas respeita rigorosamente todos os filtros de entidade (Empresa, Direto/Indireto, Fornecedor, Comprador, Unidade, Categoria, etc.).
+                    </div>
+                  </td>
+                  <td><code>ordens_compra</code></td>
+                  <td><span class="badge-date-anchor badge-date-oc">ordens_compra.data_oc</span></td>
+                  <td>Monitora ordens de compra em aberto com mais de 90 dias sem faturamento ou encerramento. Aponta pendências operacionais de recebimento, pedidos abandonados ou atrasos expressivos de fornecedores.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi">KPI Card (Âmbar)</span><br>
+                    <strong>OC Emergencial</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">COUNT(DISTINCT numero_oc) & SUM(valor_liquido_brl)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      <strong>Critério:</strong> <code>urgente = 'SIM'</code> (pedidos/faturas com Tipo de Ordem = URGENTE no Oracle Cloud).
+                    </div>
+                  </td>
+                  <td><code>notas_ri</code></td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Compras aprovadas em caráter emergencial. Acompanha o montante e volume de pedidos submetidos em rito extraordinário.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-kpi" style="background:#ea580c">KPI Card (Laranja)</span><br>
+                    <strong>OCs Sucessivas (Fracionamento de Compras)</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">COUNT(DISTINCT grupo) & SUM(valor_oc)</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      <strong>Métrica Principal:</strong> Total de <code>grupos/casos</code> com 2 ou mais OCs emitidas para o mesmo fornecedor e mesmo item aquisição dentro do mesmo mês civil.<br>
+                      <strong>Subtítulo:</strong> <code>(sucessivas_val / total_valor_ocs_periodo) × 100</code> % (R$) das OCs do Período &middot; total de OCs envolvidas.<br>
+                      <strong>ID de Grupo:</strong> <code>#GRP-001, #GRP-002...</code> rankeado por materialidade financeira total do caso (<code>DENSE_RANK() OVER (ORDER BY total_grupo DESC)</code>).<br>
+                      <strong>Dispersão:</strong> <code>(MAX(valor_oc) - MIN(valor_oc)) / AVG(valor_oc) × 100</code> com filtros rápidos para <em>Valores Idênticos</em> e <em>Valores Próximos (&plusmn;10%)</em>.
+                    </div>
+                  </td>
+                  <td>
+                    <code>ordens_compra oc</code><br>
+                    <code>numero_oc</code><br>
+                    <code>numero_fornecedor</code><br>
+                    <code>item_aquisicao</code><br>
+                    <code>data_oc</code>
+                  </td>
+                  <td><span class="badge-date-anchor badge-date-oc">ordens_compra.data_oc</span></td>
+                  <td>Auditoria de fracionamento de compras: monitora potenciais tentativas de fragmentação de pedidos para contornar limites de alçadas de aprovação. Considera pedidos válidos (exclui incompletas, rejeitadas e retiradas). A ordenação nativa mantém todos os pedidos do mesmo caso agrupados consecutivamente para facilitar a auditoria.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-chart">Gráfico</span><br>
+                    <strong>Qual Desvio Tem Maior Impacto?</strong>
+                  </td>
+                  <td>
+                    <div class="metric-formula-box">SUM(valor_liquido_brl) & Qtd de Exceções</div>
+                    <div style="font-size:.7rem; margin-top:3px; color:var(--fr-txt-soft);">
+                      Ranking de impacto por categoria de desvio: OCs pós-fatura, Notas sem OC, OCs Descentr. &gt;30K, OCs abertas &gt;90 dias e Acordos &gt;180 dias. Expurga compras emergenciais da análise comparativa.
+                    </div>
+                  </td>
+                  <td>
+                    <code>notas_ri</code><br>
+                    <code>ordens_compra</code>
+                  </td>
+                  <td><span class="badge-date-anchor">Multi-Âncora</span></td>
+                  <td>Permite priorizar auditorias e planos de ação focando nas violações de processo com maior materialidade financeira.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-table">Tabela</span><br>
+                    <strong>Quem Concentra os Desvios?</strong>
+                  </td>
+                  <td>
+                    <div style="font-size:.7rem; color:var(--fr-txt-soft);">
+                      Ranking de usuários compradores/criadores da OC por: <strong>Departamento</strong>, <strong>Tipo de Exceção</strong>, <strong>Quantidade</strong>, <strong>Valor (R$)</strong> e <strong>% de Participação</strong>.<br>
+                      Título dinâmico exibe a concentração dos 3 maiores criadores de desvios. Exclui emergencial e notas sem OC (sem usuário associado).
+                    </div>
+                  </td>
+                  <td>
+                    <code>ordens_compra.nome_usuario</code><br>
+                    <code>ordens_compra.area</code><br>
+                    <code>notas_ri</code>
+                  </td>
+                  <td><span class="badge-date-anchor">Multi-Âncora</span></td>
+                  <td>Identifica reincidência comportamental e direciona reciclagem de treinamento sobre políticas de compras para os solicitantes e compradores.</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="metric-tag tag-table">Tabela Detalhada</span><br>
+                    <strong>Detalhamento de Exceções de Governança</strong>
+                  </td>
+                  <td>
+                    <div style="font-size:.7rem; color:var(--fr-txt-soft);">
+                      Tabela operacional com seletor de abas: <em>OC Pós-Fatura</em>, <em>Descentralizada &gt;30K</em>, <em>Nota sem OC</em>, <em>Acordo &gt;180d</em> e <em>Emergencial</em>. Paginação server-side (50 registros/página) e exportação XLSX integral.
+                    </div>
+                  </td>
+                  <td>
+                    <code>notas_ri</code><br>
+                    <code>ordens_compra</code>
+                  </td>
+                  <td><span class="badge-date-anchor">Conforme Tipo de Exceção</span></td>
+                  <td>Instrumento direto para auditoria analítica e extração de evidências linha a linha para contestação e compliance.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- MÓDULO 06: RELATÓRIOS                                   -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <div class="metric-module-card" id="mod-relat">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num" style="background:#0284c7; width:22px; height:22px; font-size:.65rem;">06</span>
+              Módulo 06 — Relatórios (<code>relatorios.html</code>)
+            </h3>
+            <span class="metric-module-badge" style="background:#0284c7;">Multi-Fonte Dinâmica</span>
+          </div>
+          <div class="metric-module-body">
+            <p>Módulo de exportação analítica e pesquisa avançada com paginação server-side, ordenação multi-coluna e exportação integral para Excel.</p>
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 20%;">Fonte Selecionada</th>
+                  <th style="width: 25%;">Tabela Principal</th>
+                  <th style="width: 25%;">Âncora de Data Filtrada</th>
+                  <th style="width: 30%;">Colunas de Exportação & Recursos</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Notas Fiscais (RI)</strong></td>
+                  <td><code>notas_ri</code></td>
+                  <td><span class="badge-date-anchor">notas_ri.data_lancamento</span></td>
+                  <td>Número RI, Nota Fiscal, Série, Data Lançamento, CNPJ Bimbo, Fornecedor, CNPJ Fornecedor, Item, Descrição, Valor Líquido, Saving Total, Prazo Pagamento, Status Pagamento, Centralizado, Planta.</td>
+                </tr>
+                <tr>
+                  <td><strong>Ordens de Compra</strong></td>
+                  <td><code>ordens_compra</code></td>
+                  <td><span class="badge-date-anchor badge-date-oc">ordens_compra.data_oc</span></td>
+                  <td>Número OC, Linha, Acordo, Data OC, Data Prometida, Fornecedor, Comprador, Unidade, Valor Original BRL, Valor Utilizado BRL, Status Aprovação, Status Fechamento, Centralizado.</td>
+                </tr>
+                <tr>
+                  <td><strong>Requisições</strong></td>
+                  <td><code>requisicoes</code></td>
+                  <td><span class="badge-date-anchor badge-date-req">COALESCE(dt_aprovacao, dt_criacao)</span></td>
+                  <td>Número Requisição, Data Criação, Data Aprovação, Requisitante, Descrição, Valor Requisição, Status Requisição, Status Ordem, Número OC Gerada.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════ -->
+        <!-- MÓDULO 07: CADASTROS DE APOIO                           -->
+        <!-- ════════════════════════════════════════════════════════ -->
+        <div class="metric-module-card" id="mod-cad">
+          <div class="metric-module-header">
+            <h3 class="metric-module-title">
+              <span class="sec-num" style="background:#4b5563; width:22px; height:22px; font-size:.65rem;">07</span>
+              Módulo 07 — Cadastros de Apoio (<code>cadastros.html</code>)
+            </h3>
+            <span class="metric-module-badge" style="background:#4b5563;">Lookups / Volume Unity Catalog</span>
+          </div>
+          <div class="metric-module-body">
+            <p>Bases dimensionais gerenciadas pelo usuário autorizado via portal web com sincronização dual-write no Volume do Unity Catalog e tabelas Lakebase.</p>
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th style="width: 25%;">Tabela de Lookup</th>
+                  <th style="width: 25%;">Arquivo Oficial no Volume</th>
+                  <th style="width: 20%;">Chave Primária</th>
+                  <th style="width: 30%;">Impacto nas Regras de Negócio</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>fornecedores_especiais</code></td>
+                  <td><code>fornecedores_especiais.csv</code></td>
+                  <td><code>cod_fornecedor_oracle</code></td>
+                  <td>Permite isolar fornecedores com regime especial de compras (commodities, utilities, impostos, aluguéis).</td>
+                </tr>
+                <tr>
+                  <td><code>fornecedores_nao_negociaveis</code></td>
+                  <td><code>fornecedores_nao_negociaiveis.csv</code></td>
+                  <td><code>cod_fornecedor_oracle</code></td>
+                  <td>Identifica parceiros tabelados/regulados que não entram na cobrança de savings de negociação de suprimentos.</td>
+                </tr>\n                <tr>
+                  <td><code>fornecedores_sem_oc</code></td>
+                  <td><code>fornecedores_sem_oc.csv</code></td>
+                  <td><code>cod_fornecedor_oracle</code></td>
+                  <td>Permite isolar fornecedores autorizados a faturar sem Ordem de Compra (sem atuação da equipe de Compras).</td>
+                </tr>
+                <tr>
+                  <td><code>compradores_funcionais</code></td>
+                  <td><code>COMPRADORES_FUNCIONAIS(BASE_COMPRAS).csv</code></td>
+                  <td><code>usuario_oracle</code></td>
+                  <td><strong>Crítica:</strong> alimenta a regra de Centralização (área = 'Compras') e expurga compras desses compradores do alerta de 'Descentralizadas &gt; R$ 30K'.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 3. ARQUITETURA -->
+      <div class="tech-section">
+        <h2 data-i18n="tech_s3_ttl"><span class="sec-num">3</span> Arquitetura</h2>
+        <table class="tech-table" data-i18n="tech_s3_tbl">
+          <tr>
+            <th>Etapa</th>
+            <th>Origem</th>
+            <th>Destino</th>
+            <th>Mecanismo</th>
+          </tr>
+          <tr>
+            <td><strong>Extração</strong></td>
+            <td>Oracle Cloud (<code>cat_ocloud_r5_dv.rg5glofsn_cz</code>)</td>
+            <td>Spark temp views</td>
+            <td>SQL via notebook ETL</td>
+          </tr>
+          <tr>
+            <td><strong>Lookups (Arquivos Base)</strong></td>
+            <td>Volume Unity Catalog (<code>cat_dnabb_dv.grobbcompr_cz.compras_360</code>)</td>
+            <td>Spark DataFrames / Lakebase</td>
+            <td>Pandas / Databricks Files SDK + psycopg2</td>
+          </tr>
+          <tr>
+            <td><strong>Carga Diária</strong></td>
+            <td>Spark temp views</td>
+            <td>Lakebase PostgreSQL (<code>compras</code>)</td>
+            <td>COPY blue-green swap</td>
+          </tr>
+          <tr>
+            <td><strong>Consumo do App</strong></td>
+            <td>Lakebase PostgreSQL (fallback: Volume)</td>
+            <td>Flask API → Frontend</td>
+            <td>psycopg2 + REST</td>
+          </tr>
+          <tr>
+            <td><strong>Gestão & Edição (Cadastros)</strong></td>
+            <td>Portal Web (Usuário Autorizado)</td>
+            <td>Volume Unity Catalog + Lakebase (tempo real)</td>
+            <td>API REST → Files SDK + PostgreSQL (sem deploy)</td>
+          </tr>
+        </table>
+        <div class="tech-diagram" data-i18n="tech_s3_diag">Oracle Cloud (cat_ocloud_r5_dv)
+          │
+          ▼
+          SQL Views (vw_notas_ri, vw_ordens_compra, vw_requisicoes)
+          + Volume Unity Catalog (cat_dnabb_dv.grobbcompr_cz.compras_360)
+          │
+          ▼
+          Lakebase PostgreSQL ─▶ schema "compras_staging" (blue-green)
+          │ │
+          │ validação + swap atômico
+          ▼ │
+          schema "compras" ◄────────────┘
+          ▲
+          │ (sincronização bidirecional em tempo real)
+          ▼
+          Flask API (app.py) ◄═══ Salvar Cadastros (Volume + Lakebase)
+          │
+          ▼
+          Frontend HTML/JS (Dashboard, Análises, Guia e Cadastros)</div>
+        <p><strong>Lakebase</strong>: Host
+          <code>ep-wispy-wildflower-e5pbme5k.database.brazilsouth.azuredatabricks.net</code>, database
+          <code>databricks_postgres</code>, projeto <code>compras-360</code>, branch <code>production</code>.</p>
+        <p><strong>ETL Notebook</strong>:
+          <code>/Shared/CONSULTAS_AUTOMATIZADAS/compras_360/compras_360_lakebase_etl</code></p>
+        <h3 data-i18n="tech_s3_job_ttl">Job de Atualização Automática</h3>
+        <table class="tech-table" data-i18n="tech_s3_job_tbl">
+          <tr>
+            <th>Propriedade</th>
+            <th>Valor</th>
+          </tr>
+          <tr>
+            <td>Nome</td>
+            <td><strong>ETL Compras 360 - Lakebase Daily</strong> (Job ID: <code>357960921780603</code>)</td>
+          </tr>
+          <tr>
+            <td>Horário</td>
+            <td><strong>Diariamente às 06:00</strong> (America/Sao_Paulo)</td>
+          </tr>
+          <tr>
+            <td>Status</td>
+            <td>Ativo (<code>UNPAUSED</code>)</td>
+          </tr>
+          <tr>
+            <td>Duração média</td>
+            <td>∼6 minutos</td>
+          </tr>
+          <tr>
+            <td>Notificação em falha</td>
+            <td><code>renan.ferreira@grupobimbo.com</code></td>
+          </tr>
+          <tr>
+            <td>Notebook executado</td>
+            <td><code>compras_360_lakebase_etl</code></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- 4. MODELO DE DADOS -->
+      <div class="tech-section">
+        <h2 data-i18n="tech_s4_ttl"><span class="sec-num">4</span> Modelo de Dados</h2>
+        <h3 data-i18n="tech_s4_p1_ttl">Tabelas Principais (schema <code>compras</code>)</h3>
+        <table class="tech-table" data-i18n="tech_s4_p1_tbl">
+          <tr>
+            <th>Tabela</th>
+            <th>Registros</th>
+            <th>Descrição</th>
+            <th>Colunas-chave</th>
+          </tr>
+          <tr>
+            <td><code>notas_ri</code></td>
+            <td>∼400K</td>
+            <td>Notas fiscais de recebimento</td>
+            <td><code>numero_ri</code>, <code>nota_fiscal</code>, <code>numero_oc</code>, <code>empresa</code>,
+              <code>macro_categoria</code>, <code>valor_liquido_brl</code>, <code>saving_total</code>,
+              <code>data_lancamento</code>, <code>grupo_compras</code>, <code>centralizado</code></td>
+          </tr>
+          <tr>
+            <td><code>ordens_compra</code></td>
+            <td>∼260K</td>
+            <td>Ordens de compra (linhas)</td>
+            <td><code>numero_oc</code>, <code>numero_acordo</code>, <code>chave_oc_linha</code>,
+              <code>macro_categoria</code>, <code>data_oc</code>, <code>status_aprovacao</code>,
+              <code>status_fechamento</code>, <code>valor_original_brl</code></td>
+          </tr>
+          <tr>
+            <td><code>requisicoes</code></td>
+            <td>∼90K</td>
+            <td>Requisições de compra</td>
+            <td><code>requisicao</code>, <code>numero_oc</code>, <code>dt_criacao</code>, <code>dt_aprovacao</code>,
+              <code>valor_requisicao</code>, <code>status</code></td>
+          </tr>
+        </table>
+        <h3 data-i18n="tech_s4_p2_ttl">Tabelas de Lookup (Cadastros de Apoio)</h3>
+        <table class="tech-table" data-i18n="tech_s4_p2_tbl">
+          <tr>
+            <th>Tabela</th>
+            <th>Registros</th>
+            <th>Descrição</th>
+            <th>Fonte & Gestão</th>
+          </tr>
+          <tr>
+            <td><code>fornecedores_especiais</code></td>
+            <td>∼54</td>
+            <td>Fornecedores marcados como especiais</td>
+            <td>Módulo Cadastros / Lakebase</td>
+          </tr>
+          <tr>
+            <td><code>fornecedores_nao_negociaveis</code></td>
+            <td>∼349</td>
+            <td>Fornecedores não negociáveis</td>
+            <td>Módulo Cadastros / Lakebase</td>
+          </tr>\n          <tr>
+            <td><code>fornecedores_sem_oc</code></td>
+            <td>∼85</td>
+            <td>Fornecedores autorizados sem OC (sem atuação de compras)</td>
+            <td>Módulo Cadastros / Lakebase</td>
+          </tr>
+          <tr>
+            <td><code>compradores_funcionais</code></td>
+            <td>∼690</td>
+            <td>Mapeamento comprador → área/unidade</td>
+            <td>Módulo Cadastros / Lakebase</td>
+          </tr>
+        </table>
+        <h3 data-i18n="tech_s4_joins_ttl">Joins Principais</h3>
+        <div data-i18n="tech_s4_joins_p"><p>• <code>notas_ri</code> ↔ <code>ordens_compra</code> via <code>CHAVE_OC_LINHA</code> (composta: NUMERO_OC + LINHA_OC)</p>
+        <p>• <code>requisicoes</code> ↔ <code>ordens_compra</code> via <code>NUMERO_OC</code> ou <code>REQUISICAO</code></p>
+        <p>• <code>ordens_compra</code> ↔ <code>compradores_funcionais</code> via <code>usuario</code> = <code>usuario_oracle</code></p></div>
+
+        <h3 data-i18n="tech_s4_vol_ttl">Volume Corporativo Unity Catalog (<code>cat_dnabb_dv.grobbcompr_cz.compras_360</code>)</h3>
+        <p data-i18n="tech_s4_vol_p">Seguindo o padrão de governança e arquitetura corporativa do Grupo Bimbo, as bases de apoio em CSV deixaram de residir em pastas locais do Workspace e passaram a residir no <strong>Volume Gerenciado do Unity Catalog</strong>:</p>
+        <table class="tech-table" data-i18n="tech_s4_vol_tbl">
+          <tr>
+            <th>Arquivo no Volume</th>
+            <th>Tabela Lakebase</th>
+            <th>Finalidade</th>
+            <th>Chave Primária</th>
+          </tr>
+          <tr>
+            <td><code>fornecedores_especiais.csv</code></td>
+            <td><code>fornecedores_especiais</code></td>
+            <td>Fornecedores com tratamento especial de compras</td>
+            <td><code>cod_fornecedor_oracle</code></td>
+          </tr>
+          <tr>
+            <td><code>fornecedores_nao_negociaiveis.csv</code></td>
+            <td><code>fornecedores_nao_negociaveis</code></td>
+            <td>Fornecedores não negociáveis (compras automáticas)</td>
+            <td><code>cod_fornecedor_oracle</code></td>
+          </tr>\n          <tr>
+            <td><code>fornecedores_sem_oc.csv</code></td>
+            <td><code>fornecedores_sem_oc</code></td>
+            <td>Fornecedores autorizados a faturar sem Ordem de Compra</td>
+            <td><code>cod_fornecedor_oracle</code></td>
+          </tr>
+          <tr>
+            <td><code>COMPRADORES_FUNCIONAIS(BASE_COMPRAS).csv</code></td>
+            <td><code>compradores_funcionais</code></td>
+            <td>Mapeamento oficial de compradores por área e unidade</td>
+            <td><code>usuario_oracle</code></td>
+          </tr>
+          <tr>
+            <td><code>backups/*.csv</code></td>
+            <td>—</td>
+            <td>Histórico de alterações com timestamp gerado a cada salvamento</td>
+            <td>—</td>
+          </tr>
+        </table>
+
+        <h4 data-i18n="tech_s4_vol_flow_ttl">Como Funciona a Atualização em Tempo Real (Zero Deploy)</h4>
+        <div class="tech-diagram" data-i18n="tech_s4_vol_flow_diag">1. Usuário edita / cadastra na aba "Cadastro Planilhas" e clica em "Salvar"
+   │
+   ├─▶ 2. Gravação de Backup com data/hora em /Volumes/.../backups/{tabela}_backup_{ts}.csv
+   ├─▶ 3. Sobrescrita do CSV oficial no Volume (/Volumes/.../{tabela}.csv)
+   ├─▶ 4. Sincronização atômica na tabela correspondente do Lakebase (TRUNCATE + INSERT)
+   └─▶ 5. Recálculo em background das flags de negócio (sem travar a tela)
+   │
+   ▼
+Resultado: O App reflete os novos dados IMEDIATAMENTE (sem necessidade de deploy de código!)</div>
+        <p data-i18n="tech_s4_vol_flow_p"><strong>Por que não precisa de deploy?</strong> O deploy de bundles (<code>databricks bundle deploy</code> / <code>databricks apps deploy</code>) serve exclusivamente para atualizar o código-fonte da aplicação (Python/HTML/JS). Os dados consumidos pelo portal são lidos dinamicamente do Lakebase e do Volume a cada requisição web, garantindo sincronização instantânea.</p>
+      </div>
+
+      <!-- 5. REGRAS DE NEGÓCIO -->
+      <div class="tech-section">
+        <h2 data-i18n="tech_s5_ttl"><span class="sec-num">5</span> Regras de Negócio</h2>
+
+        <h3 data-i18n="tech_s5_cent_ttl">Classificação de Centralização</h3>
+        <table class="tech-table" data-i18n="tech_s5_cent_tbl">
+          <tr>
+            <th>Condição</th>
+            <th>Resultado</th>
+          </tr>
+          <tr>
+            <td>OC tipo <code>BLANKET</code></td>
+            <td><strong>CENTRALIZADO</strong></td>
+          </tr>
+          <tr>
+            <td>OC tipo <code>STANDARD</code> com valor de linha ≥ R$ 30.000 realizada por compradores da área de compras</td>
+            <td><strong>CENTRALIZADO</strong></td>
+          </tr>
+          <tr>
+            <td>OC com acordo de compra (ou acordo de origem) referenciado</td>
+            <td><strong>CENTRALIZADO</strong></td>
+          </tr>
+          <tr>
+            <td>Nenhuma das anteriores</td>
+            <td><strong>DESCENTRALIZADO</strong></td>
+          </tr>
+        </table>
+        <div class="tech-alert" data-i18n="tech_s5_cent_alert">⚠️ <span>O código atual usa igualdade exata (<code>= 'Compras'</code>), não
+            <code>LIKE</code>. Hoje só existe o valor <code>'Compras'</code> (93 registros). Se novos valores contendo
+            "Compras" forem cadastrados, não serão capturados. Avaliar alteração no <code>app.py</code>
+            (<code>_EXCL_COMPRAS_OCS</code>, linha ∼331).</span></div>
+
+        <h3 data-i18n="tech_s5_grp_ttl">Grupo de Compras</h3>
+        <table class="tech-table" data-i18n="tech_s5_grp_tbl">
+          <tr>
+            <th>Condição</th>
+            <th>Grupo</th>
+          </tr>
+          <tr>
+            <td>Item começa com "A" ou "B"</td>
+            <td><strong>DIRETOS</strong></td>
+          </tr>
+          <tr>
+            <td>Sem item + criado por <code>BBAPPA0001</code></td>
+            <td><strong>COMERCIAL</strong></td>
+          </tr>
+          <tr>
+            <td>Sem item (demais)</td>
+            <td><strong>INDIRETOS</strong></td>
+          </tr>
+        </table>
+
+        <h3 data-i18n="tech_s5_bu_ttl">Empresa</h3>
+        <table class="tech-table" data-i18n="tech_s5_bu_tbl">
+          <tr>
+            <th>Código BU Oracle</th>
+            <th>Empresa</th>
+          </tr>
+          <tr>
+            <td><code>300000002033035</code></td>
+            <td>BB (Bimbo Brasil)</td>
+          </tr>
+          <tr>
+            <td><code>300000002033048</code></td>
+            <td>BQ (Bimbo QSR)</td>
+          </tr>
+        </table>
+
+        <h3 data-i18n="tech_s5_sav_ttl">Cálculo de Aumento/Desconto</h3>
+        <div data-i18n="tech_s5_sav_p"><p>• <strong>Aumento/Desconto unitário</strong> = preço anterior − preço atual da NF</p>
+        <p>• <strong>Aumento/Desconto</strong> = (Aumento/Desconto unitário / preço anterior) × 100</p>
+        <p>• Filtro de sanidade: só considera <code>aumentos ou descontos na faixa de 0% a 100% </code></p>
+        <p>• <strong>Saving total</strong> = <code>Valor Líquido × Aumento/Desconto / 100</code></p></div>
+
+        <h3 data-i18n="tech_s5_term_ttl">Prazo de Pagamento Ponderado</h3>
+        <div data-i18n="tech_s5_term_p"><p><code>Prazo médio = SUM(Prazo X Valor líquido) / SUM(Valor líquido)</code></p></div>
+        <!--p>Onde <code>PGTO_X_VALOR</code> = prazo × valor líquido (pré-calculado no ETL).</p-->
+
+        <h3 data-i18n="tech_s5_yoy_ttl">Comparação YoY nos KPIs</h3>
+        <div data-i18n="tech_s5_yoy_p"><p>• <strong>Ano + Mês</strong>: compara com o mês anterior, limitado ao mesmo dia (se mês corrente)</p>
+        <p>• <strong>Só ano</strong>: compara o ano atual até hoje vs. ano anterior até a mesma data</p></div>
+
+        <h3 data-i18n="tech_s5_lt_ttl">Lead Time & Marcos de Faturamento (4 etapas)</h3>
+        <table class="tech-table" data-i18n="tech_s5_lt_tbl">
+          <tr>
+            <th>Etapa / Marco</th>
+            <th>De → Para</th>
+          </tr>
+          <tr>
+            <td>1. Requisição Aprovada → Pedido Emitido</td>
+            <td><code>requisicoes.DT_APROVACAO</code> → <code>ordens_compra.DATA_OC</code></td>
+          </tr>
+          <tr>
+            <td>2. Pedido Emitido → Pedido Aprovado</td>
+            <td><code>ordens_compra.DATA_OC</code> → <code>ordens_compra.DT_APROVACAO</code></td>
+          </tr>
+          <tr>
+            <td>3. Pedido Aprovado → 1ª NF (Início Faturamento)</td>
+            <td><code>ordens_compra.DT_APROVACAO</code> → <code>MIN(notas_ri.DATA_LANCAMENTO)</code></td>
+          </tr>
+          <tr>
+            <td>4. 1ª NF → Conclusão do Faturamento (100% Faturado)</td>
+            <td><code>MIN(notas_ri.DATA_LANCAMENTO)</code> → <code>MAX(notas_ri.DATA_LANCAMENTO)</code></td>
+          </tr>
+        </table>
+
+        <h3 data-i18n="tech_s5_excl_ttl">Exclusão de Despesas/Reembolsos/Adiantamentos de Colaboradores (RGB / ADVRGB) e Folha (FOPAG)</h3>
+        <div data-i18n="tech_s5_excl_p">
+          <p>Faturas de despesas, reembolsos e adiantamentos de colaboradores geradas no <strong>Oracle Expenses (EXM / RDV)</strong> e faturas de folha de pagamento são <strong>excluídas na origem</strong> da base de compras (<code>vw_notas_ri.sql</code>, pipeline ETL Databricks e backend):</p>
+          <p>• <strong>Reembolsos Diretos de Colaboradores</strong>: <code>NOTA_FISCAL NOT LIKE '%RGB%'</code> (ex: <code>RGBRBBR0007...</code>, <code>RGBRQSR...</code> — sem fornecedor comercial e sem OC).</p>
+          <p>• <strong>Adiantamentos de Viagem a Colaboradores</strong>: <code>NOTA_FISCAL NOT LIKE 'ADV%'</code> (ex: <code>ADVRGBRBBR0008...</code>, <code>ADVRGBRQSR0006...</code> — adiantamentos Cash Advances para viagens).</p>
+          <p>• <strong>Folha de Pagamento</strong>: <code>NOTA_FISCAL NOT LIKE '%FOPAG%'</code>.</p>
+          <p><em>Motivo:</em> Despesas de viagens/pessoais de funcionários (refeições, diárias, milhagem, pedágios, passagens/hospedagens por adiantamento) e folha são desembolsos a pessoas físicas que não representam aquisições corporativas geridas pelo departamento de Procurement. Mantê-las distorceria o Spend Líquido, inflacionaria "Notas sem OC" e geraria falso volume "Descentralizado".</p>
+        </div>
+      </div>
+
+      <!-- 6. GOVERNANÇA E SEGURANÇA -->
+      <div class="tech-section">
+        <h2 data-i18n="tech_s6_ttl"><span class="sec-num">6</span> Governança e Segurança</h2>
+        <table class="tech-table" data-i18n="tech_s6_tbl">
+          <tr>
+            <th>Componente</th>
+            <th>Acesso</th>
+            <th>Tipo</th>
+          </tr>
+          <tr>
+            <td>App compras-360 (URL)</td>
+            <td>Permissões Databricks Apps</td>
+            <td>OAuth via Databricks</td>
+          </tr>
+          <tr>
+            <td>Lakebase PostgreSQL</td>
+            <td>Service Principal <code>872976ee-3cee-44ca-b379-b95ca3c728e0</code></td>
+            <td>Token OAuth (refresh 45 min)</td>
+          </tr>
+          <tr>
+            <td>ETL Notebook</td>
+            <td>Usuários com acesso à pasta compartilhada</td>
+            <td>Workspace permissions</td>
+          </tr>
+          <tr>
+            <td>Oracle Cloud (fonte)</td>
+            <td>Catálogo <code>cat_ocloud_r5_dv</code></td>
+            <td>Unity Catalog ACL</td>
+          </tr>
+          <tr>
+            <td>Volume Unity Catalog</td>
+            <td>Volume <code>cat_dnabb_dv.grobbcompr_cz.compras_360</code></td>
+            <td>READ_VOLUME / WRITE_VOLUME ACL</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- 7. RUNBOOK -->
+      <div class="tech-section">
+        <h2 data-i18n="tech_s7_ttl"><span class="sec-num">7</span> Runbook</h2>
+
+        <h3 data-i18n="tech_s7_p1_ttl">Dados desatualizados</h3>
+        <div data-i18n="tech_s7_p1_body"><p>O job <strong>ETL Compras 360 - Lakebase Daily</strong> roda automaticamente às 06:00 (Brasília). Se os dados parecem antigos:</p>
+        <p>1. Verificar no Jobs se a última execução foi bem-sucedida (Job ID <code>357960921780603</code>) → 2. Se falhou: abrir o notebook <code>compras_360_lakebase_etl</code> e executar manualmente → 3. Verificar "ETL COMPLETO" no output → 4. Se falhar na extração: verificar acesso ao <code>cat_ocloud_r5_dv</code></p></div>
+
+        <h3 data-i18n="tech_s7_p2_ttl">App não abre / erro 5xx</h3>
+        <div data-i18n="tech_s7_p2_body"><p>1. Apps → compras-360 → verificar status → 2. Se STOPPED: Start → 3. Se RUNNING com erro: verificar logs → 4. Erro "Token refresh failed": re-executar célula 6 do ETL (grants)</p></div>
+
+        <h3 data-i18n="tech_s7_p3_ttl">Dados parecem errados</h3>
+        <div data-i18n="tech_s7_p3_body"><p>Conectar no Lakebase e validar: <code>SELECT COUNT(*) FROM compras.notas_ri</code> (∼400K), <code>compras.ordens_compra</code> (∼260K), <code>compras.requisicoes</code> (∼90K). Se discrepante: re-executar ETL.</p></div>
+
+        <h3 data-i18n="tech_s7_p4_ttl">Novo fornecedor especial / não negociável</h3>
+        <div data-i18n="tech_s7_p4_body"><p>Editar na aba "Cadastro Planilhas" diretamente pelo portal web (ou atualizar o CSV no Volume <code>cat_dnabb_dv.grobbcompr_cz.compras_360</code>) → Atualização instantânea sem necessidade de reinício.</p></div>
+
+        <h3 data-i18n="tech_s7_p5_ttl">Deploy de nova versão</h3>
+        <div data-i18n="tech_s7_p5_body"><p>Editar arquivos em <code>/src/app/</code> → CLI: <code>databricks bundle deploy -t prod && databricks apps deploy compras-360</code></p></div>
+      </div>
+
+    </div><!-- /.fr-content -->
+  </div><!-- /.sp-main -->
+</div><!-- /.sp-app-layout -->
+
+  <script>
+    /* Theme */
+    const saved = localStorage.getItem('theme');
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+    function toggleTheme() {
+      const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('theme', t);
+    }
+
+    /* Tabs */
+    function switchTab(id) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById('tab-' + id).classList.add('active');
+      document.getElementById('content-' + id).classList.add('active');
+    }
+
+    /* Presentation */
+    let currentSlide = 1;
+    const totalSlides = 8;
+
+    function presNav(dir) {
+      const next = currentSlide + dir;
+      if (next < 1 || next > totalSlides) return;
+      document.querySelector(`.slide[data-slide="${currentSlide}"]`).classList.remove('active');
+      currentSlide = next;
+      document.querySelector(`.slide[data-slide="${currentSlide}"]`).classList.add('active');
+      updatePresUI();
+    }
+
+    function updatePresUI() {
+      document.getElementById('presCounter').textContent = `${currentSlide} / ${totalSlides}`;
+      document.getElementById('presProgress').style.width = `${(currentSlide / totalSlides) * 100}%`;
+      const backBtn = document.getElementById('presBack');
+      const nextBtn = document.getElementById('presNext');
+      backBtn.disabled = currentSlide === 1;
+      nextBtn.disabled = currentSlide === totalSlides;
+      backBtn.title = (typeof t === 'function' ? t('Anterior') : 'Anterior');
+      nextBtn.title = (typeof t === 'function' ? t('Próximo') : 'Próximo');
+    }
+
+    function toggleFullscreen() {
+      const c = document.getElementById('presContainer');
+      c.classList.toggle('fullscreen');
+      const isFS = c.classList.contains('fullscreen');
+      var exitTxt = (typeof t === 'function' ? t('Sair') : 'Sair');
+      var fsTxt = (typeof t === 'function' ? t('Tela cheia') : 'Tela cheia');
+      document.getElementById('presFS').innerHTML = isFS
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg> ' + exitTxt
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg> ' + fsTxt;
+    }
+
+    /* Keyboard navigation for presentation */
+    document.addEventListener('keydown', function (e) {
+      if (!document.getElementById('content-pres').classList.contains('active')) return;
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); presNav(1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); presNav(-1); }
+      if (e.key === 'Escape') {
+        const c = document.getElementById('presContainer');
+        if (c.classList.contains('fullscreen')) toggleFullscreen();
+      }
+    });
+
+    updatePresUI();
+    document.addEventListener('langChange', updatePresUI);
+  </script>
+</body>
+
+</html>

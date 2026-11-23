@@ -1,0 +1,9 @@
+command: ["python", "app.py"]
+
+env:
+  - name: DB_SERVER
+    value: "bbraclbbsqlcp02.database.windows.net"
+  - name: DB_NAME
+    value: "ACL-DNA-BRPROD"
+  - name: PORT
+    value: "8000"

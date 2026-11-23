@@ -1,0 +1,288 @@
+{
+    "logistica": {
+        "title_key": "Logística",
+        "icon": "truck",
+        "tagline": "Gestão logística e distribuição do Grupo Bimbo QSR",
+        "hidden": false,
+        "required_group": "",
+        "about": {
+            "description": "Gestão logística e distribuição do Grupo Bimbo QSR",
+            "pillars": [
+                {
+                    "icon": "truck",
+                    "title": "Distribuição & Entregas",
+                    "desc": "Gestão de rotas, rastreamento de entregas e otimização de frota."
+                },
+                {
+                    "icon": "gauge",
+                    "title": "Performance Operacional",
+                    "desc": "Indicadores de OTIF, Fill Rate e eficiência logística."
+                },
+                {
+                    "icon": "dollar-sign",
+                    "title": "Custos & Rentabilidade",
+                    "desc": "Controle de custos de transporte, frete e rentabilidade por rota."
+                }
+            ]
+        },
+        "dashboards": [
+            {
+                "title": "Painel Logístico",
+                "title_key": "painel_logistico",
+                "icon": "truck",
+                "link": "https://app.powerbi.com/reportEmbed?reportId=67e43992-3924-46c6-9528-464b40eda398&autoAuth=true&ctid=973ba820-4a58-4246-84bf-170e50b3152a",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Rentabilidade",
+                "title_key": "rentabilidade",
+                "icon": "dollar-sign",
+                "link": "https://app.powerbi.com/reportEmbed?reportId=c25fd9f2-8516-4a41-9a04-439d84853d61&autoAuth=true&ctid=973ba820-4a58-4246-84bf-170e50b3152a",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Painel de Projetos",
+                "title_key": "painel_de_projetos",
+                "icon": "clipboard-list",
+                "link": "https://app.powerbi.com/reportEmbed?reportId=dde8af11-8886-4dd4-8483-34ee3252b993&autoAuth=true&ctid=973ba820-4a58-4246-84bf-170e50b3152a",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Painel de Preços Equipes",
+                "title_key": "painel_de_precos_equipes",
+                "icon": "tags",
+                "link": "https://app.powerbi.com/reportEmbed?reportId=99e45b11-0968-4203-a7d9-afb8dbb0a3a5&autoAuth=true&ctid=973ba820-4a58-4246-84bf-170e50b3152a",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Painel de Performance",
+                "title_key": "painel_de_performance",
+                "icon": "gauge",
+                "link": "https://app.powerbi.com/reportEmbed?reportId=3535a0a8-4f9c-4229-ab20-5b23651ed3a8&autoAuth=true&ctid=973ba820-4a58-4246-84bf-170e50b3152a",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Painel de Preços",
+                "title_key": "painel_de_precos",
+                "icon": "tags",
+                "link": "https://app.powerbi.com/reportEmbed?reportId=b1073f44-78b7-4b89-b72e-e72669ac8633&autoAuth=true&ctid=973ba820-4a58-4246-84bf-170e50b3152a",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Painel de Price Protocol",
+                "title_key": "painel_de_price_protocol",
+                "icon": "file-text",
+                "link": "https://app.powerbi.com/reportEmbed?reportId=e5d9ae3c-3ab4-479a-a2e1-70d091b4f3f6&autoAuth=true&ctid=973ba820-4a58-4246-84bf-170e50b3152a",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Logística CT-e",
+                "title_key": "logistica_ct_e",
+                "icon": "file-text",
+                "link": "https://app.powerbi.com/reportEmbed?reportId=48248c1c-5d96-40c6-a0b2-f52153ebc77d&autoAuth=true&ctid=973ba820-4a58-4246-84bf-170e50b3152a",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "applications": [
+            {
+                "title": "OTIF e Fill Rate",
+                "title_key": "otif_e_fill_rate",
+                "icon": "check",
+                "link": "https://bq-oitf-fillrate-8674310331778219.19.azure.databricksapps.com/",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ]
+    },
+    "comercial": {
+        "title_key": "Comercial",
+        "icon": "briefcase",
+        "tagline": "Inteligência comercial e gestão de vendas",
+        "hidden": false,
+        "required_group": "",
+        "about": {
+            "description": "Inteligência comercial e gestão de vendas",
+            "pillars": [
+                {
+                    "icon": "trending-up",
+                    "title": "Vendas & Receita",
+                    "desc": "Acompanhamento de vendas, metas e performance comercial."
+                },
+                {
+                    "icon": "users",
+                    "title": "Clientes & Canais",
+                    "desc": "Gestão de carteira de clientes e estratégia por canal."
+                },
+                {
+                    "icon": "tag",
+                    "title": "Pricing & Margem",
+                    "desc": "Política de preços, margens e competitividade no mercado."
+                }
+            ]
+        },
+        "dashboards": [
+            {
+                "title": "DNA de Vendas",
+                "title_key": "dna_de_vendas",
+                "icon": "bar-chart-2",
+                "link": "https://app.powerbi.com/reportEmbed?reportId=c04ce17c-f4e8-4edd-a398-b88b0d920bfe&autoAuth=true&ctid=973ba820-4a58-4246-84bf-170e50b3152a",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "applications": []
+    },
+    "supply_chain": {
+        "title_key": "Supply Chain",
+        "icon": "link",
+        "tagline": "Cadeia de suprimentos e planejamento de demanda",
+        "hidden": false,
+        "required_group": "",
+        "about": {
+            "description": "Cadeia de suprimentos e planejamento de demanda",
+            "pillars": [
+                {
+                    "icon": "calendar",
+                    "title": "Planejamento de Demanda",
+                    "desc": "Forecast, S&OP e alinhamento entre produção e vendas."
+                },
+                {
+                    "icon": "box",
+                    "title": "Gestão de Estoque",
+                    "desc": "Níveis de estoque, giro e disponibilidade de produtos."
+                },
+                {
+                    "icon": "shopping-bag",
+                    "title": "Fornecedores & Compras",
+                    "desc": "Relacionamento com fornecedores e eficiência em compras."
+                }
+            ]
+        },
+        "dashboards": [
+            {
+                "title": "Supply Chain",
+                "title_key": "supply_chain_db",
+                "icon": "link",
+                "link": "https://app.powerbi.com/reportEmbed?reportId=5de75719-aa8f-4d15-9697-061d073d780c&autoAuth=true&ctid=973ba820-4a58-4246-84bf-170e50b3152a",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "applications": []
+    },
+    "financas": {
+        "title_key": "Finanças",
+        "icon": "coins",
+        "tagline": "Gestão financeira e controle orçamentário",
+        "hidden": false,
+        "required_group": "",
+        "about": {
+            "description": "Gestão financeira e controle orçamentário",
+            "pillars": [
+                {
+                    "icon": "bar-chart-3",
+                    "title": "Resultado & P&L",
+                    "desc": "Estado de resultados, receita líquida e análise de despesas."
+                },
+                {
+                    "icon": "pie-chart",
+                    "title": "Orçamento & Forecast",
+                    "desc": "Planejamento orçamentário e projeções financeiras."
+                },
+                {
+                    "icon": "coins",
+                    "title": "Tesouraria & Fluxo",
+                    "desc": "Gestão de caixa, fluxo financeiro e capital de giro."
+                }
+            ]
+        },
+        "dashboards": [
+            {
+                "title": "Estado de Resultados",
+                "title_key": "estado_de_resultados",
+                "icon": "file-text",
+                "link": "https://app.powerbi.com/reportEmbed?reportId=568b9571-8aac-4377-83a6-7fc35b605735&autoAuth=true&ctid=973ba820-4a58-4246-84bf-170e50b3152a",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "Finanças",
+                "title_key": "financas_db",
+                "icon": "coins",
+                "link": "https://app.powerbi.com/reportEmbed?reportId=6849e6ec-2888-4e2b-9d2f-03eee775b206&autoAuth=true&ctid=973ba820-4a58-4246-84bf-170e50b3152a",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            },
+            {
+                "title": "OPEX (Custos Operacionais)",
+                "title_key": "opex_custos_operacionais",
+                "icon": "pie-chart",
+                "link": "https://app.powerbi.com/reportEmbed?reportId=e95ebdff-9082-4119-879e-428b331abd05&autoAuth=true&ctid=973ba820-4a58-4246-84bf-170e50b3152a",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "applications": []
+    },
+    "marketing": {
+        "title_key": "Marketing",
+        "icon": "trending-up",
+        "tagline": "Marketing e performance de distribuidores",
+        "hidden": false,
+        "required_group": "",
+        "about": {
+            "description": "Marketing e performance de distribuidores",
+            "pillars": [
+                {
+                    "icon": "store",
+                    "title": "Distribuidores & Trade",
+                    "desc": "Performance de distribuidores e ações no ponto de venda."
+                },
+                {
+                    "icon": "target",
+                    "title": "Campanhas & ROI",
+                    "desc": "Efetividade de campanhas e retorno sobre investimento."
+                },
+                {
+                    "icon": "award",
+                    "title": "Market Share & Marca",
+                    "desc": "Participação de mercado e posicionamento de marca."
+                }
+            ]
+        },
+        "dashboards": [
+            {
+                "title": "Performance de Distribuidores",
+                "title_key": "performance_de_distribuidores",
+                "icon": "trending-up",
+                "link": "https://app.powerbi.com/reportEmbed?reportId=93686707-57e1-4d67-9448-116f67f36d65&autoAuth=true&ctid=973ba820-4a58-4246-84bf-170e50b3152a",
+                "link_mobile": "",
+                "hidden": false,
+                "required_group": ""
+            }
+        ],
+        "applications": []
+    }
+}

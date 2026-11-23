@@ -1,0 +1,12 @@
+# Configuracao de recurso Databricks App para deploy via Declarative Automation Bundles (DABs)
+resources:
+  apps:
+    bq_vcm:
+      name: bq-vcm-${bundle.target}
+      description: "Aplicacao Web BQ VCM - Grupo Bimbo Brasil"
+      source_code_path: "../src/app"
+      permissions:
+        - group_name: GRP_BQ_VCM
+          level: CAN_USE
+        - group_name: DNA - GB Brasil Leaders
+          level: CAN_MANAGE

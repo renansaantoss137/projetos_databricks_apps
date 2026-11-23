@@ -1,0 +1,34 @@
+﻿# Ambientes Virtuais Python
+.venv/
+env/
+venv/
+ENV/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Databricks Bundle Cache
+.databricks/
+
+# Variaveis de ambiente locais
+.env
+.env.local
+
+# Arquivos temporarios e de Sistema
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+
+# IDEs e Ferramentas
+.idea/
+.vscode/
+.claude/
+memory/
+git_hub/
+*.swp
+*.swo

@@ -1,0 +1,72 @@
+{
+  "_leia": "Modelo. Troque seletores, rotas, campos e SQL pelos do seu app. 'tela' = seletor CSS do texto exibido; 'resposta' = JSON que a própria página recebeu (url_contem + campo); 'api' = chamada direta; 'sql' = consulta de referência (1ª coluna da 1ª linha). Campos: 'a.b.c', 'lista[0].x', 'lista[mes=10].valor'. 'escala': multiplica API/resposta/SQL (ex.: 100 quando a API manda 0,934 e a tela mostra 93,4%).",
+  "base": "http://localhost:8000",
+  "largura": 1440,
+  "headers": {},
+  "init_js": [],
+  "sql": { "tipo": "databricks" },
+  "cenarios": [
+    {
+      "nome": "Vendômetro · Out/2026 · filtros padrão",
+      "url": "/vendometro",
+      "acoes": [ { "esperar": "#kpi-sellin .valor" } ],
+      "checagens": [
+        {
+          "nome": "Sell-in realizado",
+          "tela": "#kpi-sellin .valor",
+          "resposta": { "url_contem": "/api/kpis", "campo": "sellin.realizado" },
+          "sql": "SELECT SUM(valor_liquido) FROM cat_dnabb_dv.opebrapodis_lz.vendas_pedidos_ppto_bq_v2 WHERE ano = 2026 AND mes = 10 AND tipo = 'INVOICED'"
+        },
+        {
+          "nome": "Meta de sell-in",
+          "tela": "#kpi-sellin .meta",
+          "resposta": { "url_contem": "/api/kpis", "campo": "sellin.meta" }
+        },
+        {
+          "nome": "Atingimento = realizado ÷ meta",
+          "regra": "razao",
+          "numerador": "#kpi-sellin .valor",
+          "denominador": "#kpi-sellin .meta",
+          "percentual": "#kpi-sellin .atingimento"
+        },
+        {
+          "nome": "Faturado + carteira = total",
+          "regra": "soma",
+          "partes": ["#pedidos .faturado", "#pedidos .carteira"],
+          "total": "#pedidos .total"
+        },
+        {
+          "nome": "Rótulo do mês no gráfico = KPI",
+          "regra": "igual",
+          "a": "#grafico-mensal .rotulo-foco",
+          "b": "#kpi-sellin .valor"
+        },
+        {
+          "nome": "Atingimento (API manda fração)",
+          "tela": "#kpi-sellin .atingimento",
+          "resposta": { "url_contem": "/api/kpis", "campo": "sellin.atingimento" },
+          "escala": 100
+        }
+      ]
+    },
+    {
+      "nome": "Vendômetro · canal QSR",
+      "url": "/vendometro",
+      "acoes": [
+        { "clicar": "[data-filtro=canal] summary" },
+        { "clicar": "[data-filtro=canal] li:has-text('QSR') .fp-somente" },
+        { "clicar": "#fpAplicar" },
+        { "esperar_rede": true }
+      ],
+      "checagens": [
+        {
+          "nome": "Sell-in realizado com filtro de canal",
+          "tela": "#kpi-sellin .valor",
+          "resposta": { "url_contem": "/api/kpis", "campo": "sellin.realizado" },
+          "api": { "url": "/api/kpis?mes=10&ano=2026&canal=QSR", "campo": "sellin.realizado" },
+          "sql": "SELECT SUM(valor_liquido) FROM cat_dnabb_dv.opebrapodis_lz.vendas_pedidos_ppto_bq_v2 WHERE ano = 2026 AND mes = 10 AND canal = 'QSR' AND tipo = 'INVOICED'"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "versao": "2026.11",
+  "categorias_disponiveis": [
+    "Logística & Atraso de Carga",
+    "Financeiro & Boletos",
+    "Divergência de Pedido SAP",
+    "Qualidade & Avaria de Pães",
+    "Dúvidas Comerciais & Metas",
+    "Suporte ao Portal & Acessos"
+  ],
+  "chamados": [
+    {
+      "protocolo": "BQ-2026-0004",
+      "dist_id": 1,
+      "dist_nome": "Distribuidor",
+      "categoria": "Logistica",
+      "assunto": "Atraso entrega",
+      "pedido_sap": "",
+      "status": "aberto",
+      "prioridade": "normal",
+      "data_abertura": "2026-11-17 14:28:49",
+      "ultima_atualizacao": "2026-11-17 14:28:49",
+      "sla_limite": "2026-11-18 14:28:49",
+      "mensagens": [
+        {
+          "autor": "Distribuidor",
+          "tipo": "distribuidor",
+          "data": "2026-11-17 14:28:49",
+          "texto": "Pallet pendente"
+        }
+      ]
+    },
+    {
+      "protocolo": "BQ-2026-0941",
+      "dist_id": 3,
+      "dist_nome": "Jedimix Distribuidora",
+      "categoria": "Logística & Atraso de Carga",
+      "assunto": "Previsão de chegada da carreta - Pedido SAP 89211",
+      "pedido_sap": "89211",
+      "status": "em_analise",
+      "prioridade": "alta",
+      "data_abertura": "2026-11-16 09:15:00",
+      "ultima_atualizacao": "2026-11-17 08:30:00",
+      "sla_limite": "2026-11-17 18:00:00",
+      "mensagens": [
+        {
+          "autor": "Jedimix Distribuidora (Renan)",
+          "tipo": "distribuidor",
+          "data": "2026-11-16 09:15:00",
+          "texto": "Bom dia time BQ. Nosso estoque de Pão Australiano está em 3 dias. A carreta com pedido 89211 estava prevista para ontem às 14h e ainda não chegou. Podem verificar com a transportadora?"
+        },
+        {
+          "autor": "Back Office Bimbo QSR (Juliana Torres)",
+          "tipo": "backoffice",
+          "data": "2026-11-16 11:20:00",
+          "texto": "Olá Renan, já acionamos a torre de controle logístico. Houve retenção na rodovia mas o caminhão foi liberado. A previsão de descarga no seu CD é hoje até às 17h."
+        },
+        {
+          "autor": "Jedimix Distribuidora (Renan)",
+          "tipo": "distribuidor",
+          "data": "2026-11-17 08:30:00",
+          "texto": "Recebemos a carga ontem às 18h30. Tudo conferido e descarregado, podem encerrar o chamado. Obrigado pela agilidade!"
+        }
+      ]
+    },
+    {
+      "protocolo": "BQ-2026-0925",
+      "dist_id": 1,
+      "dist_nome": "Disdal Distribuidora",
+      "categoria": "Qualidade & Avaria de Pães",
+      "assunto": "Caixa com avaria de embalagem no lote 4410",
+      "pedido_sap": "89144",
+      "status": "resolvido",
+      "prioridade": "media",
+      "data_abertura": "2026-11-12 14:00:00",
+      "ultima_atualizacao": "2026-11-13 16:45:00",
+      "sla_limite": "2026-11-14 18:00:00",
+      "mensagens": [
+        {
+          "autor": "Disdal Distribuidora (Carlos)",
+          "tipo": "distribuidor",
+          "data": "2026-11-12 14:00:00",
+          "texto": "Identificamos 4 caixas do Pão Brioche 120P com a lateral amassada no descarregamento. Fotos enviadas em anexo."
+        },
+        {
+          "autor": "Qualidade Bimbo QSR (Mariana Luz)",
+          "tipo": "backoffice",
+          "data": "2026-11-13 16:45:00",
+          "texto": "Laudo aprovado. Emitida nota de crédito fiscal referente às 4 caixas. O crédito constará no próximo faturamento de Sell-in."
+        }
+      ]
+    },
+    {
+      "protocolo": "BQ-2026-0952",
+      "dist_id": 4,
+      "dist_nome": "Transpão Logística",
+      "categoria": "Financeiro & Boletos",
+      "assunto": "Segunda via de boleto - NF 44921",
+      "pedido_sap": "88992",
+      "status": "aberto",
+      "prioridade": "normal",
+      "data_abertura": "2026-11-17 10:00:00",
+      "ultima_atualizacao": "2026-11-17 10:00:00",
+      "sla_limite": "2026-11-18 12:00:00",
+      "mensagens": [
+        {
+          "autor": "Transpão Logística (Marcos)",
+          "tipo": "distribuidor",
+          "data": "2026-11-17 10:00:00",
+          "texto": "Solicitamos envio de boleto atualizado com vencimento prorrogado para 20/11 devido a feriado bancário local."
+        }
+      ]
+    }
+  ]
+}

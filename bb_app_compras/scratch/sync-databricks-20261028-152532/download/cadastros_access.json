@@ -1,0 +1,11 @@
+{
+  "_comentario": "Gerenciamento de permissões do módulo de Cadastros e Apoio",
+  "admins": [
+    "renan.ferreira@grupobimbo.com",
+    "DNA - GB Brasil Leaders"
+  ],
+  "authorized_users": [
+    "rafael.lobo@grupobimbo.com",
+    "veronica.hirschhorn@grupobimbo.com"
+  ]
+}

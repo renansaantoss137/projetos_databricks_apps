@@ -1,0 +1,15 @@
+{
+  "_comentario": "Gerenciamento de permissoes do modulo de Cadastros e Apoio da Base VCM",
+  "admins": [
+    "renan.ferreira@grupobimbo.com",
+    "dna - gb brasil leaders"
+  ],
+  "managers": [
+    "jessica.sousa@grupobimbo.com"
+  ],
+  "authorized_users": [
+    "sabrina.luzpereira@grupobimbo.com",
+    "simone.lopes@grupobimbo.com",
+    "patricia.ferreira01@grupobimbo.com"
+  ]
+}

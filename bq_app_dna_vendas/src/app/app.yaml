@@ -1,0 +1,7 @@
+command: ["python", "app.py"]
+
+env:
+  - name: DATABRICKS_WAREHOUSE_ID
+    value: "f4a2e26b8410f1e3"
+  - name: PORT
+    value: "8000"

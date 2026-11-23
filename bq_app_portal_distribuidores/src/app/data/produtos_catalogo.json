@@ -1,0 +1,196 @@
+{
+  "versao": "2026.11",
+  "data_atualizacao": "2026-11-17",
+  "produtos": [
+    {
+      "sku": "503833",
+      "nome": "Pão de Hambúrguer Brioche 120P",
+      "familia": "Brioche & Gourmet",
+      "marca": "Bimbo QSR",
+      "tag": "NOVO",
+      "tag_tipo": "novo",
+      "destaque_comercial": "Massa rica em manteiga e ovos com brilho natural dourado. Líder de rentabilidade nas hamburguerias artesanais.",
+      "imagem": "img/tela-inicio-base.png",
+      "especificacoes": {
+        "peso_unitario": "64g",
+        "paes_pacote": 15,
+        "pacotes_caixa": 8,
+        "paes_caixa": 120,
+        "caixas_pallet": 35,
+        "duzias_pallet": 350.0,
+        "validade_congelado": "180 dias (-18°C)",
+        "shelf_life_ambiente": "5 dias após descongelamento",
+        "dimensoes": "Diâmetro 10,2 cm x Altura 4,8 cm",
+        "anvisa": "Dispensado conf. RDC 240/2018",
+        "alergenicos": "Contém derivados de trigo, ovos e leite. Pode conter soja e gergelim. Contém glúten."
+      },
+      "arquivos": {
+        "packshot_hd": "/api/produtos/503833/download?tipo=packshot",
+        "ficha_tecnica_pdf": "/api/produtos/503833/download?tipo=ficha",
+        "kit_pdv": "/api/produtos/503833/download?tipo=kit_pdv"
+      },
+      "lancamento": {
+        "ativo": true,
+        "data_lancamento": "2026-10-01",
+        "publico_alvo": "Hamburguerias artesanais, redes premium e casual dining",
+        "argumentos_venda": [
+          "Casca macia com acabamento brilhante que valoriza fotos para redes sociais",
+          "Resistência superior à umidade de molhos e suco da carne, sem desmanchar",
+          "Giro 25% mais rápido em comparação com o pão tradicional"
+        ]
+      }
+    },
+    {
+      "sku": "503915",
+      "nome": "Pão Australiano Hamburgueria 240P",
+      "familia": "Gourmet Especial",
+      "marca": "Bimbo QSR",
+      "tag": "DESTAQUE",
+      "tag_tipo": "destaque",
+      "destaque_comercial": "Receita exclusiva com cacau, malte e toque suave de mel. O clássico escuro que agrega valor ao cardápio.",
+      "imagem": "img/tela-inicio-base.png",
+      "especificacoes": {
+        "peso_unitario": "64g",
+        "paes_pacote": 15,
+        "pacotes_caixa": 16,
+        "paes_caixa": 240,
+        "caixas_pallet": 20,
+        "duzias_pallet": 400.0,
+        "validade_congelado": "180 dias (-18°C)",
+        "shelf_life_ambiente": "4 dias após descongelamento",
+        "dimensoes": "Diâmetro 10,5 cm x Altura 4,6 cm",
+        "anvisa": "Dispensado conf. RDC 240/2018",
+        "alergenicos": "Contém trigo e cevada. Pode conter centeio, aveia e derivados de soja e leite. Contém glúten."
+      },
+      "arquivos": {
+        "packshot_hd": "/api/produtos/503915/download?tipo=packshot",
+        "ficha_tecnica_pdf": "/api/produtos/503915/download?tipo=ficha",
+        "kit_pdv": "/api/produtos/503915/download?tipo=kit_pdv"
+      },
+      "lancamento": {
+        "ativo": false,
+        "data_lancamento": "2025-06-15",
+        "publico_alvo": "Pubs, steakhouses e hamburguerias gourmet",
+        "argumentos_venda": [
+          "Contraste visual marcante com queijo derretido e bacon",
+          "Aroma adocicado suave de malte tostado",
+          "Padronização absoluta de altura e corte para esteiras de tostar"
+        ]
+      }
+    },
+    {
+      "sku": "503831",
+      "nome": "Pão de Hambúrguer Clássico Gergelim 240P",
+      "familia": "Clássico",
+      "marca": "Bimbo QSR",
+      "tag": "ALTO GIRO",
+      "tag_tipo": "giro",
+      "destaque_comercial": "O padrão mundial de fast food. Cobertura uniforme de gergelim selecionado e miolo uniforme de alta elasticidade.",
+      "imagem": "img/tela-inicio-base.png",
+      "especificacoes": {
+        "peso_unitario": "64g",
+        "paes_pacote": 15,
+        "pacotes_caixa": 16,
+        "paes_caixa": 240,
+        "caixas_pallet": 20,
+        "duzias_pallet": 400.0,
+        "validade_congelado": "180 dias (-18°C)",
+        "shelf_life_ambiente": "5 dias após descongelamento",
+        "dimensoes": "Diâmetro 10,2 cm x Altura 4,5 cm",
+        "anvisa": "Dispensado conf. RDC 240/2018",
+        "alergenicos": "Contém derivados de trigo e gergelim. Pode conter soja e leite. Contém glúten."
+      },
+      "arquivos": {
+        "packshot_hd": "/api/produtos/503831/download?tipo=packshot",
+        "ficha_tecnica_pdf": "/api/produtos/503831/download?tipo=ficha",
+        "kit_pdv": "/api/produtos/503831/download?tipo=kit_pdv"
+      },
+      "lancamento": {
+        "ativo": false,
+        "data_lancamento": "2024-01-01",
+        "publico_alvo": "Redes de fast food, lanchonetes de alto volume e food trucks",
+        "argumentos_venda": [
+          "Máxima retenção de gergelim na superfície sem desprendimento na esteira",
+          "Padronização estrita de diâmetro garantindo rendimento de insumos",
+          "Menor custo por porção mantendo o padrão internacional QSR"
+        ]
+      }
+    },
+    {
+      "sku": "503779",
+      "nome": "Pão de Hambúrguer Liso Clássico 120P",
+      "familia": "Clássico",
+      "marca": "Bimbo QSR",
+      "tag": "VOLUME",
+      "tag_tipo": "giro",
+      "destaque_comercial": "Base versátil para smash burgers e lanches rápidos. Textura aveludada e excelente caramelização na chapa.",
+      "imagem": "img/tela-inicio-base.png",
+      "especificacoes": {
+        "peso_unitario": "64g",
+        "paes_pacote": 15,
+        "pacotes_caixa": 8,
+        "paes_caixa": 120,
+        "caixas_pallet": 35,
+        "duzias_pallet": 350.0,
+        "validade_congelado": "180 dias (-18°C)",
+        "shelf_life_ambiente": "5 dias após descongelamento",
+        "dimensoes": "Diâmetro 10,0 cm x Altura 4,3 cm",
+        "anvisa": "Dispensado conf. RDC 240/2018",
+        "alergenicos": "Contém trigo. Pode conter soja e leite. Contém glúten."
+      },
+      "arquivos": {
+        "packshot_hd": "/api/produtos/503779/download?tipo=packshot",
+        "ficha_tecnica_pdf": "/api/produtos/503779/download?tipo=ficha",
+        "kit_pdv": "/api/produtos/503779/download?tipo=kit_pdv"
+      },
+      "lancamento": {
+        "ativo": false,
+        "data_lancamento": "2024-01-01",
+        "publico_alvo": "Hamburguerias de smash burger e delivery de alto giro",
+        "argumentos_venda": [
+          "Superfície lisa ideal para prensagem em smash",
+          "Caramelização rápida em 18 a 22 segundos a 220°C",
+          "Embalagem compacta de 120 unidades para estoques reduzidos"
+        ]
+      }
+    },
+    {
+      "sku": "504342",
+      "nome": "Pão Australiano Médio 60P",
+      "familia": "Gourmet Especial",
+      "marca": "Bimbo QSR",
+      "tag": "COMPACTO",
+      "tag_tipo": "compacto",
+      "destaque_comercial": "Caixa com 60 unidades perfeita para clientes menores ou rotas com abastecimento semanal frequente.",
+      "imagem": "img/tela-inicio-base.png",
+      "especificacoes": {
+        "peso_unitario": "63g",
+        "paes_pacote": 15,
+        "pacotes_caixa": 4,
+        "paes_caixa": 60,
+        "caixas_pallet": 56,
+        "duzias_pallet": 280.0,
+        "validade_congelado": "180 dias (-18°C)",
+        "shelf_life_ambiente": "4 dias após descongelamento",
+        "dimensoes": "Diâmetro 10,2 cm x Altura 4,5 cm",
+        "anvisa": "Dispensado conf. RDC 240/2018",
+        "alergenicos": "Contém trigo e cevada. Pode conter soja e leite. Contém glúten."
+      },
+      "arquivos": {
+        "packshot_hd": "/api/produtos/504342/download?tipo=packshot",
+        "ficha_tecnica_pdf": "/api/produtos/504342/download?tipo=ficha",
+        "kit_pdv": "/api/produtos/504342/download?tipo=kit_pdv"
+      },
+      "lancamento": {
+        "ativo": false,
+        "data_lancamento": "2025-03-01",
+        "publico_alvo": "Pontos de venda com baixa capacidade de câmara fria",
+        "argumentos_venda": [
+          "Permite vender a linha australiana sem risco de perda por vencimento",
+          "Fácil empilhamento em freezers verticais",
+          "Mesma receita premium da versão 240P"
+        ]
+      }
+    }
+  ]
+}

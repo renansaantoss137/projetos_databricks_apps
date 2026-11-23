@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PORTAL COMPRAS | Bimbo Brasil</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="i18n.js"></script>
+  <script src="app-menu.js"></script>
+  <script src="view-scale.js"></script>
+  <script src="navigation.js"></script>
+  <script src="mobile-nav.js"></script>
+  <style>
+    #dna-scale-picker { display: none !important; }
+    /* Compensação de scroll feita no JS (applyFrameHeight); evita compensação dupla do navegador */
+    html, body.home-page { overflow-anchor: none; }
+    /* Rolagem compositada: sem fundo fixo (forçava repintura a cada frame de scroll) */
+    body.home-page { background-attachment: scroll !important; }
+    .continuous-frame { display: block; }
+    [data-section].single-section-hidden { display: none !important; }
+    /* Ao navegar, o título da seção fica atrás do cabeçalho fixo (que já mostra o nome do módulo) */
+    .continuous-section:not(#sec-inicio) { scroll-margin-top: calc(var(--continuous-header-height, 72px) - var(--section-title-offset, 0px)) !important; }
+    body.home-page {
+      background-color: var(--bg-page) !important;
+      color: var(--text-primary) !important;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      margin: 0;
+    }
+
+    /* ── Header Fixo da Aplicação Unificada ── */
+    .home-header {
+      padding: 0.75rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-header);
+      flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(15,23,42,.04);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      /* sem backdrop-filter: fundo já é opaco e o blur sobre iframes pesava a rolagem */
+    }
+    .hh-section-indicator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: 1.5rem;
+      position: relative;
+      min-height: 28px;
+    }
+    .hh-sec-badge, .hh-sec-title {
+      transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.16s ease;
+      will-change: transform, opacity;
+      display: inline-block;
+    }
+    .hh-section-indicator.trans-up-out .hh-sec-badge,
+    .hh-section-indicator.trans-up-out .hh-sec-title {
+      transform: translateY(-12px);
+      opacity: 0;
+    }
+    .hh-section-indicator.trans-down-out .hh-sec-badge,
+    .hh-section-indicator.trans-down-out .hh-sec-title {
+      transform: translateY(12px);
+      opacity: 0;
+    }
+    .hh-section-indicator.trans-in-from-bottom .hh-sec-badge,
+    .hh-section-indicator.trans-in-from-bottom .hh-sec-title {
+      transform: translateY(12px);
+      opacity: 0;
+    }
+    .hh-section-indicator.trans-in-from-top .hh-sec-badge,
+    .hh-section-indicator.trans-in-from-top .hh-sec-title {
+      transform: translateY(-12px);
+      opacity: 0;
+    }
+    .hh-sec-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--tint-blue, rgba(37, 99, 235, 0.12));
+      color: var(--primary, #2563eb);
+      border: 1px solid rgba(37, 99, 235, 0.25);
+    }
+    [data-theme="dark"] .hh-sec-badge {
+      color: #60a5fa;
+      border-color: rgba(96, 165, 250, 0.35);
+    }
+    .hh-sec-title {
+      text-transform: uppercase;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+    .hh-logo-area {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .dna-logo-img {
+      height: 52px;
+      max-height: 54px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+      transition: opacity .2s ease;
+    }
+    [data-theme="light"] .dna-logo-img {
+      content: url('logo-dna-blue.png');
+    }
+    .hh-divider {
+      width: 1.5px;
+      height: 24px;
+      background: var(--border);
+      opacity: 0.7;
+      display: inline-block;
+    }
+    .hh-bimbo-logo {
+      height: 22px;
+      max-height: 24px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+      opacity: 0.82;
+      filter: saturate(0.65) brightness(0.92);
+      transition: opacity .2s ease, filter .2s ease;
+    }
+    .hh-bimbo-logo:hover {
+      opacity: 0.95;
+      filter: saturate(0.85) brightness(0.98);
+    }
+    [data-theme="light"] .hh-bimbo-logo {
+      opacity: 0.74;
+      filter: saturate(0.58) brightness(0.86);
+    }
+    [data-theme="light"] .hh-bimbo-logo:hover {
+      opacity: 0.92;
+      filter: saturate(0.80) brightness(0.95);
+    }
+
+    /* ── Hero Split Impeccable (Padrão D&A Portal Distribuidores) ── */
+    .home-hero {
+      max-width: 1280px;
+      width: 100%;
+      margin: 0.5rem auto 0.75rem;
+      padding: 0.5rem 1.5rem;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+    .hero-split-card {
+      display: grid;
+      grid-template-columns: 1.05fr 1.15fr;
+      gap: 2rem;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem 2.25rem;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+      position: relative;
+      overflow: hidden;
+    }
+    html[data-theme="light"] .hero-split-card {
+      background: #ffffff;
+      border-color: rgba(38, 53, 118, 0.12);
+      box-shadow: 0 12px 36px rgba(38, 53, 118, 0.08);
+    }
+    .hero-left-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      z-index: 2;
+    }
+    .hero-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.22);
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      width: fit-content;
+    }
+    .status-pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: statusPulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    }
+    @keyframes statusPulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 7px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .hero-pill-badge {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      font-size: 0.7rem;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    html[data-theme="light"] .hero-pill-badge {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+    .hero-page-title {
+      font-size: clamp(2rem, 3.2vw, 2.75rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--text-primary);
+      margin: 0.1rem 0 0.2rem 0;
+      line-height: 1.15;
+    }
+    .hero-subtitle {
+      font-size: clamp(0.88rem, 1.1vw, 0.95rem);
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.55;
+      max-width: 520px;
+    }
+    .hero-highlights {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 0.6rem;
+    }
+    .hero-hl-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.65rem;
+      border-radius: 8px;
+    }
+    html[data-theme="light"] .hero-hl-item {
+      background: #f8fafc;
+      border-color: rgba(38, 53, 118, 0.1);
+    }
+
+    /* ── Procurement Supply Chain Flow Canvas (Lado Direito) ── */
+    .hero-flow-canvas {
+      position: relative;
+      height: 250px;
+      width: 100%;
+      border-radius: 14px;
+      background-color: rgba(15, 23, 42, 0.4);
+      background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1.2px, transparent 1.2px);
+      background-size: 18px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    html[data-theme="light"] .hero-flow-canvas {
+      background-color: #f8fafc;
+      background-image: radial-gradient(rgba(15, 23, 42, 0.1) 1.2px, transparent 1.2px);
+      border-color: rgba(38, 53, 118, 0.08);
+    }
+    .flow-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .flow-line-base {
+      stroke: rgba(148, 163, 184, 0.25);
+      stroke-width: 2;
+      stroke-linecap: round;
+      fill: none;
+    }
+    html[data-theme="light"] .flow-line-base {
+      stroke: rgba(148, 163, 184, 0.4);
+    }
+    .flow-line-animated {
+      stroke: #60a5fa;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-dasharray: 6 10;
+      fill: none;
+      animation: flowDash 20s linear infinite;
+    }
+    .flow-line-animated-emerald {
+      stroke: #34d399;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-dasharray: 6 10;
+      fill: none;
+      animation: flowDash 18s linear infinite;
+    }
+    @keyframes flowDash {
+      to { stroke-dashoffset: -1000; }
+    }
+    .flow-node {
+      position: absolute;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.55rem 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+      z-index: 2;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      cursor: default;
+    }
+    html[data-theme="light"] .flow-node {
+      background: #ffffff;
+      border-color: rgba(38, 53, 118, 0.15);
+      box-shadow: 0 4px 14px rgba(38, 53, 118, 0.08);
+    }
+    .flow-node:hover {
+      transform: translateY(-2px);
+      border-color: #60a5fa;
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25);
+    }
+    .flow-node-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .flow-node-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+    .flow-node-text strong {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    .flow-node-text span {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .flow-pill {
+      position: absolute;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      z-index: 3;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    html[data-theme="light"] .flow-pill {
+      background: #ffffff;
+      border-color: rgba(38, 53, 118, 0.15);
+    }
+    .flow-pill-active {
+      color: #3b82f6;
+      border-color: rgba(59, 130, 246, 0.4);
+      background: rgba(59, 130, 246, 0.08);
+    }
+    .flow-shield-badge {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 20px;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+      z-index: 3;
+    }
+    html[data-theme="light"] .flow-shield-badge {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #b91c1c;
+    }
+
+    /* ── Seção de Módulos (Grid Desktop 3x2 Símétrico) ── */
+    .modules-section {
+      max-width: 1280px;
+      width: 100%;
+      margin: 0.5rem auto 1.5rem;
+      padding: 0 1.5rem;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+    }
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      width: 100%;
+    }
+    @media (max-width: 1024px) {
+      .hero-split-card {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1.5rem;
+      }
+      .modules-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 640px) {
+      .modules-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-flow-canvas {
+        height: 220px;
+      }
+    }
+
+    /* ── Cartão do Módulo ── */
+    .mc-wrap {
+      text-decoration: none;
+      border-radius: var(--r-card, 14px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-card);
+      padding: 1.35rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      transition: transform .22s cubic-bezier(0.16, 1, 0.3, 1), border-color .22s ease, box-shadow .22s ease;
+      position: relative;
+      outline: none;
+      box-sizing: border-box;
+    }
+    .mc-wrap:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary);
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16);
+    }
+    .mc-wrap:focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 2px;
+      border-color: var(--primary);
+    }
+
+    .mc-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.85rem;
+    }
+    .mc-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent;
+      flex-shrink: 0;
+    }
+    .mc-icon svg { width: 22px; height: 22px; }
+
+    /* Variantes dos blocos de ícones no padrão corporativo D&A */
+    .mc-exec .mc-icon { background: var(--tint-blue); color: #2563eb; border-color: rgba(37,99,235,.2); }
+    .mc-spend .mc-icon { background: var(--tint-teal); color: #0284c7; border-color: rgba(2,132,199,.2); }
+    .mc-ord .mc-icon { background: var(--tint-amber); color: #b45309; border-color: rgba(180,83,9,.2); }
+    .mc-com .mc-icon { background: var(--tint-green); color: #15803d; border-color: rgba(21,128,61,.2); }
+    .mc-gov .mc-icon { background: var(--tint-teal); color: #0f766e; border-color: rgba(15,118,110,.25); }
+    .mc-rep .mc-icon { background: var(--tint-blue); color: #1d4ed8; border-color: rgba(29,78,216,.2); }
+
+    [data-theme="dark"] .mc-exec .mc-icon { color: #60a5fa; border-color: rgba(96,165,250,.3); }
+    [data-theme="dark"] .mc-spend .mc-icon { color: #38bdf8; border-color: rgba(56,189,248,.3); }
+    [data-theme="dark"] .mc-ord .mc-icon { color: #fbbf24; border-color: rgba(251,191,36,.3); }
+    [data-theme="dark"] .mc-com .mc-icon { color: #4ade80; border-color: rgba(74,222,128,.3); }
+    [data-theme="dark"] .mc-gov .mc-icon { color: #2dd4bf; border-color: rgba(45,212,191,.3); }
+    [data-theme="dark"] .mc-rep .mc-icon { color: #93c5fd; border-color: rgba(147,197,253,.3); }
+
+    .mc-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: var(--r-control, 8px);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .mc-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 .4rem 0;
+      line-height: 1.3;
+    }
+    .mc-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin: 0 0 .85rem 0;
+      min-height: 44px;
+    }
+    .mc-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .45rem;
+      border-top: 1px solid var(--border);
+      padding: .8rem 0 0 0;
+      margin: 0;
+    }
+    .mc-features li {
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.4;
+    }
+    .mc-features li svg {
+      width: 14px;
+      height: 14px;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    /* ── Rodapé da Capa ── */
+    .home-footer {
+      text-align: center;
+      padding: 1.15rem 1.5rem;
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: transparent;
+      flex-shrink: 0;
+    }
+    .home-footer .hh-bimbo-logo { margin: 0 auto; }
+
+    /* ── Adaptação Responsiva Tablet (641px - 1024px) ── */
+    @media (max-width: 1024px) and (min-width: 641px) {
+      .modules-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.15rem;
+      }
+      .modules-grid > .mc-wrap {
+        grid-column: span 1 !important;
+      }
+      /* Centraliza o 5º módulo (Relatórios) na 3ª linha */
+      .modules-grid > .mc-wrap.mc-rep {
+        grid-column: 1 / -1 !important;
+        max-width: 520px;
+        width: 100%;
+        margin: 0 auto;
+      }
+    }
+
+    /* ── Adaptação Responsiva Mobile (<= 640px) ── */
+    @media (max-width: 640px) {
+      body.home-page {
+        justify-content: flex-start;
+      }
+      .home-header {
+        padding: 0.65rem 1rem;
+      }
+      .hh-logo-area {
+        gap: 12px;
+      }
+      .dna-logo-img {
+        height: 42px;
+        max-height: 44px;
+      }
+      .hh-divider {
+        height: 18px;
+      }
+      .hh-bimbo-logo {
+        height: 18px;
+        max-height: 20px;
+      }
+      .home-hero {
+        padding: 1.25rem 1rem 0.5rem;
+      }
+      .hero-eyebrow {
+        font-size: 11px;
+      }
+      .hero-page-title {
+        font-size: clamp(1.45rem, 6.5vw, 1.9rem);
+      }
+      .hero-subtitle {
+        font-size: 0.88rem;
+        line-height: 1.45;
+      }
+      .modules-section {
+        padding: 0 1rem;
+        margin: 0.5rem auto 1.25rem;
+      }
+      .modules-grid {
+        grid-template-columns: 1fr;
+        gap: 0.85rem;
+      }
+      .modules-grid > .mc-wrap {
+        grid-column: span 1 !important;
+        padding: 1.15rem 1.2rem;
+      }
+      .mc-desc {
+        font-size: 13px;
+        min-height: auto;
+        margin-bottom: 0.75rem;
+      }
+      .mc-features {
+        padding-top: 0.7rem;
+        gap: 0.4rem;
+      }
+      .mc-features li {
+        font-size: 12px;
+      }
+      .home-footer {
+        padding: 1rem;
+        font-size: 12px;
+        margin-top: auto;
+      }
+    }
+
+    .home-header { gap: 16px; flex-wrap: wrap; }
+    .home-header-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; flex: none; }
+    .header-filter-strip { order: 3; display: flex; align-items: center; flex: 1 0 100%; min-width: 0; gap: 10px; padding: 0; }
+    .header-filter-strip[hidden] { display: none; }
+    .header-filter-strip .csh-btn-top { flex: none; margin-left: auto; text-decoration: none; }
+    .hh-logo-area { flex: 0 1 auto; min-width: 0; }
+    .header-filters { display: flex; align-items: center; flex: 1 1 320px; min-width: 0; gap: 8px; }
+    .header-filters[hidden] { display: none; }
+    .header-filters .fp-chips { display: flex; flex: 1 1 auto; min-width: 0; overflow-x: auto; flex-wrap: nowrap; gap: 6px; }
+    .header-filters .chip { flex: none; }
+    .header-filters .header-filter-action { flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; padding: 0 10px; border: 1px solid var(--border-input, #7d8ca1); border-radius: 6px; background: var(--surface); color: var(--text-primary); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .header-filters .header-filter-action:hover { background: var(--surface-hover); }
+    .header-filters button:focus-visible { outline: 2px solid var(--focus-ring, #2563eb); outline-offset: 2px; }
+    @media (max-width: 1024px) {
+      .header-filters { flex: 1 1 auto; }
+      .home-header-actions { order: 2; }
+      .hh-sec-title { white-space: normal; }
+    }
+  </style>
+  <link rel="stylesheet" href="responsive.css">
+  <link rel="stylesheet" href="visual-system.css">
+  <script src="analytics-ui.js"></script>
+</head>
+<body class="home-page">
+    <aside class="sp-sidebar" aria-label="Navegação principal">
+      <a href="index.html" class="sp-nav-item active" aria-current="page" title="Início">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <span>Início</span>
+      </a>
+      <a href="performance.html" class="sp-nav-item" title="Performance">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        <span>Performance</span>
+      </a>
+      <a href="ordens.html" class="sp-nav-item" title="Ordens">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4"/></svg>
+        <span>Ordens</span>
+      </a>
+      <a href="comercial.html" class="sp-nav-item" title="Comercial">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <span>Comercial</span>
+      </a>
+      <a href="governanca.html" class="sp-nav-item" title="Governança">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Governança</span>
+      </a>
+      <a href="relatorios.html" class="sp-nav-item" title="Relatórios">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        <span>Relatórios</span>
+      </a>
+    </aside>
+  <nav class="dna-mobile-nav" aria-label="Navegação mobile"></nav>
+
+  <!-- ══════════════════ HEADER UNIFICADO COM INDICADOR DINÂMICO ══════════════════ -->
+  <header class="home-header">
+    <div class="hh-logo-area">
+      <a href="index.html" class="dna-logo-link" aria-label="Ir para o Início">
+        <img src="logo-dna.png" alt="D&A Bimbo" class="dna-logo-img">
+      </a>
+      <div class="hh-divider"></div>
+      <div class="hh-section-indicator" id="headerIndicator">
+        <span class="hh-sec-title" id="headerSecTitle">PORTAL COMPRAS</span>
+      </div>
+    </div>
+    <div class="home-header-actions"><div id="app-menu-container"></div></div>
+    <div id="headerFilterStrip" class="header-filter-strip" hidden>
+      <div id="headerFilters" class="header-filters" aria-label="Filtros do módulo atual" hidden></div>
+      <a href="index.html" class="csh-btn-top" aria-label="Voltar ao início">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+        <span>Início</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ══════════════════ HERO SPLIT IMPECCABLE (PADRÃO D&A) ══════════════════ -->
+  <section class="home-hero" id="sec-inicio" data-section="inicio" data-title="PORTAL COMPRAS" data-badge="Início">
+    <div class="hero-split-card">
+      <!-- ESQUERDA: BRANDING, STATUS & CONTEXTO -->
+      <div class="hero-left-content">
+        <h1 class="hero-page-title">PORTAL COMPRAS</h1>
+        <p class="hero-subtitle">
+          Inteligência analítica integrada de suprimentos: rastreabilidade ponta a ponta desde a requisição de compras até a liquidação contábil e conformidade de fornecedores.
+        </p>
+      </div>
+
+      <!-- DIREITA: DIAGRAMA ANIMADO DO FLUXO DE SUPRIMENTOS -->
+      <div class="hero-flow-canvas" aria-label="Diagrama do Fluxo de Compras Bimbo">
+
+        <!-- SVG de Conexões Dinâmicas -->
+        <svg class="flow-svg" viewBox="0 0 520 240" fill="none">
+          <!-- Curva 1: Plantas -> Suprimentos -->
+          <path class="flow-line-base" d="M 125 170 C 175 170, 185 68, 230 68" />
+          <path class="flow-line-animated" d="M 125 170 C 175 170, 185 68, 230 68" />
+
+          <!-- Curva 2: Suprimentos -> Fornecedores -->
+          <path class="flow-line-base" d="M 290 68 C 335 68, 345 170, 395 170" />
+          <path class="flow-line-animated-emerald" d="M 290 68 C 335 68, 345 170, 395 170" />
+
+          <!-- Curva 3: Fornecedores -> 3-Way Match -->
+          <path class="flow-line-base" d="M 400 150 C 420 120, 440 85, 465 70" />
+          <path class="flow-line-animated" d="M 400 150 C 420 120, 440 85, 465 70" />
+        </svg>
+
+        <!-- Nó 1: Plantas Bimbo -->
+        <div class="flow-node" style="left: 12px; bottom: 22px;">
+          <div class="flow-node-icon" style="background: rgba(59, 130, 246, 0.12); color: #60a5fa;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7v14M8 7v14M13 11v10M18 11v10M3 7l5-4 5 4M13 11l5-4"/></svg>
+          </div>
+          <div class="flow-node-text">
+            <strong>Plantas Bimbo</strong>
+            <span>Requisição Solicitada</span>
+          </div>
+        </div>
+
+        <!-- Pill de Etapa 1 -->
+        <div class="flow-pill flow-pill-active" style="left: 145px; top: 108px;">
+          Requisição
+        </div>
+
+        <!-- Nó 2: Suprimentos D&A (Central) -->
+        <div class="flow-node" style="left: 175px; top: 25px; border-color: rgba(59, 130, 246, 0.4); box-shadow: 0 8px 24px rgba(59, 130, 246, 0.18);">
+          <div class="flow-node-icon" style="background: rgba(251, 191, 36, 0.15); color: #fbbf24;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="m9 14 2 2 4-4"/></svg>
+          </div>
+          <div class="flow-node-text">
+            <strong>Suprimentos D&A</strong>
+            <span>Ordem de Compra (OC)</span>
+          </div>
+        </div>
+
+        <!-- Pill de Etapa 2 -->
+        <div class="flow-pill flow-pill-active" style="left: 310px; top: 108px; color: #34d399; border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.08);">
+          Atendimento &amp; Lead Time
+        </div>
+
+        <!-- Nó 3: Fornecedores Homologados -->
+        <div class="flow-node" style="right: 85px; bottom: 22px;">
+          <div class="flow-node-icon" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          </div>
+          <div class="flow-node-text">
+            <strong>Fornecedores</strong>
+            <span>Entrega de Insumos</span>
+          </div>
+        </div>
+
+        <!-- Nó 4: Faturamento & Liquidação -->
+        <div class="flow-node" style="right: 10px; top: 35px;">
+          <div class="flow-node-icon" style="background: rgba(167, 139, 250, 0.15); color: #a78bfa;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div class="flow-node-text">
+            <strong>Faturamento</strong>
+            <span>3-Way Match &amp; NF</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ SEÇÃO DE MÓDULOS (6 CARTOES CLICÁVEIS) ══════════════════ -->
+  <section class="modules-section">
+    <div class="modules-grid">
+
+      <!-- ── 01. PERFORMANCE ── -->
+      <a class="mc-wrap mc-exec" href="performance.html">
+        <div class="mc-top">
+          <div class="mc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+        </div>
+        <h2 class="mc-title">Performance de Compras</h2>
+        <p class="mc-desc">Visão consolidada: gastos, lead time, centralização e prazo de pagamento.</p>
+        <ul class="mc-features">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>KPIs com variação temporal</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Spend YoY + Savings mensais</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Itens que requerem atenção</span></li>
+        </ul>
+      </a>
+
+      <!-- ── 02. GESTÃO DE ORDENS ── -->
+      <a class="mc-wrap mc-ord" href="ordens.html">
+        <div class="mc-top">
+          <div class="mc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h18"/></svg>
+          </div>
+        </div>
+        <h2 class="mc-title">Gestão de Ordens</h2>
+        <p class="mc-desc">Exposição de ordens abertas, atrasos e planejado vs. realizado.</p>
+        <ul class="mc-features">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Valor aberto e OCs atrasadas</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Atraso por fornecedor</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Tabela de OCs abertas</span></li>
+        </ul>
+      </a>
+
+      <!-- ── 04. CONDIÇÕES COMERCIAIS ── -->
+      <a class="mc-wrap mc-com" href="comercial.html">
+        <div class="mc-top">
+          <div class="mc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+        </div>
+        <h2 class="mc-title">Condições Comerciais</h2>
+        <p class="mc-desc">Evolução do prazo de pagamento e oportunidades de renegociação.</p>
+        <ul class="mc-features">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Prazo médio ponderado</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Distribuição por faixa</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Tabela de renegociação</span></li>
+        </ul>
+      </a>
+
+      <!-- ── 05. GOVERNANÇA ── -->
+      <a class="mc-wrap mc-gov" href="governanca.html">
+        <div class="mc-top">
+          <div class="mc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+        </div>
+        <h2 class="mc-title">Governança</h2>
+        <p class="mc-desc">Desvios de processo: OC pós-fatura, OCs descentralizadas &gt;30k, OCs sucessivas, nota sem OC, acordo de compra &gt;180 dias, OCs abertas &gt;90 dias e OC emergencial.</p>
+        <ul class="mc-features">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Impacto por tipo de desvio</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Concentração por comprador</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Tabela de exceções com filtro local</span></li>
+        </ul>
+      </a>
+
+      <!-- ── 06. RELATÓRIOS ── -->
+      <a class="mc-wrap mc-rep" href="relatorios.html">
+        <div class="mc-top">
+          <div class="mc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+        </div>
+        <h2 class="mc-title">Relatórios</h2>
+        <p class="mc-desc">Exploração detalhada: requisições, ordens de compra e notas fiscais com paginação e export.</p>
+        <ul class="mc-features">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Seletor de dataset</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Busca, paginação e ordenação</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Export CSV / Excel</span></li>
+        </ul>
+      </a>
+
+      <!-- ── 06. CADASTROS DE APOIO ── -->
+      <a class="mc-wrap mc-cad" href="cadastros.html" style="display:none;">
+        <div class="mc-top">
+          <div class="mc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12"/></svg>
+          </div>
+        </div>
+        <h2 class="mc-title">Cadastros de Apoio</h2>
+        <p class="mc-desc">Governança de parâmetros: compradores funcionais, tabelas de lookups e listas restritas.</p>
+        <ul class="mc-features">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Edição em grade interativa</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Compradores funcionais autorizados</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span>Fornecedores sem OC e regras</span></li>
+        </ul>
+      </a>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════ RODAPÉ COM CONTRASTE ADEQUADO ══════════════════ -->
+  <footer class="home-footer">
+    <img src="logo_bimbo.png" alt="Grupo Bimbo Brasil" class="hh-bimbo-logo">
+  </footer>
+
+
+</body>
+</html>

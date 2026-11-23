@@ -1,0 +1,1113 @@
+--- prod
++++ dev
+@@ -9,6 +9,8 @@
+   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.min.js"></script>
+   <script src="i18n.js"></script>
+   <script src="filters-shared.js"></script>
++  <script src="filters-component.js"></script>
++  <script src="app-menu.js"></script>
+   <style>
+     /* ── KPI Row + Cards (matching bq-otif-fillrate reference) ── */
+     .fr-kpi-row { display:grid; grid-template-columns:repeat(3,1fr); gap:.8rem; margin-bottom:1.5rem; }
+@@ -412,71 +414,93 @@
+ </head>
+ <body class="fr-page">
+ 
+-  <nav class="navbar">
+-    <a href="index.html" class="nav-logo"><img src="logo-dna.png" alt="DNA"></a>
+-    <div class="nav-title-area">
+-      <span class="nav-crumb">01</span>
+-      <span class="nav-page-title">Performance</span>
+-    </div>
+-    <div class="nav-links">
+-      <a href="performance.html" class="nav-link active">Performance</a>
+-      <a href="spend.html" class="nav-link">Gastos</a>
+-      <a href="ordens.html" class="nav-link">Ordens</a>
+-      <a href="comercial.html" class="nav-link">Comercial</a>
+-      <a href="governanca.html" class="nav-link">Governança</a>
+-      <a href="relatorios.html" class="nav-link">Relatórios</a>
+-    </div>
+-    <div class="nav-actions">
+-      <button class="theme-toggle" onclick="toggleTheme()" title="Alternar tema">
+-        <svg class="icon-moon" viewBox="0 0 24 24" width="20" height="20"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.5"/></svg>
+-        <svg class="icon-sun" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="4" fill="#fbbf24"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/></svg>
+-      </button>
+-    </div>
+-  </nav>
+-
+-  <div class="fr-content">
+-
+-    <!-- Filter Bar -->
+-    <div class="filter-bar">
+-      <div class="fg">
+-        <label>Empresa</label>
+-        <div class="ms-dropdown" id="fEmpresa" data-key="empresa"></div>
+-      </div>
+-      <div class="fg">
+-        <label>Ano</label>
+-        <div class="ms-dropdown" id="fAno" data-key="ano"></div>
+-      </div>
+-      <div class="fg">
+-        <label>Mês</label>
+-        <div class="ms-dropdown" id="fMes" data-key="mes"></div>
+-      </div>
+-      <div class="fg">
+-        <label>Direto/Indireto</label>
+-        <div class="ms-dropdown" id="fGrupo" data-key="grupo_compras"></div>
+-      </div>
+-      <div class="fg">
+-        <label>Fornecedor</label>
+-        <div class="ms-dropdown" id="fFornecedor" data-key="fornecedor"></div>
+-      </div>
+-      <div class="fg"><label>Centralizado</label><div class="ms-dropdown" id="fCentralizado" data-key="centralizado"></div></div>
+-      <div style="display:flex;align-items:flex-end;gap:.5rem;margin-left:auto;">
+-        <button id="btnAdvFilters" onclick="toggleAdvFilters()" title="Mais filtros" style="padding:.4rem .7rem;font-size:.72rem;font-weight:700;border-radius:8px;border:1px solid rgba(100,116,139,.35);background:rgba(100,116,139,.1);color:#94a3b8;cursor:pointer;display:flex;align-items:center;gap:.35rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>Mais Filtros</button>
+-        <button onclick="aplicarFiltros(loadAll)" style="padding:.45rem 1.1rem;font-size:.76rem;font-weight:700;border-radius:8px;border:1px solid rgba(59,130,246,.45);background:rgba(59,130,246,.15);color:#60a5fa;cursor:pointer;transition:background .15s;">Aplicar</button>
+-        <button onclick="clearAllFilters(loadAll)" style="padding:.45rem 1.1rem;font-size:.76rem;font-weight:700;border-radius:8px;border:1px solid rgba(100,116,139,.35);background:rgba(100,116,139,.1);color:#94a3b8;cursor:pointer;transition:background .15s;">Limpar</button>
+-      </div>
+-    </div>
+-    <div class="filter-bar" id="advFiltersBar" style="display:none;margin-top:-0.5rem;">
+-      <div class="fg"><label>Categoria</label><div class="ms-dropdown" id="fMacroCategoria" data-key="macro_categoria"></div></div>
+-      <div class="fg"><label>Dia</label><div class="ms-dropdown" id="fDia" data-key="dia"></div></div>
+-      <div class="fg"><label>Descrição Item</label><div class="ms-dropdown" id="fDescItem" data-key="descricao_item"></div></div>
+-      <div class="fg"><label>NF com OC?</label><div class="ms-dropdown" id="fTipoNF" data-key="oc_type"></div></div>
+-      <div class="fg"><label>Unidade</label><div class="ms-dropdown" id="fUnidade" data-key="unidade"></div></div>
+-      <div class="fg"><label>Status Pagamento</label><div class="ms-dropdown" id="fStatusPgto" data-key="status_pagamento"></div></div>
+-      <div class="fg"><label>Tipo NF</label><div class="ms-dropdown" id="fTipoNFAdv" data-key="tipo_nf"></div></div>
+-      <div class="fg"><label>Tipo Linha</label><div class="ms-dropdown" id="fTipoLinha" data-key="tipo_linha"></div></div>
+-      <div class="fg"><label>Forn. Especial</label><div class="ms-dropdown" id="fFornEspecial" data-key="is_fornecedor_especial"></div></div>
+-      <div class="fg"><label>Forn. Negociável</label><div class="ms-dropdown" id="fFornNegociavel" data-key="is_fornecedor_nao_negociavel"></div></div>
+-    </div>
++  <div class="sp-app-layout">
++    <!-- TRILHO VERTICAL À ESQUERDA (80px - Padrão D&A Unificado) -->
++    <aside class="sp-sidebar" aria-label="Navegação principal">
++      <a href="index.html" class="sp-nav-item" title="Início">
++        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
++        <span>Início</span>
++      </a>
++      <a href="performance.html" class="sp-nav-item active" aria-current="page" title="Performance">
++        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
++        <span>Performance</span>
++      </a>
++      <a href="spend.html" class="sp-nav-item" title="Gastos">
++        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
++        <span>Gastos</span>
++      </a>
++      <a href="ordens.html" class="sp-nav-item" title="Ordens">
++        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4"/></svg>
++        <span>Ordens</span>
++      </a>
++      <a href="comercial.html" class="sp-nav-item" title="Comercial">
++        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
++        <span>Comercial</span>
++      </a>
++      <a href="governanca.html" class="sp-nav-item" title="Governança">
++        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
++        <span>Governança</span>
++      </a>
++      <a href="relatorios.html" class="sp-nav-item" title="Relatórios">
++        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
++        <span>Relatórios</span>
++      </a>
++    </aside>
++
++    <div class="sp-main">
++      <!-- CABEÇALHO UNIFICADO (64px - A8, A4) -->
++      <header class="dna-header">
++        <div class="dna-brand">
++          <a href="index.html" class="dna-logo-link" aria-label="Ir para a Home">
++            <img src="logo-dna.png" alt="Portal Compras Bimbo" class="dna-logo-img">
++          </a>
++          <div class="sp-header-info">
++            <span class="dna-brand-badge">PORTAL COMPRAS</span>
++            <span class="sp-mod-crumb">01</span>
++            <h1 class="sp-page-title">Performance de Compras</h1>
++          </div>
++        </div>
++        <div class="header-right">
++          <div id="app-menu-container"></div>
++        </div>
++      </header>
++
++      <!-- NAVEGAÇÃO MOBILE INFERIOR (<=640px - A2) -->
++      <nav class="dna-mobile-nav" aria-label="Navegação mobile">
++        <a href="index.html" class="dna-mobile-nav-item">
++          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
++          <span>Início</span>
++        </a>
++        <a href="performance.html" class="dna-mobile-nav-item active" aria-current="page">
++          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
++          <span>Performance</span>
++        </a>
++        <a href="spend.html" class="dna-mobile-nav-item">
++          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><path d="M12 18V6"/></svg>
++          <span>Gastos</span>
++        </a>
++        <a href="ordens.html" class="dna-mobile-nav-item">
++          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
++          <span>Ordens</span>
++        </a>
++        <a href="comercial.html" class="dna-mobile-nav-item">
++          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
++          <span>Comercial</span>
++        </a>
++      </nav>
++
++      <!-- LAYOUT COM PAINEL RETRÁTIL À DIREITA (A5) -->
++      <div class="layout" id="appLayout" data-filtros="recolhido">
++        <main class="conteudo">
++          <!-- Linha de resumo no topo com chips removíveis (F5) -->
++          <div class="fp-resumo" id="fpResumo" hidden>
++            <button class="btn btn-secundario" id="fpAbrirGaveta" type="button" aria-haspopup="dialog">Filtros</button>
++            <div class="fp-chips" id="fpChips" aria-label="Filtros aplicados"></div>
++            <button class="fp-btn-limpar" id="fpLimparTudo" type="button" hidden>
++              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
++              <span>Limpar tudo</span>
++            </button>
++          </div>
+ 
+     <!-- KPI Row (5 cards) -->
+     <div class="fr-kpi-row">
+@@ -516,23 +540,36 @@
+ 
+     <!-- Row 2: Spend Líquido YoY (Left) + Process Funnel (Right) -->
+     <div class="fr-charts-row-2" style="align-items:start;margin-bottom:1.5rem;">
+-      <div class="fr-chart-card" id="cardSpendYoY" style="padding:0.75rem 1rem;display:flex;flex-direction:column;box-sizing:border-box;">
+-        <div class="fr-chart-header-wrap" style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.5rem;flex-wrap:wrap;">
+-          <div style="flex:1;min-width:200px;">
+-            <div class="fr-chart-ttl" id="ttlSpendYoY" style="margin-bottom:.2rem;">Spend Líquido vs. Ano Anterior</div>
+-            <div id="legendSpendYoY" style="display:flex;align-items:center;gap:1rem;margin:0 0 .25rem .2rem;font-size:.60rem;flex-wrap:wrap;">
+-              <span style="display:flex;align-items:center;gap:4px;"><span id="legYoYColorCur" style="width:9px;height:9px;background:#3b82f6;border-radius:2px;display:inline-block;"></span><span id="legYoYLblCur" class="i18n-text" style="color:#94a3b8;">Spend Líquido</span></span>
+-              <span style="display:flex;align-items:center;gap:4px;"><span id="legYoYColorPrev" style="width:9px;height:9px;background:rgba(200,200,200,0.25);border-radius:2px;display:inline-block;"></span><span id="legYoYLblPrev" class="i18n-text" style="color:#94a3b8;">Spend Líq. Ano Anterior</span></span>
+-              <span id="legYoYMeta" style="display:none;align-items:center;gap:4px;"><span style="width:14px;height:0;border-top:1.5px dashed var(--fr-txt-soft,#94a3b8);display:inline-block;"></span><span class="i18n-text" style="color:var(--fr-txt-soft,#94a3b8);font-weight:500;">Meta ≥ 80%</span></span>
++      <!-- G1-G8: Spend Líquido vs Ano Anterior (Padrão Gráfico Referência D&A) -->
++      <article class="gr-cartao" id="cardSpendYoY" aria-labelledby="grTitulo">
++        <header class="gr-topo">
++          <div>
++            <p class="gr-eyebrow" id="grEyebrow">Performance Mensal</p>
++            <h2 class="gr-titulo" id="grTitulo">Spend Líquido vs. Ano Anterior</h2>
++            <div class="gr-legenda">
++              <span><i class="sw-barra"></i><b id="grLegSerie" style="font-weight:400">Spend Líquido</b></span>
++              <span><i class="sw-traco"></i><b id="grLegComp" style="font-weight:400">Ano Anterior (Histórico)</b></span>
+             </div>
+           </div>
+-          <div class="funnel-scope-pills" id="perfYoYPills" style="margin:0;flex-shrink:0;">
+-            <button type="button" class="funnel-pill active" id="btnYoYSpend" onclick="setPerfYoYMetric('spend')">Spend Líquido</button>
+-            <button type="button" class="funnel-pill" id="btnYoYCentral" onclick="setPerfYoYMetric('central')">% Centralização</button>
++          <div class="gr-acoes">
++            <span class="gr-acumulado"><span id="grAcumRotulo">Acumulado vs ano anterior</span><span class="selo" id="grAcumSelo">—</span></span>
++            <div class="segmentado" role="tablist" id="grSeg">
++              <button type="button" role="tab" id="btnYoYSpend" aria-selected="true" onclick="setPerfYoYMetric('spend')">Spend Líquido</button>
++              <button type="button" role="tab" id="btnYoYCentral" aria-selected="false" onclick="setPerfYoYMetric('central')">% Centralização</button>
++            </div>
++          </div>
++        </header>
++        <div class="gr-rolagem">
++          <div class="gr-area" id="wrapSpendYoY">
++            <canvas id="chartSpendYoY" role="img"></canvas>
+           </div>
+         </div>
+-        <div class="fr-chart-body" id="wrapSpendYoY" style="margin-top:0.35rem;position:relative;overflow:hidden;width:100%;"><canvas id="chartSpendYoY"></canvas></div>
+-      </div>
++        <details class="gr-tabela">
++          <summary>Ver dados em tabela</summary>
++          <table id="grTabela"></table>
++        </details>
++      </article>
++      <div class="gr-tip" id="grTip" role="tooltip" hidden></div>
+ 
+       <div class="fr-chart-card" id="cardFunnel" style="padding:0.75rem 1rem;display:flex;flex-direction:column;box-sizing:border-box;">
+         <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.35rem;">
+@@ -599,7 +636,54 @@
+ 
+ 
+ 
+-  </div>
++        </main>
++
++        <!-- PAINEL LATERAL DE FILTROS RETRÁTIL À DIREITA (F1 a F11) -->
++        <aside class="fp-lateral" id="fpLateral" aria-label="Filtros">
++          <!-- Trilho recolhido (48px) -->
++          <button class="fp-trilho" id="fpExpandir" type="button" aria-expanded="false" aria-controls="fpAberto">
++            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
++            <span class="contador" id="fpTrilhoContador" hidden></span>
++            <span class="vertical" id="fpTrilhoTexto">FILTROS</span>
++          </button>
++
++          <!-- Painel aberto (320px) -->
++          <div class="fp-aberto" id="fpAberto">
++            <div class="fp-topo">
++              <h2>
++                <span id="fpTituloLateral">Filtros</span>
++                <span class="contador" id="fpLateralContador" hidden></span>
++              </h2>
++              <button class="btn-icone" id="fpRecolher" type="button" aria-expanded="true" aria-controls="fpAberto">
++                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
++              </button>
++            </div>
++            <div class="fp-corpo" id="fpCorpoLateral"></div>
++            <div class="fp-rodape">
++              <button class="btn btn-secundario" id="fpLimpar" type="button">Limpar</button>
++              <button class="btn btn-primario" id="fpAplicar" type="button" disabled>Aplicar</button>
++            </div>
++          </div>
++        </aside>
++      </div><!-- /.layout -->
++
++    </div><!-- /.sp-main -->
++  </div><!-- /.sp-app-layout -->
++
++  <!-- GAVETA MODAL PARA CELULAR E TABLET (F10) -->
++  <dialog class="fp-gaveta" id="fpGaveta" aria-labelledby="fpTituloGaveta">
++    <div class="fp-topo">
++      <h2 id="fpTituloGaveta">Filtros</h2>
++      <button class="btn-icone" id="fpFecharGaveta" type="button">
++        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
++      </button>
++    </div>
++    <div class="fp-corpo" id="fpCorpoGaveta"></div>
++    <div class="fp-rodape">
++      <button class="btn btn-secundario" id="fpGavetaLimpar" type="button">Limpar</button>
++      <button class="btn btn-primario" id="fpGavetaAplicar" type="button">Aplicar</button>
++    </div>
++  </dialog>
+ 
+   <!-- Modal for drill-down -->
+   <div class="modal-overlay" id="modalOverlay">
+@@ -648,40 +732,47 @@
+ _cascadeEndpoint = '/api/filters/cascading';
+ 
+ async function loadKPIs() {
+-  const r = await fetch(`${API}/api/performance/kpis?${getFilters()}`).then(r=>r.json());
+-  const c = r.current || {};
+-  const p = r.previous || {};
+-  document.getElementById('vSpend').textContent = fmt(c.net_spend);
+-  document.getElementById('vCentral').textContent = fmt(c.centralization_pct, 'pct');
+-  document.getElementById('vPrazo').textContent = fmt(c.avg_payment_term, 'days');
+-  // Variations
+-  const hasMes = filters.fMes && filters.fMes.getSelected().length > 0;
+-  const vsLabel = hasMes ? t('vs mesmo período mês anterior') : t('vs mesmo período ano anterior');
+-  if (p.net_spend) {
+-    const pct = ((c.net_spend - p.net_spend) / p.net_spend * 100);
+-    const arrow = pct > 0 ? '↑' : '↓';
+-    const color = pct > 0 ? '#ef4444' : '#22c55e';
+-    document.getElementById('dSpend').innerHTML = `<span style="color:${color}">${arrow} ${Math.abs(pct).toFixed(1)}% ${vsLabel}</span>`;
+-  } else {
+-    document.getElementById('dSpend').innerHTML = '';
+-  }
+-  // Centralization semantic color (border stays purple, only value color changes)
+-  const centralVal = c.centralization_pct || 0;
+-  const centralColor = centralVal >= 80 ? '#22c55e' : centralVal >= 70 ? '#fbbf24' : '#f87171';
+-  document.getElementById('vCentral').style.color = centralColor;
+-  // Delta vs meta for Centralização (meta = 80%)
+-  const centralDiff = (centralVal - 80).toFixed(1);
+-  const centralUp = centralDiff >= 0;
+-  document.getElementById('dCentral').innerHTML = `<span style="color:${centralUp?'#22c55e':'#ef4444'}">${centralUp?'\u2191':'\u2193'} ${centralUp?'+':''}${centralDiff} ${t('pp vs meta')}</span>`;
+-  // Payment term semantic (border stays amber, only value color changes)
+-  const prazoVal = c.avg_payment_term || 0;
+-  const prazoColor = prazoVal >= 60 ? '#22c55e' : prazoVal >= 50 ? '#fbbf24' : '#f87171';
+-  document.getElementById('vPrazo').style.color = prazoColor;
+-  // Delta vs meta for Prazo (meta = 60 dias)
+-  const prazoDiff = Math.round(prazoVal - 60);
+-  const prazoUp = prazoDiff >= 0;
+-  document.getElementById('dPrazo').innerHTML = `<span style="color:${prazoUp?'#22c55e':'#ef4444'}">${prazoUp?'\u2191':'\u2193'} ${prazoUp?'+':''}${prazoDiff} ${t('dias vs meta')}</span>`;
+-}
++  try {
++    const r = await fetch(`${API}/api/performance/kpis?${getFilters()}`).then(r=>r.json());
++    const c = r.current || {};
++    const p = r.previous || {};
++    document.getElementById('vSpend').textContent = fmt(c.net_spend);
++    document.getElementById('vCentral').textContent = fmt(c.centralization_pct, 'pct');
++    document.getElementById('vPrazo').textContent = fmt(c.avg_payment_term, 'days');
++    // Variations
++    const hasMes = filters.fMes && filters.fMes.getSelected().length > 0;
++    const vsLabel = hasMes ? t('vs mesmo período mês anterior') : t('vs mesmo período ano anterior');
++    if (p.net_spend) {
++      const pct = ((c.net_spend - p.net_spend) / p.net_spend * 100);
++      const arrow = pct > 0 ? '↑' : '↓';
++      const color = pct > 0 ? '#ef4444' : '#22c55e';
++      document.getElementById('dSpend').innerHTML = `<span style="color:${color}">${arrow} ${Math.abs(pct).toFixed(1)}% ${vsLabel}</span>`;
++    } else {
++      document.getElementById('dSpend').innerHTML = '';
++    }
++    // Centralization semantic color (border stays neutral, only value color changes)
++    const centralVal = c.centralization_pct || 0;
++    const centralColor = centralVal >= 80 ? '#22c55e' : centralVal >= 70 ? '#fbbf24' : '#f87171';
++    document.getElementById('vCentral').style.color = centralColor;
++    // Delta vs meta for Centralização (meta = 80%)
++    const centralDiff = centralVal - 80;
++    const centralUp = centralDiff >= 0;
++    document.getElementById('dCentral').innerHTML = `<span style="color:${centralUp?'#22c55e':'#ef4444'}">${centralUp?'\u2191':'\u2193'} ${centralUp?'+':''}${centralDiff.toFixed(1)} ${t('pp vs meta')}</span>`;
++    // Payment term semantic (border stays amber, only value color changes)
++    const prazoVal = c.avg_payment_term || 0;
++    const prazoColor = prazoVal >= 60 ? '#22c55e' : prazoVal >= 50 ? '#fbbf24' : '#f87171';
++    document.getElementById('vPrazo').style.color = prazoColor;
++    // Delta vs meta for Prazo (meta = 60 dias)
++    const prazoDiff = Math.round(prazoVal - 60);
++    const prazoUp = prazoDiff >= 0;
++    document.getElementById('dPrazo').innerHTML = `<span style="color:${prazoUp?'#22c55e':'#ef4444'}">${prazoUp?'\u2191':'\u2193'} ${prazoUp?'+':''}${prazoDiff} ${t('dias vs meta')}</span>`;
++  } catch (err) {
++    console.error('loadKPIs error:', err);
++  }
++}
++
++function fmtPct(v) { return v != null ? Math.abs(Number(v)).toFixed(1) + '%' : '--'; }
++function fmtPp(v) { return v != null ? (Number(v)>=0?'+':'') + Number(v).toFixed(1) : '--'; }
+ 
+ function getTickColor(isHighlight = false) {
+   const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+@@ -699,12 +790,8 @@
+   currentPerfYoYMetric = metric;
+   const btnS = document.getElementById('btnYoYSpend');
+   const btnC = document.getElementById('btnYoYCentral');
+-  if (btnS) {
+-    btnS.classList.toggle('active', metric === 'spend');
+-  }
+-  if (btnC) {
+-    btnC.classList.toggle('active', metric === 'central');
+-  }
++  if (btnS) btnS.setAttribute('aria-selected', String(metric === 'spend'));
++  if (btnC) btnC.setAttribute('aria-selected', String(metric === 'central'));
+   renderPerfYoYChart();
+ }
+ 
+@@ -718,65 +805,183 @@
+   }
+ }
+ 
++const tok = n => (getComputedStyle(document.documentElement).getPropertyValue(n) || '').trim();
++
++const pluginTracoYoY = {
++  id: 'tracoComp',
++  afterDatasetsDraw(chart) {
++    const meta = chart.getDatasetMeta(0), y = chart.scales.y, c = chart.ctx;
++    const v = chart._yoyData;
++    if (!v || !v.comp) return;
++    c.save();
++    c.strokeStyle = tok('--gr-traco') || (document.documentElement.getAttribute('data-theme') === 'light' ? '#161A22' : '#F0F4F8');
++    c.lineWidth = 2.5;
++    meta.data.forEach((bar, i) => {
++      if (v.comp[i] == null) return;
++      const py = Math.round(y.getPixelForValue(v.comp[i])) + 0.5;
++      const meia = bar.width * 0.62;
++      c.beginPath();
++      c.moveTo(bar.x - meia, py);
++      c.lineTo(bar.x + meia, py);
++      c.stroke();
++    });
++    c.restore();
++  }
++};
++
++const pluginRotuloFoco = {
++  id: 'rotuloFoco',
++  afterDatasetsDraw(chart) {
++    const v = chart._yoyData;
++    if (!v || !v.realizado) return;
++    const i = v.focoIndex;
++    const bar = chart.getDatasetMeta(0).data[i];
++    if (!bar || v.realizado[i] == null) return;
++    const c = chart.ctx, yTraco = v.comp[i] != null ? chart.scales.y.getPixelForValue(v.comp[i]) : null;
++    const encosta = yTraco != null && yTraco > bar.y - 24 && yTraco < bar.y + 4;
++    const yTexto = (encosta ? Math.min(bar.y, yTraco) : bar.y) - 6;
++    c.save();
++    c.fillStyle = tok('--gr-titulo') || (document.documentElement.getAttribute('data-theme') === 'light' ? '#161A22' : '#F0F4F8');
++    c.font = '700 12px Inter, "Segoe UI", system-ui, sans-serif';
++    c.textAlign = 'center';
++    c.textBaseline = 'bottom';
++    const txt = v.isSpend ? fmt(v.realizado[i]) : fmtPct(v.realizado[i]);
++    c.fillText(txt, bar.x, yTexto);
++    c.restore();
++  }
++};
++
++const pluginPilulasYoY = {
++  id: 'pilulasYoY',
++  afterDraw(chart) {
++    const v = chart._yoyData;
++    if (!v || !v.realizado) return;
++    const c = chart.ctx, x = chart.scales.x, y0 = x.bottom + 6;
++    c.save();
++    c.font = '600 11px Inter, "Segoe UI", system-ui, sans-serif';
++    c.textAlign = 'center';
++    c.textBaseline = 'middle';
++    v.realizado.forEach((r, i) => {
++      const cp = v.comp[i];
++      if (r == null || !cp) return;
++      const pct = v.isSpend ? ((r - cp) / cp * 100) : (r - cp);
++      let st = 'atencao';
++      if (v.isSpend) {
++        st = pct < -1 ? 'bom' : (pct > 5 ? 'ruim' : 'atencao');
++      } else {
++        st = r >= 80 ? 'bom' : (r >= 70 ? 'atencao' : 'ruim');
++      }
++      const sign = pct >= 0 ? '+' : '';
++      const txt = v.isSpend ? `${sign}${pct.toFixed(1)}%` : `${sign}${pct.toFixed(1)} pp`;
++      const w = c.measureText(txt).width + 14, h = 20, px = x.getPixelForValue(i);
++      c.fillStyle = tok(`--gr-${st}-bg`) || (st === 'bom' ? 'rgba(74,222,128,.14)' : st === 'ruim' ? 'rgba(248,113,113,.14)' : 'rgba(251,191,36,.14)');
++      c.beginPath();
++      if (c.roundRect) c.roundRect(px - w / 2, y0, w, h, 10);
++      else c.rect(px - w / 2, y0, w, h);
++      c.fill();
++      c.fillStyle = tok(`--gr-${st}-tx`) || (st === 'bom' ? '#4ADE80' : st === 'ruim' ? '#FCA5A5' : '#FBBF24');
++      c.fillText(txt, px, y0 + h / 2 + 0.5);
++    });
++    c.restore();
++  }
++};
++
++function tooltipExternoYoY({ chart, tooltip }) {
++  const tip = document.getElementById('grTip');
++  if (!tip) return;
++  if (!tooltip || tooltip.opacity === 0 || !tooltip.dataPoints?.length) {
++    tip.hidden = true;
++    return;
++  }
++  const i = tooltip.dataPoints[0].dataIndex;
++  const v = chart._yoyData;
++  if (!v) return;
++  const r = v.realizado[i], cp = v.comp[i];
++  const pct = cp ? (v.isSpend ? (r - cp) / cp * 100 : r - cp) : null;
++  let st = '';
++  if (pct != null) {
++    st = v.isSpend ? (pct < -1 ? 'bom' : pct > 5 ? 'ruim' : 'atencao') : (r >= 80 ? 'bom' : r >= 70 ? 'atencao' : 'ruim');
++  }
++  const sign = pct != null && pct >= 0 ? '+' : '';
++  const pctFormatted = pct == null ? '—' : (v.isSpend ? `${sign}${pct.toFixed(1)}%` : `${sign}${pct.toFixed(1)} pp`);
++  const difFormatted = (r != null && cp != null) ? fmt(r - cp) : '—';
++
++  const mesesExt = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
++  const mesNome = mesesExt[parseInt(v.mesesRaw[i]) - 1] || v.labels[i];
++
++  const linhas = [
++    [v.serie, r == null ? '—' : (v.isSpend ? fmt(r) : fmtPct(r)), ''],
++    [v.comparacao, cp == null ? '—' : (v.isSpend ? fmt(cp) : fmtPct(cp)), ''],
++    [v.percentual, pctFormatted, st],
++    ['Diferença', difFormatted, st]
++  ];
++
++  tip.innerHTML = `<h3>${mesNome}</h3><dl>${linhas.map(([label, val, cls]) => `<dt>${label}</dt><dd class="${cls}">${val}</dd>`).join('')}</dl>`;
++  tip.hidden = false;
++
++  const caixa = chart.canvas.getBoundingClientRect();
++  const bar = chart.getDatasetMeta(0).data[i];
++  if (!bar) return;
++  const topoBarra = Math.min(bar.y, cp != null ? chart.scales.y.getPixelForValue(cp) : bar.y);
++  let left = caixa.left + bar.x - tip.offsetWidth / 2;
++  let top = caixa.top + topoBarra - tip.offsetHeight - 14;
++  left = Math.max(8, Math.min(left, window.innerWidth - tip.offsetWidth - 8));
++  if (top < 8) top = caixa.top + bar.y + 14;
++  tip.style.left = `${left}px`;
++  tip.style.top = `${top}px`;
++}
++
+ function renderPerfYoYChart() {
+   if (!_perfYoYRawData) return;
+   const isSpend = currentPerfYoYMetric === 'spend';
+ 
+-  // Only limit months to current month when current year is selected; past years show all 12
+   const _selYears = filters.fAno ? filters.fAno.getSelected() : [];
+   const _cy = String(new Date().getFullYear());
+-  const activeYear = (_selYears && _selYears.length === 1) ? _selYears[0] : (_selYears && _selYears.length > 1 ? _selYears.join('/') : _cy);
++  const activeYear = (_selYears && _selYears.length === 1) ? _selYears[0] : _cy;
+   const _includesCY = _selYears.length === 0 || _selYears.includes(_cy);
+-  const currentMonth = _includesCY ? new Date().getMonth() : 11; // 0=Jan
++  const currentMonth = _includesCY ? new Date().getMonth() : 11;
+   const filtered = _perfYoYRawData.filter(d => parseInt(d.mes) - 1 <= currentMonth);
+   const labels = filtered.map(d => MONTHS[parseInt(d.mes) - 1]);
+-  const lastIdx = filtered.length - 1;
+-
+-  // Legend elements
+-  const legCurColor = document.getElementById('legYoYColorCur');
+-  const legCurLbl = document.getElementById('legYoYLblCur');
+-  const legPrevLbl = document.getElementById('legYoYLblPrev');
+-  const legMeta = document.getElementById('legYoYMeta');
+-
+-  let currentData, prevData, yoyPcts, bgCur, currentDatasetLabel, prevDatasetLabel;
+-
++  const mesesRaw = filtered.map(d => d.mes);
++
++  // Foco: se mês selecionado no filtro, usar ele; senão último mês
++  const selMeses = filters.fMes ? filters.fMes.getSelected() : [];
++  let focoIndex = filtered.length - 1;
++  if (selMeses && selMeses.length > 0) {
++    const idx = filtered.findIndex(d => String(d.mes) === String(selMeses[0]));
++    if (idx >= 0) focoIndex = idx;
++  }
++
++  let realizado, comp, serie, comparacao, percentual;
+   if (isSpend) {
+-    if (legCurColor) legCurColor.style.background = '#3b82f6';
+-    if (legCurLbl) legCurLbl.textContent = t('Spend Líquido');
+-    if (legPrevLbl) legPrevLbl.textContent = t('Spend Líq. Ano Anterior');
+-    if (legMeta) legMeta.style.display = 'none';
+-
+-    currentData = filtered.map(d => d.current_spend);
+-    prevData = filtered.map(d => d.prev_spend);
+-    currentDatasetLabel = t('Spend Líquido');
+-    prevDatasetLabel = t('Spend Líq. Ano Anterior');
+-
+-    const totalCur = currentData.reduce((a, b) => a + (b || 0), 0);
+-    const totalPrev = prevData.reduce((a, b) => a + (b || 0), 0);
++    serie = t('Spend Líquido');
++    comparacao = t('Ano Anterior');
++    percentual = t('Variação');
++    realizado = filtered.map(d => d.current_spend);
++    comp = filtered.map(d => d.prev_spend);
++
++    const totalCur = realizado.reduce((a, b) => a + (b || 0), 0);
++    const totalPrev = comp.reduce((a, b) => a + (b || 0), 0);
+     const pctVar = totalPrev ? ((totalCur - totalPrev) / totalPrev * 100).toFixed(1) : 0;
+     const direction = pctVar > 0 ? t('acima') : t('abaixo');
+     const signPct = parseFloat(pctVar) >= 0 ? '+' : '';
+-    document.getElementById('ttlSpendYoY').textContent = typeof tt !== 'undefined'
+-      ? tt('Em {ano}, o Spend Líquido está em {val} ({pct}% {dir} do mesmo período do ano anterior)', {ano: activeYear, val: fmt(totalCur), pct: `${signPct}${pctVar}`, dir: direction})
+-      : `Em ${activeYear}, o Spend Líquido está em ${fmt(totalCur)} (${signPct}${pctVar}% ${direction} do mesmo período do ano anterior)`;
+-
+-    bgCur = currentData.map((_, i) => i === lastIdx ? '#3b82f6' : 'rgba(59,130,246,0.4)');
+-    yoyPcts = currentData.map((c, i) => {
+-      const p = prevData[i] || 0;
+-      if (!p) return null;
+-      return ((c - p) / p * 100);
+-    });
++
++    const grEyebrow = document.getElementById('grEyebrow');
++    if (grEyebrow) grEyebrow.textContent = `Performance Mensal · ${activeYear}`;
++    const grTitulo = document.getElementById('grTitulo');
++    if (grTitulo) grTitulo.textContent = `Em ${activeYear}, Spend Líquido em ${fmt(totalCur)} (${signPct}${pctVar}% ${direction} vs ano anterior)`;
++
++    const selo = document.getElementById('grAcumSelo');
++    if (selo) {
++      selo.textContent = `${signPct}${pctVar}%`;
++      selo.className = 'selo ' + (parseFloat(pctVar) <= 0 ? 'bom' : 'ruim');
++    }
+   } else {
+-    // Centralização
+-    if (legCurColor) legCurColor.style.background = 'linear-gradient(135deg, #22c55e, #ef4444)';
+-    if (legCurLbl) legCurLbl.textContent = t('% Centralização');
+-    if (legPrevLbl) legPrevLbl.textContent = t('% Centraliz. Ano Anterior');
+-    if (legMeta) legMeta.style.display = 'inline-flex';
+-
+-    currentData = filtered.map(d => d.current_central_pct != null ? d.current_central_pct : null);
+-    prevData = filtered.map(d => d.prev_central_pct != null ? d.prev_central_pct : null);
+-    currentDatasetLabel = t('% Centralização');
+-    prevDatasetLabel = t('% Centraliz. Ano Anterior');
++    serie = t('% Centralização');
++    comparacao = t('% Centraliz. Anterior');
++    percentual = t('Diferença');
++    realizado = filtered.map(d => d.current_central_pct != null ? d.current_central_pct : null);
++    comp = filtered.map(d => d.prev_central_pct != null ? d.prev_central_pct : null);
+ 
+     const totalCurCentralSpend = filtered.reduce((a, d) => a + (d.current_central_spend || 0), 0);
+     const totalCurSpend = filtered.reduce((a, d) => a + (d.current_spend || 0), 0);
+@@ -786,135 +991,43 @@
+     const totalPrevSpend = filtered.reduce((a, d) => a + (d.prev_spend || 0), 0);
+     const totalPrevCentralPct = totalPrevSpend ? (totalPrevCentralSpend / totalPrevSpend * 100) : 0;
+ 
+-    const diffPP = (totalCurCentralPct - totalPrevCentralPct).toFixed(1);
+-    const dirPP = parseFloat(diffPP) >= 0 ? t('acima') : t('abaixo');
+-    const signPP = parseFloat(diffPP) >= 0 ? '+' : '';
+-
+-    document.getElementById('ttlSpendYoY').textContent = typeof tt !== 'undefined'
+-      ? tt('Em {ano}, a Centralização está em {val}% ({diff} pp {dir} do mesmo período do ano anterior)', {ano: activeYear, val: totalCurCentralPct.toFixed(1), diff: `${signPP}${diffPP}`, dir: dirPP})
+-      : `Em ${activeYear}, a Centralização está em ${totalCurCentralPct.toFixed(1)}% (${signPP}${diffPP} pp ${dirPP} do mesmo período do ano anterior)`;
+-
+-    // Conditional colors based on meta >= 80% (palette aligned with chartDiscount)
+-    bgCur = currentData.map((val, i) => {
+-      if (val == null) return 'rgba(100,116,139,0.2)';
+-      const meetsMeta = val >= 80;
+-      const isCurMonth = (i === lastIdx);
+-      if (meetsMeta) {
+-        return isCurMonth ? 'rgba(22,163,74,1)' : 'rgba(22,163,74,0.65)';
+-      } else {
+-        return isCurMonth ? 'rgba(220,38,38,1)' : 'rgba(220,38,38,0.55)';
+-      }
+-    });
+-
+-    yoyPcts = currentData.map((c, i) => {
+-      const p = prevData[i];
+-      if (c == null || p == null) return null;
+-      return (c - p);
+-    });
++    const diffPP = totalCurCentralPct - totalPrevCentralPct;
++    const dirPP = diffPP >= 0 ? t('acima') : t('abaixo');
++    const signPP = diffPP >= 0 ? '+' : '';
++
++    const grEyebrow = document.getElementById('grEyebrow');
++    if (grEyebrow) grEyebrow.textContent = `Centralização · ${activeYear}`;
++    const grTitulo = document.getElementById('grTitulo');
++    if (grTitulo) grTitulo.textContent = `Em ${activeYear}, Centralização em ${fmtPct(totalCurCentralPct)} (${signPP}${diffPP.toFixed(1)} pp ${dirPP} vs ano anterior)`;
++
++    const selo = document.getElementById('grAcumSelo');
++    if (selo) {
++      selo.textContent = `${totalCurCentralPct.toFixed(1)}%`;
++      selo.className = 'selo ' + (totalCurCentralPct >= 80 ? 'bom' : 'atencao');
++    }
++  }
++
++  const grLegSerie = document.getElementById('grLegSerie');
++  if (grLegSerie) grLegSerie.textContent = serie;
++  const grLegComp = document.getElementById('grLegComp');
++  if (grLegComp) grLegComp.textContent = comparacao;
++
++  // Tabela acessível
++  const grTabela = document.getElementById('grTabela');
++  if (grTabela) {
++    grTabela.innerHTML = `<thead><tr><th>Mês</th><th>${serie}</th><th>${comparacao}</th><th>${percentual}</th></tr></thead><tbody>${filtered.map((d, i) => {
++      const r = realizado[i], c = comp[i];
++      const p = (r != null && c) ? (isSpend ? ((r - c) / c * 100).toFixed(1) + '%' : (r - c).toFixed(1) + ' pp') : '—';
++      return `<tr><td>${labels[i]}</td><td>${r == null ? '—' : (isSpend ? fmt(r) : fmtPct(r))}</td><td>${c == null ? '—' : (isSpend ? fmt(c) : fmtPct(c))}</td><td>${p}</td></tr>`;
++    }).join('')}</tbody>`;
+   }
+ 
+   if (chartSpend) chartSpend.destroy();
+-  const ctx = document.getElementById('chartSpendYoY').getContext('2d');
+-
+-  // Custom plugin to draw labels:
+-  // Custom plugin to draw labels:
+-  // - Current year value on top of bar (formatted currency for Spend, % for Centralization)
+-  // - Difference vs previous year at base of column inside high-contrast badge (% for Spend, pp for Centralization)
+-  const yoyLabelPlugin = {
+-    id: 'yoyLabels',
+-    afterDatasetsDraw(chart) {
+-      const meta = chart.getDatasetMeta(0);
+-      const ctxC = chart.ctx;
+-      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+-      ctxC.save();
+-
+-      meta.data.forEach((bar, i) => {
+-        const cVal = currentData[i];
+-        if (cVal != null && cVal > 0) {
+-          // 1. Top label: Current year value (bold on current month, clean neutral text)
+-          ctxC.font = i === lastIdx ? '800 10.5px system-ui, -apple-system, sans-serif' : '600 9.5px system-ui, -apple-system, sans-serif';
+-          ctxC.textAlign = 'center';
+-          ctxC.textBaseline = 'bottom';
+-          ctxC.fillStyle = isLight ? '#1e293b' : '#f1f5f9';
+-          const topLabel = isSpend ? fmt(cVal) : `${cVal.toFixed(1)}%`;
+-          ctxC.fillText(topLabel, bar.x, bar.y - 2);
+-        }
+-
+-        // 2. Base label: Difference vs previous year (contrast background badge at base of column)
+-        const diffVal = yoyPcts[i];
+-        if (diffVal != null && isFinite(diffVal) && (bar.base - bar.y > 24)) {
+-          const arrow = diffVal >= 0 ? '\u2191' : '\u2193';
+-          const sign = diffVal >= 0 ? '+' : '';
+-          const absVal = Math.abs(diffVal).toFixed(1);
+-          const unit = isSpend ? '%' : ' pp';
+-          const text = `${arrow}${sign}${absVal}${unit}`;
+-
+-          ctxC.font = '700 8.5px system-ui, -apple-system, sans-serif';
+-          const textWidth = ctxC.measureText(text).width;
+-          const badgeW = textWidth + 8;
+-          const badgeH = 13;
+-          const badgeX = bar.x - badgeW / 2;
+-          const badgeY = bar.base - badgeH - 3;
+-
+-          // Background pill for contrast
+-          ctxC.beginPath();
+-          if (ctxC.roundRect) {
+-            ctxC.roundRect(badgeX, badgeY, badgeW, badgeH, 3);
+-          } else {
+-            ctxC.rect(badgeX, badgeY, badgeW, badgeH);
+-          }
+-          ctxC.fillStyle = isLight ? 'rgba(255, 255, 255, 0.92)' : 'rgba(15, 23, 42, 0.88)';
+-          ctxC.fill();
+-          ctxC.strokeStyle = isLight ? 'rgba(148, 163, 184, 0.35)' : 'rgba(148, 163, 184, 0.25)';
+-          ctxC.lineWidth = 0.8;
+-          ctxC.stroke();
+-
+-          // Text inside badge
+-          let textColor;
+-          if (isSpend) {
+-            // For Spend: spending less (negative diff) is green (savings), spending more is red
+-            if (diffVal > 0.5) textColor = isLight ? '#dc2626' : '#f87171';
+-            else if (diffVal < -0.5) textColor = isLight ? '#16a34a' : '#4ade80';
+-            else textColor = isLight ? '#64748b' : '#94a3b8';
+-          } else {
+-            // For Centralization: higher centralization is green, lower is red
+-            if (diffVal > 0.5) textColor = isLight ? '#16a34a' : '#4ade80';
+-            else if (diffVal < -0.5) textColor = isLight ? '#dc2626' : '#f87171';
+-            else textColor = isLight ? '#64748b' : '#94a3b8';
+-          }
+-
+-          ctxC.fillStyle = textColor;
+-          ctxC.textAlign = 'center';
+-          ctxC.textBaseline = 'middle';
+-          ctxC.fillText(text, bar.x, badgeY + badgeH / 2);
+-        }
+-      });
+-      ctxC.restore();
+-    }
+-  };
+-
+-  // Target 80% line plugin for Centralization (subtle neutral dashed line without text label)
+-  const metaLinePlugin = {
+-    id: 'metaLineCentral',
+-    afterDraw(chart) {
+-      if (isSpend) return;
+-      const yScale = chart.scales.y;
+-      if (!yScale) return;
+-      const yPos = yScale.getPixelForValue(80);
+-      if (yPos == null || isNaN(yPos)) return;
+-      const ctxC = chart.ctx;
+-      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+-      ctxC.save();
+-      ctxC.beginPath();
+-      ctxC.setLineDash([4, 4]);
+-      ctxC.strokeStyle = isLight ? 'rgba(100, 116, 139, 0.45)' : 'rgba(148, 163, 184, 0.4)';
+-      ctxC.lineWidth = 1.2;
+-      ctxC.moveTo(chart.chartArea.left, yPos);
+-      ctxC.lineTo(chart.chartArea.right, yPos);
+-      ctxC.stroke();
+-      ctxC.restore();
+-    }
+-  };
++  const canvasEl = document.getElementById('chartSpendYoY');
++  if (!canvasEl) return;
++  const ctx = canvasEl.getContext('2d');
++
++  const maxVal = Math.max(...realizado.filter(x => x != null), ...comp.filter(x => x != null), 1);
+ 
+   chartSpend = new Chart(ctx, {
+     type: 'bar',
+@@ -922,57 +1035,69 @@
+       labels,
+       datasets: [
+         {
+-          label: currentDatasetLabel,
+-          data: currentData,
+-          backgroundColor: bgCur,
+-          borderColor: 'transparent',
+-          borderWidth: 0,
++          label: serie,
++          data: realizado,
++          backgroundColor: ctxItem => ctxItem.dataIndex === focoIndex ? tok('--gr-barra-foco') || '#3B82F6' : tok('--gr-barra') || '#2C3E63',
++          hoverBackgroundColor: ctxItem => ctxItem.dataIndex === focoIndex ? tok('--gr-barra-foco') || '#60A5FA' : tok('--gr-barra-hover') || '#4B6AA5',
+           borderRadius: 3,
+-          barPercentage: 0.65
+-        },
+-        {
+-          label: prevDatasetLabel,
+-          data: prevData,
+-          backgroundColor: 'rgba(200,200,200,0.25)',
+-          borderRadius: 3,
+-          barPercentage: 0.65
++          barPercentage: 0.92,
++          categoryPercentage: 0.62
+         }
+       ]
+     },
+-    plugins: [yoyLabelPlugin, metaLinePlugin],
++    plugins: [pluginTracoYoY, pluginRotuloFoco, pluginPilulasYoY],
+     options: {
+       responsive: true,
+       maintainAspectRatio: false,
+-      layout: { padding: { top: 20, bottom: 4 } },
++      layout: { padding: { top: 26, bottom: 36, left: 8, right: 8 } },
++      interaction: { mode: 'index', intersect: false },
+       plugins: {
+         legend: { display: false },
+-        tooltip: {
+-          callbacks: {
+-            label: function(c) {
+-              if (isSpend) return c.dataset.label + ': ' + fmt(c.raw);
+-              return c.dataset.label + ': ' + (c.raw != null ? c.raw.toFixed(1) + '%' : '--');
+-            }
++        tooltip: { enabled: false, external: tooltipExternoYoY }
++      },
++      scales: {
++        y: {
++          display: false,
++          beginAtZero: true,
++          max: maxVal * 1.15
++        },
++        x: {
++          grid: { display: false },
++          border: { display: true, color: tok('--gr-base') || '#2A3242' },
++          ticks: {
++            color: ctxItem => ctxItem.index === focoIndex ? tok('--gr-eixo-foco') || '#F0F4F8' : tok('--gr-eixo') || '#94A2B8',
++            font: ctxItem => ({
++              size: 12,
++              weight: ctxItem.index === focoIndex ? '700' : '400',
++              family: 'Inter, "Segoe UI", system-ui, sans-serif'
++            })
+           }
+         }
+-      },
+-      scales: {
+-        x: {
+-          grid: { display: false },
+-          border: { display: false },
+-          ticks: {
+-            color: function(ctx) { return ctx.index === lastIdx ? getTickColor(true) : getTickColor(false); },
+-            font: function(ctx) { return ctx.index === lastIdx ? { size: 9, weight: '800' } : { size: 8.5, weight: '500' }; }
+-          }
+-        },
+-        y: {
+-          display: false,
+-          grace: isSpend ? '18%' : undefined,
+-          min: 0,
+-          max: isSpend ? undefined : 108
+-        }
+       }
+     }
+   });
++
++  chartSpend._yoyData = {
++    realizado,
++    comp,
++    labels,
++    mesesRaw,
++    focoIndex,
++    isSpend,
++    serie,
++    comparacao,
++    percentual
++  };
++
++  canvasEl.addEventListener('mouseleave', () => {
++    const tip = document.getElementById('grTip');
++    if (tip) tip.hidden = true;
++  });
++  window.addEventListener('scroll', () => {
++    const tip = document.getElementById('grTip');
++    if (tip) tip.hidden = true;
++  }, { passive: true });
++
+   syncFunnelRowHeight();
+ }
+ 
+@@ -1126,25 +1251,14 @@
+ let currentFunnelScope = 'diretos';
+ 
+ function syncFunnelRowHeight() {
+-  const rightCard = document.getElementById('cardFunnel');
+   const leftCard = document.getElementById('cardSpendYoY');
+   const wrapChart = document.getElementById('wrapSpendYoY');
+-  if (!rightCard || !leftCard || !wrapChart) return;
+-
+-  const targetH = rightCard.offsetHeight;
+-  if (!targetH || targetH < 60) return;
+-
+-  leftCard.style.height = targetH + 'px';
+-
+-  const header = leftCard.querySelector('.fr-chart-header-wrap');
+-  const headerH = header ? header.offsetHeight : 45;
+-  const pad = 24; // padding: 0.75rem top + 0.75rem bottom
+-  const chartH = Math.max(90, targetH - headerH - pad - 6);
+-
+-  wrapChart.style.height = chartH + 'px';
+-  wrapChart.style.maxHeight = chartH + 'px';
+-
+-  if (typeof chartSpend !== 'undefined' && chartSpend) {
++  if (leftCard) leftCard.style.height = '';
++  if (wrapChart) {
++    wrapChart.style.height = '';
++    wrapChart.style.maxHeight = '';
++  }
++  if (typeof chartSpend !== 'undefined' && chartSpend && typeof chartSpend.resize === 'function') {
+     chartSpend.resize();
+   }
+ }
+@@ -1413,28 +1527,33 @@
+ }
+ 
+ async function loadDeviations() {
+-  const data = await fetch(`${API}/api/performance/process-deviations?${getFilters()}`).then(r=>r.json());
+-  const d = data[0] || {};
+-  const total = d.total || 1;
+-  const regPct = ((d.regular||0)/total*100).toFixed(1);
+-  const posPct = ((d.pos_fatura||0)/total*100).toFixed(1);
+-  const semPct = ((d.sem_oc||0)/total*100).toFixed(1);
+-  const devPct = (parseFloat(posPct) + parseFloat(semPct)).toFixed(1);
+-  document.getElementById('ttlDeviations').textContent = tt('Desvios de processo representam {pct}% do Spend Líquido no período selecionado', {pct: devPct});
+-  document.getElementById('devBar').innerHTML = `
+-    <div class="dev-segment dev-regular" style="width:${regPct}%">${regPct}%</div>
+-    <div class="dev-segment dev-pos-fatura" style="width:${posPct}%">${posPct > 5 ? posPct+'%' : ''}</div>
+-    <div class="dev-segment dev-sem-oc" style="width:${semPct}%">${semPct > 5 ? semPct+'%' : ''}</div>
+-  `;
+-  document.getElementById('devLegend').innerHTML = `
+-    <div class="dev-legend-item"><div class="dev-legend-dot" style="background:#22c55e"></div>${t('Compra regular')} (${regPct}%)</div>
+-    <div class="dev-legend-item"><div class="dev-legend-dot" style="background:#f59e0b"></div>${t('OC pós-fatura')} (${posPct}%)</div>
+-    <div class="dev-legend-item"><div class="dev-legend-dot" style="background:#ef4444"></div>${t('Nota sem OC')} (${semPct}%)</div>
+-  `;
++  try {
++    const data = await fetch(`${API}/api/performance/process-deviations?${getFilters()}`).then(r=>r.json());
++    const d = (Array.isArray(data) ? data[0] : data) || {};
++    const total = d.total || 1;
++    const regPct = ((d.regular||0)/total*100).toFixed(1);
++    const posPct = ((d.pos_fatura||0)/total*100).toFixed(1);
++    const semPct = ((d.sem_oc||0)/total*100).toFixed(1);
++    const devPct = (parseFloat(posPct) + parseFloat(semPct)).toFixed(1);
++    document.getElementById('ttlDeviations').textContent = tt('Desvios de processo representam {pct}% do Spend Líquido no período selecionado', {pct: devPct});
++    document.getElementById('devBar').innerHTML = `
++      <div class="dev-segment dev-regular" style="width:${regPct}%">${regPct}%</div>
++      <div class="dev-segment dev-pos-fatura" style="width:${posPct}%">${posPct > 5 ? posPct+'%' : ''}</div>
++      <div class="dev-segment dev-sem-oc" style="width:${semPct}%">${semPct > 5 ? semPct+'%' : ''}</div>
++    `;
++    document.getElementById('devLegend').innerHTML = `
++      <div class="dev-legend-item"><div class="dev-legend-dot" style="background:#22c55e"></div>${t('Compra regular')} (${regPct}%)</div>
++      <div class="dev-legend-item"><div class="dev-legend-dot" style="background:#f59e0b"></div>${t('OC pós-fatura')} (${posPct}%)</div>
++      <div class="dev-legend-item"><div class="dev-legend-dot" style="background:#ef4444"></div>${t('Nota sem OC')} (${semPct}%)</div>
++    `;
++  } catch (err) {
++    console.error('loadDeviations error:', err);
++  }
+ }
+ 
+ async function loadAttention() {
+-  const data = await fetch(`${API}/api/performance/attention?${getFilters()}`).then(r=>r.json());
++  try {
++    const data = await fetch(`${API}/api/performance/attention?${getFilters()}`).then(r=>r.json());
+   const list = document.getElementById('attentionList');
+   const items = [];
+   if (data.req_pending && data.req_pending.qty > 0) {
+@@ -1529,8 +1648,11 @@
+   list.innerHTML = html;
+ 
+   // Price increase alerts (table) - based on saving_total
+-  _priceAlertsData = data.price_alerts || [];
++  _priceAlertsData = (data && data.price_alerts) || [];
+   renderPriceAlertsTable();
++  } catch (err) {
++    console.error('loadAttention error:', err);
++  }
+ }
+ 
+ async function drillDown(type) {
+@@ -1751,48 +1873,99 @@
+ const savedTheme = localStorage.getItem('theme');
+ if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+ 
++let filtersPanel = null;
+ async function initFilters() {
+-  const data = await (window.fetchCachedFilterData ? window.fetchCachedFilterData(`${API}/api/filters/notas`) : fetch(`${API}/api/filters/notas`).then(r=>r.json()));
+-  filters.fEmpresa = new MultiSelect(document.getElementById('fEmpresa'), data.empresas || ['BB','BQ']);
+-  filters.fEmpresa.selected = new Set(['BB','BQ']); filters.fEmpresa.renderOptions(); filters.fEmpresa.updateLabel();
+-  filters.fAno = new MultiSelect(document.getElementById('fAno'), data.anos || []);
+-  filters.fMes = new MultiSelect(document.getElementById('fMes'), (data.meses || []).map(m => String(m)));
+-  filters.fGrupo = new MultiSelect(document.getElementById('fGrupo'), data.grupos || []);
+-  filters.fFornecedor = new MultiSelect(document.getElementById('fFornecedor'), data.fornecedores || []);
+-  filters.fTipoNF = new MultiSelect(document.getElementById('fTipoNF'), ['com_oc','sem_oc']);
+-  filters.fTipoNF.selected = new Set(['com_oc', 'sem_oc']); filters.fTipoNF.renderOptions(); filters.fTipoNF.updateLabel();
+-  if (document.getElementById('fFornNegociavel')) {
+-    filters.fFornNegociavel = new MultiSelect(document.getElementById('fFornNegociavel'), ['NEGOCIAVEL', 'NÃO NEGOCIAVEL']);
+-  }
+-  // Advanced filters (non-blocking, cached)
++  const cy = String(new Date().getFullYear());
++  const cm = String(new Date().getMonth() + 1);
++  let data = {};
++  try {
++    const raw = await (window.fetchCachedFilterData ? window.fetchCachedFilterData(`${API}/api/filters/notas`) : fetch(`${API}/api/filters/notas`).then(r=>r.json()));
++    if (raw && !raw.error) data = raw;
++  } catch (err) {
++    console.warn('Erro ao carregar /api/filters/notas:', err);
++  }
++
++  const MESES_OPCOES = [
++    { v: '1', t: '01 - Jan' },
++    { v: '2', t: '02 - Fev' },
++    { v: '3', t: '03 - Mar' },
++    { v: '4', t: '04 - Abr' },
++    { v: '5', t: '05 - Mai' },
++    { v: '6', t: '06 - Jun' },
++    { v: '7', t: '07 - Jul' },
++    { v: '8', t: '08 - Ago' },
++    { v: '9', t: '09 - Set' },
++    { v: '10', t: '10 - Out' },
++    { v: '11', t: '11 - Nov' },
++    { v: '12', t: '12 - Dez' }
++  ];
++
++  const anosOpcoes = (data.anos && data.anos.length > 0) ? data.anos.map(String) : [cy, String(Number(cy)-1)];
++
++  const defs = [
++    { id: 'fEmpresa', key: 'empresa', rotulo: 'Empresa', tipo: 'multi', opcoes: data.empresas || ['BB','BQ'], padrao: ['BB','BQ'] },
++    { id: 'fAno', key: 'ano', rotulo: 'Ano', tipo: 'unico', opcoes: anosOpcoes, padrao: cy },
++    { id: 'fMes', key: 'mes', rotulo: 'Mês', tipo: 'multi', opcoes: MESES_OPCOES, padrao: [cm] },
++    { id: 'fGrupo', key: 'grupo_compras', rotulo: 'Direto/Indireto', tipo: 'multi', opcoes: data.grupos || [] },
++    { id: 'fFornecedor', key: 'fornecedor', rotulo: 'Fornecedor', tipo: 'multi', opcoes: data.fornecedores || [] },
++    { id: 'fTipoNF', key: 'tipo_nf', rotulo: 'Tipo NF', tipo: 'multi', opcoes: ['com_oc','sem_oc'] },
++    { id: 'fCentralizado', key: 'centralizado', rotulo: 'Centralizado', tipo: 'multi', opcoes: ['SIM','NÃO'] },
++    { id: 'fFornNegociavel', key: 'is_fornecedor_nao_negociavel', rotulo: 'Forn. Negociável', tipo: 'multi', opcoes: ['NEGOCIAVEL', 'NÃO NEGOCIAVEL'], padrao: ['NEGOCIAVEL'] }
++  ];
++
++  filtersPanel = new DNAFiltersPanel({
++    layoutId: 'appLayout',
++    resumoId: 'fpResumo',
++    chipsId: 'fpChips',
++    limparTudoId: 'fpLimparTudo',
++    abrirGavetaId: 'fpAbrirGaveta',
++    lateralId: 'fpLateral',
++    trilhoId: 'fpExpandir',
++    trilhoContadorId: 'fpTrilhoContador',
++    trilhoTextoId: 'fpTrilhoTexto',
++    abertoId: 'fpAberto',
++    tituloLateralId: 'fpTituloLateral',
++    lateralContadorId: 'fpLateralContador',
++    recolherId: 'fpRecolher',
++    corpoLateralId: 'fpCorpoLateral',
++    limparId: 'fpLimpar',
++    aplicarId: 'fpAplicar',
++    gavetaId: 'fpGaveta',
++    tituloGavetaId: 'fpTituloGaveta',
++    fecharGavetaId: 'fpFecharGaveta',
++    corpoGavetaId: 'fpCorpoGaveta',
++    gavetaLimparId: 'fpGavetaLimpar',
++    gavetaAplicarId: 'fpGavetaAplicar',
++    estadoInicial: 'recolhido',
++    filtros: defs,
++    onApply: () => aplicarFiltros(loadAll)
++  });
++
+   (window.fetchCachedFilterData ? window.fetchCachedFilterData(`${API}/api/filters/advanced`) : fetch(`${API}/api/filters/advanced`).then(r=>r.json())).then(advData=>{
+-    if(document.getElementById('fMacroCategoria')) filters.fMacroCategoria = new MultiSelect(document.getElementById('fMacroCategoria'), advData.macro_categoria || []);
+-    if(document.getElementById('fDia')) filters.fDia = new MultiSelect(document.getElementById('fDia'), (advData.dias || []).map(d=>String(d)));
+-    if(document.getElementById('fNumeroRI')) filters.fNumeroRI = new MultiSelect(document.getElementById('fNumeroRI'), advData.numero_ri || []);
+-    if(document.getElementById('fNotaFiscal')) filters.fNotaFiscal = new MultiSelect(document.getElementById('fNotaFiscal'), advData.nota_fiscal || []);
+-    if(document.getElementById('fNumeroOC')) filters.fNumeroOC = new MultiSelect(document.getElementById('fNumeroOC'), advData.numero_oc || []);
+-    if(document.getElementById('fDsItem')) filters.fDsItem = new MultiSelect(document.getElementById('fDsItem'), advData.ds_item || []);
+-    if(document.getElementById('fCodigoItem')) filters.fCodigoItem = new MultiSelect(document.getElementById('fCodigoItem'), advData.codigo_item || []);
+-    if(document.getElementById('fDescItem')) filters.fDescItem = new MultiSelect(document.getElementById('fDescItem'), advData.descricao_item || []);
+-    if(document.getElementById('fCentralizado')) filters.fCentralizado = new MultiSelect(document.getElementById('fCentralizado'), advData.centralizado || []);
+-    if(document.getElementById('fUnidade')) filters.fUnidade = new MultiSelect(document.getElementById('fUnidade'), advData.unidade || []);
+-    if(document.getElementById('fStatusPgto')) filters.fStatusPgto = new MultiSelect(document.getElementById('fStatusPgto'), advData.status_pagamento || []);
+-    if(document.getElementById('fTipoNFAdv')) filters.fTipoNFAdv = new MultiSelect(document.getElementById('fTipoNFAdv'), advData.tipo_nf || []);
+-    if(document.getElementById('fTipoLinha')) filters.fTipoLinha = new MultiSelect(document.getElementById('fTipoLinha'), advData.tipo_linha || []);
+-    if(document.getElementById('fFornEspecial')) filters.fFornEspecial = new MultiSelect(document.getElementById('fFornEspecial'), ['ESPECIAL', 'NÃO ESPECIAL']);
+-    if(document.getElementById('fFornNegociavel') && !filters.fFornNegociavel) filters.fFornNegociavel = new MultiSelect(document.getElementById('fFornNegociavel'), ['NEGOCIAVEL', 'NÃO NEGOCIAVEL']);
+-    if (typeof FilterStateStore !== 'undefined') FilterStateStore.restore();
++    const advDefs = [];
++    if(advData.macro_categoria) advDefs.push({ id: 'fMacroCategoria', key: 'macro_categoria', rotulo: 'Categoria', tipo: 'multi', opcoes: advData.macro_categoria });
++    if(advData.dias) advDefs.push({ id: 'fDia', key: 'dia', rotulo: 'Dia', tipo: 'multi', opcoes: advData.dias.map(String) });
++    if(advData.descricao_item) advDefs.push({ id: 'fDescItem', key: 'descricao_item', rotulo: 'Descrição Item', tipo: 'multi', opcoes: advData.descricao_item });
++    if(advData.unidade) advDefs.push({ id: 'fUnidade', key: 'unidade', rotulo: 'Unidade', tipo: 'multi', opcoes: advData.unidade });
++    if(advData.status_pagamento) advDefs.push({ id: 'fStatusPgto', key: 'status_pagamento', rotulo: 'Status Pagamento', tipo: 'multi', opcoes: advData.status_pagamento });
++    if(advData.tipo_nf) advDefs.push({ id: 'fTipoNFAdv', key: 'tipo_nf', rotulo: 'Tipo NF (Adv)', tipo: 'multi', opcoes: advData.tipo_nf });
++    if(advData.tipo_linha) advDefs.push({ id: 'fTipoLinha', key: 'tipo_linha', rotulo: 'Tipo Linha', tipo: 'multi', opcoes: advData.tipo_linha });
++    if(advData.numero_ri) advDefs.push({ id: 'fNumeroRI', key: 'numero_ri', rotulo: 'Número RI', tipo: 'multi', opcoes: advData.numero_ri });
++    if(advData.nota_fiscal) advDefs.push({ id: 'fNotaFiscal', key: 'nota_fiscal', rotulo: 'Nota Fiscal', tipo: 'multi', opcoes: advData.nota_fiscal });
++    if(advData.numero_oc) advDefs.push({ id: 'fNumeroOC', key: 'numero_oc', rotulo: 'Número OC', tipo: 'multi', opcoes: advData.numero_oc });
++    if(advData.ds_item) advDefs.push({ id: 'fDsItem', key: 'ds_item', rotulo: 'DS Item', tipo: 'multi', opcoes: advData.ds_item });
++    if(advData.codigo_item) advDefs.push({ id: 'fCodigoItem', key: 'codigo_item', rotulo: 'Código Item', tipo: 'multi', opcoes: advData.codigo_item });
++    advDefs.push({ id: 'fFornEspecial', key: 'is_fornecedor_especial', rotulo: 'Forn. Especial', tipo: 'multi', opcoes: ['ESPECIAL', 'NÃO ESPECIAL'] });
++    if (advDefs.length) filtersPanel.updateDefinitions(advDefs);
+   }).catch(()=>{});
+-  // Pre-select current year + month
+-  const cy = String(new Date().getFullYear());
+-  if (filters.fAno.options.includes(cy)) { filters.fAno.selected = new Set([cy]); filters.fAno.renderOptions(); filters.fAno.updateLabel(); }
+-  const cm = String(new Date().getMonth() + 1);
+-  if (filters.fMes.options.includes(cm)) { filters.fMes.selected = new Set([cm]); filters.fMes.renderOptions(); filters.fMes.updateLabel(); }
+-  if (typeof FilterStateStore !== 'undefined') FilterStateStore.restore();
++
+   _filtersReady = true;
+-  // Initial cascade + data load
+   aplicarFiltros(loadAll);
+ }
++window.addEventListener('themeChanged', () => {
++  if (typeof renderPerfYoYChart === 'function') renderPerfYoYChart();
++  if (typeof renderDiscountChart === 'function') renderDiscountChart();
++});
+ initFilters();
+ </script>
+ </body>

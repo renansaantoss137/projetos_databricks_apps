@@ -1,0 +1,58 @@
+# Declarative Automation Bundle definition for bq_app_vcm
+# Grupo Bimbo Brasil - DNA Analytics
+bundle:
+  name: bq_app_vcm
+
+include:
+  - resources/*.yml
+
+sync:
+  exclude:
+    - "Modelo VCM - Dna Vendas.xlsx"
+    - "Base - VCM.xlsx"
+    - "*.tmp"
+    - "~$*"
+    - ".git"
+    - "__pycache__"
+
+variables:
+  catalog:
+    description: Catalogo do Unity Catalog
+    default: cat_dnabb_dv
+  schema:
+    description: Schema padrao do Unity Catalog
+    default: grobbbqb_sz
+  volume_name:
+    description: Volume de dados VCM
+    default: dev_bq_vcm
+  table_name:
+    description: Tabela Delta de destino dos dados VCM
+    default: tbl_bq_vcm
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://adb-8674310331778219.19.azuredatabricks.net
+      root_path: /Shared/CONSULTAS_AUTOMATIZADAS/${workspace.current_user.userName}/${bundle.name}/${bundle.target}/
+    variables:
+      volume_name: dev_bq_vcm
+    permissions:
+      - user_name: ${workspace.current_user.userName}
+        level: CAN_MANAGE
+      - group_name: DNA - GB Brasil Leaders
+        level: CAN_MANAGE
+
+  prod:
+    mode: production
+    workspace:
+      host: https://adb-8674310331778219.19.azuredatabricks.net
+      root_path: /Shared/CONSULTAS_AUTOMATIZADAS/${bundle.name}/${bundle.target}
+    variables:
+      volume_name: prod_bq_vcm
+    permissions:
+      - user_name: ${workspace.current_user.userName}
+        level: CAN_MANAGE
+      - group_name: DNA - GB Brasil Leaders
+        level: CAN_MANAGE
